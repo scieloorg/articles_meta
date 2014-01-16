@@ -3,6 +3,7 @@ import weakref
 
 from ConfigParser import SafeConfigParser
 
+
 class SingletonMixin(object):
     """
     Adds a singleton behaviour to an existing class.
@@ -23,6 +24,7 @@ class SingletonMixin(object):
         cls._instances[key] = new_instance
 
         return new_instance
+
 
 class Configuration(SingletonMixin):
     """
