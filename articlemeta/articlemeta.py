@@ -11,6 +11,7 @@ import pymongo
 
 import utils
 import controller
+from export import Export
 
 
 @view_config(route_name='index', request_method='GET')
@@ -36,9 +37,12 @@ def exists_article(request):
 def get_article(request):
 
     code = request.GET.get('code', None)
-    format = request.GET.get('format', 'json')
+    fmt = request.GET.get('format', 'json')
 
     article = request.databroker.get_article(code)
+
+    if fmt == 'xmlwos':
+        return Response(Export(article).xmlwos())
 
     return Response(json.dumps(article))
 
