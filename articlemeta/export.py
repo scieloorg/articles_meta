@@ -22,7 +22,31 @@ class XMLArticlePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        xml.append(ET.Element('article'))
+        article_types = {
+            'rc': 'undefined',
+            'ab': 'abstract',
+            'pv': 'article-commentary',
+            'ed': 'editorial',
+            'in': 'oration',
+            'tr': 'research-article',
+            'up': 'review-article',
+            'oa': 'research-article',
+            'an': 'undefined',
+            'ax': 'undefined',
+            'mt': 'research-article',
+            'le': 'letter',
+            'ra': 'review-article',
+            'nd': 'undefined',
+            'cr': 'case-report',
+            'sc': 'rapid-communication',
+            'co': 'article-commentary',
+            'rn': 'brief-report'}
+
+        article = ET.Element('article')
+        article.set('lang_id', raw.original_language())
+        article.set('article-type', raw.document_type)
+
+        xml.append(article)
 
         return data
 
@@ -32,8 +56,49 @@ class XMLFrontBackPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        xml.find('article').append(ET.Element('front'))
-        xml.find('article').append(ET.Element('back'))
+        article = xml.find('article')
+        article.append(ET.Element('front'))
+        article.append(ET.Element('back'))
+
+        front = article.find('front')
+        front.append(ET.Element('journal-meta'))
+        front.append(ET.Element('article-meta'))
+
+        back = article.find('back')
+        back.append(ET.Element('ref-list'))
+
+        return data
+
+
+class XMLJournalMetaJournalIdPipe(plumber.Pipe):
+
+    def transform(self, data):
+        raw, xml = data
+
+        journalid = ET.Element('journal-id')
+        journalid.text = raw.journal_acronym
+        journalid.set('journal-id-type', 'publisher')
+
+        xml.find('./article/front/journal-meta').append(journalid)
+
+        return data
+
+
+class XMLJournalMetaJournalTitleGroupPipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        journaltitle = ET.Element('journal-title')
+        journaltitle.text = raw.journal_title
+
+        journalabbrevtitle = ET.Element('abbrev-journal-title')
+        journalabbrevtitle.text = raw.journal_abbreviated_title
+
+        journaltitlegroup = ET.Element('journal-title-group')
+        journaltitlegroup.append(journaltitle)
+        journaltitlegroup.append(journalabbrevtitle)
+
+        xml.find('./article/front/journal-meta').append(journaltitlegroup)
 
         return data
 
@@ -54,7 +119,14 @@ class Export(object):
         self._article = Article(article)
 
     def xmlwos(self):
-        ppl = plumber.Pipeline(SetupPipe(), XMLArticlePipe(), XMLFrontBackPipe(), XMLClosePipe())
+
+        ppl = plumber.Pipeline(SetupPipe(),
+                               XMLArticlePipe(),
+                               XMLFrontBackPipe(),
+                               XMLJournalMetaJournalIdPipe(),
+                               XMLJournalMetaJournalTitleGroupPipe(),
+                               XMLJournalMetaJournalTitleGroupPipe(),
+                               XMLClosePipe())
 
         transformed_data = ppl.run(self._article, rewrap=True)
 
