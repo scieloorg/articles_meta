@@ -103,6 +103,130 @@ class XMLJournalMetaJournalTitleGroupPipe(plumber.Pipe):
         return data
 
 
+class XMLJournalMetaISSNPipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        issn = ET.Element('issn')
+        issn.text = raw.any_issn()
+
+        xml.find('./article/front/journal-meta').append(issn)
+
+        return data
+
+
+class XMLJournalMetaPublisherPipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        publishername = ET.Element('publisher-name')
+        publishername.text = raw.publisher_name
+
+        publisherloc = ET.Element('publisher-loc')
+        publisherloc.text = raw.publisher_loc
+
+        publisher = ET.Element('publisher')
+        publisher.append(publishername)
+        publisher.append(publisherloc)
+
+        xml.find('./article/front/journal-meta').append(publisher)
+
+        return data
+
+
+class XMLArticleMetaUniqueArticleIdPipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        uniquearticleid = ET.Element('unique-article-id')
+        uniquearticleid.set('pub-id-type', 'publisher-id')
+        uniquearticleid.text = raw.publisher_id
+
+        xml.find('./article/front/article-meta').append(uniquearticleid)
+
+        return data
+
+
+class XMLArticleMetaArticleIdPublisherPipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        articleidpublisher = ET.Element('article-id')
+        articleidpublisher.set('pub-id-type', 'publisher-id')
+        articleidpublisher.text = raw.publisher_id
+
+        xml.find('./article/front/article-meta').append(articleidpublisher)
+
+        return data
+
+
+class XMLArticleMetaArticleIdDOIPipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.doi:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        articleiddoi = ET.Element('article-id')
+        articleiddoi.set('pub-id-type', 'doi')
+        articleiddoi.text = raw.doi
+
+        xml.find('./article/front/article-meta').append(articleiddoi)
+
+        return data
+
+
+class XMLArticleMetaArticleCategoriesPipe(plumber.Pipe):
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.wos_subject_areas:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        subjectgroup = ET.Element('subj-group')
+
+        for subject in raw.wos_subject_areas:
+            sbj = ET.Element('subject')
+            sbj.text = subject
+            subjectgroup.append(sbj)
+
+        articlecategories = ET.Element('article-categories')
+        articlecategories.append(subjectgroup)
+
+        xml.find('./article/front/article-meta').append(articlecategories)
+
+        return data
+
+
+class XMLArticleMetaTitleGroupPipe(plumber.Pipe):
+
+    def transform(self, data):
+        raw, xml = data
+
+        articletitle = ET.Element('article-title')
+        articletitle.set('lang_id', raw.original_language())
+
+        articletitle.text = raw.original_title()
+
+        titlegroup = ET.Element('title-group')
+        titlegroup.append(articletitle)
+
+        xml.find('./article/front/article-meta').append(titlegroup)
+
+        return data
+
+
 class XMLClosePipe(plumber.Pipe):
 
     def transform(self, data):
@@ -125,7 +249,12 @@ class Export(object):
                                XMLFrontBackPipe(),
                                XMLJournalMetaJournalIdPipe(),
                                XMLJournalMetaJournalTitleGroupPipe(),
-                               XMLJournalMetaJournalTitleGroupPipe(),
+                               XMLJournalMetaISSNPipe(),
+                               XMLJournalMetaPublisherPipe(),
+                               XMLArticleMetaUniqueArticleIdPipe(),
+                               XMLArticleMetaArticleIdPublisherPipe(),
+                               XMLArticleMetaArticleIdDOIPipe(),
+                               XMLArticleMetaArticleCategoriesPipe(),
                                XMLClosePipe())
 
         transformed_data = ppl.run(self._article, rewrap=True)

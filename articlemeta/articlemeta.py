@@ -42,9 +42,9 @@ def get_article(request):
     article = request.databroker.get_article(code)
 
     if fmt == 'xmlwos':
-        return Response(Export(article).xmlwos())
+        return Response(Export(article).xmlwos(), content_type="application/xml")
 
-    return Response(json.dumps(article))
+    return Response(json.dumps(article), content_type="application/json")
 
 
 @view_config(route_name='add_article',

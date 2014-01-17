@@ -17,7 +17,7 @@ class ExportTests(unittest.TestCase):
             json.loads(
                 open(os.path.dirname(__file__)+'/fixtures/article_meta.json').read()))
 
-    def test_xmlclosepipe(self):
+    def test_xmlclose_pipe(self):
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -52,7 +52,7 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(attributes, xml.keys())
 
-    def test_xmlarticlepipe(self):
+    def test_xmlarticle_pipe(self):
 
         pxml = ET.Element('articles')
 
@@ -61,9 +61,9 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export.XMLArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<articles><article article-type="research-article" lang_id="en" /></articles>', ET.tostring(xml))
+        self.assertEqual('<articles><article article-type="research-article" lang_id="pt" /></articles>', ET.tostring(xml))
 
-    def test_xmlfrontbackpipe(self):
+    def test_xmlfrontback_pipe(self):
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -75,7 +75,7 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual('<articles><article><front><journal-meta /><article-meta /></front><back><ref-list /></back></article></articles>', ET.tostring(xml))
 
-    def test_xmljournal_idpipe(self):
+    def test_xmljournal_id_pipe(self):
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -91,9 +91,9 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export.XMLJournalMetaJournalIdPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<articles><article><front><journal-meta><journal-id journal-id-type="publisher">bjoce</journal-id></journal-meta></front></article></articles>', ET.tostring(xml))
+        self.assertEqual('<articles><article><front><journal-meta><journal-id journal-id-type="publisher">rsp</journal-id></journal-meta></front></article></articles>', ET.tostring(xml))
 
-    def test_xmljournal_meta_journal_title_grouppipe(self):
+    def test_xmljournal_meta_journal_title_group_pipe(self):
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -112,6 +112,217 @@ class ExportTests(unittest.TestCase):
         title = xml.find('./article/front/journal-meta/journal-title-group/journal-title').text
         abbrevtitle = xml.find('./article/front/journal-meta/journal-title-group/abbrev-journal-title').text
 
-        self.assertEqual(u'Brazilian Journal of Oceanography', title)
-        self.assertEqual(u'Braz. j. oceanogr.', abbrevtitle)
+        self.assertEqual(u'Revista de Saúde Pública', title)
+        self.assertEqual(u'Rev. Saúde Pública', abbrevtitle)
+
+    def test_xmljournal_meta_issn_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('journal-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLJournalMetaISSNPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        issn = xml.find('./article/front/journal-meta/issn').text
+
+        self.assertEqual(u'0034-8910', issn)
+
+    def test_xmljournal_meta_publisher_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('journal-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLJournalMetaPublisherPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        publishername = xml.find('./article/front/journal-meta/publisher/publisher-name').text
+        publisherloc = xml.find('./article/front/journal-meta/publisher/publisher-loc').text
+
+        self.assertEqual(u'Faculdade de Saúde Pública da Universidade de São Paulo', publishername)
+        self.assertEqual(u'São Paulo', publisherloc)
+
+    def test_xml_article_meta_unique_article_id_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaUniqueArticleIdPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        uniquearticleid = xml.find('./article/front/article-meta/unique-article-id').text
+
+        self.assertEqual(u'S0034-89102010000400007', uniquearticleid)
+
+    def test_xml_article_meta_article_id_publisher_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaArticleIdPublisherPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        articleidpublisher = xml.find('./article/front/article-meta/article-id[@pub-id-type="publisher-id"]').text
+
+        self.assertEqual(u'S0034-89102010000400007', articleidpublisher)
+
+    def test_xml_article_meta_article_id_doi_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaArticleIdDOIPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        articleidpublisher = xml.find('./article/front/article-meta/article-id[@pub-id-type="doi"]').text
+
+        self.assertEqual(u'10.1590/S0034-89102010000400007', articleidpublisher)
+
+    def test_xml_article_meta_article_id_doi_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaArticleIdDOIPipe()
+
+        raw, xml = xmlarticle.transform(data)
+
+        # This try except is a trick to test the expected result of the
+        # piped XML, once the precond method don't raise an exception
+        # we try to check if the preconditioned pipe was called or not.
+        try:
+            xml.find('./article/front/article-meta/article-id[@pub-id-type="doi"]').text
+        except AttributeError:
+            self.assertTrue(True)
+        else:
+            self.assertTrue(False)
+
+    def test_xmljournal_meta_article_categories_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaArticleCategoriesPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        categories = [i.text for i in xml.findall('./article/front/article-meta/article-categories/subj-group/subject')]
+
+        self.assertEqual([u'PUBLIC, ENVIRONMENTAL & OCCUPATIONAL HEALTH'], categories)
+
+    def test_xmljournal_meta_article_categories_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaArticleCategoriesPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        self.assertEqual(None, xml.find('./article/front/article-meta/article-categories/subj-group/subject'))
+
+    def test_xmljournal_meta_title_group_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaTitleGroupPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        title = xml.find('./article/front/article-meta/title-group/article-title[@lang_id="pt"]').text
+
+        self.assertEqual(u'Perfil epidemiológico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004', title)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
