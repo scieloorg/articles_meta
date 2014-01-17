@@ -227,6 +227,24 @@ class XMLArticleMetaTitleGroupPipe(plumber.Pipe):
         return data
 
 
+class XMLArticleMetaTranslatedTitleGroupPipe(plumber.Pipe):
+
+    def transform(self, data):
+        raw, xml = data
+
+        for lang, title in raw.translated_titles().items():
+            transtitle = ET.Element('trans-title')
+            transtitle.text = title
+
+            transtitlegrp = ET.Element('trans-title-group')
+            transtitlegrp.set('lang_id', lang)
+            transtitlegrp.append(transtitle)
+
+            xml.find('./article/front/article-meta/title-group').append(transtitlegrp)
+
+        return data
+
+
 class XMLClosePipe(plumber.Pipe):
 
     def transform(self, data):
@@ -255,6 +273,7 @@ class Export(object):
                                XMLArticleMetaArticleIdPublisherPipe(),
                                XMLArticleMetaArticleIdDOIPipe(),
                                XMLArticleMetaArticleCategoriesPipe(),
+                               XMLArticleMetaTitleGroupPipe(),
                                XMLClosePipe())
 
         transformed_data = ppl.run(self._article, rewrap=True)

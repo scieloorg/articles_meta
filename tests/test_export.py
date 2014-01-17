@@ -246,7 +246,7 @@ class ExportTests(unittest.TestCase):
         else:
             self.assertTrue(False)
 
-    def test_xmljournal_meta_article_categories_pipe(self):
+    def test_xmlarticle_meta_article_categories_pipe(self):
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -266,7 +266,7 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual([u'PUBLIC, ENVIRONMENTAL & OCCUPATIONAL HEALTH'], categories)
 
-    def test_xmljournal_meta_article_categories_without_data_pipe(self):
+    def test_xmlarticle_meta_article_categories_without_data_pipe(self):
 
         fakexylosearticle = Article({'article': {}, 'title': {}})
 
@@ -286,7 +286,7 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(None, xml.find('./article/front/article-meta/article-categories/subj-group/subject'))
 
-    def test_xmljournal_meta_title_group_pipe(self):
+    def test_xmlarticle_meta_title_group_pipe(self):
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -306,7 +306,29 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'Perfil epidemiológico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004', title)
 
+    def test_xmlarticle_meta_translated_title_group_pipe(self):
 
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        articlemeta = front.find('article-meta')
+        articlemeta.append(ET.Element('title-group'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaTranslatedTitleGroupPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        titles = [i.find('trans-title').text for i in xml.findall('./article/front/article-meta/title-group/trans-title-group')]
+
+        self.assertEqual([u'Epidemiological profile of patients on renal replacement therapy in Brazil, 2000-2004',
+                          u'Perfil epidemiológico de los pacientes en terapia renal substitutiva en Brasil, 2000-2004'], titles)
 
 
 
