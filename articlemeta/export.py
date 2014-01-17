@@ -274,6 +274,7 @@ class Export(object):
                                XMLArticleMetaArticleIdDOIPipe(),
                                XMLArticleMetaArticleCategoriesPipe(),
                                XMLArticleMetaTitleGroupPipe(),
+                               XMLArticleMetaTranslatedTitleGroupPipe(),
                                XMLClosePipe())
 
         transformed_data = ppl.run(self._article, rewrap=True)
