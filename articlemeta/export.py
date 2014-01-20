@@ -229,6 +229,14 @@ class XMLArticleMetaTitleGroupPipe(plumber.Pipe):
 
 class XMLArticleMetaTranslatedTitleGroupPipe(plumber.Pipe):
 
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.translated_titles():
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
@@ -241,6 +249,202 @@ class XMLArticleMetaTranslatedTitleGroupPipe(plumber.Pipe):
             transtitlegrp.append(transtitle)
 
             xml.find('./article/front/article-meta/title-group').append(transtitlegrp)
+
+        return data
+
+
+class XMLArticleMetaContribGroupPipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.authors:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        contribgroup = ET.Element('contrib-group')
+
+        for author in raw.authors:
+            contribsurname = ET.Element('surname')
+            contribsurname.text = author['surname']
+
+            contribgivennames = ET.Element('given-names')
+            contribgivennames.text = author['given_names']
+
+            contribname = ET.Element('name')
+            contribname.append(contribsurname)
+            contribname.append(contribgivennames)
+
+            role = ET.Element('role')
+            role.text = author['role'] or 'ND'
+
+            contrib = ET.Element('contrib')
+            contrib.set('contrib-type', 'author')
+            contrib.append(contribname)
+            contrib.append(role)
+
+            for xr in author['xref']:
+                xref = ET.Element('xref')
+                xref.set('ref-type', 'aff')
+                xref.set('rid', xr)
+                contrib.append(xref)
+
+            contribgroup.append(contrib)
+
+        xml.find('./article/front/article-meta').append(contribgroup)
+
+        return data
+
+
+class XMLArticleMetaAffiliationPipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.affiliations:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        for affiliation in raw.affiliations:
+            addrline = ET.Element('addr-line')
+            addrline.text = affiliation['addr_line']
+
+            institution = ET.Element('institution')
+            institution.text = affiliation['institution']
+
+            country = ET.Element('country')
+            country.text = affiliation['country']
+
+            aff = ET.Element('aff')
+            aff.set('id', affiliation['index'])
+
+            if affiliation['addr_line']:
+                aff.append(addrline)
+
+            if affiliation['institution']:
+                aff.append(institution)
+
+            if affiliation['country']:
+                aff.append(country)
+
+            xml.find('./article/front/article-meta').append(aff)
+
+        return data
+
+
+class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
+
+    def transform(self, data):
+        raw, xml = data
+
+        year = ET.Element('year')
+        year.text = raw.publication_date[0:4]
+
+        month = ET.Element('month')
+        month.text = raw.publication_date[5:7]
+
+        pubdate = ET.Element('pub-date')
+        pubdate.append(month)
+        pubdate.append(year)
+
+        fpage = ET.Element('fpage')
+        fpage.text = raw.start_page
+
+        lpage = ET.Element('lpage')
+        lpage.text = raw.end_page
+
+        vol = ET.Element('volume')
+        vol.text = raw.volume
+
+        issue = ET.Element('issue')
+        issue.text = raw.issue
+
+        issue_uri = ET.Element('self-uri')
+        issue_uri.set('href', raw.issue_url)
+        issue_uri.set('content-type', 'issue_page')
+
+        journal_uri = ET.Element('self-uri')
+        journal_uri.set('href', raw.journal_url)
+        journal_uri.set('content-type', 'journal_page')
+
+        article_uri = ET.Element('self-uri')
+        article_uri.set('href', raw.html_url)
+        article_uri.set('content-type', 'full_text_page')
+
+        articlemeta = xml.find('./article/front/article-meta')
+        articlemeta.append(pubdate)
+        if raw.volume:
+            articlemeta.append(vol)
+        if raw.issue:
+            articlemeta.append(issue)
+        if raw.start_page:
+            articlemeta.append(fpage)
+        if raw.end_page:
+            articlemeta.append(lpage)
+        articlemeta.append(article_uri)
+        articlemeta.append(issue_uri)
+        articlemeta.append(journal_uri)
+
+        return data
+
+
+class XMLArticleMetaAbstractsPipe(plumber.Pipe):
+
+    def transform(self, data):
+        raw, xml = data
+
+        p = ET.Element('p')
+        p.text = raw.original_abstract()
+
+        abstract = ET.Element('abstract')
+        abstract.set('lang_id', raw.original_language())
+        abstract.append(p)
+
+        articlemeta = xml.find('./article/front/article-meta')
+
+        if raw.original_abstract():
+            articlemeta.append(abstract)
+
+        if raw.translated_abstracts():
+            for lang, text in raw.translated_abstracts().items():
+                p = ET.Element('p')
+                p.text = text
+
+                abstract = ET.Element('trans-abstract')
+                abstract.set('lang_id', lang)
+                abstract.append(p)
+
+                articlemeta.append(abstract)
+
+        return data
+
+
+class XMLArticleMetaKeywordsPipe(plumber.Pipe):
+
+    def transform(self, data):
+        raw, xml = data
+
+        if raw.keywords():
+
+            articlemeta = xml.find('./article/front/article-meta')
+
+            for lang, keywords in raw.keywords().items():
+                kwdgroup = ET.Element('kwd-group')
+                kwdgroup.set('lang_id', lang)
+                kwdgroup.set('kwd-group-type', 'author-generated')
+                for keyword in keywords:
+                    kwd = ET.Element('kwd')
+                    kwd.text = keyword
+                    kwdgroup.append(kwd)
+                articlemeta.append(kwdgroup)
 
         return data
 
@@ -275,6 +479,11 @@ class Export(object):
                                XMLArticleMetaArticleCategoriesPipe(),
                                XMLArticleMetaTitleGroupPipe(),
                                XMLArticleMetaTranslatedTitleGroupPipe(),
+                               XMLArticleMetaContribGroupPipe(),
+                               XMLArticleMetaAffiliationPipe(),
+                               XMLArticleMetaGeneralInfoPipe(),
+                               XMLArticleMetaAbstractsPipe(),
+                               XMLArticleMetaKeywordsPipe(),
                                XMLClosePipe())
 
         transformed_data = ppl.run(self._article, rewrap=True)

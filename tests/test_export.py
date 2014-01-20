@@ -330,19 +330,659 @@ class ExportTests(unittest.TestCase):
         self.assertEqual([u'Epidemiological profile of patients on renal replacement therapy in Brazil, 2000-2004',
                           u'Perfil epidemiológico de los pacientes en terapia renal substitutiva en Brasil, 2000-2004'], titles)
 
+    def test_xmlarticle_meta_translated_title_group_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        articlemeta = front.find('article-meta')
+        articlemeta.append(ET.Element('title-group'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaContribGroupPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        titles = [i.find('trans-title').text for i in xml.findall('./article/front/article-meta/title-group/trans-title-group')]
+
+        self.assertEqual([], titles)
+
+    def test_xmlarticle_meta_contrib_group_author_names_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaContribGroupPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        fullnames = [' '.join([i.find('given-names').text, i.find('surname').text]) for i in xml.findall('./article/front/article-meta/contrib-group/contrib/name')]
+
+        self.assertEqual([u'Mariangela Leal Cherchiglia',
+                          u'Elaine Leandro Machado',
+                          u'Daniele Araújo Campo Szuster',
+                          u'Eli Iola Gurgel Andrade',
+                          u'Francisco de Assis Acúrcio',
+                          u'Waleska Teixeira Caiaffa',
+                          u'Ricardo Sesso',
+                          u'Augusto A Guerra Junior',
+                          u'Odilon Vanni de Queiroz',
+                          u'Isabel Cristina Gomes'], fullnames)
+
+    def test_xmlarticle_meta_contrib_group_author_roles_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaContribGroupPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        fullnames = [i.text for i in xml.findall('./article/front/article-meta/contrib-group/contrib/role')]
+
+        self.assertEqual([u'ND', u'ND', u'ND', u'ND', u'ND', u'ND', u'ND',
+                          u'ND', u'ND', u'ND'], fullnames)
+
+    def test_xmlarticle_meta_contrib_group_author_xrefs_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaContribGroupPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        fullnames = [i.get('rid') for i in xml.findall('./article/front/article-meta/contrib-group/contrib/xref')]
+
+        self.assertEqual([u'A01', u'A01', u'A01', u'A01', u'A01', u'A01', u'A02',
+                          u'A01', u'A02', u'A01', u'A03'], fullnames)
+
+    def test_xmlarticle_meta_contrib_group_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaContribGroupPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        titles = [i.find('contrib-group').text for i in xml.findall('./article/front/article-meta/contrib-group/contrib')]
+
+        self.assertEqual([], titles)
+
+    def test_xmlarticle_meta_affiliation_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaAffiliationPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        affiliations = [i.find('institution').text for i in xml.findall('./article/front/article-meta/aff')]
+
+        self.assertEqual([], affiliations)
+
+    def test_xmlarticle_meta_affiliation_institution_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaAffiliationPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        affiliations = [i.find('institution').text for i in xml.findall('./article/front/article-meta/aff')]
+
+        self.assertEqual([u'Universidade Federal de Minas Gerais',
+                          u'Universidade Federal de São Paulo',
+                          u'Universidade Federal de Minas Gerais'], affiliations)
+
+    def test_xmlarticle_meta_affiliation_index_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaAffiliationPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        indexes = [i.get('id') for i in xml.findall('./article/front/article-meta/aff')]
+
+        self.assertEqual([u'A01',
+                          u'A02',
+                          u'A03'], indexes)
+
+    def test_xmlarticle_meta_affiliation_country_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaAffiliationPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        countries = [i.find('country').text for i in xml.findall('./article/front/article-meta/aff')]
+
+        self.assertEqual([u'BRAZIL',
+                          u'BRAZIL',
+                          u'BRAZIL'], countries)
 
 
+    def test_xmlarticle_meta_affiliation_address_pipe(self):
 
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
 
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
 
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
 
+        data = [self._article_meta, pxml]
 
+        xmlarticle = export.XMLArticleMetaAffiliationPipe()
+        raw, xml = xmlarticle.transform(data)
 
+        address = [i.find('addr-line').text for i in xml.findall('./article/front/article-meta/aff')]
 
+        self.assertEqual([u'Belo Horizonte',
+                          u'São Paulo',
+                          u'Belo Horizonte'], address)
 
+    def test_xmlarticle_meta_general_info_pub_year_pipe(self):
 
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
 
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
 
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        pub_year = xml.find('./article/front/article-meta/pub-date/year').text
+
+        self.assertEqual(u'2010', pub_year)
+
+    def test_xmlarticle_meta_general_info_pub_month_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        pub_month = xml.find('./article/front/article-meta/pub-date/month').text
+
+        self.assertEqual(u'08', pub_month)
+
+    def test_xmlarticle_meta_general_info_first_page_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        fpage = xml.find('./article/front/article-meta/fpage').text
+
+        self.assertEqual(u'639', fpage)
+
+    def test_xmlarticle_meta_general_info_without_first_page_pipe(self):
+
+        fakexylosearticle = Article({'article': {'v65': [{'_': '201008'}]}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        fpage = xml.find('./article/front/article-meta/fpage')
+
+        self.assertEqual(None, fpage)
+
+    def test_xmlarticle_meta_general_info_last_page_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        lpage = xml.find('./article/front/article-meta/lpage').text
+
+        self.assertEqual(u'649', lpage)
+
+    def test_xmlarticle_meta_general_info_without_last_page_pipe(self):
+
+        fakexylosearticle = Article({'article': {'v65': [{'_': '201008'}]}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        lpage = xml.find('./article/front/article-meta/lpage')
+
+        self.assertEqual(None, lpage)
+
+    def test_xmlarticle_meta_general_info_volume_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        volume = xml.find('./article/front/article-meta/volume').text
+
+        self.assertEqual(u'44', volume)
+
+    def test_xmlarticle_meta_general_info_without_volume_pipe(self):
+
+        fakexylosearticle = Article({'article': {'v65': [{'_': '201008'}]}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        volume = xml.find('./article/front/article-meta/volume')
+
+        self.assertEqual(None, volume)
+
+    def test_xmlarticle_meta_general_info_issue_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        issue = xml.find('./article/front/article-meta/issue').text
+
+        self.assertEqual(u'4', issue)
+
+    def test_xmlarticle_meta_general_info_without_issue_pipe(self):
+
+        fakexylosearticle = Article({'article': {'v65': [{'_': '201008'}]}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        issue = xml.find('./article/front/article-meta/issue')
+
+        self.assertEqual(None, issue)
+
+    def test_xmlarticle_meta_general_info_fulltext_uri_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        uri = xml.find('./article/front/article-meta/self-uri[@content-type="full_text_page"]').get('href')
+
+        self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_arttext&pid=S0034-89102010000400007', uri)
+
+    def test_xmlarticle_meta_general_info_issue_uri_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        uri = xml.find('./article/front/article-meta/self-uri[@content-type="issue_page"]').get('href')
+
+        self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_issuetoc&pid=S0034-891020100004', uri)
+
+    def test_xmlarticle_meta_general_info_journal_uri_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        uri = xml.find('./article/front/article-meta/self-uri[@content-type="journal_page"]').get('href')
+
+        self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_serial&pid=0034-8910', uri)
+
+    def test_xmlarticle_meta_original_language_abstract_data_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaAbstractsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        abstract = xml.find('./article/front/article-meta/abstract/p').text[0:30]
+
+        self.assertEqual(u'OBJETIVO: Descrever o perfil e', abstract)
+
+    def test_xmlarticle_meta_original_language_abstract_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {'v40': [{'_': 'pt'}]}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaAbstractsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        abstract = xml.find('./article/front/article-meta/abstract/p')
+
+        self.assertEqual(None, abstract)
+
+    def test_xmlarticle_meta_translated_abstract_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {'v40': [{'_': 'pt'}]}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaAbstractsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        abstract = xml.find('./article/front/article-meta/trans-abstract/p')
+
+        self.assertEqual(None, abstract)
+
+    def test_xmlarticle_meta_keywords_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {'v40': [{'_': 'pt'}]}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaKeywordsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        keywords_language = xml.find('./article/front/article-meta/kwd-group')
+
+        self.assertEqual(None, keywords_language)
+
+    def test_xmlarticle_meta_keywords_languages_data_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaKeywordsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        keywords_language = [i.get('lang_id') for i in xml.findall('./article/front/article-meta/kwd-group')]
+
+        self.assertEqual([u'en', u'es', u'pt'], keywords_language)
+
+    def test_xmlarticle_meta_keywords_languages_data_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaKeywordsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        keywords_language = [i.get('lang_id') for i in xml.findall('./article/front/article-meta/kwd-group')]
+
+        self.assertEqual([u'en', u'es', u'pt'], keywords_language)
+
+    def test_xmlarticle_meta_keywords_data_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaKeywordsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        keywords = [i.text for i in xml.findall('.//kwd')]
+
+        self.assertEqual([u'Renal Insufficiency, Chronic',
+                          u'Renal Replacement Therapy',
+                          u'Hospital Information Systems',
+                          u'Mortality Registries',
+                          u'Insuficiencia Renal Crónica',
+                          u'Terapia de Reemplazo Renal',
+                          u'Sistemas de Información en Hospital',
+                          u'Registros de Mortalidad',
+                          u'Insuficiência Renal Crônica',
+                          u'Terapia de Substituição Renal',
+                          u'Sistemas de Informação Hospitalar',
+                          u'Registros de Mortalidade'], keywords)
 
 
 
