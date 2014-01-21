@@ -1,0 +1,3089 @@
+{
+    "sent_doaj": "True", 
+    "code": "S0034-89102010000400007", 
+    "article_title_md5": [
+        "79f5d0c40db5366c638d401d291fffc2", 
+        "1e8b399129eb4793ca02fee5f8e66d66", 
+        "96497b0183a6b8a3ff7c333d6c9e5fd6"
+    ], 
+    "title": {
+        "v30": [
+            {
+                "_": "fbpe-013"
+            }
+        ], 
+        "v35": [
+            {
+                "_": "PRINT"
+            }
+        ], 
+        "v6": [
+            {
+                "_": "c"
+            }
+        ], 
+        "v10": [
+            {
+                "_": "br1.1"
+            }
+        ], 
+        "v441": [
+            {
+                "_": "Health Sciences"
+            }
+        ], 
+        "v150": [
+            {
+                "_": "Rev. Sa\u00fade P\u00fablica"
+            }
+        ], 
+        "v151": [
+            {
+                "_": "Rev. sa\u00fade p\u00fablica"
+            }
+        ], 
+        "v930": [
+            {
+                "_": "RSP"
+            }
+        ], 
+        "v302": [
+            {
+                "_": "1"
+            }
+        ], 
+        "v440": [
+            {
+                "_": "SAUDE COLETIVA"
+            }, 
+            {
+                "_": "SAUDE PUBLICA"
+            }, 
+            {
+                "_": "MICROBIOLOGIA"
+            }
+        ], 
+        "v935": [
+            {
+                "_": "0034-8910"
+            }
+        ], 
+        "v950": [
+            {
+                "_": "MRB"
+            }
+        ], 
+        "v951": [
+            {
+                "_": "MRB"
+            }
+        ], 
+        "v480": [
+            {
+                "_": "Faculdade de Sa\u00fade P\u00fablica da Universidade de S\u00e3o Paulo"
+            }
+        ], 
+        "v400": [
+            {
+                "_": "0034-8910"
+            }
+        ], 
+        "v421": [
+            {
+                "_": "Rev Saude Publica"
+            }
+        ], 
+        "v350": [
+            {
+                "_": "es"
+            }, 
+            {
+                "_": "en"
+            }, 
+            {
+                "_": "pt"
+            }
+        ], 
+        "v540": [
+            {
+                "t": "<p> </p>", 
+                "_": "", 
+                "l": "es"
+            }, 
+            {
+                "t": "<p> </p>", 
+                "_": "", 
+                "l": "pt"
+            }, 
+            {
+                "t": "<p> </p>", 
+                "_": "", 
+                "l": "en"
+            }
+        ], 
+        "v117": [
+            {
+                "_": "vancouv"
+            }
+        ], 
+        "v310": [
+            {
+                "_": "BR"
+            }
+        ], 
+        "v330": [
+            {
+                "_": "CT"
+            }
+        ], 
+        "v85": [
+            {
+                "_": "decs"
+            }
+        ], 
+        "v691": [
+            {
+                "_": "101000000000000000000000"
+            }
+        ], 
+        "v690": [
+            {
+                "_": "www.scielo.br"
+            }
+        ], 
+        "v230": [
+            {
+                "_": "Journal of Public Health"
+            }
+        ], 
+        "v854": [
+            {
+                "_": "PUBLIC, ENVIRONMENTAL & OCCUPATIONAL HEALTH"
+            }
+        ], 
+        "v20": [
+            {
+                "_": "068227-6"
+            }
+        ], 
+        "v851": [
+            {
+                "_": "SCIE"
+            }
+        ], 
+        "v490": [
+            {
+                "_": "S\u00e3o Paulo"
+            }
+        ], 
+        "v68": [
+            {
+                "_": "rsp"
+            }
+        ], 
+        "v67": [
+            {
+                "_": "na"
+            }
+        ], 
+        "v66": [
+            {
+                "_": "art"
+            }
+        ], 
+        "v65": [
+            {
+                "_": "<hr>"
+            }
+        ], 
+        "v64": [
+            {
+                "_": "revsp@org.usp.br"
+            }
+        ], 
+        "v63": [
+            {
+                "_": "Avenida Dr. Arnaldo, 715"
+            }, 
+            {
+                "_": "01246-904 S\u00e3o Paulo SP Brazil"
+            }, 
+            {
+                "_": "Tel./Fax: +55 11 3061-7985"
+            }
+        ], 
+        "v62": [
+            {
+                "_": "Faculdade de Sa\u00fade P\u00fablica da Universidade de S\u00e3o Paulo"
+            }
+        ], 
+        "v450": [
+            {
+                "_": "CAB-Health"
+            }, 
+            {
+                "_": "EMBASE"
+            }, 
+            {
+                "_": "Popline"
+            }, 
+            {
+                "_": "LILACS"
+            }, 
+            {
+                "_": "AdSa\u00fade"
+            }, 
+            {
+                "_": "DOCPAL"
+            }, 
+            {
+                "_": "Abstracts on Hygiene and Communicable Diseases"
+            }, 
+            {
+                "_": "Abstracts on Zooparasitology"
+            }, 
+            {
+                "_": "Biological Abstracts"
+            }, 
+            {
+                "_": "Current Contents/Social & Behavioral Science"
+            }, 
+            {
+                "_": "entomology Abstracts"
+            }, 
+            {
+                "_": "Excerpta Medica"
+            }, 
+            {
+                "_": "Index Medicus"
+            }, 
+            {
+                "_": "Microbiology Abstracts"
+            }, 
+            {
+                "_": "Nutrition Abstracts and Reviews-SeriesB"
+            }, 
+            {
+                "_": "Review Medical Veterinary entomology"
+            }, 
+            {
+                "_": "Safety Science Abstracts Journal"
+            }, 
+            {
+                "_": "Social Science Citation Index"
+            }, 
+            {
+                "_": "Tropical Diseases Bulletin"
+            }, 
+            {
+                "_": "Veterinary Bulletin"
+            }, 
+            {
+                "_": "Virology Abstracts"
+            }, 
+            {
+                "_": "ISI"
+            }, 
+            {
+                "_": "PubMed"
+            }
+        ], 
+        "v380": [
+            {
+                "_": "B"
+            }
+        ], 
+        "v901": [
+            {
+                "l": "es", 
+                "_": "Publicar y diseminar productos del trabajo cient\u00edfico relevantes para la Salud P\u00fablica"
+            }, 
+            {
+                "l": "pt", 
+                "_": "Publicar e disseminar produtos do trabalho cient\u00edfico que sejam relevantes para a Sa\u00fade P\u00fablica"
+            }, 
+            {
+                "l": "en", 
+                "_": "To publish and divulge scientific production on subjects of relevance to Public Health"
+            }
+        ], 
+        "v943": [
+            {
+                "_": "20130104"
+            }
+        ], 
+        "v942": [
+            {
+                "_": "19980430"
+            }
+        ], 
+        "v941": [
+            {
+                "_": "20121108"
+            }
+        ], 
+        "v940": [
+            {
+                "_": "19980430"
+            }
+        ], 
+        "v320": [
+            {
+                "_": "SP"
+            }
+        ], 
+        "v340": [
+            {
+                "_": "A"
+            }
+        ], 
+        "v852": [
+            {
+                "_": "SSCI"
+            }
+        ], 
+        "v541": [
+            {
+                "_": "nd"
+            }
+        ], 
+        "v100": [
+            {
+                "_": "Revista de Sa\u00fade P\u00fablica"
+            }
+        ], 
+        "v50": [
+            {
+                "_": "C"
+            }
+        ], 
+        "v51": [
+            {
+                "a": "19980430", 
+                "b": "C", 
+                "_": ""
+            }
+        ], 
+        "v360": [
+            {
+                "_": "es"
+            }, 
+            {
+                "_": "en"
+            }, 
+            {
+                "_": "pt"
+            }
+        ], 
+        "v301": [
+            {
+                "_": "1967"
+            }
+        ], 
+        "v303": [
+            {
+                "_": "1"
+            }
+        ], 
+        "v5": [
+            {
+                "_": "S"
+            }
+        ]
+    }, 
+    "citations_title_md5": [
+        "f53a44728b7c1c3c42e9390bc0c07f4e", 
+        "f8054bfde14b4566b629dbbbcb50ac97", 
+        "71124047d5fac58e40b1b2045c2a7179", 
+        "4f8a0c49c8aaf34928862b7eaab34773", 
+        "222a920ed4fff2bf3bcebc301a179b2a", 
+        "77eac6b02dd48f18bb6b008a31354b2c", 
+        "04a772ee4daeb03544f31e580260a370", 
+        "cfb3c5b6a8bc1d0d4470ec76d4d50af1", 
+        "d4ecf2a33ae09311768ed7438b533c06", 
+        "fe9a0245c39164be150e0dd7c90e1675", 
+        "51b7907f9eca4eda096594997c0130c5", 
+        "74857ea5d0ac9db94779eb0e08d713b4", 
+        "f498c42dc563fa57a9d21d9f9f3b636b", 
+        "1926fcac1d1ea87a452c29fb6c4c445a", 
+        "c05fb40cb0ba7213a2483049373aea15", 
+        "b55d0a4214257666320b9655b5569ce2", 
+        "cef153582d85817022219efb12cd65cb", 
+        "d85a1d5c644179baa2d132f110b23f7f", 
+        "7c330d337611f8889494365e433dc12d", 
+        "12661322f330c56ee38c7aae9eb7e6ff", 
+        "2e3134385782ebd151333cf821d28f73", 
+        "2b8d24c507d2195ce3187cb29f8df65f", 
+        "f53a44728b7c1c3c42e9390bc0c07f4e", 
+        "f8054bfde14b4566b629dbbbcb50ac97", 
+        "71124047d5fac58e40b1b2045c2a7179", 
+        "4f8a0c49c8aaf34928862b7eaab34773", 
+        "222a920ed4fff2bf3bcebc301a179b2a", 
+        "77eac6b02dd48f18bb6b008a31354b2c", 
+        "04a772ee4daeb03544f31e580260a370", 
+        "cfb3c5b6a8bc1d0d4470ec76d4d50af1", 
+        "d4ecf2a33ae09311768ed7438b533c06", 
+        "fe9a0245c39164be150e0dd7c90e1675", 
+        "51b7907f9eca4eda096594997c0130c5", 
+        "74857ea5d0ac9db94779eb0e08d713b4", 
+        "f498c42dc563fa57a9d21d9f9f3b636b", 
+        "1926fcac1d1ea87a452c29fb6c4c445a", 
+        "c05fb40cb0ba7213a2483049373aea15", 
+        "b55d0a4214257666320b9655b5569ce2", 
+        "cef153582d85817022219efb12cd65cb", 
+        "d85a1d5c644179baa2d132f110b23f7f", 
+        "7c330d337611f8889494365e433dc12d", 
+        "12661322f330c56ee38c7aae9eb7e6ff", 
+        "2e3134385782ebd151333cf821d28f73", 
+        "2b8d24c507d2195ce3187cb29f8df65f"
+    ], 
+    "article_title_no_accents": [
+        "perfilepidemiologicodospacientesemterapiarenalsubstitutivanobrasil", 
+        "epidemiologicalprofileofpatientsonrenalreplacementtherapyinbrazil", 
+        "perfilepidemiologicodelospacientesenterapiarenalsubstitutivaenbrasil"
+    ], 
+    "collection": "scl", 
+    "applicable": "True", 
+    "code_title": [
+        "0034-8910"
+    ], 
+    "citations": [
+        {
+            "v30": [
+                {
+                    "_": "Ethn Dis."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "16"
+                }
+            ], 
+            "v32": [
+                {
+                    "s": "2", 
+                    "_": "2"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "1"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "End-stage renal disease in sub-Saharan Africa."
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20060000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2006"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "2,5,9"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700001"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "1"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Bamgboye", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "EL"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "J Bras Nefrol"
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "26"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "4"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "2"
+                }
+            ], 
+            "v35": [
+                {
+                    "_": "0101-2800"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "pt", 
+                    "_": "Doen\u00e7a renal cr\u00f4nica: problemas e solu\u00e7\u00f5es"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Bastos", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "MG"
+                }, 
+                {
+                    "s": "Carmo", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "WB"
+                }, 
+                {
+                    "s": "Abrita", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "RR"
+                }, 
+                {
+                    "s": "Almeida", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "EC"
+                }, 
+                {
+                    "s": "Mafra", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "D"
+                }, 
+                {
+                    "s": "Costa", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "DMN"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2004"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "202-15"
+                }
+            ], 
+            "v801": [
+                {
+                    "_": "J Bras Nefrol"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700002"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "2"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20040000"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Kidney Int Suppl."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "(98)"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "3"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "P revention of chronic kidney disease: a global challenge"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20050000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2005"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "11-7. DOI:10.1111/j.1523-1755.2005.09802.x"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700003"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "3"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Bello", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "AK"
+                }, 
+                {
+                    "s": "Nwankwo", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "E"
+                }, 
+                {
+                    "s": "El Nahas", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "AM"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Nephrol Dial Transplant."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "17"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "4"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "Prevalence and socio-economic aspects of chronic kidney disease"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20020000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2002"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "8-12"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700004"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "4"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Bommer", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "J"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Rev Bras Estud Pop"
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "24"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "1"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "5"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "pt", 
+                    "_": "A constru\u00e7\u00e3o da base de dados nacional em terapia renal substitutiva (TRS) centrada no indiv\u00edduo: aplica\u00e7\u00e3o do m\u00e9todo de linkage determin\u00edstico-probabil\u00edstico"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20070000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2007"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "163-7"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700005"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "5"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Cherchiglia", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "ML"
+                }, 
+                {
+                    "s": "Guerra Jr", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "AA"
+                }, 
+                {
+                    "s": "Andrade", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "EIG"
+                }, 
+                {
+                    "s": "Machado", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "CJ"
+                }, 
+                {
+                    "s": "Ac\u00farcio", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "FA"
+                }, 
+                {
+                    "s": "Meira Jr", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "W"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Ren Fail"
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "28"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "8"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "6"
+                }
+            ], 
+            "v35": [
+                {
+                    "_": "0886-022X"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "End-stage renal disease and its treatment in latin america in the twenty-first century"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Cusumano", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "A"
+                }, 
+                {
+                    "s": "Garcia-Garcia", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "G"
+                }, 
+                {
+                    "s": "Di Gioia", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "C"
+                }, 
+                {
+                    "s": "Hermida", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "O"
+                }, 
+                {
+                    "s": "Lavorato", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "C"
+                }, 
+                {
+                    "s": "Carre\u00f1o", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "CA"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2006"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "631-7."
+                }
+            ], 
+            "v801": [
+                {
+                    "_": "Ren Fail"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700006"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "6"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20060000"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Nephrol Dial Transplant."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "20"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "12"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "7"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "ESRD patients in 2004: global overview of patient numbers, treatment modalities and associated trends"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20050000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2005"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "2587-93. DOI:10.1093/ndt/gfi159"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700007"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "7"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Grassmann", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "A"
+                }, 
+                {
+                    "s": "Gioberge", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "S"
+                }, 
+                {
+                    "s": "Moeller", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "S"
+                }, 
+                {
+                    "s": "Brown", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "G"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Clin J Am Soc Nephrol."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "1"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "4"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "8"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "Mortality by dialysis modality among patients who have end-stage renal disease and are awaiting renal transplantation"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20060000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2006"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "774-9."
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700008"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "8"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Inrig", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "JK"
+                }, 
+                {
+                    "s": "Sun", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "JL"
+                }, 
+                {
+                    "s": "Yang", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "Q"
+                }, 
+                {
+                    "s": "Briley", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "LP"
+                }, 
+                {
+                    "s": "Szczech", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "LA"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Ann Intern Med."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "143"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "3"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "9"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "Comparing the risk for death with peritoneal dialysis and hemodialysis in a national cohort of patients with chronic kidney disease"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20050000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2005"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "174-83"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700009"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "9"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Jaar", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "BG"
+                }, 
+                {
+                    "s": "Coresh", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "J"
+                }, 
+                {
+                    "s": "Plantinga", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "LC"
+                }, 
+                {
+                    "s": "Fink", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "NE"
+                }, 
+                {
+                    "s": "Klag", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "MJ"
+                }, 
+                {
+                    "s": "Levey", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "AS"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Kidney Int Suppl."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "57"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "10"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "Criteria for selection of ESRD treatment modalities"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20000000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2000"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "136-43"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700010"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "10"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Mazzuchi", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "N"
+                }, 
+                {
+                    "s": "Fernandez-Cean", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "JM"
+                }, 
+                {
+                    "s": "Carbonell", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "E"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Epidemiol Serv Saude."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "18"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "2"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "11"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "pt", 
+                    "_": "Monitoramento da doen\u00e7a renal cr\u00f4nica terminal pelo subsistema de Autoriza\u00e7\u00e3o de Procedimentos de Alta Complexidade - Apac - Brasil, 2000 a 2006"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20090000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2009"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "121-32"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700011"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "11"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Moura", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "L"
+                }, 
+                {
+                    "s": "Schmidt", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "MI"
+                }, 
+                {
+                    "s": "Duncan", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "BB"
+                }, 
+                {
+                    "s": "Rosa", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "RS"
+                }, 
+                {
+                    "s": "Malta", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "DC"
+                }, 
+                {
+                    "s": "Stevens", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "A"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Kidney Int Suppl."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "(97)"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "12"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "End-stage renal disease in Brazil: Epidemiology, prevention, and treatment"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20050000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2005"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "82-6"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700012"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "12"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Oliveira", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "MB"
+                }, 
+                {
+                    "s": "Rom\u00e3o Jr", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "JE"
+                }, 
+                {
+                    "s": "Zatz", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "R"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "BMJ"
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "327"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "7426"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "13"
+                }
+            ], 
+            "v35": [
+                {
+                    "_": "0959-8138"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "Equity of access to renal transplant waiting list and renal transplantation in Scotland: cohort study"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Oniscu", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "GC"
+                }, 
+                {
+                    "s": "Schalkwijk", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "AA"
+                }, 
+                {
+                    "s": "Johnson", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "RJ"
+                }, 
+                {
+                    "s": "Brown", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "H"
+                }, 
+                {
+                    "s": "Forsythe", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "JL"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2003"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "1261"
+                }
+            ], 
+            "v801": [
+                {
+                    "_": "BMJ"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700013"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "13"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20030000"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Kidney Int."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "61"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "1"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "14"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "Vascular access use in Europe and the United States: results from the DOPPS"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20020000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2002"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "305-16"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700014"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "14"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Pisoni", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "RL"
+                }, 
+                {
+                    "s": "Young", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "EW"
+                }, 
+                {
+                    "s": "Dykstra", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "DM"
+                }, 
+                {
+                    "s": "Greenwood", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "RN"
+                }, 
+                {
+                    "s": "Hecking", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "E"
+                }, 
+                {
+                    "s": "Gillespie", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "B"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Epidemiol Serv Saude."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "18"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "2"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "15"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "pt", 
+                    "_": "A constru\u00e7\u00e3o da Base Nacional em Terapia Renal Substitutiva (TRS) centrada no indiv\u00edduo: relacionamento entre registros de \u00f3bitos do subsistema de Autoriza\u00e7\u00e3o de Procedimentos de Alta Complexidade (APAC) e pelo Sistema de Informa\u00e7\u00f5es de Mortalidade (SIM)"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20090000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2009"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "107-20."
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700015"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "15"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Queiroz", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "OV"
+                }, 
+                {
+                    "s": "Guerra Jr", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "AA"
+                }, 
+                {
+                    "s": "Machado", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "CJ"
+                }, 
+                {
+                    "s": "Andrade", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "EIG"
+                }, 
+                {
+                    "s": "Meira Jr", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "W"
+                }, 
+                {
+                    "s": "Ac\u00farcio", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "FA"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "J Am Soc Nephrol"
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "11"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "5"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "16"
+                }
+            ], 
+            "v35": [
+                {
+                    "_": "1046-6673"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "Comparison of mortality risk for dialysis patients and cadaveric first renal transplant recipients in Ontario, Canada"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "CG", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "Rabbat"
+                }, 
+                {
+                    "s": "KE", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "Thorpe"
+                }, 
+                {
+                    "s": "JD", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "Russell"
+                }, 
+                {
+                    "s": "DN", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "Churchill"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2000"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "917-22"
+                }
+            ], 
+            "v801": [
+                {
+                    "_": "J Am Soc Nephrol"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700016"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "16"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20000000"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Nephrol Dial Transplant."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "22"
+                }
+            ], 
+            "v32": [
+                {
+                    "s": "7", 
+                    "_": ""
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "17"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "Measures of care in adult renal transplant recipients in the United Kingdom (chapter 11)"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20070000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2007"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "vii138-54"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700017"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "17"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Ravanan", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "R"
+                }, 
+                {
+                    "s": "Udayaraj", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "U"
+                }, 
+                {
+                    "s": "Bakran", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "A"
+                }, 
+                {
+                    "s": "Steenkamp", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "R"
+                }, 
+                {
+                    "s": "Williams", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "AJ"
+                }, 
+                {
+                    "s": "Ansell", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "D"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "J Bras Nefrol."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "30"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "4"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "18"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "pt", 
+                    "_": "Resultados do censo de di\u00e1lise da SBN, 2008"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20080000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2008"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "233-8"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700018"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "18"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Sesso", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "R"
+                }, 
+                {
+                    "s": "Lopes", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "AA"
+                }, 
+                {
+                    "s": "Thom\u00e9", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "FS"
+                }, 
+                {
+                    "s": "Bevilacqua J", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "L"
+                }, 
+                {
+                    "s": "Rom\u00e3o", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "JEJ"
+                }, 
+                {
+                    "s": "Lugon", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "J"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "J Am Soc Nephrol."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "13"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "5"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "19"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "Determinants of modality selection among incident US dialysis patients: results from a national study"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20020000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2002"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "1279-87"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700019"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "19"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Stack", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "AG"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Nephrol Dial Transplant."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "18"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "9"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "20"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "Trends in the incidence of renal replacement therapy for end-stage renal disease in Europe, 1990-1999"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20030000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2003"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "1824-33. DOI:10.1093/ndt/gfg233"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700020"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "20"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Stengel", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "B"
+                }, 
+                {
+                    "s": "Billon", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "S"
+                }, 
+                {
+                    "s": "Van Dijk", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "PC"
+                }, 
+                {
+                    "s": "Jager", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "KJ"
+                }, 
+                {
+                    "s": "Dekker", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "FW"
+                }, 
+                {
+                    "s": "Simpson", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "K"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Cienc Saude Coletiva."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "11"
+                }
+            ], 
+            "v32": [
+                {
+                    "_": "4"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "21"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "pt", 
+                    "_": "Desigualdades geogr\u00e1ficas e sociais no acesso aos servi\u00e7os de sa\u00fade no Brasil: 1998 e 2003"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20060000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2006"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "975-86"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700021"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "21"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Travassos", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "C"
+                }, 
+                {
+                    "s": "Oliveira", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "EXG"
+                }, 
+                {
+                    "s": "Viacava", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "F"
+                }
+            ]
+        }, 
+        {
+            "v30": [
+                {
+                    "_": "Kidney Int Suppl."
+                }
+            ], 
+            "v31": [
+                {
+                    "_": "(103)"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "22"
+                }
+            ], 
+            "v12": [
+                {
+                    "l": "en", 
+                    "_": "Mortality studies comparing peritoneal dialysis and hemodialysis: What do they tell us?"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20060000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2006"
+                }
+            ], 
+            "v14": [
+                {
+                    "_": "3-11"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700022"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "22"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ], 
+            "v10": [
+                {
+                    "s": "Vonesh", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "EF"
+                }, 
+                {
+                    "s": "Snyder", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "JJ"
+                }, 
+                {
+                    "s": "Foley", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "RN"
+                }, 
+                {
+                    "s": "Collins", 
+                    "r": "ND", 
+                    "_": "", 
+                    "n": "AJ"
+                }
+            ]
+        }, 
+        {
+            "v18": [
+                {
+                    "l": "en", 
+                    "_": "Global burden of disease study"
+                }
+            ], 
+            "v118": [
+                {
+                    "_": "23"
+                }
+            ], 
+            "v65": [
+                {
+                    "_": "20030000"
+                }
+            ], 
+            "v64": [
+                {
+                    "_": "2003"
+                }
+            ], 
+            "v17": [
+                {
+                    "_": "World Health Organization"
+                }
+            ], 
+            "v880": [
+                {
+                    "_": "S0034-8910201000040000700023"
+                }
+            ], 
+            "v701": [
+                {
+                    "_": "23"
+                }
+            ], 
+            "v865": [
+                {
+                    "_": "20100800"
+                }
+            ], 
+            "v702": [
+                {
+                    "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+                }
+            ]
+        }
+    ], 
+    "publication_year": "2010", 
+    "sent_wos": "True", 
+    "article": {
+        "v30": [
+            {
+                "_": "Rev. Sa\u00fade P\u00fablica"
+            }
+        ], 
+        "v31": [
+            {
+                "_": "44"
+            }
+        ], 
+        "v32": [
+            {
+                "_": "4"
+            }
+        ], 
+        "v35": [
+            {
+                "_": "0034-8910"
+            }
+        ], 
+        "v38": [
+            {
+                "_": "GRA"
+            }, 
+            {
+                "_": "TAB"
+            }
+        ], 
+        "v10": [
+            {
+                "1": "A01", 
+                "s": "Cherchiglia", 
+                "r": "ND", 
+                "_": "", 
+                "n": "Mariangela Leal"
+            }, 
+            {
+                "1": "A01", 
+                "s": "Machado", 
+                "r": "ND", 
+                "_": "", 
+                "n": "Elaine Leandro"
+            }, 
+            {
+                "1": "A01", 
+                "s": "Szuster", 
+                "r": "ND", 
+                "_": "", 
+                "n": "Daniele Ara\u00fajo Campo"
+            }, 
+            {
+                "1": "A01", 
+                "s": "Andrade", 
+                "r": "ND", 
+                "_": "", 
+                "n": "Eli Iola Gurgel"
+            }, 
+            {
+                "1": "A01", 
+                "s": "Ac\u00farcio", 
+                "r": "ND", 
+                "_": "", 
+                "n": "Francisco de Assis"
+            }, 
+            {
+                "1": "A01", 
+                "s": "Caiaffa", 
+                "r": "ND", 
+                "_": "", 
+                "n": "Waleska Teixeira"
+            }, 
+            {
+                "1": "A02", 
+                "s": "Sesso", 
+                "r": "ND", 
+                "_": "", 
+                "n": "Ricardo"
+            }, 
+            {
+                "1": "A01 A02", 
+                "s": "Guerra Junior", 
+                "r": "ND", 
+                "_": "", 
+                "n": "Augusto A"
+            }, 
+            {
+                "1": "A01", 
+                "s": "Queiroz", 
+                "r": "ND", 
+                "_": "", 
+                "n": "Odilon Vanni de"
+            }, 
+            {
+                "1": "A03", 
+                "s": "Gomes", 
+                "r": "ND", 
+                "_": "", 
+                "n": "Isabel Cristina"
+            }
+        ], 
+        "v70": [
+            {
+                "c": "Belo Horizonte", 
+                "i": "A01", 
+                "1": "Faculdade de Medicina", 
+                "p": "BRAZIL", 
+                "s": "MG", 
+                "2": "Departamento de Medicina Preventiva e Social", 
+                "_": "Universidade Federal de Minas Gerais"
+            }, 
+            {
+                "c": "S\u00e3o Paulo", 
+                "i": "A02", 
+                "1": "Faculdade de Medicina", 
+                "p": "BRAZIL", 
+                "s": "SP", 
+                "2": "Departamento de Medicina", 
+                "_": "Universidade Federal de S\u00e3o Paulo"
+            }, 
+            {
+                "c": "Belo Horizonte", 
+                "i": "A03", 
+                "1": "Instituto de Ci\u00eancias Exatas", 
+                "p": "BRAZIL", 
+                "s": "MG", 
+                "2": "Departamento de Estat\u00edstica", 
+                "_": "Universidade Federal de Minas Gerais"
+            }
+        ], 
+        "v71": [
+            {
+                "_": "oa"
+            }
+        ], 
+        "v14": [
+            {
+                "l": "649", 
+                "_": "", 
+                "f": "639"
+            }
+        ], 
+        "v882": [
+            {
+                "v": "44", 
+                "_": "", 
+                "n": "4"
+            }
+        ], 
+        "v880": [
+            {
+                "_": "S0034-89102010000400007"
+            }
+        ], 
+        "v158": [
+            {
+                "_": "nd"
+            }
+        ], 
+        "v999": [
+            {
+                "_": "../bases-work/rsp/rsp"
+            }
+        ], 
+        "v114": [
+            {
+                "_": "20100205"
+            }
+        ], 
+        "v117": [
+            {
+                "_": "vancouv"
+            }
+        ], 
+        "v111": [
+            {
+                "_": "14/8/2009"
+            }
+        ], 
+        "v112": [
+            {
+                "_": "20090814"
+            }
+        ], 
+        "v113": [
+            {
+                "_": "5/2/2010"
+            }
+        ], 
+        "v40": [
+            {
+                "_": "pt"
+            }
+        ], 
+        "v42": [
+            {
+                "_": "1"
+            }
+        ], 
+        "v85": [
+            {
+                "i": "1", 
+                "d": "decs", 
+                "_": ""
+            }, 
+            {
+                "i": "1", 
+                "k": "Insufici\u00eancia Renal Cr\u00f4nica", 
+                "l": "pt", 
+                "s": "epidemiologia", 
+                "t": "m", 
+                "_": ""
+            }, 
+            {
+                "i": "1", 
+                "k": "Terapia de Substitui\u00e7\u00e3o Renal", 
+                "t": "m", 
+                "_": "", 
+                "l": "pt"
+            }, 
+            {
+                "i": "1", 
+                "k": "Sistemas de Informa\u00e7\u00e3o Hospitalar", 
+                "t": "m", 
+                "_": "", 
+                "l": "pt"
+            }, 
+            {
+                "i": "1", 
+                "k": "Registros de Mortalidade", 
+                "t": "m", 
+                "_": "", 
+                "l": "pt"
+            }, 
+            {
+                "i": "2", 
+                "d": "decs", 
+                "_": ""
+            }, 
+            {
+                "i": "2", 
+                "k": "Renal Insufficiency, Chronic", 
+                "l": "en", 
+                "s": "epidemiology", 
+                "t": "m", 
+                "_": ""
+            }, 
+            {
+                "i": "2", 
+                "k": "Renal Replacement Therapy", 
+                "t": "m", 
+                "_": "", 
+                "l": "en"
+            }, 
+            {
+                "i": "2", 
+                "k": "Hospital Information Systems", 
+                "t": "m", 
+                "_": "", 
+                "l": "en"
+            }, 
+            {
+                "i": "2", 
+                "k": "Mortality Registries", 
+                "t": "m", 
+                "_": "", 
+                "l": "en"
+            }, 
+            {
+                "i": "3", 
+                "d": "decs", 
+                "_": ""
+            }, 
+            {
+                "i": "3", 
+                "k": "Insuficiencia Renal Cr\u00f3nica", 
+                "l": "es", 
+                "s": "epidemiolog\u00eda", 
+                "t": "m", 
+                "_": ""
+            }, 
+            {
+                "i": "3", 
+                "k": "Terapia de Reemplazo Renal", 
+                "t": "m", 
+                "_": "", 
+                "l": "es"
+            }, 
+            {
+                "i": "3", 
+                "k": "Sistemas de Informaci\u00f3n en Hospital", 
+                "t": "m", 
+                "_": "", 
+                "l": "es"
+            }, 
+            {
+                "i": "3", 
+                "k": "Registros de Mortalidad", 
+                "t": "m", 
+                "_": "", 
+                "l": "es"
+            }
+        ], 
+        "v83": [
+            {
+                "a": "OBJETIVO: Descrever o perfil epidemiol\u00f3gico e cl\u00ednico de pacientes em terapia renal substitutiva, identificando fatores associados ao risco de morte. M\u00c9TODOS: Estudo observacional, prospectivo n\u00e3o concorrente, a partir de dados de 90.356 pacientes da Base Nacional em Terapias Renais Substitutivas, no Brasil. Foi realizado relacionamento determin\u00edstico-probabil\u00edstico do Sistema de Autoriza\u00e7\u00e3o de Procedimentos de Alta Complexidade/Custo e do Sistema de Informa\u00e7\u00e3o de Mortalidade. Foram inclu\u00eddos todos os pacientes incidentes que iniciaram di\u00e1lise entre 1/1/2000 e 31/12/2004, acompanhados at\u00e9 a morte ou final de 2004. Idade, sexo, regi\u00e3o de resid\u00eancia, doen\u00e7a renal prim\u00e1ria, causa do \u00f3bito foram analisados. Ajustou-se um modelo de riscos proporcionais para identificar fatores associados ao risco de morte. RESULTADOS: Ocorreu um aumento m\u00e9dio de 5,5% na preval\u00eancia de pacientes em terapia enquanto a incid\u00eancia manteve-se est\u00e1vel no per\u00edodo. Hemodi\u00e1lise foi a modalidade inicial predominante (89%). A maioria dos pacientes era do sexo masculino, com idade m\u00e9dia de 53 anos, residente na regi\u00e3o Sudeste, e apresentava causa indeterminada como principal causa b\u00e1sica da doen\u00e7a renal cr\u00f4nica, seguida da hipertens\u00e3o, diabetes e glomerulonefrites. Desses pacientes, 7% realizou transplante renal e 42% evoluiu para o \u00f3bito. Os pacientes em di\u00e1lise peritoneal eram mais idosos e apresentavam maior preval\u00eancia de diabetes. Entre os n\u00e3o transplantados, 45% foi a \u00f3bito e, entre os transplantados, 7%. No modelo final de riscos proporcionais de Cox, o risco de mortalidade foi associado com o aumento da idade, sexo feminino, ter diabetes, residir nas regi\u00f5es Norte e Nordeste, di\u00e1lise peritoneal como modalidade de entrada e n\u00e3o ter realizado transplante renal. CONCLUS\u00d5ES: Houve aumento da preval\u00eancia de pacientes em terapia renal no Brasil. Pacientes com idade avan\u00e7ada, diabetes, do sexo feminino, residentes nas regi\u00f5es Norte e Nordeste e sem transplante renal apresentam maior risco de morte.", 
+                "l": "pt", 
+                "_": ""
+            }, 
+            {
+                "a": "OBJECTIVE: To describe the clinical and epidemiological profile of patients under renal replacement therapies, identifying risk factors for death. METHODS: This is a non-concurrent cohort study of data for 90,356 patients in the National Renal Replacement Therapies Database. A deterministic-probabilistic linkage was performed using the Authorization System for High Complexity/Cost Procedures and the Mortality Information System databases. All patients who started dialysis between 1/1/2000 and 12/31/2004 were included and followed until death or the end of 2004. Age, sex, region of residence, primary renal disease and causes of death were analyzed. A proportional hazards model was used to identify factors associated with risk of death. RESULTS: The prevalence of patients under renal replacement therapies increased an average of 5.5%, while incidence remained stable during the period. Hemodialysis was the predominant initial modality (89%). The patients were majority male with mean age 53 years, residents of the Southeast region and presented unknown causes as the main cause of chronic renal disease, followed by hypertension, diabetes and glomerulonephritis. Of these patients, 42% progressed to death and 7% underwent kidney transplantation. The patients on peritoneal dialysis were older and had higher prevalence of diabetes. The death rate varied from 7% among transplanted patients to 45% among non-transplanted patients. In the final Cox proportional hazards model, the risk of mortality was associated with increasing age, female sex, having diabetes, living in the North and Northeast region, peritoneal dialysis as a first modality and not having renal transplantation. CONCLUSIONS: There was an increased prevalence of patients on renal therapy in Brazil. Increased risk of death was associated with advanced age, diabetes, the female sex, residents of the North and Northeast region and lack of renal transplant.", 
+                "l": "en", 
+                "_": ""
+            }, 
+            {
+                "a": "OBJETIVO: Describir el perfil epidemiol\u00f3gico y cl\u00ednico de pacientes en terapia renal substitutiva, identificando factores asociados al riesgo de muerte. M\u00c9TODOS: Estudio de observaci\u00f3n, prospectivo no concurrente, a partir de datos de 90.356 pacientes de la Base Nacional en Terapias Renales Substitutivas, en Brasil. Fue realizado reracionamiento determin\u00edstico-probabil\u00edstico del Sistema de Informaci\u00f3n de Mortalidad. Fueron incluidos todos los pacientes incidentes que iniciaron di\u00e1lisis entre 1/1/2000 y 31/12/2004, acompa\u00f1ados hasta la muerte o final de 2004. Edad, sexo, regi\u00f3n de residencia, enfermedad renal primaria, causa del \u00f3bito fueron analizados. Se ajust\u00f3 un modelo de riesgos proporcionales para identificar factores asociados al riesgo de muerte. RESULTADOS: Ocurri\u00f3 un aumento promedio de 5,5% en la prevalencia de pacientes en terapia, con relaci\u00f3n a la incidencia se mantuvo estable en el per\u00edodo. Hemodi\u00e1lisis fue la modalidad inicial predominante (89%). La mayor\u00eda de los pacientes era del sexo masculino, con edad promedio de 53 a\u00f1os, residente en la regi\u00f3n Sureste y presentaba causa indeterminada como principal causa b\u00e1sica de la enfermedad renal cr\u00f3nica, seguida de la hipertensi\u00f3n, diabetes y glomerulonefritis. De esos pacientes, 7% realizaron transplante renal y 42% evolucionaron a \u00f3bito. Los pacientes en di\u00e1lisis peritoneal eran m\u00e1s ancianos y presentaban mayor prevalencia de diabetes. Entre los no transplantados, 45% fueron a \u00f3bito y, entre los transplantadas 7%. En el modelo final de riesgos proporcionales de Cox, el riesgo de mortalidad estuvo asociado con el aumento de la edad, sexo femenino, tener diabetes, residir en la regi\u00f3n Norte y Noreste, di\u00e1lisis peritoneal como modalidad de entrada y no haber realizado transplante renal. CONCLUSIONES: Hubo aumento de la prevalencia de pacientes en terapia renal en Brasil. Pacientes con edad avanzada, diabetes, del sexo femenino, residentes en la regi\u00f3n Norte y Noreste y sin transplante renal presentan mayor riesgo de muerte.", 
+                "l": "es", 
+                "_": ""
+            }
+        ], 
+        "v65": [
+            {
+                "_": "20100800"
+            }
+        ], 
+        "v4": [
+            {
+                "_": "v44n4"
+            }
+        ], 
+        "v60": [
+            {
+                "_": "4864/2005"
+            }, 
+            {
+                "_": "409729/2006-0"
+            }, 
+            {
+                "_": "3284/06"
+            }
+        ], 
+        "v709": [
+            {
+                "_": "article"
+            }
+        ], 
+        "v49": [
+            {
+                "_": "RSP010"
+            }
+        ], 
+        "v2": [
+            {
+                "_": "S0034-8910(10)04400407"
+            }
+        ], 
+        "doi": "10.1590/S0034-89102010000400007", 
+        "v121": [
+            {
+                "_": "07"
+            }
+        ], 
+        "v120": [
+            {
+                "_": "3.1"
+            }
+        ], 
+        "v701": [
+            {
+                "_": "1"
+            }
+        ], 
+        "v700": [
+            {
+                "_": "2"
+            }
+        ], 
+        "v702": [
+            {
+                "_": "V:\\Scielo\\serial\\rsp\\v44n4\\markup\\07.htm"
+            }
+        ], 
+        "v705": [
+            {
+                "_": "S"
+            }
+        ], 
+        "v708": [
+            {
+                "_": "1"
+            }
+        ], 
+        "v706": [
+            {
+                "_": "h"
+            }
+        ], 
+        "v91": [
+            {
+                "_": "20100726"
+            }
+        ], 
+        "v1": [
+            {
+                "_": "br1.1"
+            }
+        ], 
+        "v72": [
+            {
+                "_": "23"
+            }
+        ], 
+        "v936": [
+            {
+                "i": "0034-8910", 
+                "y": "2010", 
+                "_": "", 
+                "o": "4"
+            }
+        ], 
+        "v12": [
+            {
+                "l": "pt", 
+                "_": "Perfil epidemiol\u00f3gico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004"
+            }, 
+            {
+                "l": "en", 
+                "_": "Epidemiological profile of patients on renal replacement therapy in Brazil, 2000-2004"
+            }, 
+            {
+                "l": "es", 
+                "_": "Perfil epidemiol\u00f3gico de los pacientes en terapia renal substitutiva en Brasil, 2000-2004"
+            }
+        ], 
+        "v58": [
+            {
+                "d": "Fundo Nacional de Sa\u00fade", 
+                "_": "Minist\u00e9rio da Sa\u00fade"
+            }, 
+            {
+                "_": "Conselho Nacional de Desenvolvimento Cient\u00edfico e Tecnol\u00f3gico"
+            }, 
+            {
+                "_": "Funda\u00e7\u00e3o de Amparo \u00e0 Pesquisa do Estado de Minas Gerais"
+            }
+        ]
+    }, 
+    "article_title_author_year_no_accents": [
+        "perfilepidemiologicodospacientesemterapiarenalsubstitutivanobrasilmariangelalealcherchiglia2010", 
+        "epidemiologicalprofileofpatientsonrenalreplacementtherapyinbrazilmariangelalealcherchiglia2010", 
+        "perfilepidemiologicodelospacientesenterapiarenalsubstitutivaenbrasilmariangelalealcherchiglia2010"
+    ], 
+    "citations_title_author_year_no_accents": [
+        "endstagerenaldiseaseinsubsaharanafricaelbamgboye2006", 
+        "doencarenalcronicaproblemasesolucoesmgbastos2004", 
+        "preventionofchronickidneydiseaseaglobalchallengeakbello2005", 
+        "prevalenceandsocioeconomicaspectsofchronickidneydiseasejbommer2002", 
+        "aconstrucaodabasededadosnacionalemterapiarenalsubstitutivatrscentradanoindividuoaplicacaodometododelinkagedeterministicoprobabilisticomlcherchiglia2007", 
+        "endstagerenaldiseaseanditstreatmentinlatinamericainthetwentyfirstcenturyacusumano2006", 
+        "esrdpatientsinglobaloverviewofpatientnumberstreatmentmodalitiesandassociatedtrendsagrassmann2005", 
+        "mortalitybydialysismodalityamongpatientswhohaveendstagerenaldiseaseandareawaitingrenaltransplantationjkinrig2006", 
+        "comparingtheriskfordeathwithperitonealdialysisandhemodialysisinanationalcohortofpatientswithchronickidneydiseasebgjaar2005", 
+        "criteriaforselectionofesrdtreatmentmodalitiesnmazzuchi2000", 
+        "monitoramentodadoencarenalcronicaterminalpelosubsistemadeautorizacaodeprocedimentosdealtacomplexidadeapacbrasilalmoura2009", 
+        "endstagerenaldiseaseinbrazilepidemiologypreventionandtreatmentmboliveira2005", 
+        "equityofaccesstorenaltransplantwaitinglistandrenaltransplantationinscotlandcohortstudygconiscu2003", 
+        "vascularaccessuseineuropeandtheunitedstatesresultsfromthedoppsrlpisoni2002", 
+        "aconstrucaodabasenacionalemterapiarenalsubstitutivatrscentradanoindividuorelacionamentoentreregistrosdeobitosdosubsistemadeautorizacaodeprocedimentosdealtacomplexidadeapacepelosistemadeinformacoesdemortalidadesimovqueiroz2009", 
+        "comparisonofmortalityriskfordialysispatientsandcadavericfirstrenaltransplantrecipientsinontariocanadarabbatcg2000", 
+        "measuresofcareinadultrenaltransplantrecipientsintheunitedkingdomchapterrravanan2007", 
+        "resultadosdocensodedialisedasbnrsesso2008", 
+        "determinantsofmodalityselectionamongincidentusdialysispatientsresultsfromanationalstudyagstack2002", 
+        "trendsintheincidenceofrenalreplacementtherapyforendstagerenaldiseaseineuropebstengel2003", 
+        "desigualdadesgeograficasesociaisnoacessoaosservicosdesaudenobrasilectravassos2006", 
+        "mortalitystudiescomparingperitonealdialysisandhemodialysiswhatdotheytellusefvonesh2006", 
+        "endstagerenaldiseaseinsubsaharanafricaelbamgboye2006", 
+        "doencarenalcronicaproblemasesolucoesmgbastos2004", 
+        "preventionofchronickidneydiseaseaglobalchallengeakbello2005", 
+        "prevalenceandsocioeconomicaspectsofchronickidneydiseasejbommer2002", 
+        "aconstrucaodabasededadosnacionalemterapiarenalsubstitutivatrscentradanoindividuoaplicacaodometododelinkagedeterministicoprobabilisticomlcherchiglia2007", 
+        "endstagerenaldiseaseanditstreatmentinlatinamericainthetwentyfirstcenturyacusumano2006", 
+        "esrdpatientsinglobaloverviewofpatientnumberstreatmentmodalitiesandassociatedtrendsagrassmann2005", 
+        "mortalitybydialysismodalityamongpatientswhohaveendstagerenaldiseaseandareawaitingrenaltransplantationjkinrig2006", 
+        "comparingtheriskfordeathwithperitonealdialysisandhemodialysisinanationalcohortofpatientswithchronickidneydiseasebgjaar2005", 
+        "criteriaforselectionofesrdtreatmentmodalitiesnmazzuchi2000", 
+        "monitoramentodadoencarenalcronicaterminalpelosubsistemadeautorizacaodeprocedimentosdealtacomplexidadeapacbrasilalmoura2009", 
+        "endstagerenaldiseaseinbrazilepidemiologypreventionandtreatmentmboliveira2005", 
+        "equityofaccesstorenaltransplantwaitinglistandrenaltransplantationinscotlandcohortstudygconiscu2003", 
+        "vascularaccessuseineuropeandtheunitedstatesresultsfromthedoppsrlpisoni2002", 
+        "aconstrucaodabasenacionalemterapiarenalsubstitutivatrscentradanoindividuorelacionamentoentreregistrosdeobitosdosubsistemadeautorizacaodeprocedimentosdealtacomplexidadeapacepelosistemadeinformacoesdemortalidadesimovqueiroz2009", 
+        "comparisonofmortalityriskfordialysispatientsandcadavericfirstrenaltransplantrecipientsinontariocanadarabbatcg2000", 
+        "measuresofcareinadultrenaltransplantrecipientsintheunitedkingdomchapterrravanan2007", 
+        "resultadosdocensodedialisedasbnrsesso2008", 
+        "determinantsofmodalityselectionamongincidentusdialysispatientsresultsfromanationalstudyagstack2002", 
+        "trendsintheincidenceofrenalreplacementtherapyforendstagerenaldiseaseineuropebstengel2003", 
+        "desigualdadesgeograficasesociaisnoacessoaosservicosdesaudenobrasilectravassos2006", 
+        "mortalitystudiescomparingperitonealdialysisandhemodialysiswhatdotheytellusefvonesh2006"
+    ], 
+    "citations_title_no_accents": [
+        "endstagerenaldiseaseinsubsaharanafrica", 
+        "doencarenalcronicaproblemasesolucoes", 
+        "preventionofchronickidneydiseaseaglobalchallenge", 
+        "prevalenceandsocioeconomicaspectsofchronickidneydisease", 
+        "aconstrucaodabasededadosnacionalemterapiarenalsubstitutivatrscentradanoindividuoaplicacaodometododelinkagedeterministicoprobabilistico", 
+        "endstagerenaldiseaseanditstreatmentinlatinamericainthetwentyfirstcentury", 
+        "esrdpatientsinglobaloverviewofpatientnumberstreatmentmodalitiesandassociatedtrends", 
+        "mortalitybydialysismodalityamongpatientswhohaveendstagerenaldiseaseandareawaitingrenaltransplantation", 
+        "comparingtheriskfordeathwithperitonealdialysisandhemodialysisinanationalcohortofpatientswithchronickidneydisease", 
+        "criteriaforselectionofesrdtreatmentmodalities", 
+        "monitoramentodadoencarenalcronicaterminalpelosubsistemadeautorizacaodeprocedimentosdealtacomplexidadeapacbrasila", 
+        "endstagerenaldiseaseinbrazilepidemiologypreventionandtreatment", 
+        "equityofaccesstorenaltransplantwaitinglistandrenaltransplantationinscotlandcohortstudy", 
+        "vascularaccessuseineuropeandtheunitedstatesresultsfromthedopps", 
+        "aconstrucaodabasenacionalemterapiarenalsubstitutivatrscentradanoindividuorelacionamentoentreregistrosdeobitosdosubsistemadeautorizacaodeprocedimentosdealtacomplexidadeapacepelosistemadeinformacoesdemortalidadesim", 
+        "comparisonofmortalityriskfordialysispatientsandcadavericfirstrenaltransplantrecipientsinontariocanada", 
+        "measuresofcareinadultrenaltransplantrecipientsintheunitedkingdomchapter", 
+        "resultadosdocensodedialisedasbn", 
+        "determinantsofmodalityselectionamongincidentusdialysispatientsresultsfromanationalstudy", 
+        "trendsintheincidenceofrenalreplacementtherapyforendstagerenaldiseaseineurope", 
+        "desigualdadesgeograficasesociaisnoacessoaosservicosdesaudenobrasile", 
+        "mortalitystudiescomparingperitonealdialysisandhemodialysiswhatdotheytellus", 
+        "endstagerenaldiseaseinsubsaharanafrica", 
+        "doencarenalcronicaproblemasesolucoes", 
+        "preventionofchronickidneydiseaseaglobalchallenge", 
+        "prevalenceandsocioeconomicaspectsofchronickidneydisease", 
+        "aconstrucaodabasededadosnacionalemterapiarenalsubstitutivatrscentradanoindividuoaplicacaodometododelinkagedeterministicoprobabilistico", 
+        "endstagerenaldiseaseanditstreatmentinlatinamericainthetwentyfirstcentury", 
+        "esrdpatientsinglobaloverviewofpatientnumberstreatmentmodalitiesandassociatedtrends", 
+        "mortalitybydialysismodalityamongpatientswhohaveendstagerenaldiseaseandareawaitingrenaltransplantation", 
+        "comparingtheriskfordeathwithperitonealdialysisandhemodialysisinanationalcohortofpatientswithchronickidneydisease", 
+        "criteriaforselectionofesrdtreatmentmodalities", 
+        "monitoramentodadoencarenalcronicaterminalpelosubsistemadeautorizacaodeprocedimentosdealtacomplexidadeapacbrasila", 
+        "endstagerenaldiseaseinbrazilepidemiologypreventionandtreatment", 
+        "equityofaccesstorenaltransplantwaitinglistandrenaltransplantationinscotlandcohortstudy", 
+        "vascularaccessuseineuropeandtheunitedstatesresultsfromthedopps", 
+        "aconstrucaodabasenacionalemterapiarenalsubstitutivatrscentradanoindividuorelacionamentoentreregistrosdeobitosdosubsistemadeautorizacaodeprocedimentosdealtacomplexidadeapacepelosistemadeinformacoesdemortalidadesim", 
+        "comparisonofmortalityriskfordialysispatientsandcadavericfirstrenaltransplantrecipientsinontariocanada", 
+        "measuresofcareinadultrenaltransplantrecipientsintheunitedkingdomchapter", 
+        "resultadosdocensodedialisedasbn", 
+        "determinantsofmodalityselectionamongincidentusdialysispatientsresultsfromanationalstudy", 
+        "trendsintheincidenceofrenalreplacementtherapyforendstagerenaldiseaseineurope", 
+        "desigualdadesgeograficasesociaisnoacessoaosservicosdesaudenobrasile", 
+        "mortalitystudiescomparingperitonealdialysisandhemodialysiswhatdotheytellus"
+    ], 
+    "validated_wos": "True", 
+    "code_issue": "S0034-891020100004", 
+    "validated_scielo": "True", 
+    "normalized": {
+        "article": {
+            "v70": {
+                "_": [
+                    true, 
+                    true, 
+                    true
+                ]
+            }
+        }
+    }
+}
