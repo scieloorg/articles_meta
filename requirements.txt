@@ -4,3 +4,4 @@ uuid==1.30
 pyramid
 -e git+ssh://git@github.com/scieloorg/xylose.git#egg=xylose
 -e git+git://github.com/gustavofonseca/plumber.git#egg=plumber
+lxml

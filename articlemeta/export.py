@@ -4,7 +4,215 @@ import xml.etree.ElementTree as ET
 import plumber
 
 
-class SetupPipe(plumber.Pipe):
+class XMLCitation(object):
+
+    def __init__(self):
+        self._ppl = plumber.Pipeline(self.SetupCitationPipe(),
+                                     self.RefIdPipe(),
+                                     self.ElementCitationPipe(),
+                                     self.ArticleTitlePipe(),
+                                     self.SourcePipe(),
+                                     self.DatePipe(),
+                                     self.StartPagePipe(),
+                                     self.EndPagePipe(),
+                                     self.IssuePipe(),
+                                     self.VolumePipe(),
+                                     self.PersonGroupPipe())
+
+    class SetupCitationPipe(plumber.Pipe):
+
+        def transform(self, data):
+
+            xml = ET.Element('ref')
+
+            return data, xml
+
+    class RefIdPipe(plumber.Pipe):
+        def transform(self, data):
+            raw, xml = data
+
+            ref = xml.find('.')
+
+            ref.set('id', 'B{0}'.format(str(raw.index_number)))
+
+            return data
+
+    class ElementCitationPipe(plumber.Pipe):
+        def transform(self, data):
+            raw, xml = data
+
+            elementcitation = ET.Element('element-citation')
+            elementcitation.set('publication-type', raw.publication_type)
+
+            xml.find('.').append(elementcitation)
+
+            return data
+
+    class ArticleTitlePipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if not raw.article_title:
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            articletitle = ET.Element('article-title')
+
+            articletitle.text = raw.article_title
+
+            xml.find('./element-citation').append(articletitle)
+
+            return data
+
+    class SourcePipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if not raw.source:
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            source = ET.Element('source')
+
+            source.text = raw.source
+
+            xml.find('./element-citation').append(source)
+
+            return data
+
+    class DatePipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if not raw.date:
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            year = ET.Element('year')
+            year.text = raw.date
+
+            pdate = ET.Element('date')
+            pdate.append(year)
+
+            xml.find('./element-citation').append(pdate)
+
+            return data
+
+    class StartPagePipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if not raw.start_page:
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            fpage = ET.Element('fpage')
+            fpage.text = raw.start_page
+            xml.find('./element-citation').append(fpage)
+
+            return data
+
+    class EndPagePipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if not raw.end_page:
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            lpage = ET.Element('lpage')
+            lpage.text = raw.end_page
+            xml.find('./element-citation').append(lpage)
+
+            return data
+
+    class IssuePipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if not raw.issue:
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            issue = ET.Element('issue')
+            issue.text = raw.issue
+            xml.find('./element-citation').append(issue)
+
+            return data
+
+    class VolumePipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if not raw.volume:
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            volume = ET.Element('volume')
+            volume.text = raw.volume
+            xml.find('./element-citation').append(volume)
+
+            return data
+
+    class PersonGroupPipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if not raw.authors:
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            persongroup = ET.Element('person-group')
+
+            for author in raw.authors:
+                givennames = ET.Element('given-names')
+                givennames.text = author['given_names']
+
+                surname = ET.Element('surname')
+                surname.text = author['surname']
+
+                name = ET.Element('name')
+                name.append(surname)
+                name.append(givennames)
+
+                persongroup.append(name)
+
+            xml.find('./element-citation').append(persongroup)
+
+            return data
+
+    def deploy(self, raw):
+
+        transformed_data = self._ppl.run(raw, rewrap=True)
+
+        return next(transformed_data)
+
+
+class SetupArticlePipe(plumber.Pipe):
 
     def transform(self, data):
 
@@ -389,9 +597,12 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
             articlemeta.append(fpage)
         if raw.end_page:
             articlemeta.append(lpage)
-        articlemeta.append(article_uri)
-        articlemeta.append(issue_uri)
-        articlemeta.append(journal_uri)
+        if raw.html_url:
+            articlemeta.append(article_uri)
+        if raw.issue_url:
+            articlemeta.append(issue_uri)
+        if raw.journal_url:
+            articlemeta.append(journal_uri)
 
         return data
 
@@ -449,6 +660,56 @@ class XMLArticleMetaKeywordsPipe(plumber.Pipe):
         return data
 
 
+class XMLArticleMetaKeywordsPipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.keywords():
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        articlemeta = xml.find('./article/front/article-meta')
+
+        for lang, keywords in raw.keywords().items():
+            kwdgroup = ET.Element('kwd-group')
+            kwdgroup.set('lang_id', lang)
+            kwdgroup.set('kwd-group-type', 'author-generated')
+            for keyword in keywords:
+                kwd = ET.Element('kwd')
+                kwd.text = keyword
+                kwdgroup.append(kwd)
+            articlemeta.append(kwdgroup)
+
+        return data
+
+
+class XMLArticleMetaCitationsPipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.citations:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        reflist = xml.find('./article/back/ref-list')
+
+        cit = XMLCitation()
+        for citation in raw.citations:
+            reflist.append(cit.deploy(citation)[1])
+
+        return data
+
+
 class XMLClosePipe(plumber.Pipe):
 
     def transform(self, data):
@@ -466,7 +727,7 @@ class Export(object):
 
     def xmlwos(self):
 
-        ppl = plumber.Pipeline(SetupPipe(),
+        ppl = plumber.Pipeline(SetupArticlePipe(),
                                XMLArticlePipe(),
                                XMLFrontBackPipe(),
                                XMLJournalMetaJournalIdPipe(),
@@ -484,6 +745,7 @@ class Export(object):
                                XMLArticleMetaGeneralInfoPipe(),
                                XMLArticleMetaAbstractsPipe(),
                                XMLArticleMetaKeywordsPipe(),
+                               XMLArticleMetaCitationsPipe(),
                                XMLClosePipe())
 
         transformed_data = ppl.run(self._article, rewrap=True)

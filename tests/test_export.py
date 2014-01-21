@@ -5,17 +5,305 @@ import xml.etree.ElementTree as ET
 import json
 import os
 
+from lxml import etree
 from xylose.scielodocument import Article
 
 from articlemeta import export
 
 
+class XMLCitationTests(unittest.TestCase):
+
+    def setUp(self):
+
+        self._raw_json = json.loads(open(os.path.dirname(__file__)+'/fixtures/article_meta.json').read())
+        self._citation_meta = Article(self._raw_json).citations[0]
+
+        self._xmlcitation = export.XMLCitation()
+
+    def test_xml_citation_setup_pipe(self):
+
+        data = [self._citation_meta, None]
+
+        raw, xml = self._xmlcitation.SetupCitationPipe().transform(data)
+
+        rootcitation = xml.findall('.')[0].tag
+
+        self.assertEqual('ref', rootcitation)
+
+    def test_xml_citation_id_as_str_pipe(self):
+
+        pxml = ET.Element('ref')
+
+        data = [self._citation_meta, pxml]
+
+        raw, xml = self._xmlcitation.RefIdPipe().transform(data)
+
+        strid = xml.find('.').get('id')
+
+        self.assertTrue(isinstance(strid, basestring))
+
+    def test_xml_citation_element_citation_pipe(self):
+
+        pxml = ET.Element('ref')
+
+        data = [self._citation_meta, pxml]
+
+        raw, xml = self._xmlcitation.ElementCitationPipe().transform(data)
+
+        publicationtype = xml.find('./element-citation[@publication-type="article"]').get('publication-type')
+
+        self.assertEqual(u'article', publicationtype)
+
+    def test_xml_citation_article_title_pipe(self):
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [self._citation_meta, pxml]
+
+        raw, xml = self._xmlcitation.ArticleTitlePipe().transform(data)
+
+        expected = xml.find('./element-citation/article-title').text
+
+        self.assertEqual(u'End-stage renal disease in sub-Saharan Africa.', expected)
+
+    def test_xml_citation_article_title_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [{}]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.ArticleTitlePipe().transform(data)
+
+        expected = xml.find('./element-citation/article-title')
+
+        self.assertEqual(None, expected)
+
+    def test_xml_citation_source_pipe(self):
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [self._citation_meta, pxml]
+
+        raw, xml = self._xmlcitation.SourcePipe().transform(data)
+
+        expected = xml.find('./element-citation/source').text
+
+        self.assertEqual(u'Ethn Dis.', expected)
+
+    def test_xml_citation_source_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [{}]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.SourcePipe().transform(data)
+
+        expected = xml.find('./element-citation/source')
+
+        self.assertEqual(None, expected)
+
+    def test_xml_citation_date_pipe(self):
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [self._citation_meta, pxml]
+
+        raw, xml = self._xmlcitation.DatePipe().transform(data)
+
+        expected = xml.find('./element-citation/date/year').text
+
+        self.assertEqual(u'2006', expected)
+
+    def test_xml_citation_date_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [{}]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.DatePipe().transform(data)
+
+        expected = xml.find('./element-citation/date')
+
+        self.assertEqual(None, expected)
+
+    def test_xml_citation_fpage_pipe(self):
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [self._citation_meta, pxml]
+
+        raw, xml = self._xmlcitation.StartPagePipe().transform(data)
+
+        expected = xml.find('./element-citation/fpage').text
+
+        self.assertEqual(u'2,5,9', expected)
+
+    def test_xml_citation_fpage_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [{}]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.StartPagePipe().transform(data)
+
+        expected = xml.find('./element-citation/fpage')
+
+        self.assertEqual(None, expected)
+
+    def test_xml_citation_lpage_pipe(self):
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [{'v14': [{'_': '120-130'}]}]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.EndPagePipe().transform(data)
+
+        expected = xml.find('./element-citation/lpage').text
+
+        self.assertEqual(u'130', expected)
+
+    def test_xml_citation_lpage_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [{}]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.EndPagePipe().transform(data)
+
+        expected = xml.find('./element-citation/lpage')
+
+        self.assertEqual(None, expected)
+
+    def test_xml_citation_volume_pipe(self):
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [self._citation_meta, pxml]
+
+        raw, xml = self._xmlcitation.VolumePipe().transform(data)
+
+        expected = xml.find('./element-citation/volume').text
+
+        self.assertEqual(u'16', expected)
+
+    def test_xml_citation_volume_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [{}]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.VolumePipe().transform(data)
+
+        expected = xml.find('./element-citation/volume')
+
+        self.assertEqual(None, expected)
+
+    def test_xml_citation_issue_pipe(self):
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [self._citation_meta, pxml]
+
+        raw, xml = self._xmlcitation.IssuePipe().transform(data)
+
+        expected = xml.find('./element-citation/issue').text
+
+        self.assertEqual(u'2', expected)
+
+    def test_xml_citation_issue_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [{}]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.IssuePipe().transform(data)
+
+        expected = xml.find('./element-citation/issue')
+
+        self.assertEqual(None, expected)
+
+    def test_xml_citation_person_group_len_pipe(self):
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [self._citation_meta, pxml]
+
+        raw, xml = self._xmlcitation.PersonGroupPipe().transform(data)
+
+        expected = len(xml.findall('./element-citation/person-group/name'))
+
+        self.assertEqual(1, expected)
+
+    def test_xml_citation_person_group_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [{}]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.PersonGroupPipe().transform(data)
+
+        expected = xml.find('./element-citation/person-group')
+
+        self.assertEqual(None, expected)
+
+
 class ExportTests(unittest.TestCase):
 
     def setUp(self):
-        self._article_meta = Article(
-            json.loads(
-                open(os.path.dirname(__file__)+'/fixtures/article_meta.json').read()))
+        self._raw_json = json.loads(open(os.path.dirname(__file__)+'/fixtures/article_meta.json').read())
+        self._article_meta = Article(self._raw_json)
 
     def test_xmlclose_pipe(self):
 
@@ -33,7 +321,7 @@ class ExportTests(unittest.TestCase):
 
         data = [None, None]
 
-        xmlarticle = export.SetupPipe()
+        xmlarticle = export.SetupArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
         self.assertEqual('articles', xml.tag)
@@ -42,7 +330,7 @@ class ExportTests(unittest.TestCase):
 
         data = [None, None]
 
-        xmlarticle = export.SetupPipe()
+        xmlarticle = export.SetupArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
         attributes = ['xmlns:xsi',
@@ -787,6 +1075,28 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_arttext&pid=S0034-89102010000400007', uri)
 
+    def test_xmlarticle_meta_general_info_fulltext_uri_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {'v65': [{'_': '201008'}]}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        uri = xml.find('./article/front/article-meta/self-uri[@content-type="full_text_page"]')
+
+        self.assertEqual(None, uri)
+
     def test_xmlarticle_meta_general_info_issue_uri_pipe(self):
 
         pxml = ET.Element('articles')
@@ -806,6 +1116,28 @@ class ExportTests(unittest.TestCase):
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="issue_page"]').get('href')
 
         self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_issuetoc&pid=S0034-891020100004', uri)
+
+    def test_xmlarticle_meta_general_info_issue_uri_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {'v65': [{'_': '201008'}]}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        uri = xml.find('./article/front/article-meta/self-uri[@content-type="issue_page"]')
+
+        self.assertEqual(None, uri)
 
     def test_xmlarticle_meta_general_info_journal_uri_pipe(self):
 
@@ -827,7 +1159,29 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_serial&pid=0034-8910', uri)
 
-    def test_xmlarticle_meta_original_language_abstract_data_pipe(self):
+    def test_xmlarticle_meta_general_info_journal_uri_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {'v65': [{'_': '201008'}]}, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        uri = xml.find('./article/front/article-meta/self-uri[@content-type="journal_page"]')
+
+        self.assertEqual(None, uri)
+
+    def test_xmlarticle_meta_original_language_abstract_pipe(self):
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -933,27 +1287,7 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual([u'en', u'es', u'pt'], keywords_language)
 
-    def test_xmlarticle_meta_keywords_languages_data_pipe(self):
-
-        pxml = ET.Element('articles')
-        pxml.append(ET.Element('article'))
-
-        article = pxml.find('article')
-        article.append(ET.Element('front'))
-
-        front = article.find('front')
-        front.append(ET.Element('article-meta'))
-
-        data = [self._article_meta, pxml]
-
-        xmlarticle = export.XMLArticleMetaKeywordsPipe()
-        raw, xml = xmlarticle.transform(data)
-
-        keywords_language = [i.get('lang_id') for i in xml.findall('./article/front/article-meta/kwd-group')]
-
-        self.assertEqual([u'en', u'es', u'pt'], keywords_language)
-
-    def test_xmlarticle_meta_keywords_data_pipe(self):
+    def test_xmlarticle_meta_keywords_pipe(self):
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -984,7 +1318,58 @@ class ExportTests(unittest.TestCase):
                           u'Sistemas de Informação Hospitalar',
                           u'Registros de Mortalidade'], keywords)
 
+    def test_xml_citations_without_data_pipe(self):
 
+        fakexylosearticle = Article({'article': {}, 'title': {}, 'citatons': {}})
 
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
 
+        article = pxml.find('article')
+        article.append(ET.Element('back'))
 
+        back = article.find('back')
+        back.append(ET.Element('ref-list'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export.XMLArticleMetaKeywordsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        citations = xml.find('./articles/article/back/ref-list/ref')
+
+        self.assertEqual(None, citations)
+
+    def test_xml_citations_count_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('back'))
+
+        back = article.find('back')
+        back.append(ET.Element('ref-list'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaCitationsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        citations = len(xml.findall('./article/back/ref-list/ref'))
+
+        self.assertEqual(23, citations)
+
+    def test_validating_against_schema(self):
+
+        xml = export.Export(self._raw_json).xmlwos()
+
+        xsd = open('tests/xsd/ThomsonReuters_publishing.xsd', 'r').read()
+        schema_root = etree.XML(xsd)
+
+        schema = etree.XMLSchema(schema_root)
+        xmlparser = etree.XMLParser(schema=schema)
+
+        expected = etree.fromstring(xml, xmlparser).tag
+
+        self.assertEqual('articles', expected)
