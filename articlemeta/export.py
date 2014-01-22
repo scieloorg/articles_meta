@@ -522,25 +522,23 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
         raw, xml = data
 
         for affiliation in raw.affiliations:
-            addrline = ET.Element('addr-line')
-            addrline.text = affiliation['addr_line']
-
-            institution = ET.Element('institution')
-            institution.text = affiliation['institution']
-
-            country = ET.Element('country')
-            country.text = affiliation['country']
 
             aff = ET.Element('aff')
             aff.set('id', affiliation['index'])
 
-            if affiliation['addr_line']:
+            if 'addr_line' in affiliation:
+                addrline = ET.Element('addr-line')
+                addrline.text = affiliation['addr_line']
                 aff.append(addrline)
 
-            if affiliation['institution']:
+            if 'institution' in affiliation:
+                institution = ET.Element('institution')
+                institution.text = affiliation['institution']
                 aff.append(institution)
 
-            if affiliation['country']:
+            if 'country' in affiliation:
+                country = ET.Element('country')
+                country.text = affiliation['country']
                 aff.append(country)
 
             xml.find('./article/front/article-meta').append(aff)
