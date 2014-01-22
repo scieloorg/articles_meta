@@ -179,7 +179,7 @@ class XMLCitation(object):
         def precond(data):
             raw, xml = data
 
-            if not raw.authors:
+            if not raw.authors and not raw.monographic_authors:
                 raise plumber.UnmetPrecondition()
 
         @plumber.precondition(precond)
@@ -188,18 +188,33 @@ class XMLCitation(object):
 
             persongroup = ET.Element('person-group')
 
-            for author in raw.authors:
-                givennames = ET.Element('given-names')
-                givennames.text = author['given_names']
+            if raw.authors:
+                for author in raw.authors:
+                    givennames = ET.Element('given-names')
+                    givennames.text = author['given_names']
 
-                surname = ET.Element('surname')
-                surname.text = author['surname']
+                    surname = ET.Element('surname')
+                    surname.text = author['surname']
 
-                name = ET.Element('name')
-                name.append(surname)
-                name.append(givennames)
+                    name = ET.Element('name')
+                    name.append(surname)
+                    name.append(givennames)
 
-                persongroup.append(name)
+                    persongroup.append(name)
+
+            if raw.monographic_authors:
+                for author in raw.monographic_authors:
+                    givennames = ET.Element('given-names')
+                    givennames.text = author['given_names']
+
+                    surname = ET.Element('surname')
+                    surname.text = author['surname']
+
+                    name = ET.Element('name')
+                    name.append(surname)
+                    name.append(givennames)
+
+                    persongroup.append(name)
 
             xml.find('./element-citation').append(persongroup)
 
