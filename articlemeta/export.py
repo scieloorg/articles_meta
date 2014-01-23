@@ -566,14 +566,16 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
+        pubdate = ET.Element('pub-date')
+
         year = ET.Element('year')
         year.text = raw.publication_date[0:4]
 
-        month = ET.Element('month')
-        month.text = raw.publication_date[5:7]
+        if raw.publication_date[5:7]:
+            month = ET.Element('month')
+            month.text = raw.publication_date[5:7]
+            pubdate.append(month)
 
-        pubdate = ET.Element('pub-date')
-        pubdate.append(month)
         pubdate.append(year)
 
         fpage = ET.Element('fpage')

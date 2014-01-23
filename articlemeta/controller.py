@@ -170,9 +170,6 @@ class DataBroker(object):
         issns = set([article.any_issn(priority=u'electronic'),
                     article.any_issn(priority=u'print')])
 
-        if not article.publisher_id:
-            return None
-
         metadata['code_issue'] = article.publisher_id[1:18]
         metadata['code_title'] = list(issns)
         metadata['publication_year'] = article.publication_date[0:4]
@@ -208,9 +205,6 @@ class DataBroker(object):
         article = self._check_article_meta(metadata)
 
         if not article:
-            return None
-
-        if not 'v880' in article['article']:
             return None
 
         code = article['article']['v880'][0]['_']
