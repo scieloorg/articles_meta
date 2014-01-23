@@ -177,8 +177,14 @@ class DataBroker(object):
         metadata['validated_wos'] = 'False'
         metadata['sent_wos'] = 'False'
         metadata['applicable'] = 'False'
-        metadata.update(gen_title_keys(article))
-        metadata.update(gen_citations_title_keys(article))
+
+        gtk = gen_title_keys(article)
+        if gtk:
+            metadata.update(gtk)
+
+        gctk = gen_citations_title_keys(article)
+        if gctk:
+            metadata.update()
 
         return metadata
 

@@ -55,8 +55,6 @@ def add_article(request):
         article = request.databroker.add_article(request.json_body)
     except ValueError:
         raise exc.HTTPBadRequest('The posted JSON data is not valid')
-    except:
-        raise exc.HTTPBadRequest()
 
     return Response()
 

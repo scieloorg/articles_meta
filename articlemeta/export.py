@@ -510,7 +510,7 @@ class XMLArticleMetaContribGroupPipe(plumber.Pipe):
             contrib.append(contribname)
             contrib.append(role)
 
-            for xr in author['xref']:
+            for xr in author.get('xref', []):
                 xref = ET.Element('xref')
                 xref.set('ref-type', 'aff')
                 xref.set('rid', xr)

@@ -714,6 +714,30 @@ class ExportTests(unittest.TestCase):
         self.assertEqual([u'A01', u'A01', u'A01', u'A01', u'A01', u'A01', u'A02',
                           u'A01', u'A02', u'A01', u'A03'], fullnames)
 
+    def test_xmlarticle_meta_contrib_group_author_without_xrefs_pipe(self):
+
+        del(self._raw_json['article']['v71'])
+        article_meta = Article(self._raw_json)
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export.XMLArticleMetaContribGroupPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        fullnames = [i.get('rid') for i in xml.findall('./article/front/article-meta/contrib-group/contrib/xref')]
+
+        self.assertEqual([u'A01', u'A01', u'A01', u'A01', u'A01', u'A01', u'A02',
+                          u'A01', u'A02', u'A01', u'A03'], fullnames)
+
     def test_xmlarticle_meta_contrib_group_without_data_pipe(self):
 
         fakexylosearticle = Article({'article': {}, 'title': {}})
