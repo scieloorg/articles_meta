@@ -281,6 +281,32 @@ class XMLCitationTests(unittest.TestCase):
 
         self.assertEqual(1, expected)
 
+    def test_xml_citation_person_group_given_names_pipe(self):
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [self._citation_meta, pxml]
+
+        raw, xml = self._xmlcitation.PersonGroupPipe().transform(data)
+
+        result = xml.find('./element-citation/person-group/name/given-names').text
+
+        self.assertEqual('EL', result)
+
+    def test_xml_citation_person_group_surname_pipe(self):
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [self._citation_meta, pxml]
+
+        raw, xml = self._xmlcitation.PersonGroupPipe().transform(data)
+
+        result = xml.find('./element-citation/person-group/name/surname').text
+
+        self.assertEqual('Bamgboye', result)
+
     def test_xml_citation_person_group_without_data_pipe(self):
 
         fakexylosearticle = Article({'article': {},

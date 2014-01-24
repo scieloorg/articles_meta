@@ -197,7 +197,7 @@ class XMLCitation(object):
                         surname.text = author['surname']
                         name.append(surname)
 
-                    if "given-names" in author:
+                    if "given_names" in author:
                         givennames = ET.Element('given-names')
                         givennames.text = author['given_names']
                         name.append(givennames)                    
@@ -213,7 +213,7 @@ class XMLCitation(object):
                         surname.text = author['surname']
                         name.append(surname)
 
-                    if "given-names" in author:
+                    if "given_names" in author:
                         givennames = ET.Element('given-names')
                         givennames.text = author['given_names']
                         name.append(givennames)
@@ -498,13 +498,15 @@ class XMLArticleMetaContribGroupPipe(plumber.Pipe):
         for author in raw.authors:
             contribname = ET.Element('name')
 
-            contribsurname = ET.Element('surname')
-            contribsurname.text = author['surname']
-            contribname.append(contribsurname)
+            if 'surname' in author:
+                contribsurname = ET.Element('surname')
+                contribsurname.text = author['surname']
+                contribname.append(contribsurname)
 
-            contribgivennames = ET.Element('given-names')
-            contribgivennames.text = author['given_names']
-            contribname.append(contribgivennames)
+            if 'given_names' in author:
+                contribgivennames = ET.Element('given-names')
+                contribgivennames.text = author['given_names']
+                contribname.append(contribgivennames)
 
             role = ET.Element('role')
             role.text = author['role'] or 'ND'
