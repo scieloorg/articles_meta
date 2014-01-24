@@ -509,7 +509,7 @@ class XMLArticleMetaContribGroupPipe(plumber.Pipe):
                 contribname.append(contribgivennames)
 
             role = ET.Element('role')
-            role.text = author['role'] or 'ND'
+            role.text = author.get('role', 'ND')
 
             contrib = ET.Element('contrib')
             contrib.set('contrib-type', 'author')
