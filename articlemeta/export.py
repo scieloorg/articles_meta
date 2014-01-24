@@ -190,29 +190,33 @@ class XMLCitation(object):
 
             if raw.authors:
                 for author in raw.authors:
-                    givennames = ET.Element('given-names')
-                    givennames.text = author['given_names']
-
-                    surname = ET.Element('surname')
-                    surname.text = author['surname']
-
                     name = ET.Element('name')
-                    name.append(surname)
-                    name.append(givennames)
+
+                    if "surname" in author:
+                        surname = ET.Element('surname')
+                        surname.text = author['surname']
+                        name.append(surname)
+
+                    if "given_names" in author:
+                        givennames = ET.Element('given-names')
+                        givennames.text = author['given_names']
+                        name.append(givennames)                    
 
                     persongroup.append(name)
 
             if raw.monographic_authors:
                 for author in raw.monographic_authors:
-                    givennames = ET.Element('given-names')
-                    givennames.text = author['given_names']
-
-                    surname = ET.Element('surname')
-                    surname.text = author['surname']
-
                     name = ET.Element('name')
-                    name.append(surname)
-                    name.append(givennames)
+
+                    if "surname" in author:
+                        surname = ET.Element('surname')
+                        surname.text = author['surname']
+                        name.append(surname)
+
+                    if "given_names" in author:
+                        givennames = ET.Element('given-names')
+                        givennames.text = author['given_names']
+                        name.append(givennames)
 
                     persongroup.append(name)
 
@@ -492,15 +496,17 @@ class XMLArticleMetaContribGroupPipe(plumber.Pipe):
         contribgroup = ET.Element('contrib-group')
 
         for author in raw.authors:
-            contribsurname = ET.Element('surname')
-            contribsurname.text = author['surname']
-
-            contribgivennames = ET.Element('given-names')
-            contribgivennames.text = author['given_names']
-
             contribname = ET.Element('name')
-            contribname.append(contribsurname)
-            contribname.append(contribgivennames)
+
+            if 'surname' in author:
+                contribsurname = ET.Element('surname')
+                contribsurname.text = author['surname']
+                contribname.append(contribsurname)
+
+            if 'given_names' in author:
+                contribgivennames = ET.Element('given-names')
+                contribgivennames.text = author['given_names']
+                contribname.append(contribgivennames)
 
             role = ET.Element('role')
             role.text = author['role'] or 'ND'
