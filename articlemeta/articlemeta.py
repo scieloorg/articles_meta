@@ -31,6 +31,17 @@ def exists_article(request):
     return Response(str(article))
 
 
+@view_config(route_name='collection',
+             request_method='GET')
+def collection(request):
+
+    fmt = request.GET.get('format', 'json')
+
+    collection = request.databroker.collection()
+
+    return Response(json.dumps(collection), content_type="application/json")
+
+
 @view_config(route_name='get_article',
              request_method='GET',
              request_param=['code'])
@@ -67,16 +78,17 @@ def main(settings, *args, **xargs):
     config_citedby.registry.db = pymongo.Connection(host=db_url.hostname,
                                                     port=db_url.port)
 
-    def add_collection():
+    def add_database():
         db = config_citedby.registry.db[db_url.path[1:]]
         if db_url.username and db_url.password:
             db.authenticate(db_url.username, db_url.password)
-        return db['articles']
+        return db
 
     def add_databroker(request):
-        return controller.DataBroker(add_collection())
+        return controller.DataBroker(add_database())
 
     config_citedby.add_route('index', '/')
+    config_citedby.add_route('collection', '/api/v1/collection')
     config_citedby.add_route('get_article', '/api/v1/article')
     config_citedby.add_route('add_article', '/api/v1/article/add')
     config_citedby.add_route('exists_article', '/api/v1/article/exists')

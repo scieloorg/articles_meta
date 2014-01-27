@@ -188,9 +188,18 @@ class DataBroker(object):
 
         return metadata
 
+    def collection(self):
+
+        data = self.db['collections'].find({}, {'_id': 0})
+
+        if not data:
+            return None
+
+        return [i for i in data]
+
     def get_article(self, code):
 
-        data = self.db.find_one({'code': code})
+        data = self.db['articles'].find_one({'code': code})
 
         if not data:
             return None
@@ -201,7 +210,7 @@ class DataBroker(object):
 
     def exists_article(self, code):
 
-        if self.db.find({'code': code}).count() >= 1:
+        if self.db['articles'].find({'code': code}).count() >= 1:
             return True
 
         return False
@@ -215,7 +224,7 @@ class DataBroker(object):
 
         code = article['article']['v880'][0]['_']
 
-        self.db.update(
+        self.db['articles'].update(
             {'code': code},
             {'$set': article},
             safe=False,

@@ -20,7 +20,7 @@ class ControllerTest(unittest.TestCase):
 
         mocker = Mocker()
         databroker = mocker.mock()
-        databroker.find_one(ANY)
+        databroker['articles'].find_one(ANY)
         mocker.result(self._raw_json)
         mocker.replay()
 
@@ -32,7 +32,7 @@ class ControllerTest(unittest.TestCase):
 
         mocker = Mocker()
         databroker = mocker.mock()
-        databroker.find_one(ANY)
+        databroker['articles'].find_one(ANY)
         mocker.result(None)
         mocker.replay()
 
@@ -44,19 +44,7 @@ class ControllerTest(unittest.TestCase):
 
         mocker = Mocker()
         databroker = mocker.mock()
-        databroker.find(ANY).count()
-        mocker.result(self._raw_jso)
-        mocker.replay()
-
-        db = DataBroker(databroker)
-
-        self.assertEqual(db.exists_article('xx'), True)
-
-    def test_exists_article_False(self):
-
-        mocker = Mocker()
-        databroker = mocker.mock()
-        databroker.find(ANY).count()
+        databroker['articles'].find(ANY).count()
         mocker.result(None)
         mocker.replay()
 
