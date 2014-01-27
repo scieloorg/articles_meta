@@ -61,6 +61,16 @@ class ControllerTest(unittest.TestCase):
         self.assertEqual(expected['code_issue'], u'0034-891020100004')
         self.assertEqual(expected['code_title'], [u'0034-8910'])
         self.assertEqual(expected['publication_year'], u'2010')
+        self.assertEqual(expected['collection'], u'scl')
+
+    def test_check_journal_meta(self):
+
+        db = DataBroker(None)
+
+        expected = db._check_journal_meta(self._raw_json['title'])
+
+        self.assertEqual(expected['code'], [u'0034-8910'])
+        self.assertEqual(expected['collection'], u'scl')
 
     def test_remove_accents(self):
 

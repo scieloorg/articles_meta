@@ -172,6 +172,7 @@ class DataBroker(object):
 
         metadata['code_issue'] = article.publisher_id[1:18]
         metadata['code_title'] = list(issns)
+        metadata['collection'] = article.collection_acronym
         metadata['publication_year'] = article.publication_date[0:4]
         metadata['validated_scielo'] = 'False'
         metadata['validated_wos'] = 'False'
@@ -187,6 +188,46 @@ class DataBroker(object):
             metadata.update()
 
         return metadata
+
+    def _check_journal_meta(self, metadata):
+        """
+            This method will check the given metadata and retrieve
+            a new dictionary with some new fields.
+        """
+        journal = Article({'title': metadata, 'article': {}, 'citations': {}})
+
+        issns = set([journal.any_issn(priority=u'electronic'),
+                     journal.any_issn(priority=u'print')])
+
+        metadata['code'] = list(issns)
+        metadata['collection'] = journal.collection_acronym
+
+        return metadata
+
+    def journal(self):
+
+        data = self.db['journals'].find({}, {'_id': 0})
+
+        if not data:
+            return None
+
+        return [i for i in data]
+
+    def add_journal(self, metadata):
+
+        journal = self._check_journal_meta(metadata)
+
+        if not journal:
+            return None
+
+        self.db['journals'].update(
+            {'code': journal['code']},
+            {'$set': journal},
+            safe=False,
+            upsert=True
+        )
+
+        return journal
 
     def collection(self):
 

@@ -42,6 +42,31 @@ def collection(request):
     return Response(json.dumps(collection), content_type="application/json")
 
 
+@view_config(route_name='journal',
+             request_method='GET')
+def journal(request):
+
+    fmt = request.GET.get('format', 'json')
+    collection = request.GET.get('collection', None)
+    issn = request.GET.get('issn', None)
+
+    journal = request.databroker.journal(collection=collection, issn=issn)
+
+    return Response(json.dumps(journal), content_type="application/json")
+
+
+@view_config(route_name='add_journal',
+             request_method='POST')
+def add_journal(request):
+
+    try:
+        journal = request.databroker.add_journal(request.json_body)
+    except ValueError:
+        raise exc.HTTPBadRequest('The posted JSON data is not valid')
+
+    return Response()
+
+
 @view_config(route_name='get_article',
              request_method='GET',
              request_param=['code'])
@@ -89,6 +114,8 @@ def main(settings, *args, **xargs):
 
     config_citedby.add_route('index', '/')
     config_citedby.add_route('collection', '/api/v1/collection')
+    config_citedby.add_route('journal', '/api/v1/journal')
+    config_citedby.add_route('add_journal', '/api/v1/journal/add')
     config_citedby.add_route('get_article', '/api/v1/article')
     config_citedby.add_route('add_article', '/api/v1/article/add')
     config_citedby.add_route('exists_article', '/api/v1/article/exists')
