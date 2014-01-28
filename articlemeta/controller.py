@@ -204,9 +204,17 @@ class DataBroker(object):
 
         return metadata
 
-    def journal(self):
+    def journal(self, collection=None, issn=None):
 
-        data = self.db['journals'].find({}, {'_id': 0})
+        fltr = {}
+
+        if collection:
+            fltr['collection'] = collection
+
+        if issn:
+            fltr['code'] = issn
+
+        data = self.db['journals'].find(fltr, {'_id': 0})
 
         if not data:
             return None
