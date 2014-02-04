@@ -103,7 +103,7 @@ def exists_article(request):
 
     article = request.databroker.exists_article(code)
 
-    return Response(article)
+    return Response(json.dumps(article))
 
 
 @view_config(route_name='get_article',
