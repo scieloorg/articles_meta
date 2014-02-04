@@ -1,5 +1,6 @@
 # coding: utf-8
 import unicodedata
+
 from xylose.scielodocument import Article
 
 
@@ -15,7 +16,7 @@ def gen_citations_title_keys(article):
     to: ['healthcareafter60th', 'cuidadosdesaudeaposossessentaanos']
     """
 
-    def get_citation_titles(article):
+    def get_citation_titles():
         titles = []
 
         for citation in article.citations:
@@ -41,7 +42,7 @@ def gen_citations_title_keys(article):
 
         return titles
 
-    def get_citation_titles_author_year(article):
+    def get_citation_titles_author_year():
         titles = []
 
         for citation in article.citations:
@@ -93,8 +94,8 @@ def gen_citations_title_keys(article):
     if not article.citations:
         return None
 
-    no_accents_strings = get_citation_titles(article)
-    no_accents_strings_author_year = get_citation_titles_author_year(article)
+    no_accents_strings = get_citation_titles()
+    no_accents_strings_author_year = get_citation_titles_author_year()
 
     if not no_accents_strings:
         return None
@@ -114,7 +115,7 @@ def gen_title_keys(article):
     to: ['healthcareafter60th', 'cuidadosdesaudeaposossessentaanos']
     """
 
-    def titles(article):
+    def titles():
         titles = []
         if article.original_title():
             titles.append(article.original_title())
@@ -128,7 +129,7 @@ def gen_title_keys(article):
 
         return titles
 
-    titles = titles(article)
+    titles = titles()
 
     if not titles:
         return None
@@ -245,6 +246,43 @@ class DataBroker(object):
             return None
 
         return [i for i in data]
+
+    def identifiers_journal(self, collection=None, limit=20, offset=0):
+
+        fltr = {}
+        if collection:
+            fltr['collection'] = collection
+
+        total = self.db['journals'].find(fltr, {'code': 1}).count()
+        data = self.db['journals'].find(fltr, {'code': 1}).skip(offset).limit(limit)
+
+        meta = {'limit': limit,
+                'offset': offset,
+                'filter': fltr,
+                'total': total}
+
+        result = {'meta': meta, 'objects': [i['code'] for i in data]}
+
+        return result
+
+    def identifiers_article(self, collection=None, issn=None, limit=20, offset=0):
+
+        fltr = {}
+        if collection:
+            fltr['collection'] = collection
+        if issn:
+            fltr['code_title'] = issn
+
+        total = self.db['articles'].find(fltr, {'code': 1}).count()
+        data = self.db['articles'].find(fltr, {'code': 1}).skip(offset).limit(limit)
+        meta = {'limit': limit,
+                'offset': offset,
+                'filter': fltr,
+                'total': total}
+
+        result = {'meta': meta, 'objects': [i['code'] for i in data]}
+
+        return result
 
     def get_article(self, code):
 

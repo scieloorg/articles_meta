@@ -19,18 +19,6 @@ def index(request):
     return Response('Articles Metadata API')
 
 
-@view_config(route_name='exists_article',
-             request_method='GET',
-             request_param=['code'])
-def exists_article(request):
-
-    code = request.GET.get('code', None)
-
-    article = request.databroker.exists_article(code)
-
-    return Response(str(article))
-
-
 @view_config(route_name='collection',
              request_method='GET')
 def collection(request):
@@ -55,6 +43,24 @@ def journal(request):
     return Response(json.dumps(journal), content_type="application/json")
 
 
+@view_config(route_name='identifiers_journal',
+             request_method='GET')
+def identifiers_journal(request):
+
+    collection = request.GET.get('collection', None)
+    issn = request.GET.get('issn', None)
+    offset = request.GET.get('offset', 0)
+
+    try:
+        offset = int(offset)
+    except ValueError:
+        raise exc.HTTPBadRequest('offset must be integer')
+
+    ids = request.databroker.identifiers_journal(collection=collection,
+                                                 offset=offset)
+
+    return Response(json.dumps(ids))
+
 @view_config(route_name='add_journal',
              request_method='POST')
 def add_journal(request):
@@ -65,6 +71,38 @@ def add_journal(request):
         raise exc.HTTPBadRequest('The posted JSON data is not valid')
 
     return Response()
+
+
+@view_config(route_name='identifiers_article',
+             request_method='GET')
+def identifiers_article(request):
+
+    collection = request.GET.get('collection', None)
+    issn = request.GET.get('issn', None)
+    offset = request.GET.get('offset', 0)
+
+    try:
+        offset = int(offset)
+    except ValueError:
+        raise exc.HTTPBadRequest('offset must be integer')
+
+    ids = request.databroker.identifiers_article(collection=collection,
+                                                 issn=issn,
+                                                 offset=offset)
+
+    return Response(json.dumps(ids))
+
+
+@view_config(route_name='exists_article',
+             request_method='GET',
+             request_param=['code'])
+def exists_article(request):
+
+    code = request.GET.get('code', None)
+
+    article = request.databroker.exists_article(code)
+
+    return Response(article)
 
 
 @view_config(route_name='get_article',
@@ -96,15 +134,15 @@ def add_article(request):
 
 
 def main(settings, *args, **xargs):
-    config_citedby = Configurator(settings=settings)
+    config = Configurator(settings=settings)
 
     db_url = urlparse.urlparse(settings['app']['mongo_uri'])
 
-    config_citedby.registry.db = pymongo.Connection(host=db_url.hostname,
+    config.registry.db = pymongo.Connection(host=db_url.hostname,
                                                     port=db_url.port)
 
     def add_database():
-        db = config_citedby.registry.db[db_url.path[1:]]
+        db = config.registry.db[db_url.path[1:]]
         if db_url.username and db_url.password:
             db.authenticate(db_url.username, db_url.password)
         return db
@@ -112,17 +150,19 @@ def main(settings, *args, **xargs):
     def add_databroker(request):
         return controller.DataBroker(add_database())
 
-    config_citedby.add_route('index', '/')
-    config_citedby.add_route('collection', '/api/v1/collection')
-    config_citedby.add_route('journal', '/api/v1/journal')
-    config_citedby.add_route('add_journal', '/api/v1/journal/add')
-    config_citedby.add_route('get_article', '/api/v1/article')
-    config_citedby.add_route('add_article', '/api/v1/article/add')
-    config_citedby.add_route('exists_article', '/api/v1/article/exists')
-    config_citedby.add_request_method(add_databroker, 'databroker', reify=True)
-    config_citedby.scan()
+    config.add_route('index', '/')
+    config.add_route('collection', '/api/v1/collection')
+    config.add_route('journal', '/api/v1/journal')
+    config.add_route('identifiers_journal', '/api/v1/journal/identifiers')
+    config.add_route('add_journal', '/api/v1/journal/add')
+    config.add_route('get_article', '/api/v1/article')
+    config.add_route('add_article', '/api/v1/article/add')
+    config.add_route('identifiers_article', '/api/v1/article/identifiers')
+    config.add_route('exists_article', '/api/v1/article/exists')
+    config.add_request_method(add_databroker, 'databroker', reify=True)
+    config.scan()
 
-    return config_citedby.make_wsgi_app()
+    return config.make_wsgi_app()
 
 config = utils.Configuration.from_file(os.environ.get('CONFIG_INI', os.path.dirname(__file__)+'/../config.ini'))
 
