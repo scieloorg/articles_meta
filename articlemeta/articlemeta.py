@@ -61,6 +61,7 @@ def identifiers_journal(request):
 
     return Response(json.dumps(ids))
 
+
 @view_config(route_name='add_journal',
              request_method='POST')
 def add_journal(request):

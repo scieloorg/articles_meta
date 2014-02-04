@@ -247,7 +247,7 @@ class DataBroker(object):
 
         return [i for i in data]
 
-    def identifiers_journal(self, collection=None, limit=20, offset=0):
+    def identifiers_journal(self, collection=None, limit=1000, offset=0):
 
         fltr = {}
         if collection:
@@ -265,7 +265,7 @@ class DataBroker(object):
 
         return result
 
-    def identifiers_article(self, collection=None, issn=None, limit=20, offset=0):
+    def identifiers_article(self, collection=None, issn=None, limit=1000, offset=0):
 
         fltr = {}
         if collection:
