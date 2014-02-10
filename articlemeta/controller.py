@@ -186,7 +186,7 @@ class DataBroker(object):
 
         gctk = gen_citations_title_keys(article)
         if gctk:
-            metadata.update()
+            metadata.update(gctk)
 
         return metadata
 
