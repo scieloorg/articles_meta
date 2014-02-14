@@ -74,6 +74,30 @@ def add_journal(request):
     return Response()
 
 
+@view_config(route_name='delete_journal',
+             request_method='DELETE')
+def delete_journal(request):
+
+    code = request.GET.get('code', None)
+    admintoken = request.GET.get('admintoken', None)
+
+    token = request.registry.settings.get('app', {}).get('admintoken', None)
+
+    if admintoken != token:
+        raise exc.HTTPUnauthorized(
+            'Invalid admin token'
+        )
+
+    if not admintoken or not code:
+        raise exc.HTTPBadRequest(
+            'The attribute code and admintoken must be given'
+        )
+
+    request.databroker.delete_journal(code)
+
+    return Response()
+
+
 @view_config(route_name='identifiers_article',
              request_method='GET')
 def identifiers_article(request):
@@ -134,13 +158,39 @@ def add_article(request):
     return Response()
 
 
+@view_config(route_name='delete_article',
+             request_method='DELETE')
+def delete_article(request):
+
+    code = request.GET.get('code', None)
+    admintoken = request.GET.get('admintoken', None)
+
+    token = request.registry.settings.get('app', {}).get('admintoken', None)
+
+    if admintoken != token:
+        raise exc.HTTPUnauthorized(
+            'Invalid admin token'
+        )
+
+    if not admintoken or not code:
+        raise exc.HTTPBadRequest(
+            'The attribute code and admintoken must be given'
+        )
+
+    request.databroker.delete_article(code)
+
+    return Response()
+
+
 def main(settings, *args, **xargs):
     config = Configurator(settings=settings)
 
     db_url = urlparse.urlparse(settings['app']['mongo_uri'])
 
-    config.registry.db = pymongo.Connection(host=db_url.hostname,
-                                                    port=db_url.port)
+    config.registry.db = pymongo.Connection(
+        host=db_url.hostname,
+        port=db_url.port
+    )
 
     def add_database():
         db = config.registry.db[db_url.path[1:]]
@@ -156,8 +206,10 @@ def main(settings, *args, **xargs):
     config.add_route('journal', '/api/v1/journal')
     config.add_route('identifiers_journal', '/api/v1/journal/identifiers')
     config.add_route('add_journal', '/api/v1/journal/add')
+    config.add_route('delete_journal', '/api/v1/journal/delete')
     config.add_route('get_article', '/api/v1/article')
     config.add_route('add_article', '/api/v1/article/add')
+    config.add_route('delete_article', '/api/v1/article/delete')
     config.add_route('identifiers_article', '/api/v1/article/identifiers')
     config.add_route('exists_article', '/api/v1/article/exists')
     config.add_request_method(add_databroker, 'databroker', reify=True)

@@ -222,6 +222,10 @@ class DataBroker(object):
 
         return [i for i in data]
 
+    def delete_journal(self, code):
+
+        self.db['journals'].remove({'code': code})
+
     def add_journal(self, metadata):
 
         journal = self._check_journal_meta(metadata)
@@ -301,6 +305,10 @@ class DataBroker(object):
             return True
 
         return False
+
+    def delete_article(self, code):
+
+        self.db['articles'].remove({'code': code})
 
     def add_article(self, metadata):
 
