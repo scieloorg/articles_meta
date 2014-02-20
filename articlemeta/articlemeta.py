@@ -59,7 +59,7 @@ def identifiers_journal(request):
     ids = request.databroker.identifiers_journal(collection=collection,
                                                  offset=offset)
 
-    return Response(json.dumps(ids))
+    return Response(json.dumps(ids), content_type="application/json")
 
 
 @view_config(route_name='add_journal',
@@ -115,7 +115,7 @@ def identifiers_article(request):
                                                  issn=issn,
                                                  offset=offset)
 
-    return Response(json.dumps(ids))
+    return Response(json.dumps(ids), content_type="application/json")
 
 
 @view_config(route_name='exists_article',
@@ -127,7 +127,7 @@ def exists_article(request):
 
     article = request.databroker.exists_article(code)
 
-    return Response(json.dumps(article))
+    return Response(json.dumps(article), content_type="application/json")
 
 
 @view_config(route_name='get_article',
