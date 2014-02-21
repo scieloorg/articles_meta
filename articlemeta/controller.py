@@ -300,9 +300,9 @@ class DataBroker(object):
 
         return data
 
-    def exists_article(self, code):
+    def exists_article(self, code, collection):
 
-        if self.db['articles'].find({'code': code}).count() >= 1:
+        if self.db['articles'].find({'code': code, 'collection': collection}).count() >= 1:
             return True
 
         return False

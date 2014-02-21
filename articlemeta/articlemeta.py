@@ -124,8 +124,9 @@ def identifiers_article(request):
 def exists_article(request):
 
     code = request.GET.get('code', None)
+    collection = request.GET.get('collection', None)
 
-    article = request.databroker.exists_article(code)
+    article = request.databroker.exists_article(code, collection)
 
     return Response(json.dumps(article), content_type="application/json")
 
