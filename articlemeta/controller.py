@@ -322,7 +322,7 @@ class DataBroker(object):
         code = article['article']['v992'][0]['_']
 
         self.db['articles'].update(
-            {'code': code, 'collection' collection},
+            {'code': code, 'collection': collection},
             {'$set': article},
             safe=False,
             upsert=True
