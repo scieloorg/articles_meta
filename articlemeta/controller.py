@@ -319,7 +319,7 @@ class DataBroker(object):
             return None
 
         code = article['article']['v880'][0]['_']
-        code = article['article']['v992'][0]['_']
+        collection = article['article']['v992'][0]['_']
 
         self.db['articles'].update(
             {'code': code, 'collection': collection},
