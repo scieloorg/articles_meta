@@ -137,9 +137,10 @@ def exists_article(request):
 def get_article(request):
 
     code = request.GET.get('code', None)
+    collection = request.GET.get('collection', None)
     fmt = request.GET.get('format', 'json')
 
-    article = request.databroker.get_article(code)
+    article = request.databroker.get_article(code, collection)
 
     if fmt == 'xmlwos':
         return Response(Export(article).xmlwos(), content_type="application/xml")

@@ -289,9 +289,13 @@ class DataBroker(object):
 
         return result
 
-    def get_article(self, code):
+    def get_article(self, code, collection=None):
 
-        data = self.db['articles'].find_one({'code': code})
+        fltr = {'code': code}
+        if collection:
+            fltr['collection'] = collection        
+
+        data = self.db['articles'].find_one(fltr)
 
         if not data:
             return None
@@ -300,7 +304,7 @@ class DataBroker(object):
 
         return data
 
-    def exists_article(self, code, collection):
+    def exists_article(self, code, collection=None):
 
         if self.db['articles'].find({'code': code, 'collection': collection}).count() >= 1:
             return True
