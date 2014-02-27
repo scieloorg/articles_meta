@@ -222,9 +222,14 @@ class DataBroker(object):
 
         return [i for i in data]
 
-    def delete_journal(self, code):
+    def delete_journal(self, issn, collection=None):
 
-        self.db['journals'].remove({'code': code})
+        fltr = {
+            'code': issn,
+            'collection': collection
+        }
+
+        self.db['journals'].remove(fltr)
 
     def add_journal(self, metadata):
 
@@ -234,6 +239,7 @@ class DataBroker(object):
             return None
 
         collection = journal['v992'][0]['_']
+
         self.db['journals'].update(
             {'code': journal['code'], 'collection': collection},
             {'$set': journal},
@@ -305,15 +311,24 @@ class DataBroker(object):
         return data
 
     def exists_article(self, code, collection=None):
+        
+        fltr = {'code': code}
+        if collection:
+            fltr['collection'] = collection    
 
-        if self.db['articles'].find({'code': code, 'collection': collection}).count() >= 1:
+        if self.db['articles'].find(fltr).count() >= 1:
             return True
 
         return False
 
-    def delete_article(self, code):
+    def delete_article(self, code, collection=None):
 
-        self.db['articles'].remove({'code': code})
+        fltr = {
+            'code': code,
+            'collection': collection
+        }
+
+        self.db['articles'].remove(fltr)
 
     def add_article(self, metadata):
 

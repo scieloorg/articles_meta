@@ -48,7 +48,6 @@ def journal(request):
 def identifiers_journal(request):
 
     collection = request.GET.get('collection', None)
-    issn = request.GET.get('issn', None)
     offset = request.GET.get('offset', 0)
 
     try:
@@ -78,7 +77,8 @@ def add_journal(request):
              request_method='DELETE')
 def delete_journal(request):
 
-    code = request.GET.get('code', None)
+    issn = request.GET.get('issn', None)
+    collection = request.GET.get('collection', None)
     admintoken = request.GET.get('admintoken', None)
 
     token = request.registry.settings.get('app', {}).get('admintoken', None)
@@ -88,12 +88,12 @@ def delete_journal(request):
             'Invalid admin token'
         )
 
-    if not admintoken or not code:
+    if not admintoken or not issn:
         raise exc.HTTPBadRequest(
             'The attribute code and admintoken must be given'
         )
 
-    request.databroker.delete_journal(code)
+    request.databroker.delete_journal(issn, collection=collection)
 
     return Response()
 
@@ -126,7 +126,7 @@ def exists_article(request):
     code = request.GET.get('code', None)
     collection = request.GET.get('collection', None)
 
-    article = request.databroker.exists_article(code, collection)
+    article = request.databroker.exists_article(code, collection=collection)
 
     return Response(json.dumps(article), content_type="application/json")
 
@@ -165,6 +165,7 @@ def add_article(request):
 def delete_article(request):
 
     code = request.GET.get('code', None)
+    colletion = request.GET.get('collection', None)
     admintoken = request.GET.get('admintoken', None)
 
     token = request.registry.settings.get('app', {}).get('admintoken', None)
@@ -179,7 +180,7 @@ def delete_article(request):
             'The attribute code and admintoken must be given'
         )
 
-    request.databroker.delete_article(code)
+    request.databroker.delete_article(code, collection=collection)
 
     return Response()
 
