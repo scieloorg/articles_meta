@@ -238,10 +238,8 @@ class DataBroker(object):
         if not journal:
             return None
 
-        collection = journal['v992'][0]['_']
-
         self.db['journals'].update(
-            {'code': journal['code'], 'collection': collection},
+            {'code': journal['code'], 'collection': journal['collection']},
             {'$set': journal},
             safe=False,
             upsert=True
