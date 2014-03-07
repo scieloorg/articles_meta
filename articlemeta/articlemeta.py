@@ -165,7 +165,7 @@ def add_article(request):
 def delete_article(request):
 
     code = request.GET.get('code', None)
-    colletion = request.GET.get('collection', None)
+    collection = request.GET.get('collection', None)
     admintoken = request.GET.get('admintoken', None)
 
     token = request.registry.settings.get('app', {}).get('admintoken', None)
