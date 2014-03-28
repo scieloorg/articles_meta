@@ -249,26 +249,6 @@ class XMLArticlePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        article_types = {
-            'rc': 'undefined',
-            'ab': 'abstract',
-            'pv': 'article-commentary',
-            'ed': 'editorial',
-            'in': 'oration',
-            'tr': 'research-article',
-            'up': 'review-article',
-            'oa': 'research-article',
-            'an': 'undefined',
-            'ax': 'undefined',
-            'mt': 'research-article',
-            'le': 'letter',
-            'ra': 'review-article',
-            'nd': 'undefined',
-            'cr': 'case-report',
-            'sc': 'rapid-communication',
-            'co': 'article-commentary',
-            'rn': 'brief-report'}
-
         article = ET.Element('article')
         article.set('lang_id', raw.original_language())
         article.set('article-type', raw.document_type)
