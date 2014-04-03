@@ -8,8 +8,8 @@ import os
 from lxml import etree
 from xylose.scielodocument import Article
 
+from articlemeta import export_sci
 from articlemeta import export
-
 
 class XMLCitationTests(unittest.TestCase):
 
@@ -18,7 +18,7 @@ class XMLCitationTests(unittest.TestCase):
         self._raw_json = json.loads(open(os.path.dirname(__file__)+'/fixtures/article_meta.json').read())
         self._citation_meta = Article(self._raw_json).citations[0]
 
-        self._xmlcitation = export.XMLCitation()
+        self._xmlcitation = export_sci.XMLCitation()
 
     def test_xml_citation_setup_pipe(self):
 
@@ -338,7 +338,7 @@ class ExportTests(unittest.TestCase):
 
         data = [None, pxml]
 
-        xmlarticle = export.XMLClosePipe()
+        xmlarticle = export_sci.XMLClosePipe()
         xml = xmlarticle.transform(data)
 
         self.assertEqual('<articles><article /></articles>', xml)
@@ -347,7 +347,7 @@ class ExportTests(unittest.TestCase):
 
         data = [None, None]
 
-        xmlarticle = export.SetupArticlePipe()
+        xmlarticle = export_sci.SetupArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
         self.assertEqual('articles', xml.tag)
@@ -356,7 +356,7 @@ class ExportTests(unittest.TestCase):
 
         data = [None, None]
 
-        xmlarticle = export.SetupArticlePipe()
+        xmlarticle = export_sci.SetupArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
         attributes = ['xmlns:xsi',
@@ -372,7 +372,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticlePipe()
+        xmlarticle = export_sci.XMLArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
         self.assertEqual('<articles><article article-type="research-article" lang_id="pt" /></articles>', ET.tostring(xml))
@@ -384,7 +384,7 @@ class ExportTests(unittest.TestCase):
 
         data = [None, pxml]
 
-        xmlarticle = export.XMLFrontBackPipe()
+        xmlarticle = export_sci.XMLFrontBackPipe()
         raw, xml = xmlarticle.transform(data)
 
         self.assertEqual('<articles><article><front><journal-meta /><article-meta /></front><back><ref-list /></back></article></articles>', ET.tostring(xml))
@@ -402,7 +402,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLJournalMetaJournalIdPipe()
+        xmlarticle = export_sci.XMLJournalMetaJournalIdPipe()
         raw, xml = xmlarticle.transform(data)
 
         self.assertEqual('<articles><article><front><journal-meta><journal-id journal-id-type="publisher">rsp</journal-id></journal-meta></front></article></articles>', ET.tostring(xml))
@@ -420,7 +420,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLJournalMetaJournalTitleGroupPipe()
+        xmlarticle = export_sci.XMLJournalMetaJournalTitleGroupPipe()
         raw, xml = xmlarticle.transform(data)
 
         title = xml.find('./article/front/journal-meta/journal-title-group/journal-title').text
@@ -442,7 +442,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLJournalMetaISSNPipe()
+        xmlarticle = export_sci.XMLJournalMetaISSNPipe()
         raw, xml = xmlarticle.transform(data)
 
         issn = xml.find('./article/front/journal-meta/issn').text
@@ -462,7 +462,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLJournalMetaPublisherPipe()
+        xmlarticle = export_sci.XMLJournalMetaPublisherPipe()
         raw, xml = xmlarticle.transform(data)
 
         publishername = xml.find('./article/front/journal-meta/publisher/publisher-name').text
@@ -484,7 +484,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaUniqueArticleIdPipe()
+        xmlarticle = export_sci.XMLArticleMetaUniqueArticleIdPipe()
         raw, xml = xmlarticle.transform(data)
 
         uniquearticleid = xml.find('./article/front/article-meta/unique-article-id').text
@@ -504,7 +504,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaArticleIdPublisherPipe()
+        xmlarticle = export_sci.XMLArticleMetaArticleIdPublisherPipe()
         raw, xml = xmlarticle.transform(data)
 
         articleidpublisher = xml.find('./article/front/article-meta/article-id[@pub-id-type="publisher-id"]').text
@@ -524,7 +524,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaArticleIdDOIPipe()
+        xmlarticle = export_sci.XMLArticleMetaArticleIdDOIPipe()
         raw, xml = xmlarticle.transform(data)
 
         articleidpublisher = xml.find('./article/front/article-meta/article-id[@pub-id-type="doi"]').text
@@ -546,7 +546,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaArticleIdDOIPipe()
+        xmlarticle = export_sci.XMLArticleMetaArticleIdDOIPipe()
 
         raw, xml = xmlarticle.transform(data)
 
@@ -573,7 +573,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaArticleCategoriesPipe()
+        xmlarticle = export_sci.XMLArticleMetaArticleCategoriesPipe()
         raw, xml = xmlarticle.transform(data)
 
         categories = [i.text for i in xml.findall('./article/front/article-meta/article-categories/subj-group/subject')]
@@ -595,7 +595,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaArticleCategoriesPipe()
+        xmlarticle = export_sci.XMLArticleMetaArticleCategoriesPipe()
         raw, xml = xmlarticle.transform(data)
 
         self.assertEqual(None, xml.find('./article/front/article-meta/article-categories/subj-group/subject'))
@@ -613,7 +613,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaTitleGroupPipe()
+        xmlarticle = export_sci.XMLArticleMetaTitleGroupPipe()
         raw, xml = xmlarticle.transform(data)
 
         title = xml.find('./article/front/article-meta/title-group/article-title[@lang_id="pt"]').text
@@ -636,7 +636,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaTranslatedTitleGroupPipe()
+        xmlarticle = export_sci.XMLArticleMetaTranslatedTitleGroupPipe()
         raw, xml = xmlarticle.transform(data)
 
         titles = [i.find('trans-title').text for i in xml.findall('./article/front/article-meta/title-group/trans-title-group')]
@@ -662,7 +662,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaContribGroupPipe()
+        xmlarticle = export_sci.XMLArticleMetaContribGroupPipe()
         raw, xml = xmlarticle.transform(data)
 
         titles = [i.find('trans-title').text for i in xml.findall('./article/front/article-meta/title-group/trans-title-group')]
@@ -682,7 +682,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaContribGroupPipe()
+        xmlarticle = export_sci.XMLArticleMetaContribGroupPipe()
         raw, xml = xmlarticle.transform(data)
 
         fullnames = [' '.join([i.find('given-names').text, i.find('surname').text]) for i in xml.findall('./article/front/article-meta/contrib-group/contrib/name')]
@@ -711,7 +711,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaContribGroupPipe()
+        xmlarticle = export_sci.XMLArticleMetaContribGroupPipe()
         raw, xml = xmlarticle.transform(data)
 
         fullnames = [i.text for i in xml.findall('./article/front/article-meta/contrib-group/contrib/role')]
@@ -732,7 +732,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaContribGroupPipe()
+        xmlarticle = export_sci.XMLArticleMetaContribGroupPipe()
         raw, xml = xmlarticle.transform(data)
 
         fullnames = [i.get('rid') for i in xml.findall('./article/front/article-meta/contrib-group/contrib/xref')]
@@ -756,7 +756,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaContribGroupPipe()
+        xmlarticle = export_sci.XMLArticleMetaContribGroupPipe()
         raw, xml = xmlarticle.transform(data)
 
         fullnames = [i.get('rid') for i in xml.findall('./article/front/article-meta/contrib-group/contrib/xref')]
@@ -779,7 +779,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaContribGroupPipe()
+        xmlarticle = export_sci.XMLArticleMetaContribGroupPipe()
         raw, xml = xmlarticle.transform(data)
 
         titles = [i.find('contrib-group').text for i in xml.findall('./article/front/article-meta/contrib-group/contrib')]
@@ -801,7 +801,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaAffiliationPipe()
+        xmlarticle = export_sci.XMLArticleMetaAffiliationPipe()
         raw, xml = xmlarticle.transform(data)
 
         affiliations = [i.find('institution').text for i in xml.findall('./article/front/article-meta/aff')]
@@ -821,7 +821,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaAffiliationPipe()
+        xmlarticle = export_sci.XMLArticleMetaAffiliationPipe()
         raw, xml = xmlarticle.transform(data)
 
         affiliations = [i.find('institution').text for i in xml.findall('./article/front/article-meta/aff')]
@@ -843,7 +843,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaAffiliationPipe()
+        xmlarticle = export_sci.XMLArticleMetaAffiliationPipe()
         raw, xml = xmlarticle.transform(data)
 
         indexes = [i.get('id') for i in xml.findall('./article/front/article-meta/aff')]
@@ -865,7 +865,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaAffiliationPipe()
+        xmlarticle = export_sci.XMLArticleMetaAffiliationPipe()
         raw, xml = xmlarticle.transform(data)
 
         countries = [i.find('country').text for i in xml.findall('./article/front/article-meta/aff')]
@@ -888,7 +888,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaAffiliationPipe()
+        xmlarticle = export_sci.XMLArticleMetaAffiliationPipe()
         raw, xml = xmlarticle.transform(data)
 
         address = [i.find('addr-line').text for i in xml.findall('./article/front/article-meta/aff')]
@@ -910,7 +910,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         pub_year = xml.find('./article/front/article-meta/pub-date/year').text
@@ -930,7 +930,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         pub_month = xml.find('./article/front/article-meta/pub-date/month').text
@@ -950,7 +950,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         fpage = xml.find('./article/front/article-meta/fpage').text
@@ -972,7 +972,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         fpage = xml.find('./article/front/article-meta/fpage')
@@ -992,7 +992,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         lpage = xml.find('./article/front/article-meta/lpage').text
@@ -1014,7 +1014,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         lpage = xml.find('./article/front/article-meta/lpage')
@@ -1034,7 +1034,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         volume = xml.find('./article/front/article-meta/volume').text
@@ -1056,7 +1056,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         volume = xml.find('./article/front/article-meta/volume')
@@ -1076,7 +1076,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         issue = xml.find('./article/front/article-meta/issue').text
@@ -1098,7 +1098,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         issue = xml.find('./article/front/article-meta/issue')
@@ -1118,7 +1118,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="full_text_page"]').get('href')
@@ -1140,7 +1140,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="full_text_page"]')
@@ -1160,7 +1160,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="issue_page"]').get('href')
@@ -1182,7 +1182,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="issue_page"]')
@@ -1202,7 +1202,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="journal_page"]').get('href')
@@ -1224,7 +1224,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="journal_page"]')
@@ -1244,7 +1244,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaAbstractsPipe()
+        xmlarticle = export_sci.XMLArticleMetaAbstractsPipe()
         raw, xml = xmlarticle.transform(data)
 
         abstract = xml.find('./article/front/article-meta/abstract/p').text[0:30]
@@ -1266,7 +1266,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaAbstractsPipe()
+        xmlarticle = export_sci.XMLArticleMetaAbstractsPipe()
         raw, xml = xmlarticle.transform(data)
 
         abstract = xml.find('./article/front/article-meta/abstract/p')
@@ -1288,7 +1288,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaAbstractsPipe()
+        xmlarticle = export_sci.XMLArticleMetaAbstractsPipe()
         raw, xml = xmlarticle.transform(data)
 
         abstract = xml.find('./article/front/article-meta/trans-abstract/p')
@@ -1310,7 +1310,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaKeywordsPipe()
+        xmlarticle = export_sci.XMLArticleMetaKeywordsPipe()
         raw, xml = xmlarticle.transform(data)
 
         keywords_language = xml.find('./article/front/article-meta/kwd-group')
@@ -1330,7 +1330,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaKeywordsPipe()
+        xmlarticle = export_sci.XMLArticleMetaKeywordsPipe()
         raw, xml = xmlarticle.transform(data)
 
         keywords_language = [i.get('lang_id') for i in xml.findall('./article/front/article-meta/kwd-group')]
@@ -1350,7 +1350,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaKeywordsPipe()
+        xmlarticle = export_sci.XMLArticleMetaKeywordsPipe()
         raw, xml = xmlarticle.transform(data)
 
         keywords = [i.text for i in xml.findall('.//kwd')]
@@ -1383,7 +1383,7 @@ class ExportTests(unittest.TestCase):
 
         data = [fakexylosearticle, pxml]
 
-        xmlarticle = export.XMLArticleMetaKeywordsPipe()
+        xmlarticle = export_sci.XMLArticleMetaKeywordsPipe()
         raw, xml = xmlarticle.transform(data)
 
         citations = xml.find('./articles/article/back/ref-list/ref')
@@ -1403,7 +1403,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export.XMLArticleMetaCitationsPipe()
+        xmlarticle = export_sci.XMLArticleMetaCitationsPipe()
         raw, xml = xmlarticle.transform(data)
 
         citations = len(xml.findall('./article/back/ref-list/ref'))
@@ -1412,9 +1412,9 @@ class ExportTests(unittest.TestCase):
 
     def test_validating_against_schema(self):
 
-        xml = export.Export(self._raw_json).xmlwos()
+        xml = export.Export(self._raw_json).pipeline_sci()
 
-        xsd = open('tests/xsd/ThomsonReuters_publishing.xsd', 'r').read()
+        xsd = open('tests/xsd/scielo_sci/ThomsonReuters_publishing.xsd', 'r').read()
         schema_root = etree.XML(xsd)
 
         schema = etree.XMLSchema(schema_root)
