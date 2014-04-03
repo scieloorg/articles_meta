@@ -347,3 +347,11 @@ class DataBroker(object):
         )
 
         return article
+
+    def set_doaj_status(self, code, status):
+
+        self.db['articles'].update(
+            {'code': code},
+            {'$set': {'sent_doaj': str(status)}},
+            safe=False
+        )
