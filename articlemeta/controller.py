@@ -178,6 +178,7 @@ class DataBroker(object):
         metadata['validated_scielo'] = 'False'
         metadata['validated_wos'] = 'False'
         metadata['sent_wos'] = 'False'
+        metadata['sent_doaj'] = 'False'
         metadata['applicable'] = 'False'
 
         gtk = gen_title_keys(article)
@@ -274,13 +275,16 @@ class DataBroker(object):
 
         return result
 
-    def identifiers_article(self, collection=None, issn=None, limit=1000, offset=0):
+    def identifiers_article(self, collection=None, issn=None, doaj=None, limit=1000, offset=0):
 
         fltr = {}
         if collection:
             fltr['collection'] = collection
         if issn:
             fltr['code_title'] = issn
+        if not doaj is None:  # Expects a boolean value or None.
+            fltr['sent_doaj'] = doaj
+
 
         total = self.db['articles'].find(fltr).count()
         data = self.db['articles'].find(fltr, {'code': 1, 'collection': 1}).skip(offset).limit(limit)
