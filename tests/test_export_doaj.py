@@ -102,7 +102,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_doaj.XMLArticleMetaIdPipe()
         raw, xml = xmlarticle.transform(data)
 
-        uniquearticleid = xml.find('./record/publisherId').text
+        uniquearticleid = xml.find('./record/publisherRecordId').text
 
         self.assertEqual(u'S0034-89102010000400007', uniquearticleid)
 
@@ -157,6 +157,42 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'Perfil epidemiológico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004', title)
 
+    def test_xmlarticle_meta_title_language_pipe(self):
+
+        pxml = ET.Element('records')
+        pxml.append(ET.Element('record'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_doaj.XMLArticleMetaTitlePipe()
+        raw, xml = xmlarticle.transform(data)
+
+        title = xml.find('./record/title').get('language')
+
+        self.assertEqual(u'pt', title)
+
+    def test_xml_article_meta_article_id_doi_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {}, 'title': {}})
+
+        pxml = ET.Element('records')
+        pxml.append(ET.Element('record'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export_doaj.XMLArticleMetaArticleIdDOIPipe()
+
+        raw, xml = xmlarticle.transform(data)
+
+        # This try except is a trick to test the expected result of the
+        # piped XML, once the precond method don't raise an exception
+        # we try to check if the preconditioned pipe was called or not.
+        try:
+            xml.find('./record/title').text
+        except AttributeError:
+            self.assertTrue(True)
+        else:
+            self.assertTrue(False)
 
     def test_xmlarticle_meta_contrib_group_author_names_pipe(self):
 
@@ -586,7 +622,7 @@ class ExportTests(unittest.TestCase):
 
     def test_validating_against_schema(self):
 
-        xml = export.Export(self._raw_json).pipeline_sci()
+        xml = export.Export(self._raw_json).pipeline_doaj()
 
         xsd = open('tests/xsd/scielo_doaj/doajArticles.xsd', 'r').read()
         schema_root = etree.XML(xsd)

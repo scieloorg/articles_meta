@@ -8,9 +8,10 @@ import export_doaj
 class Export(object):
 
     def __init__(self, article):
-        self._article = Article(article)
+        self._article = article
 
     def pipeline_sci(self):
+        xylose_article = Article(self._article)
 
         ppl = plumber.Pipeline(export_sci.SetupArticlePipe(),
                                export_sci.XMLArticlePipe(),
@@ -33,32 +34,34 @@ class Export(object):
                                export_sci.XMLArticleMetaCitationsPipe(),
                                export_sci.XMLClosePipe())
 
-        transformed_data = ppl.run(self._article, rewrap=True)
+        transformed_data = ppl.run(xylose_article, rewrap=True)
 
         return next(transformed_data)
 
     def pipeline_doaj(self):
+        xylose_article = Article(self._article, iso_format='iso 639-2')
 
         ppl = plumber.Pipeline(export_doaj.SetupArticlePipe(),
                                export_doaj.XMLArticlePipe(),
-                               export_doaj.XMLFrontBackPipe(),
-                               export_doaj.XMLJournalMetaJournalIdPipe(),
-                               export_doaj.XMLJournalMetaJournalTitleGroupPipe(),
-                               export_doaj.XMLJournalMetaISSNPipe(),
                                export_doaj.XMLJournalMetaPublisherPipe(),
-                               export_doaj.XMLArticleMetaUniqueArticleIdPipe(),
-                               export_doaj.XMLArticleMetaArticleIdPublisherPipe(),
+                               export_doaj.XMLJournalMetaJournalTitlePipe(),
+                               export_doaj.XMLJournalMetaISSNPipe(),
+                               export_doaj.XMLArticleMetaPublicationDatePipe(),
+                               export_doaj.XMLArticleMetaVolumePipe(),
+                               export_doaj.XMLArticleMetaIssuePipe(),
+                               export_doaj.XMLArticleMetaStartPagePipe(),
+                               export_doaj.XMLArticleMetaEndPagePipe(),
                                export_doaj.XMLArticleMetaArticleIdDOIPipe(),
-                               export_doaj.XMLArticleMetaArticleCategoriesPipe(),
-                               export_doaj.XMLArticleMetaTitleGroupPipe(),
-                               export_doaj.XMLArticleMetaTranslatedTitleGroupPipe(),
-                               export_doaj.XMLArticleMetaContribGroupPipe(),
+                               export_doaj.XMLArticleMetaIdPipe(),
+                               export_doaj.XMLArticleMetaDocumentTypePipe(),
+                               export_doaj.XMLArticleMetaTitlePipe(),
+                               export_doaj.XMLArticleMetaAuthorsPipe(),
                                export_doaj.XMLArticleMetaAffiliationPipe(),
-                               export_doaj.XMLArticleMetaGeneralInfoPipe(),
                                export_doaj.XMLArticleMetaAbstractsPipe(),
+                               export_doaj.XMLArticleMetaFullTextUrlPipe(),
                                export_doaj.XMLArticleMetaKeywordsPipe(),
                                export_doaj.XMLClosePipe())
 
-        transformed_data = ppl.run(self._article, rewrap=True)
+        transformed_data = ppl.run(xylose_article, rewrap=True)
 
         return next(transformed_data)

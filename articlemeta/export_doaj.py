@@ -65,7 +65,7 @@ class XMLArticleMetaIdPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        uniquearticleid = ET.Element('publisherId')
+        uniquearticleid = ET.Element('publisherRecordId')
         uniquearticleid.text = raw.publisher_id
 
         xml.find('./record').append(uniquearticleid)
@@ -96,11 +96,20 @@ class XMLArticleMetaArticleIdDOIPipe(plumber.Pipe):
 
 class XMLArticleMetaTitlePipe(plumber.Pipe):
 
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.original_title():
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
         title = ET.Element('title')
         title.text = raw.original_title()
+        title.set('language', raw.original_language())
 
         xml.find('./record').append(title)
 
