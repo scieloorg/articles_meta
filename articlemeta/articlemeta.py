@@ -13,6 +13,20 @@ import utils
 import controller
 from export import Export
 
+from functools import wraps
+
+
+def authenticate(func):
+    @wraps(func)
+    def wrapper(request):
+        token = request.registry.settings.get('app', {}).get('admintoken', None)
+        giventoken = request.GET.get('admintoken', None)
+        if giventoken != token:
+            raise exc.HTTPUnauthorized('Invalid admin token')
+        result = func(request)
+        return result
+    return wrapper
+
 
 @view_config(route_name='index', request_method='GET')
 def index(request):
@@ -63,6 +77,7 @@ def identifiers_journal(request):
 
 @view_config(route_name='add_journal',
              request_method='POST')
+@authenticate
 def add_journal(request):
 
     try:
@@ -75,18 +90,12 @@ def add_journal(request):
 
 @view_config(route_name='delete_journal',
              request_method='DELETE')
+@authenticate
 def delete_journal(request):
 
     issn = request.GET.get('issn', None)
     collection = request.GET.get('collection', None)
     admintoken = request.GET.get('admintoken', None)
-
-    token = request.registry.settings.get('app', {}).get('admintoken', None)
-
-    if admintoken != token:
-        raise exc.HTTPUnauthorized(
-            'Invalid admin token'
-        )
 
     if not admintoken or not issn:
         raise exc.HTTPBadRequest(
@@ -155,6 +164,7 @@ def get_article(request):
 
 @view_config(route_name='add_article',
              request_method='POST')
+@authenticate
 def add_article(request):
 
     try:
@@ -167,23 +177,18 @@ def add_article(request):
 
 @view_config(route_name='delete_article',
              request_method='DELETE')
+@authenticate
 def delete_article(request):
 
     code = request.GET.get('code', None)
     collection = request.GET.get('collection', None)
-    admintoken = request.GET.get('admintoken', None)
+
+    if not code:
+        raise exc.HTTPBadRequest(
+            'The attribute code must be given'
+        )
 
     token = request.registry.settings.get('app', {}).get('admintoken', None)
-
-    if admintoken != token:
-        raise exc.HTTPUnauthorized(
-            'Invalid admin token'
-        )
-
-    if not admintoken or not code:
-        raise exc.HTTPBadRequest(
-            'The attribute code and admintoken must be given'
-        )
 
     request.databroker.delete_article(code, collection=collection)
 
