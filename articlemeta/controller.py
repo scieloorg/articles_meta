@@ -297,7 +297,7 @@ class DataBroker(object):
 
         fltr = {'code': code}
         if collection:
-            fltr['collection'] = collection        
+            fltr['collection'] = collection
 
         data = self.db['articles'].find_one(fltr)
 
@@ -309,10 +309,11 @@ class DataBroker(object):
         return data
 
     def exists_article(self, code, collection=None):
-        
+
         fltr = {'code': code}
+
         if collection:
-            fltr['collection'] = collection    
+            fltr['collection'] = collection
 
         if self.db['articles'].find(fltr).count() >= 1:
             return True

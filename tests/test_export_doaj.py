@@ -1,5 +1,4 @@
 # coding: utf-8
-
 import unittest
 import xml.etree.ElementTree as ET
 import json

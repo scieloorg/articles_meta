@@ -1,3 +1,4 @@
+# coding: utf-8
 from xylose.scielodocument import Article
 import plumber
 
