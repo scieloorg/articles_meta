@@ -270,21 +270,17 @@ class XMLArticlePipe(plumber.Pipe):
         return data
 
 
-class XMLFrontBackPipe(plumber.Pipe):
+class XMLFrontPipe(plumber.Pipe):
 
     def transform(self, data):
         raw, xml = data
 
         article = xml.find('article')
         article.append(ET.Element('front'))
-        article.append(ET.Element('back'))
 
         front = article.find('front')
         front.append(ET.Element('journal-meta'))
         front.append(ET.Element('article-meta'))
-
-        back = article.find('back')
-        back.append(ET.Element('ref-list'))
 
         return data
 
@@ -713,6 +709,12 @@ class XMLArticleMetaCitationsPipe(plumber.Pipe):
     @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
+
+        article = xml.find('./article')
+        article.append(ET.Element('back'))
+
+        back = article.find('back')
+        back.append(ET.Element('ref-list'))
 
         reflist = xml.find('./article/back/ref-list')
 

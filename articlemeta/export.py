@@ -16,7 +16,7 @@ class Export(object):
 
         ppl = plumber.Pipeline(export_sci.SetupArticlePipe(),
                                export_sci.XMLArticlePipe(),
-                               export_sci.XMLFrontBackPipe(),
+                               export_sci.XMLFrontPipe(),
                                export_sci.XMLJournalMetaJournalIdPipe(),
                                export_sci.XMLJournalMetaJournalTitleGroupPipe(),
                                export_sci.XMLJournalMetaISSNPipe(),

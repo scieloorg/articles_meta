@@ -416,17 +416,17 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual('<articles><article article-type="research-article" lang_id="pt" /></articles>', ET.tostring(xml))
 
-    def test_xmlfrontback_pipe(self):
+    def test_xmlfront_pipe(self):
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
 
         data = [None, pxml]
 
-        xmlarticle = export_sci.XMLFrontBackPipe()
+        xmlarticle = export_sci.XMLFrontPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<articles><article><front><journal-meta /><article-meta /></front><back><ref-list /></back></article></articles>', ET.tostring(xml))
+        self.assertEqual('<articles><article><front><journal-meta /><article-meta /></front></article></articles>', ET.tostring(xml))
 
     def test_xmljournal_id_pipe(self):
 
