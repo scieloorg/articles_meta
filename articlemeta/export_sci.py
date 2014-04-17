@@ -97,11 +97,23 @@ class XMLCitation(object):
         def transform(self, data):
             raw, xml = data
 
-            year = ET.Element('year')
-            year.text = raw.date
-
             pdate = ET.Element('date')
+
+            if raw.date[8:10]:
+                day = ET.Element('day')
+                day.text = raw.date[8:10]
+                pdate.append(day)
+
+            if raw.date[5:7]:
+                month = ET.Element('month')
+                month.text = raw.date[5:7]
+                pdate.append(month)
+
+            year = ET.Element('year')
+            year.text = raw.date[0:4]
             pdate.append(year)
+
+
 
             xml.find('./element-citation').append(pdate)
 

@@ -126,6 +126,46 @@ class XMLCitationTests(unittest.TestCase):
 
         self.assertEqual(u'2006', expected)
 
+    def test_xml_citation_date_with_year_and_month_pipe(self):
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [{'v65': [{'_': '200604'}]}]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.DatePipe().transform(data)
+
+        expected_year = xml.find('./element-citation/date/year').text
+        expected_month = xml.find('./element-citation/date/month').text
+
+        self.assertEqual(u'2006', expected_year)
+        self.assertEqual(u'04', expected_month)
+
+    def test_xml_citation_date_with_year_and_month_and_day_pipe(self):
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [{'v65': [{'_': '20060430'}]}]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.DatePipe().transform(data)
+
+        expected_year = xml.find('./element-citation/date/year').text
+        expected_month = xml.find('./element-citation/date/month').text
+        expected_day = xml.find('./element-citation/date/day').text
+
+        self.assertEqual(u'2006', expected_year)
+        self.assertEqual(u'04', expected_month)
+        self.assertEqual(u'30', expected_day)
+
     def test_xml_citation_date_without_data_pipe(self):
 
         fakexylosearticle = Article({'article': {},
