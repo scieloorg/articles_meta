@@ -174,6 +174,7 @@ class DataBroker(object):
         metadata['code_issue'] = article.publisher_id[1:18]
         metadata['code_title'] = list(issns)
         metadata['collection'] = article.collection_acronym
+        metadata['document_type'] = article.document_type
         metadata['publication_year'] = article.publication_date[0:4]
         metadata['validated_scielo'] = 'False'
         metadata['validated_wos'] = 'False'
