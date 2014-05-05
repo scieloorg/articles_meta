@@ -1,6 +1,8 @@
 # coding: utf-8
 import unicodedata
+from datetime import datetime, timedelta
 
+import pymongo
 from xylose.scielodocument import Article
 
 
@@ -283,30 +285,30 @@ class DataBroker(object):
 
     def identifiers_article(self,
                             collection=None,
-                            issn=None,
-                            doc_type=None,
-                            doaj=None,
+                            from_date='1500-01-01',
+                            until_date=datetime.now().date().isoformat(),
                             limit=1000,
                             offset=0):
 
         fltr = {}
+        fltr['processing_date'] = {'$gte': from_date, '$lte': until_date}
+
         if collection:
             fltr['collection'] = collection
-        if issn:
-            fltr['code_title'] = issn
-        if doc_type:
-            fltr['document_type'] = doc_type
-        if not doaj is None:  # Expects a boolean value or None.
-            fltr['sent_doaj'] = doaj
 
         total = self.db['articles'].find(fltr).count()
-        data = self.db['articles'].find(fltr, {'code': 1, 'collection': 1}).skip(offset).limit(limit)
+        data = self.db['articles'].find(fltr, {
+            'code': 1,
+            'collection': 1,
+            'processing_date': 1}
+        ).sort('processing_date').skip(offset).limit(limit)
+
         meta = {'limit': limit,
                 'offset': offset,
                 'filter': fltr,
                 'total': total}
 
-        result = {'meta': meta, 'objects': [{'code': i['code'], 'collection': i['collection']} for i in data]}
+        result = {'meta': meta, 'objects': [{'code': i['code'], 'collection': i['collection'], 'processing_date': i['processing_date']} for i in data]}
 
         return result
 

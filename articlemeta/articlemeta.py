@@ -2,6 +2,7 @@
 import os
 import urlparse
 import json
+from datetime import datetime
 
 from wsgiref.simple_server import make_server
 import pyramid.httpexceptions as exc
@@ -113,9 +114,8 @@ def delete_journal(request):
 def identifiers_article(request):
 
     collection = request.GET.get('collection', None)
-    issn = request.GET.get('issn', None)
-    doaj = request.GET.get('doaj', None)
-    doc_type = request.GET.get('doc_type', None)
+    from_date = request.GET.get('from', '1500-01-01')
+    until_date = request.GET.get('until', datetime.now().date().isoformat())
     offset = request.GET.get('offset', 0)
 
     try:
@@ -124,10 +124,9 @@ def identifiers_article(request):
         raise exc.HTTPBadRequest('offset must be integer')
 
     ids = request.databroker.identifiers_article(collection=collection,
-                                                 issn=issn,
                                                  offset=offset,
-                                                 doc_type=doc_type,
-                                                 doaj=doaj)
+                                                 from_date=from_date,
+                                                 until_date=until_date)
 
     return Response(json.dumps(ids), content_type="application/json")
 
