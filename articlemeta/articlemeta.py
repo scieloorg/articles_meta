@@ -115,6 +115,7 @@ def identifiers_article(request):
     collection = request.GET.get('collection', None)
     issn = request.GET.get('issn', None)
     doaj = request.GET.get('doaj', None)
+    doc_type = request.GET.get('doc_type', None)
     offset = request.GET.get('offset', 0)
 
     try:
@@ -125,6 +126,7 @@ def identifiers_article(request):
     ids = request.databroker.identifiers_article(collection=collection,
                                                  issn=issn,
                                                  offset=offset,
+                                                 doc_type=doc_type,
                                                  doaj=doaj)
 
     return Response(json.dumps(ids), content_type="application/json")
