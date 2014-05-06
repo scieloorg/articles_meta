@@ -18,7 +18,6 @@ class ExportTests(unittest.TestCase):
         self._article_meta = Article(self._raw_json)
 
     def test_xmlclose_pipe(self):
-
         pxml = ET.Element('ArticleSet')
         pxml.append(ET.Element('Article'))
 
@@ -28,6 +27,26 @@ class ExportTests(unittest.TestCase):
         xml = xmlarticle.transform(data)
 
         self.assertEqual('<ArticleSet><Article /></ArticleSet>', xml)
+
+    def test_setuppipe_element_name(self):
+
+        data = [None, None]
+
+        xmlarticle = export_pubmed.SetupArticleSetPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        self.assertEqual('ArticleSet', xml.tag)
+
+    def test_xmlarticle_pipe(self):
+
+        pxml = ET.Element('ArticleSet')
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLArticlePipe()
+        raw, xml = xmlarticle.transform(data)
+
+        self.assertEqual('<ArticleSet><Article /></ArticleSet>', ET.tostring(xml))
 
     def test_xmljournal_pipe(self):
         pxml = ET.Element('ArticleSet')
@@ -41,3 +60,17 @@ class ExportTests(unittest.TestCase):
         journal = xml.find('./Article/Journal').text
 
         self.assertEqual(u'Revista de Saúde Pública', journal)
+
+    def test_xmlpublishername_pipe(self):
+        pxml = ET.Element('ArticleSet')
+        pxml.append(ET.Element('Article'))
+        pxml.append(ET.Element('Journal'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLPublisherNamePipe()
+        raw, xml = xmlarticle.transform(data)
+
+        publishername = xml.find('./Journal/PublisherName').text
+
+        self.assertEqual(u'Faculdade de Saúde Pública da Universidade de São Paulo', publishername)
