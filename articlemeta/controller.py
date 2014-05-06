@@ -296,12 +296,43 @@ class DataBroker(object):
         if collection:
             fltr['collection'] = collection
 
-        total = self.db['articles'].find(fltr).count()
+        total = self.db['articles'].find(fltr).hint([('processing_date', -1), ('collection', 1)]).count()
         data = self.db['articles'].find(fltr, {
             'code': 1,
             'collection': 1,
             'processing_date': 1}
-        ).sort('processing_date').skip(offset).limit(limit)
+        ).hint([('processing_date', -1), ('collection', 1)]).skip(offset).limit(limit)
+
+        meta = {'limit': limit,
+                'offset': offset,
+                'filter': fltr,
+                'total': total}
+
+        result = {'meta': meta, 'objects': [{'code': i['code'], 'collection': i['collection'], 'processing_date': i['processing_date']} for i in data]}
+
+        return result
+
+    def identifiers_press_release(self,
+                                  collection=None,
+                                  from_date='1500-01-01',
+                                  until_date=datetime.now().date().isoformat(),
+                                  limit=1000,
+                                  offset=0):
+
+        fltr = {}
+        fltr['processing_date'] = {'$gte': from_date, '$lte': until_date}
+
+        fltr['document_type'] = u'press-release'
+
+        if collection:
+            fltr['collection'] = collection
+
+        total = self.db['articles'].find(fltr).hint([('processing_date', -1), ('document_type', 1), ('collection', 1)]).count()
+        data = self.db['articles'].find(fltr, {
+            'code': 1,
+            'collection': 1,
+            'processing_date': 1}
+        ).hint([('processing_date', -1), ('document_type', 1), ('collection', 1)]).skip(offset).limit(limit)
 
         meta = {'limit': limit,
                 'offset': offset,

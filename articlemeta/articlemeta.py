@@ -131,6 +131,28 @@ def identifiers_article(request):
     return Response(json.dumps(ids), content_type="application/json")
 
 
+@view_config(route_name='identifiers_press_release',
+             request_method='GET')
+def identifiers_press_release(request):
+
+    collection = request.GET.get('collection', None)
+    from_date = request.GET.get('from', '1500-01-01')
+    until_date = request.GET.get('until', datetime.now().date().isoformat())
+    offset = request.GET.get('offset', 0)
+
+    try:
+        offset = int(offset)
+    except ValueError:
+        raise exc.HTTPBadRequest('offset must be integer')
+
+    ids = request.databroker.identifiers_press_release(collection=collection,
+                                                       offset=offset,
+                                                       from_date=from_date,
+                                                       until_date=until_date)
+
+    return Response(json.dumps(ids), content_type="application/json")
+
+
 @view_config(route_name='exists_article',
              request_method='GET',
              request_param=['code'])
@@ -259,6 +281,7 @@ def main(settings, *args, **xargs):
     config.add_route('set_doaj_status_false', '/api/v1/article/doaj_status_false')
     config.add_route('delete_article', '/api/v1/article/delete')
     config.add_route('identifiers_article', '/api/v1/article/identifiers')
+    config.add_route('identifiers_press_release', '/api/v1/press_release/identifiers')
     config.add_route('exists_article', '/api/v1/article/exists')
     config.add_request_method(add_databroker, 'databroker', reify=True)
     config.scan()
