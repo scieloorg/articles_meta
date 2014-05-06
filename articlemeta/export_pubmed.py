@@ -30,7 +30,7 @@ class XMLJournalPipe(plumber.Pipe):
         raw, xml = data
 
         journal = ET.Element('Journal')
-        journal.text = raw.journal_title
+        # journal.text = raw.journal_title
 
         xml.find('./Article').append(journal)
 
@@ -45,6 +45,18 @@ class XMLPublisherNamePipe(plumber.Pipe):
         publishername.text = raw.publisher_name
 
         xml.find('./Journal').append(publishername)
+
+        return data
+
+
+class XMLJournalTitlePipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        journaltitle = ET.Element('JournalTitle')
+        journaltitle.text = raw.journal_title
+
+        xml.find('./Journal').append(journaltitle)
 
         return data
 
