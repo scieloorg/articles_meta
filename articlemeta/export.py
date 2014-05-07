@@ -4,6 +4,7 @@ import plumber
 
 import export_sci
 import export_doaj
+import export_iahx
 
 
 class Export(object):
@@ -66,3 +67,43 @@ class Export(object):
         transformed_data = ppl.run(xylose_article, rewrap=True)
 
         return next(transformed_data)
+
+    def pipeline_iahx(self):
+        xylose_article = Article(self._article)
+
+        ppl = plumber.Pipeline(export_iahx.SetupDocumentPipe(),
+                               export_iahx.XMLDocumentPipe(),
+                               export_iahx.XMLDocumentIDPipe(),
+                               export_iahx.XMLCollectionPipe(),
+                               export_iahx.XMLKnowledgeAreaPipe(),
+                               export_iahx.XMLCenterPipe(),
+                               export_iahx.XMLDocumentTypePipe(),
+                               export_iahx.XMLURPipe(),
+                               export_iahx.XMLAuthorsPipe(),
+                               export_iahx.XMLTitlePipe(),
+                               export_iahx.XMLPagesPipe(),
+                               export_iahx.XMLWOKCIPipe(),
+                               export_iahx.XMLWOKSCPipe(),
+                               export_iahx.XMLIssueLabelPipe(),
+                               export_iahx.XMLJournalTitlePipe(),
+                               export_iahx.XMLOriginalLanguagePipe(),
+                               export_iahx.XMLPublicationDatePipe(),
+                               export_iahx.XMLAbstractPipe(),
+                               export_iahx.XMLAffiliationCountryPipe(),
+                               export_iahx.XMLAffiliationInstitutionPipe(),
+                               export_iahx.XMLSponsorPipe(),
+                               export_iahx.XMLClosePipe())
+
+        transformed_data = ppl.run(xylose_article, rewrap=True)
+
+        return next(transformed_data)
+
+    # def pipeline_pubmed(self):
+    #     xylose_article = Article(self._article, iso_format='iso 639-2')
+
+    #     ppl = plumber.Pipeline(export_pubmed.SetupArticlePipe(),
+    #                            export_pubmed.XMLArticlePipe())
+
+    #     transformed_data = ppl.run(xylose_article, rewrap=True)
+
+    #     return next(transformed_data)

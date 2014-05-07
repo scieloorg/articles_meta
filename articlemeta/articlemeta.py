@@ -186,6 +186,14 @@ def get_article(request):
             return Response(
                 Export(article).pipeline_doaj(), content_type="application/xml")
 
+        if fmt == 'xmliahx':
+            return Response(
+                Export(article).pipeline_iahx(), content_type="application/xml")
+
+        # if fmt == 'xmlpubmed':
+        #     return Response(
+        #         Export(article).pipeline_pubmed(), content_type="application/xml")
+
     return Response(json.dumps(article), content_type="application/json")
 
 
