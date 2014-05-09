@@ -96,6 +96,18 @@ class XMLIssuePipe(plumber.Pipe):
         return data
 
 
+class XMLArticleTitlePipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        articletitle = ET.Element('ArticleTitle')
+        articletitle.text = raw.original_title()
+
+        xml.find('./Article').append(articletitle)
+
+        return data
+
+
 class XMLClosePipe(plumber.Pipe):
 
     def transform(self, data):

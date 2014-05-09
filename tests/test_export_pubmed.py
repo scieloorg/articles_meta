@@ -128,3 +128,16 @@ class ExportTests(unittest.TestCase):
         issue = xml.find('./Journal/Issue').text
 
         self.assertEqual(u'4', issue)
+
+    def test_xmlarticletitle_pipe(self):
+        pxml = ET.Element('ArticleSet')
+        pxml.append(ET.Element('Article'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLArticleTitlePipe()
+        raw, xml = xmlarticle.transform(data)
+
+        articletitle = xml.find('./Article/ArticleTitle').text
+
+        self.assertEqual(u'Perfil epidemiológico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004', articletitle)
