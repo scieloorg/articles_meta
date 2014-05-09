@@ -1,6 +1,8 @@
 # coding: utf-8
 import unicodedata
+from datetime import datetime, timedelta
 
+import pymongo
 from xylose.scielodocument import Article
 
 
@@ -174,12 +176,18 @@ class DataBroker(object):
         metadata['code_issue'] = article.publisher_id[1:18]
         metadata['code_title'] = list(issns)
         metadata['collection'] = article.collection_acronym
+        metadata['document_type'] = article.document_type
         metadata['publication_year'] = article.publication_date[0:4]
         metadata['validated_scielo'] = 'False'
         metadata['validated_wos'] = 'False'
         metadata['sent_wos'] = 'False'
         metadata['sent_doaj'] = 'False'
         metadata['applicable'] = 'False'
+
+        try:
+            metadata['processing_date'] = article.processing_date
+        except:
+            metadata['processing_date'] = article.publication_date
 
         gtk = gen_title_keys(article)
         if gtk:
@@ -275,25 +283,65 @@ class DataBroker(object):
 
         return result
 
-    def identifiers_article(self, collection=None, issn=None, doaj=None, limit=1000, offset=0):
+    def identifiers_article(self,
+                            collection=None,
+                            from_date='1500-01-01',
+                            until_date=datetime.now().date().isoformat(),
+                            limit=1000,
+                            offset=0):
 
         fltr = {}
+        fltr['processing_date'] = {'$gte': from_date, '$lte': until_date}
+
+        hint = [('processing_date', -1)]
         if collection:
             fltr['collection'] = collection
-        if issn:
-            fltr['code_title'] = issn
-        if not doaj is None:  # Expects a boolean value or None.
-            fltr['sent_doaj'] = doaj
+            hint.insert(0, ('collection', 1))
 
+        total = self.db['articles'].find(fltr).hint(hint).count()
+        data = self.db['articles'].find(fltr, {
+            'code': 1,
+            'collection': 1,
+            'processing_date': 1}
+        ).hint(hint).skip(offset).limit(limit)
 
-        total = self.db['articles'].find(fltr).count()
-        data = self.db['articles'].find(fltr, {'code': 1, 'collection': 1}).skip(offset).limit(limit)
         meta = {'limit': limit,
                 'offset': offset,
                 'filter': fltr,
                 'total': total}
 
-        result = {'meta': meta, 'objects': [{'code': i['code'], 'collection': i['collection']} for i in data]}
+        result = {'meta': meta, 'objects': [{'code': i['code'], 'collection': i['collection'], 'processing_date': i['processing_date']} for i in data]}
+
+        return result
+
+    def identifiers_press_release(self,
+                                  collection=None,
+                                  from_date='1500-01-01',
+                                  until_date=datetime.now().date().isoformat(),
+                                  limit=1000,
+                                  offset=0):
+
+        fltr = {}
+        fltr['processing_date'] = {'$gte': from_date, '$lte': until_date}
+
+        fltr['document_type'] = u'press-release'
+
+        if collection:
+            fltr['collection'] = collection
+
+        total = self.db['articles'].find(fltr).hint([('document_type', 1), ('collection', 1), ('processing_date', -1)]).count()
+        data = self.db['articles'].find(fltr, {
+            'code': 1,
+            'collection': 1,
+            'processing_date': 1}
+        ).hint([('document_type', 1), ('collection', 1), ('processing_date', -1)]).skip(offset).limit(limit)
+
+        meta = {'limit': limit,
+                'offset': offset,
+                'filter': fltr,
+                'total': total}
+
+        result = {'meta': meta, 'objects': [{'code': i['code'], 'collection': i['collection'], 'processing_date': i['processing_date']} for i in data]}
 
         return result
 
