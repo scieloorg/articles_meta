@@ -86,3 +86,45 @@ class ExportTests(unittest.TestCase):
         journaltitle = xml.find('./Journal/JournalTitle').text
 
         self.assertEqual(u'Revista de Saúde Pública', journaltitle)
+
+    def test_xmlissn_pipe(self):
+        pxml = ET.Element('ArticleSet')
+        pxml.append(ET.Element('Article'))
+        pxml.append(ET.Element('Journal'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLISSNPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        issn = xml.find('./Journal/Issn').text
+
+        self.assertEqual(u'0034-8910', issn)
+
+    def test_xmlvolume_pipe(self):
+        pxml = ET.Element('ArticleSet')
+        pxml.append(ET.Element('Article'))
+        pxml.append(ET.Element('Journal'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLVolumePipe()
+        raw, xml = xmlarticle.transform(data)
+
+        volume = xml.find('./Journal/Volume').text
+
+        self.assertEqual(u'44', volume)
+
+    def test_xmlissue_pipe(self):
+        pxml = ET.Element('ArticleSet')
+        pxml.append(ET.Element('Article'))
+        pxml.append(ET.Element('Journal'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLIssuePipe()
+        raw, xml = xmlarticle.transform(data)
+
+        issue = xml.find('./Journal/Issue').text
+
+        self.assertEqual(u'4', issue)
