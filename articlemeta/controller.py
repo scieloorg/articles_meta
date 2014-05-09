@@ -19,7 +19,7 @@ def gen_citations_title_keys(article):
     """
 
     def get_citation_titles():
-        titles = []
+        titles = set()
 
         for citation in article.citations:
             title = ''
@@ -37,15 +37,15 @@ def gen_citations_title_keys(article):
             if not title:
                 continue
 
-            titles.append(remove_accents(title))
+            titles.add(remove_accents(title))
 
         if len(titles) == 0:
-            return None
+            return []
 
-        return titles
+        return list(titles)
 
     def get_citation_titles_author_year():
-        titles = []
+        titles = set()
 
         for citation in article.citations:
 
@@ -86,25 +86,24 @@ def gen_citations_title_keys(article):
             key += citation.date[0:4]
 
             if key:
-                titles.append(key)
+                titles.add(key)
 
         if len(titles) == 0:
-            return None
+            return []
 
-        return titles
+        return list(titles)
 
     if not article.citations:
-        return None
+        return []
 
     no_accents_strings = get_citation_titles()
     no_accents_strings_author_year = get_citation_titles_author_year()
 
     if not no_accents_strings:
-        return None
+        return []
 
     title_keys = {}
-    title_keys['citations_title_no_accents'] = no_accents_strings
-    title_keys['citations_title_author_year_no_accents'] = no_accents_strings_author_year
+    title_keys['citations_keys'] = no_accents_strings + no_accents_strings_author_year
 
     return title_keys
 
@@ -127,14 +126,14 @@ def gen_title_keys(article):
                 titles.append(title)
 
         if len(titles) == 0:
-            return None
+            return []
 
         return titles
 
     titles = titles()
 
     if not titles:
-        return None
+        return []
 
     no_accents_strings = []
     no_accents_strings_author_year = []
@@ -151,8 +150,7 @@ def gen_title_keys(article):
             ra+author+article.publication_date[0:4])
 
     title_keys = {}
-    title_keys['no_accents_strings'] = no_accents_strings
-    title_keys['no_accents_strings_author_year'] = no_accents_strings_author_year
+    title_keys['title_keys'] = no_accents_strings + no_accents_strings_author_year
 
     return title_keys
 
@@ -187,7 +185,8 @@ class DataBroker(object):
         try:
             metadata['processing_date'] = article.processing_date
         except:
-            metadata['processing_date'] = article.publication_date
+            if article.publication_date > datetime.now().date().isoformat():
+                metadata['processing_date'] = datetime.now().date().isoformat()
 
         gtk = gen_title_keys(article)
         if gtk:

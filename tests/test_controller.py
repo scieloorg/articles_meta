@@ -23,14 +23,11 @@ class ControllerTest(unittest.TestCase):
     def test_gen_title_keys(self):
 
         title_keys = gen_title_keys(Article(self._raw_json))
-
         expected = {
-            'no_accents_strings': [
+            'title_keys': [
                 u'perfilepidemiologicodospacientesemterapiarenalsubstitutivanobrasil',
                 u'epidemiologicalprofileofpatientsonrenalreplacementtherapyinbrazil',
-                u'perfilepidemiologicodelospacientesenterapiarenalsubstitutivaenbrasil'
-            ],
-            'no_accents_strings_author_year': [
+                u'perfilepidemiologicodelospacientesenterapiarenalsubstitutivaenbrasil',
                 u'perfilepidemiologicodospacientesemterapiarenalsubstitutivanobrasilmariangelalealcherchiglia2010',
                 u'epidemiologicalprofileofpatientsonrenalreplacementtherapyinbrazilmariangelalealcherchiglia2010',
                 u'perfilepidemiologicodelospacientesenterapiarenalsubstitutivaenbrasilmariangelalealcherchiglia2010'
@@ -45,7 +42,7 @@ class ControllerTest(unittest.TestCase):
 
         title_keys = gen_title_keys(Article(self._raw_json))
 
-        self.assertEqual(title_keys, None)
+        self.assertEqual(title_keys, [])
 
     def test_gen_title_keys_without_authors(self):
 
@@ -54,12 +51,11 @@ class ControllerTest(unittest.TestCase):
         title_keys = gen_title_keys(Article(self._raw_json))
 
         expected = {
-            'no_accents_strings': [
+            'title_keys': [
                 u'perfilepidemiologicodospacientesemterapiarenalsubstitutivanobrasil',
                 u'epidemiologicalprofileofpatientsonrenalreplacementtherapyinbrazil',
                 u'perfilepidemiologicodelospacientesenterapiarenalsubstitutivaenbrasil'
             ],
-            'no_accents_strings_author_year': []
         }
 
         self.assertEqual(title_keys, expected)
@@ -70,8 +66,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations['citations_title_no_accents'][0],
-                         u'endstagerenaldiseaseinsubsaharanafrica')
+        self.assertTrue(u'preventionofchronickidneydiseaseaglobalchallenge' in citations['citations_keys'])
 
     def test_get_citations_titles_article_title(self):
 
@@ -92,8 +87,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations['citations_title_no_accents'][0],
-                         u'endstagerenaldiseaseinsubsaharanafrica')
+        self.assertTrue(u'endstagerenaldiseaseinsubsaharanafrica' in citations['citations_keys'])
 
     def test_get_citations_without_citations(self):
 
@@ -103,7 +97,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations, None)
+        self.assertEqual(citations, [])
 
     def test_get_citations_titles_article_title_with_author_and_year(self):
 
@@ -124,8 +118,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations['citations_title_author_year_no_accents'][0],
-                         u'aticletitleelbamgboye2006')
+        self.assertTrue(u'aticletitleelbamgboye2006' in citations['citations_keys'])
 
     def test_get_citations_titles_thesis_title(self):
 
@@ -143,8 +136,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations['citations_title_no_accents'][0],
-                         u'thesistitle')
+        self.assertTrue(u'thesistitle' in citations['citations_keys'])
 
     def test_get_citations_titles_thesis_title_with_autor_and_year(self):
 
@@ -162,8 +154,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations['citations_title_author_year_no_accents'][0],
-                         u'thesistitleelbamgboye2006')
+        self.assertTrue(u'thesistitleelbamgboye2006', citations['citations_keys'])
 
     def test_get_citations_titles_book_title_with_monographic_autor_and_year(self):
 
@@ -181,8 +172,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations['citations_title_author_year_no_accents'][0],
-                         u'chaptertitleelbamgboye2006')
+        self.assertTrue(u'chaptertitleelbamgboye2006' in citations['citations_keys'])
 
     def test_get_citations_titles_chapter_title(self):
 
@@ -200,8 +190,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations['citations_title_no_accents'][0],
-                         u'chaptertitle')
+        self.assertTrue(u'chaptertitle' in citations['citations_keys'])
 
     def test_get_citations_titles_chapter_title_with_author_and_year(self):
 
@@ -219,8 +208,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations['citations_title_author_year_no_accents'][0],
-                         u'chaptertitleelbamgboye2006')
+        self.assertTrue(u'chaptertitleelbamgboye2006', citations['citations_keys'])
 
     def test_get_citations_titles_conference_title(self):
 
@@ -236,8 +224,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations['citations_title_no_accents'][0],
-                         u'conferencetitle')
+        self.assertTrue(u'conferencetitle' in citations['citations_keys'])
 
     def test_get_citations_titles_link_title(self):
 
@@ -254,8 +241,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations['citations_title_no_accents'][0],
-                         u'linktitle')
+        self.assertTrue(u'linktitle' in citations['citations_keys'])
 
     def test_get_citations_titles_link_title_with_author_and_year(self):
 
@@ -273,8 +259,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations['citations_title_author_year_no_accents'][0],
-                         u'linktitleelbamgboye2006')
+        self.assertTrue(u'linktitleelbamgboye2006' in citations['citations_keys'])
 
     def test_get_citations_titles_link_title_without_date(self):
 
@@ -290,7 +275,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations['citations_title_author_year_no_accents'], None)
+        self.assertEqual(citations['citations_keys'], [u'linktitle'])
 
     def test_get_citations_author_year_titles(self):
 
@@ -298,8 +283,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations['citations_title_author_year_no_accents'][0],
-                         u'endstagerenaldiseaseinsubsaharanafricaelbamgboye2006')
+        self.assertTrue(u'endstagerenaldiseaseinsubsaharanafricaelbamgboye2006' in citations['citations_keys'])
 
     def test_get_article_available_code(self):
 
