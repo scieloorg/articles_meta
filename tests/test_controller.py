@@ -275,7 +275,7 @@ class ControllerTest(unittest.TestCase):
 
         citations = gen_citations_title_keys(article)
 
-        self.assertEqual(citations['citations_keys'], [u'linktitle'])
+        self.assertEqual(citations['citations_keys'], [u'linktitle', u'linktitle'])
 
     def test_get_citations_author_year_titles(self):
 

@@ -44,6 +44,35 @@ def gen_citations_title_keys(article):
 
         return list(titles)
 
+    def get_citation_titles_pages():
+        titles = set()
+
+        for citation in article.citations:
+            title = ''
+            if citation.article_title:
+                title = citation.article_title
+            elif citation.chapter_title:
+                title = citation.chapter_title
+            elif citation.thesis_title:
+                title = citation.thesis_title
+            elif citation.conference_title:
+                title = citation.conference_title
+            elif citation.link_title:
+                title = citation.link_title
+
+            if not title:
+                continue
+
+            start_page = citation.start_page or ''
+            end_page = citation.end_page or ''
+            titles.add(remove_accents(title)+start_page+end_page)
+
+
+        if len(titles) == 0:
+            return []
+
+        return list(titles)
+
     def get_citation_titles_author_year():
         titles = set()
 
@@ -98,12 +127,13 @@ def gen_citations_title_keys(article):
 
     no_accents_strings = get_citation_titles()
     no_accents_strings_author_year = get_citation_titles_author_year()
+    no_accents_strings_pages = get_citation_titles_pages()
 
     if not no_accents_strings:
         return []
 
     title_keys = {}
-    title_keys['citations_keys'] = no_accents_strings + no_accents_strings_author_year
+    title_keys['citations_keys'] = no_accents_strings + no_accents_strings_author_year + no_accents_strings_pages
 
     return title_keys
 
