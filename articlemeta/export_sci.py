@@ -250,8 +250,8 @@ class SetupArticlePipe(plumber.Pipe):
         xml = ET.Element('articles')
         xml.set('xmlns:xlink', 'http://www.w3.org/1999/xlink')
         xml.set('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
-        xml.set('xsi:noNamespaceSchemaLocation', 'ThomsonReuters_publishing_1.06.xsd')
-        xml.set('dtd-version', '1.06')
+        xml.set('xsi:noNamespaceSchemaLocation', 'ThomsonReuters_publishing_1.09.xsd')
+        xml.set('dtd-version', '1.09')
 
         return data, xml
 
