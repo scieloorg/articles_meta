@@ -343,6 +343,9 @@ class XMLAbstractPipe(plumber.Pipe):
         field.set('name', 'ab_%s' % raw.original_language())
         xml.find('./doc').append(field)
 
+        if not raw.translated_abstracts():
+            return data
+
         for language, abstract in raw.translated_abstracts().items():
             field = ET.Element('field')
             field.text = abstract
