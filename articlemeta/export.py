@@ -51,7 +51,6 @@ class Export(object):
                                export_rsps.XMLJournalMetaJournalTitleGroupPipe(),
                                export_rsps.XMLJournalMetaISSNPipe(),
                                export_rsps.XMLJournalMetaPublisherPipe(),
-                               export_rsps.XMLArticleMetaUniqueArticleIdPipe(),
                                export_rsps.XMLArticleMetaArticleIdPublisherPipe(),
                                export_rsps.XMLArticleMetaArticleIdDOIPipe(),
                                export_rsps.XMLArticleMetaArticleCategoriesPipe(),
