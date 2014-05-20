@@ -129,6 +129,35 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'4', issue)
 
+    def test_xmlpubdate_pipe(self):
+        pxml = ET.Element('ArticleSet')
+        pxml.append(ET.Element('Article'))
+        pxml.append(ET.Element('Journal'))
+        #pxml = ET.Element('Journal')
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLPubDatePipe()
+        raw, xml = xmlarticle.transform(data)
+
+        #pubdate = xml.find('./Journal/PubDate PubStatus="ppublish"').text
+        self.assertEqual('<ArticleSet><Article /><Journal><PubDate PubStatus="ppublish"><Year>2010</Year><Month>08</Month></PubDate></Journal></ArticleSet>', ET.tostring(xml))
+
+        #self.assertEqual('Pubdate PubStatus="ppublish" />', pubdate)
+
+    def test_xmlreplaces_pipe(self):
+        pxml = ET.Element('ArticleSet')
+        pxml.append(ET.Element('Article'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLReplacesPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        replaces = xml.find('./Article/Replaces').text
+
+        self.assertEqual(u'S0034-89102010000400007', replaces)
+
     def test_xmlarticletitle_pipe(self):
         pxml = ET.Element('ArticleSet')
         pxml.append(ET.Element('Article'))
@@ -141,3 +170,31 @@ class ExportTests(unittest.TestCase):
         articletitle = xml.find('./Article/ArticleTitle').text
 
         self.assertEqual(u'Perfil epidemiológico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004', articletitle)
+
+    def test_xmlfirstpagepipe(self):
+
+        pxml = ET.Element('ArticleSet')
+        pxml.append(ET.Element('Article'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLFirstPagePipe()
+        raw, xml = xmlarticle.transform(data)
+
+        firstpage = xml.find('./Article/FirstPage').text
+
+        self.assertEqual(u'639', firstpage)
+
+    def test_xmllastpagepipe(self):
+
+        pxml = ET.Element('ArticleSet')
+        pxml.append(ET.Element('Article'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLLastPagePipe()
+        raw, xml = xmlarticle.transform(data)
+
+        lastpage = xml.find('./Article/LastPage').text
+
+        self.assertEqual(u'649', lastpage)

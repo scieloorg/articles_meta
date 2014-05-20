@@ -96,6 +96,48 @@ class XMLIssuePipe(plumber.Pipe):
         return data
 
 
+class XMLPubDatePipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        if raw.issue == 'ahead':
+            pubdate = ET.Element('PubDate', PubStatus='aheadofprint')
+        else:
+            pubdate = ET.Element('PubDate', PubStatus='ppublish')
+
+        #Year
+        if raw.publication_date[0:4]:
+            year = ET.Element('Year')
+            year.text = raw.publication_date[0:4]
+            pubdate.append(year)
+        #Month
+        if raw.publication_date[5:7]:
+            month = ET.Element('Month')
+            month.text = raw.publication_date[5:7]
+            pubdate.append(month)
+        #Day
+        if raw.publication_date[8:10]:
+            day = ET.Element('Day')
+            day.text = raw.publication_date[8:10]
+            pubdate.append(day)
+
+        xml.find('./Journal').append(pubdate)
+
+        return data
+
+
+class XMLReplacesPipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        replaces = ET.Element('Replaces')
+        replaces.text = raw.publisher_id
+
+        xml.find('./Article').append(replaces)
+
+        return data
+
+
 class XMLArticleTitlePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
@@ -104,6 +146,30 @@ class XMLArticleTitlePipe(plumber.Pipe):
         articletitle.text = raw.original_title()
 
         xml.find('./Article').append(articletitle)
+
+        return data
+
+
+class XMLFirstPagePipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        firstpage = ET.Element('FirstPage')
+        firstpage.text = raw.start_page
+
+        xml.find('./Article').append(firstpage)
+
+        return data
+
+
+class XMLLastPagePipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        lastpage = ET.Element('LastPage')
+        lastpage.text = raw.end_page
+
+        xml.find('./Article').append(lastpage)
 
         return data
 
