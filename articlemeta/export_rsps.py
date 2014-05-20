@@ -347,19 +347,6 @@ class XMLJournalMetaPublisherPipe(plumber.Pipe):
         return data
 
 
-class XMLArticleMetaUniqueArticleIdPipe(plumber.Pipe):
-    def transform(self, data):
-        raw, xml = data
-
-        uniquearticleid = ET.Element('article-id')
-        uniquearticleid.set('pub-id-type', 'publisher-id')
-        uniquearticleid.text = raw.publisher_id
-
-        xml.find('./front/article-meta').append(uniquearticleid)
-
-        return data
-
-
 class XMLArticleMetaArticleIdPublisherPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data

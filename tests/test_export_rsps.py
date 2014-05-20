@@ -499,23 +499,6 @@ class ExportTests(unittest.TestCase):
         self.assertEqual(u'Faculdade de Saúde Pública da Universidade de São Paulo', publishername)
         self.assertEqual(u'São Paulo', publisherloc)
 
-    def test_xml_article_meta_unique_article_id_pipe(self):
-
-        pxml = ET.Element('article')
-        pxml.append(ET.Element('front'))
-
-        front = pxml.find('front')
-        front.append(ET.Element('article-meta'))
-
-        data = [self._article_meta, pxml]
-
-        xmlarticle = export_rsps.XMLArticleMetaUniqueArticleIdPipe()
-        raw, xml = xmlarticle.transform(data)
-
-        uniquearticleid = xml.find('./front/article-meta/article-id').text
-
-        self.assertEqual(u'S0034-89102010000400007', uniquearticleid)
-
     def test_xml_article_meta_article_id_publisher_pipe(self):
 
         pxml = ET.Element('article')
