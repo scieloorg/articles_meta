@@ -3,6 +3,7 @@ from xylose.scielodocument import Article
 import plumber
 
 import export_sci
+import export_rsps
 import export_doaj
 import export_iahx
 
@@ -35,6 +36,34 @@ class Export(object):
                                export_sci.XMLArticleMetaKeywordsPipe(),
                                export_sci.XMLArticleMetaCitationsPipe(),
                                export_sci.XMLClosePipe())
+
+        transformed_data = ppl.run(xylose_article, rewrap=True)
+
+        return next(transformed_data)
+
+    def pipeline_rsps(self):
+        xylose_article = Article(self._article)
+
+        ppl = plumber.Pipeline(export_rsps.SetupArticlePipe(),
+                               export_rsps.XMLArticlePipe(),
+                               export_rsps.XMLFrontPipe(),
+                               export_rsps.XMLJournalMetaJournalIdPipe(),
+                               export_rsps.XMLJournalMetaJournalTitleGroupPipe(),
+                               export_rsps.XMLJournalMetaISSNPipe(),
+                               export_rsps.XMLJournalMetaPublisherPipe(),
+                               export_rsps.XMLArticleMetaUniqueArticleIdPipe(),
+                               export_rsps.XMLArticleMetaArticleIdPublisherPipe(),
+                               export_rsps.XMLArticleMetaArticleIdDOIPipe(),
+                               export_rsps.XMLArticleMetaArticleCategoriesPipe(),
+                               export_rsps.XMLArticleMetaTitleGroupPipe(),
+                               export_rsps.XMLArticleMetaTranslatedTitleGroupPipe(),
+                               export_rsps.XMLArticleMetaContribGroupPipe(),
+                               export_rsps.XMLArticleMetaAffiliationPipe(),
+                               export_rsps.XMLArticleMetaGeneralInfoPipe(),
+                               export_rsps.XMLArticleMetaAbstractsPipe(),
+                               export_rsps.XMLArticleMetaKeywordsPipe(),
+                               export_rsps.XMLArticleMetaCitationsPipe(),
+                               export_rsps.XMLClosePipe())
 
         transformed_data = ppl.run(xylose_article, rewrap=True)
 
