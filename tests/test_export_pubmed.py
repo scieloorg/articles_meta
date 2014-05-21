@@ -255,3 +255,26 @@ class ExportTests(unittest.TestCase):
                           u'Guerra Junior',
                           u'Queiroz',
                           u'Gomes'], lastnames)
+
+    def test_xmlpublicationtype_pipe(self):
+        pxml = ET.Element('ArticleSet')
+        pxml.append(ET.Element('Article'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLPublicationTypePipe()
+        raw, xml = xmlarticle.transform(data)
+
+        self.assertEqual('<ArticleSet><Article><PublicationType /></Article></ArticleSet>', ET.tostring(xml))
+
+    def test_xmlarticleidlist_pipe(self):
+
+        pxml = ET.Element('ArticleSet')
+        pxml.append(ET.Element('Article'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLArticleIDListPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        self.assertEqual('<ArticleSet><Article><ArticleIdList><ArticleId IdType="pii">S0034-89102010000400007</ArticleId><ArticleId IdType="doi">10.1590/S0034-89102010000400007</ArticleId></ArticleIdList></Article></ArticleSet>', ET.tostring(xml))

@@ -235,6 +235,38 @@ class XMLAuthorListPipe(plumber.Pipe):
         return data
 
 
+class XMLPublicationTypePipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        publicationtype = ET.Element('PublicationType')
+
+        xml.find('./Article').append(publicationtype)
+
+        return data
+
+
+class XMLArticleIDListPipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        articleidlist = ET.Element('ArticleIdList')
+
+        if raw.publisher_id:
+            articleidtype = ET.Element('ArticleId', IdType='pii')
+            articleidtype.text = raw.publisher_id
+            articleidlist.append(articleidtype)
+
+        if raw.doi:
+            articleiddoi = ET.Element('ArticleId', IdType='doi')
+            articleiddoi.text = raw.doi
+            articleidlist.append(articleiddoi)
+
+        xml.find('./Article').append(articleidlist)
+
+        return data
+
+
 class XMLClosePipe(plumber.Pipe):
 
     def transform(self, data):
