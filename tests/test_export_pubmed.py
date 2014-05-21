@@ -133,17 +133,13 @@ class ExportTests(unittest.TestCase):
         pxml = ET.Element('ArticleSet')
         pxml.append(ET.Element('Article'))
         pxml.append(ET.Element('Journal'))
-        #pxml = ET.Element('Journal')
 
         data = [self._article_meta, pxml]
 
         xmlarticle = export_pubmed.XMLPubDatePipe()
         raw, xml = xmlarticle.transform(data)
 
-        #pubdate = xml.find('./Journal/PubDate PubStatus="ppublish"').text
         self.assertEqual('<ArticleSet><Article /><Journal><PubDate PubStatus="ppublish"><Year>2010</Year><Month>08</Month></PubDate></Journal></ArticleSet>', ET.tostring(xml))
-
-        #self.assertEqual('Pubdate PubStatus="ppublish" />', pubdate)
 
     def test_xmlreplaces_pipe(self):
         pxml = ET.Element('ArticleSet')
@@ -171,7 +167,7 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'Perfil epidemiológico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004', articletitle)
 
-    def test_xmlfirstpagepipe(self):
+    def test_xmlfirstpage_pipe(self):
 
         pxml = ET.Element('ArticleSet')
         pxml.append(ET.Element('Article'))
@@ -185,7 +181,7 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'639', firstpage)
 
-    def test_xmllastpagepipe(self):
+    def test_xmllastpage_pipe(self):
 
         pxml = ET.Element('ArticleSet')
         pxml.append(ET.Element('Article'))
@@ -198,3 +194,29 @@ class ExportTests(unittest.TestCase):
         lastpage = xml.find('./Article/LastPage').text
 
         self.assertEqual(u'649', lastpage)
+
+    def test_xmlelocatonid_pipe(self):
+
+        pxml = ET.Element('ArticleSet')
+        pxml.append(ET.Element('Article'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLElocationIDPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        self.assertEqual('<ArticleSet><Article><ELocationID EIdType="pii">S0034-89102010000400007</ELocationID></Article></ArticleSet>', ET.tostring(xml))
+
+    def test_xmllanguage_pipe(self):
+
+        pxml = ET.Element('ArticleSet')
+        pxml.append(ET.Element('Article'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLLanguagePipe()
+        raw, xml = xmlarticle.transform(data)
+
+        language = xml.find('./Article/Language').text
+
+        self.assertEqual(u'pt', language)

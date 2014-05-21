@@ -174,6 +174,30 @@ class XMLLastPagePipe(plumber.Pipe):
         return data
 
 
+class XMLElocationIDPipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        elocationid = ET.Element('ELocationID', EIdType="pii")
+        elocationid.text = raw.publisher_id
+
+        xml.find('./Article').append(elocationid)
+
+        return data
+
+
+class XMLLanguagePipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        language = ET.Element('Language')
+        language.text = raw.original_language()
+
+        xml.find('./Article').append(language)
+
+        return data
+
+
 class XMLClosePipe(plumber.Pipe):
 
     def transform(self, data):
