@@ -198,11 +198,48 @@ class XMLLanguagePipe(plumber.Pipe):
         return data
 
 
+class XMLAuthorListPipe(plumber.Pipe):
+    def transform(self, data):
+        raw, xml = data
+
+        authorlist = ET.Element('AuthorList')
+
+        for authors in raw.authors:
+            author = ET.Element('Author')
+            authorlist.append(author)
+
+            firstname = ET.Element('FirstName')
+            firstname.text = authors['given_names']
+            author.append(firstname)
+
+            lastname = ET.Element('LastName')
+            lastname.text = authors['surname']
+            author.append(lastname)
+
+            if raw.affiliations:
+                for aff in raw.affiliations:
+                    if aff['index'] == authors['xref'][0]:
+                        affiliation = ET.Element('Affiliation')
+                        aff_list = []
+                        if 'institution' in aff:
+                            aff_list.append(aff['institution'])
+                        if 'addr_line' in aff:
+                            aff_list.append(aff['addr_line'])
+                        if 'country' in aff:
+                            aff_list.append(aff['country'])
+                        affiliation.text = ',  '.join(aff_list)
+                        author.append(affiliation)
+
+        xml.find('./Article').append(authorlist)
+
+        return data
+
+
 class XMLClosePipe(plumber.Pipe):
 
     def transform(self, data):
         raw, xml = data
 
-        data = ET.tostring(xml, encoding="utf-8", method="xml")
+        data = ET.tostring(xml, method="xml", encoding="utf-8")
 
         return data

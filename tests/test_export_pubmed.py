@@ -220,3 +220,26 @@ class ExportTests(unittest.TestCase):
         language = xml.find('./Article/Language').text
 
         self.assertEqual(u'pt', language)
+
+    def test_xmlauthorlist_pipe(self):
+
+        pxml = ET.Element('ArticleSet')
+        pxml.append(ET.Element('Article'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_pubmed.XMLAuthorListPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        authors = [i.find('FirstName').text for i in xml.findall('./Article/AuthorList/Author')]
+
+        self.assertEqual([u'Mariangela Leal',
+                          u'Elaine Leandro',
+                          u'Daniele Araújo Campo',
+                          u'Eli Iola Gurgel',
+                          u'Francisco de Assis',
+                          u'Waleska Teixeira',
+                          u'Ricardo',
+                          u'Augusto A',
+                          u'Odilon Vanni de',
+                          u'Isabel Cristina'], authors)
