@@ -231,7 +231,8 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_pubmed.XMLAuthorListPipe()
         raw, xml = xmlarticle.transform(data)
 
-        authors = [i.find('FirstName').text for i in xml.findall('./Article/AuthorList/Author')]
+        firstnames = [f.find('FirstName').text for f in xml.findall('./Article/AuthorList/Author')]
+        lastnames = [l.find('LastName').text for l in xml.findall('./Article/AuthorList/Author')]
 
         self.assertEqual([u'Mariangela Leal',
                           u'Elaine Leandro',
@@ -242,4 +243,15 @@ class ExportTests(unittest.TestCase):
                           u'Ricardo',
                           u'Augusto A',
                           u'Odilon Vanni de',
-                          u'Isabel Cristina'], authors)
+                          u'Isabel Cristina'], firstnames)
+
+        self.assertEqual([u'Cherchiglia',
+                          u'Machado',
+                          u'Szuster',
+                          u'Andrade',
+                          u'Acúrcio',
+                          u'Caiaffa',
+                          u'Sesso',
+                          u'Guerra Junior',
+                          u'Queiroz',
+                          u'Gomes'], lastnames)
