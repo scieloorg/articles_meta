@@ -488,6 +488,26 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'0034-8910', issn)
 
+    def test_xmljournal_meta_collection_pipe(self):
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('journal-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_sci.XMLJournalMetaCollectionPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        collection = xml.find('./article/front/journal-meta/collection').text
+
+        self.assertEqual(u'SciELO Brazil', collection)
+
     def test_xmljournal_meta_publisher_pipe(self):
 
         pxml = ET.Element('articles')

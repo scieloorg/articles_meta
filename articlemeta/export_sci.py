@@ -330,6 +330,27 @@ class XMLJournalMetaISSNPipe(plumber.Pipe):
         return data
 
 
+class XMLJournalMetaCollectionPipe(plumber.Pipe):
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.collection_acronym:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        collection = ET.Element('collection')
+
+        collection.text = 'SciELO %s' % raw.collection_name
+
+        xml.find('./article/front/journal-meta').append(collection)
+
+        return data
+
+
 class XMLJournalMetaPublisherPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
