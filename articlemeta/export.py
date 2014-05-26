@@ -22,6 +22,7 @@ class Export(object):
                                export_sci.XMLJournalMetaJournalIdPipe(),
                                export_sci.XMLJournalMetaJournalTitleGroupPipe(),
                                export_sci.XMLJournalMetaISSNPipe(),
+                               export_sci.XMLJournalMetaCollectionPipe(),
                                export_sci.XMLJournalMetaPublisherPipe(),
                                export_sci.XMLArticleMetaUniqueArticleIdPipe(),
                                export_sci.XMLArticleMetaArticleIdPublisherPipe(),
