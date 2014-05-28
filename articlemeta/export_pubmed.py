@@ -267,6 +267,7 @@ class XMLArticleIDListPipe(plumber.Pipe):
         return data
 
 
+<<<<<<< HEAD
 # class XMLHistoryPipe(plumber.Pipe):
 #     def transform(self, data):
 #         raw, xml = data
@@ -328,7 +329,6 @@ class XMLArticleIDListPipe(plumber.Pipe):
 #         xml.find('./Article').append(publicationtype)
 
 #         return data
-
 
 class XMLClosePipe(plumber.Pipe):
 
