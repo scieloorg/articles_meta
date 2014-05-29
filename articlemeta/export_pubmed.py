@@ -26,6 +26,7 @@ class XMLArticlePipe(plumber.Pipe):
 
 
 class XMLJournalPipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -37,6 +38,7 @@ class XMLJournalPipe(plumber.Pipe):
 
 
 class XMLPublisherNamePipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -49,6 +51,7 @@ class XMLPublisherNamePipe(plumber.Pipe):
 
 
 class XMLJournalTitlePipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -61,6 +64,7 @@ class XMLJournalTitlePipe(plumber.Pipe):
 
 
 class XMLISSNPipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -73,6 +77,7 @@ class XMLISSNPipe(plumber.Pipe):
 
 
 class XMLVolumePipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -85,6 +90,7 @@ class XMLVolumePipe(plumber.Pipe):
 
 
 class XMLIssuePipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -97,6 +103,7 @@ class XMLIssuePipe(plumber.Pipe):
 
 
 class XMLPubDatePipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -127,6 +134,7 @@ class XMLPubDatePipe(plumber.Pipe):
 
 
 class XMLReplacesPipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -139,6 +147,7 @@ class XMLReplacesPipe(plumber.Pipe):
 
 
 class XMLArticleTitlePipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -151,6 +160,7 @@ class XMLArticleTitlePipe(plumber.Pipe):
 
 
 class XMLFirstPagePipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -163,6 +173,7 @@ class XMLFirstPagePipe(plumber.Pipe):
 
 
 class XMLLastPagePipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -175,6 +186,7 @@ class XMLLastPagePipe(plumber.Pipe):
 
 
 class XMLElocationIDPipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -187,6 +199,7 @@ class XMLElocationIDPipe(plumber.Pipe):
 
 
 class XMLLanguagePipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -199,6 +212,7 @@ class XMLLanguagePipe(plumber.Pipe):
 
 
 class XMLAuthorListPipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -236,6 +250,7 @@ class XMLAuthorListPipe(plumber.Pipe):
 
 
 class XMLPublicationTypePipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -247,6 +262,7 @@ class XMLPublicationTypePipe(plumber.Pipe):
 
 
 class XMLArticleIDListPipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
@@ -267,68 +283,78 @@ class XMLArticleIDListPipe(plumber.Pipe):
         return data
 
 
-<<<<<<< HEAD
-# class XMLHistoryPipe(plumber.Pipe):
-#     def transform(self, data):
-#         raw, xml = data
+class XMLHistoryPipe(plumber.Pipe):
 
-#         publicationtype = ET.Element('History')
+    def transform(self, data):
+        raw, xml = data
 
-# #received date
-#     if raw.receive_date:
-#         pubdate = Element('PubDate', PubStatus='received')
-#         #Yeah
-#         year = Element('Year')
-#         year.text = raw.receive_date[0:4]
-#         pubdate.append(year)
-#         #Month
-#         month = Element('Month')
-#         month.text = raw.receive_date[5:7]
-#         pubdate.append(month)
-#         #Day
-#         day = Element('Day')
-#         day.text = raw.receive_date[8:10]
-#         pubdate.append(day)
-#     #acceptance date
-#     if raw.acceptance_date:
-#         pubdate = Element('PubDate', PubStatus='accepted')
-#         #Yeah
-#         year = Element('Year')
-#         year.text = raw.acceptance_date[0:4]
-#         pubdate.append(year)
-#         #Month
-#         month = Element('Month')
-#         month.text = raw.acceptance_date[5:7]
-#         pubdate.append(month)
-#         #Day
-#         day = Element('Day')
-#         day.text = raw.acceptance_date[8:10]
-#         pubdate.append(day)
-#     #ahead of print date
-#     if raw.ahead_publication_date:
-#         pubdate = Element('PubDate', PubStatus='aheadofprint')
-#         #Yeah
-#         year = Element('Year')
-#         year.text = raw.ahead_publication_date[0:4]
-#         pubdate.append(year)
-#         #Month
-#         month = Element('Month')
-#         month.text = raw.ahead_publication_date[5:7]
-#         pubdate.append(month)
-#         #Day
-#         day = Element('Day')
-#         day.text = raw.ahead_publication_date[8:10]
-#         pubdate.append(day)
+        history = ET.Element('History')
 
-#     history.append(pubdate)
-#     article.append(history)
+        #received date
+        if raw.receive_date:
+            pubdate = ET.Element('PubDate', PubStatus='received')
+            #Yeah
+            year = ET.Element('Year')
+            year.text = raw.receive_date[0:4]
+            pubdate.append(year)
+            #Month
+            month = ET.Element('Month')
+            month.text = raw.receive_date[5:7]
+            pubdate.append(month)
+            #Day
+            day = ET.Element('Day')
+            day.text = raw.receive_date[8:10]
+            pubdate.append(day)
+        #acceptance date
+        if raw.acceptance_date:
+            pubdate = ET.Element('PubDate', PubStatus='accepted')
+            #Yeah
+            year = ET.Element('Year')
+            year.text = raw.acceptance_date[0:4]
+            pubdate.append(year)
+            #Month
+            month = ET.Element('Month')
+            month.text = raw.acceptance_date[5:7]
+            pubdate.append(month)
+            #Day
+            day = ET.Element('Day')
+            day.text = raw.acceptance_date[8:10]
+            pubdate.append(day)
+        #ahead of print date
+        if raw.ahead_publication_date:
+            pubdate = ET.Element('PubDate', PubStatus='aheadofprint')
+            #Yeah
+            year = ET.Element('Year')
+            year.text = raw.ahead_publication_date[0:4]
+            pubdate.append(year)
+            #Month
+            month = ET.Element('Month')
+            month.text = raw.ahead_publication_date[5:7]
+            pubdate.append(month)
+            #Day
+            day = ET.Element('Day')
+            day.text = raw.ahead_publication_date[8:10]
+            pubdate.append(day)
+
+        history.append(pubdate)
+
+        xml.find('./Article').append(history)
+
+        return data
 
 
+class XMLAbstractPipe(plumber.Pipe):
 
+    def transform(self, data):
+        raw, xml = data
 
-#         xml.find('./Article').append(publicationtype)
+        abstract = ET.Element('Abstract')
+        abstract.text = raw.original_abstract()
 
-#         return data
+        xml.find('./Article').append(abstract)
+
+        return data
+
 
 class XMLClosePipe(plumber.Pipe):
 
