@@ -211,6 +211,19 @@ def add_article(request):
     return Response()
 
 
+@view_config(route_name='update_article',
+             request_method='UPDATE')
+@authenticate
+def update_article(request):
+
+    try:
+        article = request.databroker.update_article(request.json_body)
+    except ValueError:
+        raise exc.HTTPBadRequest('The posted JSON data is not valid')
+
+    return Response()
+
+
 @view_config(route_name='set_doaj_status_true',
              request_method='POST')
 @authenticate
@@ -225,6 +238,7 @@ def set_doaj_status_true(request):
 
     return Response()
 
+
 @view_config(route_name='set_doaj_status_false',
              request_method='POST')
 @authenticate
@@ -238,6 +252,7 @@ def set_doaj_status_false(request):
         raise exc.HTTPBadRequest('The posted JSON data is not valid')
 
     return Response()
+
 
 @view_config(route_name='delete_article',
              request_method='DELETE')
@@ -286,6 +301,7 @@ def main(settings, *args, **xargs):
     config.add_route('delete_journal', '/api/v1/journal/delete')
     config.add_route('get_article', '/api/v1/article')
     config.add_route('add_article', '/api/v1/article/add')
+    config.add_route('update_article', '/api/v1/article/update')
     config.add_route('set_doaj_status_true', '/api/v1/article/doaj_status_true')
     config.add_route('set_doaj_status_false', '/api/v1/article/doaj_status_false')
     config.add_route('delete_article', '/api/v1/article/delete')

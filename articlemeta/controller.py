@@ -433,6 +433,27 @@ class DataBroker(object):
         code = article['article']['v880'][0]['_']
         collection = article['article']['v992'][0]['_']
 
+        article['created_at'] = article['processing_date']
+
+        self.db['articles'].update(
+            {'code': code, 'collection': collection},
+            {'$set': article},
+            safe=False,
+            upsert=True
+        )
+
+        return article
+
+    def update_article(self, metadata):
+
+        article = self._check_article_meta(metadata)
+
+        if not article:
+            return None
+
+        code = article['article']['v880'][0]['_']
+        collection = article['article']['v992'][0]['_']
+
         self.db['articles'].update(
             {'code': code, 'collection': collection},
             {'$set': article},

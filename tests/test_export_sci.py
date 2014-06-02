@@ -10,6 +10,7 @@ from xylose.scielodocument import Article
 from articlemeta import export_sci
 from articlemeta import export
 
+
 class XMLCitationTests(unittest.TestCase):
 
     def setUp(self):
