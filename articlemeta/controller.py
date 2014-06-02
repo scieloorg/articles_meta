@@ -389,6 +389,19 @@ class DataBroker(object):
 
         return data
 
+    def get_articles(self, code, collection=None):
+
+        fltr = {'code': code}
+        if collection:
+            fltr['collection'] = collection
+
+        data = self.db['articles'].find(fltr, {'_id': 0})
+
+        if not data.count():
+            return None
+
+        return data
+
     def exists_article(self, code, collection=None):
 
         fltr = {'code': code}

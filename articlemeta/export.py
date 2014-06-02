@@ -1,6 +1,8 @@
 # coding: utf-8
-from xylose.scielodocument import Article
+import xml.etree.ElementTree as ET
 import plumber
+
+from xylose.scielodocument import Article
 
 import export_sci
 import export_rsps
@@ -98,10 +100,8 @@ class Export(object):
         return next(transformed_data)
 
     def pipeline_iahx(self):
-        xylose_article = Article(self._article)
 
         ppl = plumber.Pipeline(export_iahx.SetupDocumentPipe(),
-                               export_iahx.XMLDocumentPipe(),
                                export_iahx.XMLDocumentIDPipe(),
                                export_iahx.XMLCollectionPipe(),
                                export_iahx.XMLKnowledgeAreaPipe(),
@@ -121,18 +121,15 @@ class Export(object):
                                export_iahx.XMLAffiliationCountryPipe(),
                                export_iahx.XMLAffiliationInstitutionPipe(),
                                export_iahx.XMLSponsorPipe(),
-                               export_iahx.XMLClosePipe())
+                               export_iahx.XMLTearDownPipe())
 
-        transformed_data = ppl.run(xylose_article, rewrap=True)
+        xmls = ppl.run([Article(article) for article in self._article])
 
-        return next(transformed_data)
+        #Add root document
+        add = ET.Element('add')
 
-    # def pipeline_pubmed(self):
-    #     xylose_article = Article(self._article, iso_format='iso 639-2')
+        for xml in xmls:
+          add.append(xml)
 
-    #     ppl = plumber.Pipeline(export_pubmed.SetupArticlePipe(),
-    #                            export_pubmed.XMLArticlePipe())
+        return ET.tostring(add, encoding="utf-8", method="xml")
 
-    #     transformed_data = ppl.run(xylose_article, rewrap=True)
-
-    #     return next(transformed_data)

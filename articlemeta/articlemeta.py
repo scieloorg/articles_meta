@@ -178,7 +178,7 @@ def get_article(request):
     article = request.databroker.get_article(code, collection)
 
     if article:
-        if fmt == 'xmlwos':  # SciELO Citation Index
+        if fmt == 'xmlwos':
             return Response(
                 Export(article).pipeline_sci(), content_type="application/xml")
 
@@ -186,13 +186,14 @@ def get_article(request):
             return Response(
                 Export(article).pipeline_doaj(), content_type="application/xml")
 
-        if fmt == 'xmliahx':
-            return Response(
-                Export(article).pipeline_iahx(), content_type="application/xml")
-
         if fmt == 'xmlrsps':
             return Response(
                 Export(article).pipeline_rsps(), content_type="application/xml")
+
+    if fmt == 'xmliahx':
+        articles = request.databroker.get_articles(code, collection)
+        if articles:
+            return Response(Export(articles).pipeline_iahx(), content_type="application/xml")
 
     return Response(json.dumps(article), content_type="application/json")
 
