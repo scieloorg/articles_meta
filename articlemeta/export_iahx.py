@@ -208,7 +208,7 @@ class XMLWOKCIPipe(plumber.Pipe):
 
         for index in raw.wos_citation_indexes:
             field = ET.Element('field')
-            field.text = index
+            field.text = index.replace('&', '')
             field.set('name', 'wok_citation_index')
             xml.find('.').append(field)
 

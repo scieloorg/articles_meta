@@ -263,11 +263,11 @@ class ExportTests(unittest.TestCase):
 
         result = ', '.join([i.text for i in xml.findall('./field[@name="wok_citation_index"]')])
 
-        self.assertEqual(u'SCIE', result)
+        self.assertEqual(u'SCIE, SSCI', result)
 
-    def test_xml_document_multiple_wok_citation_index_pipe(self):
+    def test_xml_document_wok_citation_index_AHCI_pipe(self):
 
-        fakexylosearticle = Article({'article': {}, 'title': {'v851': [{'_': 'SSCI'}, {'_': 'SCIE'}]}})
+        fakexylosearticle = Article({'article': {}, 'title': {'v853': [{'_': 'A&HCI'}]}})
 
         pxml = ET.Element('doc')
 
@@ -278,7 +278,7 @@ class ExportTests(unittest.TestCase):
 
         result = ', '.join([i.text for i in xml.findall('./field[@name="wok_citation_index"]')])
 
-        self.assertEqual(u'SSCI, SCIE', result)
+        self.assertEqual(u'AHCI', result)
 
     def test_xml_document_wok_citation_index_without_data_pipe(self):
 
