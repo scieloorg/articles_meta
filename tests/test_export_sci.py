@@ -84,6 +84,23 @@ class XMLCitationTests(unittest.TestCase):
 
         self.assertEqual(None, expected)
 
+    def test_xml_citation_url_pipe(self):
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [{'v37': [{'_': 'http://www.scielo.br'}]}]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.URIPipe().transform(data)
+
+        expected = xml.find('./element-citation/ext-link').text
+
+        self.assertEqual(u'http://www.scielo.br', expected)
+
     def test_xml_citation_source_pipe(self):
 
         pxml = ET.Element('ref')

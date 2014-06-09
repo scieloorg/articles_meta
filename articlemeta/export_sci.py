@@ -17,7 +17,9 @@ class XMLCitation(object):
                                      self.EndPagePipe(),
                                      self.IssuePipe(),
                                      self.VolumePipe(),
-                                     self.PersonGroupPipe())
+                                     self.PersonGroupPipe(),
+                                     self.URIPipe()
+                                     )
 
     class SetupCitationPipe(plumber.Pipe):
 
@@ -86,6 +88,25 @@ class XMLCitation(object):
 
             return data
 
+    class URIPipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if not raw.link:
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            uri = ET.Element('ext-link')
+
+            uri.text = raw.link
+
+            xml.find('./element-citation').append(uri)
+
+            return data
+
     class DatePipe(plumber.Pipe):
         def precond(data):
             raw, xml = data
@@ -112,8 +133,6 @@ class XMLCitation(object):
             year = ET.Element('year')
             year.text = raw.date[0:4]
             pdate.append(year)
-
-
 
             xml.find('./element-citation').append(pdate)
 
