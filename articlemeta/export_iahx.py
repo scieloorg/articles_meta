@@ -275,14 +275,21 @@ class XMLJournalTitlePipe(plumber.Pipe):
 
         field = ET.Element('field')
         field.text = raw.journal_title
-        field.set('name', 'ta')
+        field.set('name', 'journal_title')
         xml.find('.').append(field)
 
-        if raw.journal_abbreviated_title:
-            field = ET.Element('field')
-            field.text = raw.journal_abbreviated_title
-            field.set('name', 'ta')
-            xml.find('.').append(field)
+        return data
+
+
+class XMLJournalAbbrevTitlePipe(plumber.Pipe):
+
+    def transform(self, data):
+        raw, xml = data
+
+        field = ET.Element('field')
+        field.text = raw.journal_abbreviated_title
+        field.set('name', 'ta')
+        xml.find('.').append(field)
 
         return data
 
