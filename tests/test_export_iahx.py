@@ -375,9 +375,22 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_iahx.XMLJournalTitlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        result = xml.find('./field[@name="ta"]').text
+        result = xml.find('./field[@name="journal_title"]').text
 
         self.assertEqual(u'Revista de Saúde Pública', result)
+
+    def test_xml_document_journal_abbrev_title_pipe(self):
+
+        pxml = ET.Element('doc')
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_iahx.XMLJournalAbbrevTitlePipe()
+        raw, xml = xmlarticle.transform(data)
+
+        result = xml.find('./field[@name="ta"]').text
+
+        self.assertEqual(u'Rev. Saúde Pública', result)
 
     def test_xml_document_original_language_pipe(self):
 
