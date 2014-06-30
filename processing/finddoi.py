@@ -21,10 +21,6 @@ config = utils.Configuration.from_file(os.environ.get('CONFIG_INI', os.path.dirn
 settings = dict(config.items())
 
 
-def remove_accents(data):
-    return ''.join(x for x in unicodedata.normalize('NFKD', data) if unicodedata.category(x)[0] == 'L').lower()
-
-
 def _config_logging(logging_level='INFO', logging_file=None):
 
     allowed_levels = {
@@ -51,6 +47,7 @@ def verify_doi(doi, article):
     response = json.loads(urllib2.urlopen(doi_query_url).read())
     # make sure the DOI is in API
     # should always be true, since we got the DOI from the API
+
     if not response or len(response) == 0:
         print '%s, doi not found in API' % doi
         return False
@@ -151,15 +148,15 @@ def load_articles_doi_from_crossref(mongo_uri=settings['app']['mongo_uri']):
     except:
         logging.error('Failing to MongoDB database at %s' % mongo_uri)
 
-    regs = coll.find({'article.doi': {'$exists': 0}}, {'code': 1}).limit(10)
+    regs = coll.find({'article.doi': {'$exists': 0}}, {'code': 1, 'collection': 1}).limit(10)
 
-    for code in [i['code'] for i in regs]:
-        article = Article(coll.find_one({'code': code}, {'citations': 0, '_id': 0}))
+    for code, collection in [[i['code'], i['collection']] for i in regs]:
+        article = Article(coll.find_one({'code': code, 'collection': collection}, {'citations': 0, '_id': 0}))
 
         doi = search_doi(article)
 
         if doi:
-            coll.update({'code': code}, {'$set': {'article.doi': doi}})
+            coll.update({'code': code, 'collection': collection}, {'$set': {'article.doi': doi}})
             logging.debug('DOI Registered for %s' % code)
 
 
