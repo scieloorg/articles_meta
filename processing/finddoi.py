@@ -1,4 +1,5 @@
-#import argsparse
+# encoding: utf-8
+
 import os
 import json
 import urllib
@@ -64,6 +65,7 @@ def verify_doi(doi, article):
 
     # most SciELO DOIs resolve to scielo.
     # check the resolved URL
+    resolved_url = None
     try:
         logging.debug('Checking resolved SciELO URL for %s' % found_doi)
         resolved_url = urllib2.urlopen(response[0]['doi']).geturl()
@@ -71,25 +73,26 @@ def verify_doi(doi, article):
     except urllib2.HTTPError, e:
         logging.error('HTTPError, trying %s' % found_doi)
 
-    qs = urlparse.urlparse(resolved_url).query  # grab the query string
+    if resolved_url:
+        qs = urlparse.urlparse(resolved_url).query  # grab the query string
 
-    if qs and 'pid' in qs:
-        if article.publisher_id.upper() == urlparse.parse_qs(qs)['pid'][0].upper():
-            logging.debug('PID (%s) is part of the resolved URL %s' % (article.publisher_id.upper(), resolved_url))
-            return found_doi
-    elif 'scielo' in resolved_url:
-        logging.debug('No matching PID (%s) for %s' % (article.publisher_id.upper(), resolved_url))
-        return False
+        if qs and 'pid' in qs:
+            if article.publisher_id.upper() == urlparse.parse_qs(qs)['pid'][0].upper():
+                logging.debug('PID (%s) is part of the resolved URL %s' % (article.publisher_id.upper(), resolved_url))
+                return found_doi
+        elif 'scielo' in resolved_url:
+            logging.debug('No matching PID (%s) for %s' % (article.publisher_id.upper(), resolved_url))
+            return False
 
-    coins = urlparse.parse_qs(response[0]['coins'])
+    coins = urlparse.parse_qs(str(response[0]['coins']))
 
     document = ' '.join([
         article.authors[0].get('given_names', '') if article.authors else '',
         article.authors[0].get('surname', '') if article.authors else '',
         article.original_title() or '',
-        'publication_year: %s' % article.publication_date[0:4] or '',
-        'volume: %s' % article.volume or '',
-        'issue: %s' % article.issue or ''
+        'publication_year: %s' % (article.publication_date[0:4] or ''),
+        'volume: %s' % (article.volume or ''),
+        'issue: %s' % (article.issue or '')
     ])
 
     request_document = ' '.join([
@@ -99,20 +102,24 @@ def verify_doi(doi, article):
         'publication_year: %s' % coins.get('rft.date', [''])[0],
         'volume: %s' % coins.get('rft.volume', [''])[0],
         'issue: %s' % coins.get('rft.issue', [''])[0],
-    ])
+    ]).decode('utf-8')
 
-    if SequenceMatcher(None, document, request_document).ratio() >= settings['processing']['expected_ratio']:
-        logging.debug('Matching by %s ratio for strings (%s) and (%s)' % (
-            settings['processing']['expected_ratio']),
-            document,
-            request_document
+    if SequenceMatcher(None, document.lower(), request_document.lower()).ratio() >= float(settings['processing']['expected_ratio']):
+        logging.debug(
+            'Matching by %s ratio for strings (%s) and (%s)' % (
+                settings['processing']['expected_ratio'],
+                document,
+                request_document
+            )
         )
         return found_doi
 
-    logging.debug('No match found for (%s) and (%s)' % (
-        document,
-        request_document
-    ))
+    logging.debug(
+        'No match found for (%s) and (%s)' % (
+            document,
+            request_document
+        )
+    )
 
     return False
 
@@ -152,7 +159,7 @@ def load_articles_doi_from_crossref(mongo_uri=settings['app']['mongo_uri']):
 
     for code, collection in [[i['code'], i['collection']] for i in regs]:
         article = Article(coll.find_one({'code': code, 'collection': collection}, {'citations': 0, '_id': 0}))
-
+        logging.debug('Finding DOI for (%s)' % code)
         doi = search_doi(article)
 
         if doi:
