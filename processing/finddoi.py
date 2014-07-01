@@ -46,7 +46,7 @@ def _config_logging(logging_level='INFO', logging_file=None):
 def verify_doi(doi, article):
     doi_query_url = CROSSREF_API_DOI + urllib.urlencode({'q': doi})
     try:
-        response = json.loads(urllib2.urlopen(doi_query_url).read(), timeout=3)
+        response = json.loads(urllib2.urlopen(doi_query_url, timeout=3).read())
     except urllib2.URLError:
         logging('Error loading %s' % doi_query_url)
         return False
