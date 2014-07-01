@@ -146,6 +146,12 @@ def search_doi(article):
         return article.doi
 
     response = urllib2.urlopen(CROSSREF_API_DOI + doi_query1(article)).read()
+
+    json_response = json.loads(response)
+
+    if len(json_response) == 0:
+        return None
+
     response_doi = json.loads(response)[0]['doi'].replace(
         'http://dx.doi.org/', ''
     ).upper()
