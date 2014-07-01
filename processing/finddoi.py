@@ -47,8 +47,10 @@ def verify_doi(doi, article):
     doi_query_url = CROSSREF_API_DOI + urllib.urlencode({'q': doi})
     try:
         response = json.loads(urllib2.urlopen(doi_query_url, timeout=3).read())
+    except urllib2.HTTPError:
+        logging.error('HTTPError, trying %s' % found_doi)
     except urllib2.URLError:
-        logging.error('Error loading %s' % doi_query_url)
+        logging.error('HTTPError, trying %s' % doi_query_url)
         return False
     # make sure the DOI is in API
     # should always be true, since we got the DOI from the API
@@ -74,7 +76,9 @@ def verify_doi(doi, article):
         logging.debug('Checking resolved SciELO URL for %s' % found_doi)
         resolved_url = urllib2.urlopen(response[0]['doi']).geturl()
         logging.debug('Resolved SciELO URL is %s' % resolved_url)
-    except urllib2.HTTPError, e:
+    except urllib2.HTTPError:
+        logging.error('HTTPError, trying %s' % found_doi)
+    except urllib2.URLError:
         logging.error('HTTPError, trying %s' % found_doi)
 
     if resolved_url:
