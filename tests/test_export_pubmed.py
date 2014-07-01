@@ -4,9 +4,11 @@ import json
 import os
 
 import xml.etree.ElementTree as ET
+from lxml import etree
 from xylose.scielodocument import Article
 
 from articlemeta import export_pubmed
+from articlemeta import export
 
 
 class ExportTests(unittest.TestCase):
@@ -314,3 +316,18 @@ class ExportTests(unittest.TestCase):
         abstract = xml.find('./Article/Abstract').text[0:30]
 
         self.assertEqual(u'OBJETIVO: Descrever o perfil e', abstract)
+
+    # def test_validating_against_dtd(self):
+
+    #     xml = export.Export(self._raw_json).pipeline_pubmed()
+
+    #     xmlparser = etree.XMLParser(dtd_validation=True, load_dtd=True)
+
+    #     dtd = open('tests/dtd/scielo_pubmed/PubMed.dtd', 'r').read()
+    #     schema_root = etree.XML(dtd)
+    #     schema = etree.XMLSchema(schema_root)
+    #     xmlparser = etree.parse(schema=schema)
+
+    #     expected = etree.fromstring(xml, xmlparser).tag
+
+    #     self.assertEqual('ArticleSet', expected)
