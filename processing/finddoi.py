@@ -48,7 +48,7 @@ def verify_doi(doi, article):
     try:
         response = json.loads(urllib2.urlopen(doi_query_url, timeout=3).read())
     except urllib2.URLError:
-        logging('Error loading %s' % doi_query_url)
+        logging.error('Error loading %s' % doi_query_url)
         return False
     # make sure the DOI is in API
     # should always be true, since we got the DOI from the API
