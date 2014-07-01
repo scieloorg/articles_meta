@@ -45,7 +45,11 @@ def _config_logging(logging_level='INFO', logging_file=None):
 
 def verify_doi(doi, article):
     doi_query_url = CROSSREF_API_DOI + urllib.urlencode({'q': doi})
-    response = json.loads(urllib2.urlopen(doi_query_url).read())
+    try:
+        response = json.loads(urllib2.urlopen(doi_query_url).read(), timeout=3)
+    except urllib2.URLError:
+        logging('Error loading %s' % doi_query_url)
+        return False
     # make sure the DOI is in API
     # should always be true, since we got the DOI from the API
 
