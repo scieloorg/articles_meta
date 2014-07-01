@@ -134,7 +134,7 @@ def verify_doi(doi, article):
 
 def doi_query1(article):
     data = {}
-    data['q'] = ' '.join([article.original_title() or '', article.any_issn() or ''])
+    data['q'] = ' '.join([article.original_title() or '', article.any_issn() or '']).encode('utf-8')
     data['year'] = article.publication_date[0:4]
 
     return urllib.urlencode(data)
