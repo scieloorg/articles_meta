@@ -7,6 +7,7 @@ import unicodedata
 import logging
 from difflib import SequenceMatcher
 from ConfigParser import SafeConfigParser
+import socket
 
 import requests
 from pymongo import MongoClient
@@ -53,6 +54,8 @@ def verify_doi(doi, article):
         logging.error(e.message)
     except requests.exceptions.HTTPError, e:
         logging.error(e.message)
+    except socket.timeout, e:  # exception been catch just because: https://github.com/kennethreitz/requests/issues/1236
+        logging.error(e.message)
 
     # make sure the DOI is in API
     # should always be true, since we got the DOI from the API
@@ -83,6 +86,8 @@ def verify_doi(doi, article):
     except requests.exceptions.ConnectionError, e:
         logging.error(e.message)
     except requests.exceptions.HTTPError, e:
+        logging.error(e.message)
+    except socket.timeout, e:  # exception been catch just because: https://github.com/kennethreitz/requests/issues/1236
         logging.error(e.message)
 
     if resolved_url:
@@ -153,6 +158,8 @@ def search_doi(article):
     except requests.exceptions.ConnectionError, e:
         logging.error(e.message)
     except requests.exceptions.HTTPError, e:
+        logging.error(e.message)
+    except socket.timeout, e:  # exception been catch just because: https://github.com/kennethreitz/requests/issues/1236
         logging.error(e.message)
 
     if not response or len(response) == 0:
