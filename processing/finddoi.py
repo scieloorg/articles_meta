@@ -2,15 +2,13 @@
 
 import os
 import json
-import urllib
-import urllib2
 import urlparse
 import unicodedata
 import logging
 from difflib import SequenceMatcher
-
 from ConfigParser import SafeConfigParser
 
+import requests
 from pymongo import MongoClient
 from xylose.scielodocument import Article
 
@@ -44,14 +42,18 @@ def _config_logging(logging_level='INFO', logging_file=None):
 
 
 def verify_doi(doi, article):
-    doi_query_url = CROSSREF_API_DOI + urllib.urlencode({'q': doi})
+    payload = {'q': doi}
+
+    response = None
     try:
-        response = json.loads(urllib2.urlopen(doi_query_url, timeout=3).read())
-    except urllib2.HTTPError:
-        logging.error('HTTPError, trying %s' % found_doi)
-    except urllib2.URLError:
-        logging.error('HTTPError, trying %s' % doi_query_url)
-        return False
+        response = requests.get(CROSSREF_API_DOI, params=payload, timeout=3).json()
+    except requests.exceptions.Timeout, e:
+        logging.error(e.message)
+    except requests.exceptions.ConnectionError, e:
+        logging.error(e.message)
+    except requests.exceptions.HTTPError, e:
+        logging.error(e.message)
+
     # make sure the DOI is in API
     # should always be true, since we got the DOI from the API
 
@@ -74,20 +76,20 @@ def verify_doi(doi, article):
     resolved_url = None
     try:
         logging.debug('Checking resolved SciELO URL for %s' % found_doi)
-        resolved_url = urllib2.urlopen(response[0]['doi']).geturl()
+        resolved_url = requests.get(response[0]['doi'], timeout=3).url
         logging.debug('Resolved SciELO URL is %s' % resolved_url)
-    except urllib2.HTTPError:
-        logging.error('HTTPError, trying %s' % found_doi)
-    except urllib2.URLError:
-        logging.error('HTTPError, trying %s' % found_doi)
+    except requests.exceptions.Timeout, e:
+        logging.error(e.message)
+    except requests.exceptions.ConnectionError, e:
+        logging.error(e.message)
+    except requests.exceptions.HTTPError, e:
+        logging.error(e.message)
 
     if resolved_url:
-        qs = urlparse.urlparse(resolved_url).query  # grab the query string
-
-        if qs and 'pid' in qs:
-            if article.publisher_id.upper() == urlparse.parse_qs(qs)['pid'][0].upper():
-                logging.debug('PID (%s) is part of the resolved URL %s' % (article.publisher_id.upper(), resolved_url))
-                return found_doi
+        qs = urlparse.parse_qs(urlparse.urlparse(resolved_url).query)  # grab the query string
+        if article.publisher_id.upper() == qs.get('pid', [''])[0].upper():
+            logging.debug('PID (%s) is part of the resolved URL %s' % (article.publisher_id.upper(), resolved_url))
+            return found_doi
         elif 'scielo' in resolved_url:
             logging.debug('No matching PID (%s) for %s' % (article.publisher_id.upper(), resolved_url))
             return False
@@ -132,27 +134,31 @@ def verify_doi(doi, article):
     return False
 
 
-def doi_query1(article):
+def search_doi(article):
     data = {}
-    data['q'] = ' '.join([article.original_title() or '', article.any_issn() or '']).encode('utf-8')
+    data['q'] = ' '.join(
+        [article.original_title() or '', article.journal.scielo_issn or '']
+    ).encode('utf-8')
     data['year'] = article.publication_date[0:4]
 
-    return urllib.urlencode(data)
+    response = None
+    try:
+        response = requests.get(
+            CROSSREF_API_DOI,
+            params=data,
+            timeout=3
+        ).json()
+    except requests.exceptions.Timeout, e:
+        logging.error(e.message)
+    except requests.exceptions.ConnectionError, e:
+        logging.error(e.message)
+    except requests.exceptions.HTTPError, e:
+        logging.error(e.message)
 
-
-def search_doi(article):
-    # do nothing if we have a DOI
-    if article.doi:
-        return article.doi
-
-    response = urllib2.urlopen(CROSSREF_API_DOI + doi_query1(article)).read()
-
-    json_response = json.loads(response)
-
-    if len(json_response) == 0:
+    if not response or len(response) == 0:
         return None
 
-    response_doi = json.loads(response)[0]['doi'].replace(
+    response_doi = response[0].get('doi', '').replace(
         'http://dx.doi.org/', ''
     ).upper()
 
@@ -173,11 +179,12 @@ def load_articles_doi_from_crossref(mongo_uri=settings['app']['mongo_uri']):
     for code, collection in [[i['code'], i['collection']] for i in regs]:
         article = Article(coll.find_one({'code': code, 'collection': collection}, {'citations': 0, '_id': 0}))
         logging.debug('Finding DOI for (%s)' % code)
+
         doi = search_doi(article)
 
         if doi:
             coll.update({'code': code, 'collection': collection}, {'$set': {'article.doi': doi}})
-            logging.debug('DOI Registered for %s' % code)
+            logging.debug('DOI (%s) Registered for (%s)' % (doi, code))
 
 
 def load_citations_doi_from_crossref(mongo_uri=settings['app']['mongo_uri']):
