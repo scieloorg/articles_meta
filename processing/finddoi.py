@@ -42,29 +42,9 @@ def _config_logging(logging_level='INFO', logging_file=None):
     logging.basicConfig(**logging_config)
 
 
-def verify_doi(doi, article):
-    payload = {'q': doi}
+def verify_doi(coins, article):
 
-    response = None
-    try:
-        response = requests.get(CROSSREF_API_DOI, params=payload, timeout=3).json()
-    except requests.exceptions.Timeout, e:
-        logging.error(e.message)
-    except requests.exceptions.ConnectionError, e:
-        logging.error(e.message)
-    except requests.exceptions.HTTPError, e:
-        logging.error(e.message)
-    except socket.timeout, e:  # exception been catch just because: https://github.com/kennethreitz/requests/issues/1236
-        logging.error(e.message)
-
-    # make sure the DOI is in API
-    # should always be true, since we got the DOI from the API
-
-    if not response or len(response) == 0:
-        print '%s, doi not found in API' % doi
-        return False
-
-    found_doi = response[0]['doi'].replace(
+    found_doi = coins['doi'].replace(
         'http://dx.doi.org/', ''
     ).upper()
 
@@ -79,13 +59,15 @@ def verify_doi(doi, article):
     resolved_url = None
     try:
         logging.debug('Checking resolved SciELO URL for %s' % found_doi)
-        resolved_url = requests.get(response[0]['doi'], timeout=3).url
+        resolved_url = requests.get(coins['doi'], timeout=3, allow_redirects=False).headers.get('location', '')
         logging.debug('Resolved SciELO URL is %s' % resolved_url)
     except requests.exceptions.Timeout, e:
         logging.error(e.message)
     except requests.exceptions.ConnectionError, e:
         logging.error(e.message)
     except requests.exceptions.HTTPError, e:
+        logging.error(e.message)
+    except requests.exceptions.InvalidSchema, e:
         logging.error(e.message)
     except socket.timeout, e:  # exception been catch just because: https://github.com/kennethreitz/requests/issues/1236
         logging.error(e.message)
@@ -99,7 +81,7 @@ def verify_doi(doi, article):
             logging.debug('No matching PID (%s) for %s' % (article.publisher_id.upper(), resolved_url))
             return False
 
-    coins = urlparse.parse_qs(str(response[0]['coins']))
+    coins = urlparse.parse_qs(str(coins))
 
     document = ' '.join([
         article.authors[0].get('given_names', '') if article.authors else '',
@@ -165,11 +147,7 @@ def search_doi(article):
     if not response or len(response) == 0:
         return None
 
-    response_doi = response[0].get('doi', '').replace(
-        'http://dx.doi.org/', ''
-    ).upper()
-
-    if verify_doi(response_doi, article):
+    if verify_doi(response[0], article):
         return response_doi
 
 
