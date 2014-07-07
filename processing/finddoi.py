@@ -148,7 +148,7 @@ def search_doi(article):
         return None
 
     if verify_doi(response[0], article):
-        return response_doi
+        return response[0].get('doi', '')
 
 
 def load_articles_doi_from_crossref(mongo_uri=settings['app']['mongo_uri']):
