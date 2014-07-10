@@ -181,7 +181,7 @@ def load_articles_doi_from_crossref(mongo_uri=settings['app']['mongo_uri']):
 
         if doi:
             coll.update({'code': code, 'collection': collection}, {'$set': {'article.doi': doi}})
-            logging.debug('DOI (%s) Registered for (%s)' % (doi, code))
+            logging.debug('DOI (%s) Registered for (%s)' % (doi.upper().replace('HTTP://DX.DOI.ORG/',''), code))
 
 
 def load_citations_doi_from_crossref(mongo_uri=settings['app']['mongo_uri']):
