@@ -149,6 +149,9 @@ def search_doi(article):
     except ValueError:
         response = None
         logging.error(e.message)
+    except AttributeError:
+        response = None
+        logging.error(e.message)
 
     if not response:
         return None
