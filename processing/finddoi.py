@@ -134,7 +134,7 @@ def search_doi(article):
             CROSSREF_API_DOI,
             params=data,
             timeout=3
-        ).json()
+        )
     except requests.exceptions.Timeout, e:
         logging.error(e.message)
     except requests.exceptions.ConnectionError, e:
@@ -142,6 +142,12 @@ def search_doi(article):
     except requests.exceptions.HTTPError, e:
         logging.error(e.message)
     except socket.timeout, e:  # exception been catch just because: https://github.com/kennethreitz/requests/issues/1236
+        logging.error(e.message)
+
+    try:
+        respose = resolved_url.json()
+    except ValueError:
+        response = None
         logging.error(e.message)
 
     if not response or len(response) == 0:
