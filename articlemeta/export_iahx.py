@@ -194,6 +194,26 @@ class XMLPagesPipe(plumber.Pipe):
         return data
 
 
+class XMLDOIPipe(plumber.Pipe):
+
+    def precond(data):
+        raw, xml = data
+
+        if not raw.doi:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        field = ET.Element('field')
+        field.text = raw.doi.upper().replace('HTTP://DX.DOI.ORG/', '')
+        field.set('name', 'doi')
+        xml.find('.').append(field)
+
+        return data
+
+
 class XMLWOKCIPipe(plumber.Pipe):
 
     def precond(data):

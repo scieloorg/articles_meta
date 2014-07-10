@@ -103,6 +103,7 @@ class Export(object):
 
         ppl = plumber.Pipeline(export_iahx.SetupDocumentPipe(),
                                export_iahx.XMLDocumentIDPipe(),
+                               export_iahx.XMLDoiPipe(),
                                export_iahx.XMLCollectionPipe(),
                                export_iahx.XMLKnowledgeAreaPipe(),
                                export_iahx.XMLCenterPipe(),

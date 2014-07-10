@@ -65,6 +65,44 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'Health Sciences', result)
 
+    def test_xml_document_doi_data_pipe(self):
+
+        fakexylosearticle = Article({'title': {}, 'article': {'doi': 'http://dx.doi.org/10.1590/s0036-36342011000900009'}})
+
+        pxml = ET.Element('doc')
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export_iahx.XMLDOIPipe()
+
+        raw, xml = xmlarticle.transform(data)
+
+        result = xml.find('./field[@name="doi"]').text
+
+        self.assertEqual(u'10.1590/S0036-36342011000900009', result)
+
+    def test_xml_document_doi_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {}, 'title': {}})
+
+        pxml = ET.Element('doc')
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export_iahx.XMLDOIPipe()
+
+        raw, xml = xmlarticle.transform(data)
+
+        # This try except is a trick to test the expected result of the
+        # piped XML, once the precond method don't raise an exception
+        # we try to check if the preconditioned pipe was called or not.
+        try:
+            xml.find('./field[name="doi"]').text
+        except AttributeError:
+            self.assertTrue(True)
+        else:
+            self.assertTrue(False)
+
     def test_xml_document_knowledge_area_multiple_data_pipe(self):
 
         fakexylosearticle = Article({'article': {}, 'title': {'v441': [{'_': 'Health Sciences'}, {'_': 'Human Sciences'}]}})

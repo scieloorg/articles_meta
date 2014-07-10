@@ -145,12 +145,15 @@ def search_doi(article):
         logging.error(e.message)
 
     try:
-        respose = response.json()
+        response = response.json()
     except ValueError:
         response = None
         logging.error(e.message)
 
-    if not response or len(response) == 0:
+    if not response:
+        return None
+
+    if len(response) == 0:
         return None
 
     if verify_doi(response[0], article):
