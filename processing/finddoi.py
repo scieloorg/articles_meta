@@ -145,7 +145,7 @@ def search_doi(article):
         logging.error(e.message)
 
     try:
-        respose = resolved_url.json()
+        respose = response.json()
     except ValueError:
         response = None
         logging.error(e.message)
