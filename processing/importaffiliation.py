@@ -4,11 +4,11 @@ This processing import affiliation metadata for the Article Meta database.
 
 input: CSV file formated as below
 
-    isis record index;PID;Collection;Publication Year;Journal Title;number label;Affiliation ID [aff1, aff2];Affiliaton as it was markedup; Affiliation Country as it was markedup;Normalized Affiliation;Normalized Affiliation Country
+    PID;Collection;Publication Year;Journal Title;number label;Affiliation ID [aff1, aff2];Affiliaton as it was markedup; Affiliation Country as it was markedup;Normalized Affiliation;Normalized Affiliation Country;iso-3661
 
 input example:
 
-    27136;S0001-37652013000100001;scl;2013;An. Acad. Bras. Ciênc.;v85n1;aff1;Museu Nacional/UFRJ;Brasil;Universidade Federal do Rio de Janeiro;Brazil
+    S0001-37652013000100001|scl|2013|An. Acad. Bras. Ciênc.|v85n1|aff1|Museu Nacional/UFRJ|Brasil|Universidade Federal do Rio de Janeiro|Brazil|iso-3661
 
 CSV Total parameters size: 10
 """
@@ -17,6 +17,8 @@ import logging
 import codecs
 import re
 import argparse
+import csv
+
 from ConfigParser import SafeConfigParser
 
 from pymongo import Connection
@@ -51,6 +53,35 @@ trans_collections_code = {
     'cub': 'cub'
 }
 
+iso3661codes = [
+    'BD', 'BE', 'BF', 'BG', 'BA', 'BB', 'WF', 'BL', 'BM', 'BN', 'BO', 'BH',
+    'BI', 'BJ', 'BT', 'BU', 'BV', 'BW', 'WS', 'BQ', 'BR', 'BS', 'JE', 'WK',
+    'BX', 'BY', 'BZ', 'RU', 'RW', 'RP', 'PC', 'TL', 'JT', 'TM', 'RA', 'RC',
+    'RL', 'RM', 'RN', 'RO', 'RH', 'RI', 'TK', 'GW', 'GU', 'GT', 'GS', 'GR',
+    'GQ', 'GP', 'JP', 'GY', 'GG', 'GF', 'GE', 'GD', 'GC', 'GB', 'GA', 'SV',
+    'VN', 'GN', 'GM', 'GL', 'GI', 'GH', 'OM', 'TN', 'WV', 'WG', 'JM', 'WL',
+    'OA', 'JO', 'UN', 'TA', 'HR', 'HV', 'HT', 'HU', 'HK', 'HN', 'SU', 'HM',
+    'VD', 'VE', 'PR', 'PS', 'UA', 'PW', 'PT', 'PU', 'PZ', 'PY', 'JA', 'IQ',
+    'PA', 'PF', 'PG', 'ZW', 'PE', 'PK', 'PH', 'PI', 'PN', 'PL', 'PM', 'EM',
+    'ZM', 'EH', 'EE', 'EG', 'EF', 'EA', 'ZA', 'EC', 'IT', 'UK', 'TJ', 'EZ',
+    'EU', 'ET', 'EW', 'EV', 'EP', 'ES', 'ER', 'ME', 'MD', 'MG', 'MF', 'MA',
+    'MC', 'UZ', 'MM', 'ML', 'MO', 'MN', 'MI', 'MH', 'MK', 'MU', 'MT', 'MW',
+    'MV', 'MQ', 'MP', 'MS', 'MR', 'IM', 'UG', 'TZ', 'MY', 'MX', 'IL', 'FQ',
+    'FR', 'IO', 'FX', 'SH', 'RE', 'SJ', 'FI', 'FJ', 'FK', 'FL', 'FM', 'FO',
+    'NH', 'NI', 'IB', 'NL', 'NO', 'NA', 'VU', 'NC', 'NE', 'NF', 'NG', 'NZ',
+    'ZR', 'NP', 'NQ', 'NR', 'SO', 'NT', 'NU', 'CK', 'CI', 'CH', 'CO', 'CN',
+    'CM', 'CL', 'CC', 'CA', 'CG', 'CF', 'CD', 'CZ', 'CY', 'CX', 'WO', 'CS',
+    'CR', 'CP', 'CW', 'CV', 'CU', 'CT', 'SZ', 'SY', 'SX', 'KG', 'KE', 'SS',
+    'SR', 'KI', 'KH', 'KN', 'KM', 'ST', 'SK', 'KR', 'SI', 'KP', 'KW', 'SN',
+    'SM', 'SL', 'SC', 'KZ', 'KY', 'SG', 'SF', 'SE', 'SD', 'DO', 'DM', 'DJ',
+    'DK', 'VG', 'DG', 'DD', 'DE', 'YE', 'YD', 'DZ', 'US', 'DY', 'UY', 'YU',
+    'YT', 'YV', 'LF', 'UM', 'LB', 'LC', 'LA', 'TV', 'TW', 'TT', 'RB', 'TR',
+    'LK', 'TP', 'LI', 'LV', 'TO', 'LT', 'LU', 'LR', 'LS', 'TH', 'TF', 'TG',
+    'TD', 'TC', 'LY', 'VA', 'AC', 'VC', 'AE', 'AD', 'AG', 'AF', 'AI', 'VI',
+    'IS', 'IR', 'AM', 'AL', 'AO', 'AN', 'AQ', 'AP', 'AS', 'AR', 'AU', 'AT',
+    'AW', 'IN', 'AX', 'IC', 'AZ', 'IE', 'ID', 'SB', 'RS', 'QA', 'SA', 'MZ'
+]
+
 
 def _config_logging(logging_level='INFO', logging_file=None):
 
@@ -81,11 +112,12 @@ def is_valid_pid(pid):
     return False
 
 
-def parse_csv_line(line):
-    data = line.split(';')
-
+def parse_csv_line(data):
     parsed_data = {}
-    if len(data) != 11:
+
+    line = '|'.join(data)
+
+    if len(data) != 12:
         logging.error('line has an invalid number of fields (%s)' % line)
         return False
 
@@ -110,6 +142,7 @@ def parse_csv_line(line):
     parsed_data['markup_affiliation_country'] = data[8].strip()
     parsed_data['normalized_affiliation_name'] = data[9].strip()
     parsed_data['normalized_affiliation_country'] = data[10].strip()
+    parsed_data['normalized_affiliation_iso_3661_country'] = data[11].strip()
 
     logging.debug('line has been parsed')
 
@@ -123,14 +156,17 @@ def is_clean_checked(parsed_line, original_article):
         the original_article.
     """
     if parsed_line['pid'] != original_article.publisher_id:
-        logging.error('Invalid metadata (PID) reading line with mfn (%s)' % parsed_line['mfn'])
+        logging.error('Invalid metadata (PID) reading line (%s)' % parsed_line['mfn'])
         return False
 
     affstr = parsed_line['affiliation_index'].strip().lower()
 
     if not original_article.affiliations:
-        logging.error('Invalid metadata (Affiliation Index) reading line with mfn (%s). Record does not have affiliations' % parsed_line['mfn'])
+        logging.error('Invalid metadata (Affiliation Index) reading (%s). Record does not have affiliations' % parsed_line['mfn'])
         return False
+
+    if not parsed_line['normalized_affiliation_iso_3661_country'] in iso3661codes:
+        logging.error('Invalid metadata (Country ISO-3661 code: %s) reading line (%s).' % (parsed_line['normalized_affiliation_iso_3661_country'], parsed_line['mfn']))
 
     aff = False
     for affiliation in original_article.affiliations:
@@ -141,10 +177,10 @@ def is_clean_checked(parsed_line, original_article):
             break
 
     if not aff:
-        logging.error('Invalid metadata (Affiliation Index) reading line with mfn (%s). Record does not have a matching affiliation' % parsed_line['mfn'])
+        logging.error('Invalid metadata (Affiliation Index) reading line (%s). Record does not have a matching affiliation' % parsed_line['mfn'])
         return False
 
-    logging.debug('line was validated agains original metadata (PID, Affiliation Index)')
+    logging.debug('line was validated agains original metadata (PID, Affiliation Index, Country ISO-3661 code)')
 
     return True
 
@@ -153,11 +189,15 @@ def get_original_article(pid, collection):
     query = {'code': pid, 'collection': collection}
     try:
         json_article = scielo_network_articles.find_one(query)
+
+        if not json_article:
+            return None
+
         article = Article(json_article)
         logging.debug('original metadata retrieved from Article Meta')
         return article
     except:
-        logging.error('Fail to retrieve (%s)' % str(query))    
+        logging.error('Fail to retrieve (%s)' % str(query))
 
 
 def isis_like_json(data):
@@ -202,15 +242,20 @@ def check_affiliations(file_name='processing/normalized_affiliations.csv', impor
 
     original_article = None
 
-    with codecs.open(file_name, 'r', encoding=encoding) as f:
-        for line in f:
-            logging.debug('reading line (%s)' % line.strip())
-            parsed_line = parse_csv_line(line.strip())
+    line_count = 0
+    with codecs.open(file_name, 'r') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter='|')
+        for line in spamreader:
+            line_count += 1
 
+            logging.debug('reading line (%s)' % line_count)
+            parsed_line = parse_csv_line([str(line_count)] + line)
             if not parsed_line:
                 continue
 
-            original_article = get_original_article(parsed_line['pid'], parsed_line['collection'])
+            original_article = get_original_article(
+                parsed_line['pid'], parsed_line['collection']
+            )
 
             if not original_article:
                 continue
