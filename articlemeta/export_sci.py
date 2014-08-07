@@ -570,7 +570,7 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        for affiliation in raw.affiliations:
+        for affiliation in raw.mixed_affiliations:
 
             aff = ET.Element('aff')
             aff.set('id', affiliation['index'])
