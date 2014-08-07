@@ -951,29 +951,6 @@ class ExportTests(unittest.TestCase):
                           u'BRAZIL',
                           u'BRAZIL'], countries)
 
-
-    def test_xmlarticle_meta_affiliation_address_pipe(self):
-
-        pxml = ET.Element('articles')
-        pxml.append(ET.Element('article'))
-
-        article = pxml.find('article')
-        article.append(ET.Element('front'))
-
-        front = article.find('front')
-        front.append(ET.Element('article-meta'))
-
-        data = [self._article_meta, pxml]
-
-        xmlarticle = export_sci.XMLArticleMetaAffiliationPipe()
-        raw, xml = xmlarticle.transform(data)
-
-        address = [i.find('addr-line').text for i in xml.findall('./article/front/article-meta/aff')]
-
-        self.assertEqual([u'Belo Horizonte',
-                          u'São Paulo',
-                          u'Belo Horizonte'], address)
-
     def test_xmlarticle_meta_general_info_pub_year_pipe(self):
 
         pxml = ET.Element('articles')

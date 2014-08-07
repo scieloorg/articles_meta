@@ -563,7 +563,7 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
 
         raw, xml = data
 
-        if not raw.affiliations:
+        if not raw.mixed_affiliations:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
@@ -574,11 +574,6 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
 
             aff = ET.Element('aff')
             aff.set('id', affiliation['index'])
-
-            if 'addr_line' in affiliation:
-                addrline = ET.Element('addr-line')
-                addrline.text = affiliation['addr_line']
-                aff.append(addrline)
 
             if 'institution' in affiliation:
                 institution = ET.Element('institution')
