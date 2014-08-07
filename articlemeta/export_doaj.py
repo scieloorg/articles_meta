@@ -157,7 +157,7 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
 
         raw, xml = data
 
-        if not raw.affiliations:
+        if not raw.mixed_affiliations:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
@@ -166,7 +166,7 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
 
         affs = ET.Element('affiliationsList')
 
-        for affiliation in raw.affiliations:
+        for affiliation in raw.mixed_affiliations:
 
             if 'institution' in affiliation:
                 aff = ET.Element('affiliationName')

@@ -373,7 +373,7 @@ class XMLAffiliationCountryPipe(plumber.Pipe):
 
     def precond(data):
         raw, xml = data
-        if not raw.affiliations:
+        if not raw.mixed_affiliations:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
@@ -382,7 +382,7 @@ class XMLAffiliationCountryPipe(plumber.Pipe):
 
         countries = set()
 
-        for affiliation in raw.affiliations:
+        for affiliation in raw.mixed_affiliations:
             if 'country' in affiliation:
                 countries.add(affiliation['country'])
 
@@ -399,7 +399,7 @@ class XMLAffiliationInstitutionPipe(plumber.Pipe):
 
     def precond(data):
         raw, xml = data
-        if not raw.affiliations:
+        if not raw.mixed_affiliations:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
@@ -408,8 +408,8 @@ class XMLAffiliationInstitutionPipe(plumber.Pipe):
 
         institutions = set()
 
-        for affiliation in raw.affiliations:
-            if 'country' in affiliation:
+        for affiliation in raw.mixed_affiliations:
+            if 'institution' in affiliation:
                 institutions.add(affiliation['institution'])
 
         for institution in institutions:

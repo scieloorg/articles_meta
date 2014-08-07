@@ -522,8 +522,10 @@ class ExportTests(unittest.TestCase):
 
         result = [i.text for i in xml.findall('./field[@name="aff_institution"]')]
 
-        self.assertEqual([u'Universidade Federal de Minas Gerais', u'Universidade Federal de São Paulo'], result)
-
+        self.assertEqual(
+            sorted([u'Universidade Federal de Minas Gerais', u'Universidade Federal de São Paulo']),
+            sorted(result)
+        )
 
     def test_xml_document_affiliation_institution_without_data_pipe(self):
 
