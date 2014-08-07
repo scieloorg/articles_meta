@@ -903,9 +903,9 @@ class ExportTests(unittest.TestCase):
 
         affiliations = [i.find('institution').text for i in xml.findall('./article/front/article-meta/aff')]
 
-        self.assertEqual([u'Universidade Federal de Minas Gerais',
+        self.assertEqual(sorted([u'Universidade Federal de Minas Gerais',
                           u'Universidade Federal de São Paulo',
-                          u'Universidade Federal de Minas Gerais'], affiliations)
+                          u'Universidade Federal de Minas Gerais']), sorted(affiliations))
 
     def test_xmlarticle_meta_affiliation_index_pipe(self):
 
@@ -925,9 +925,9 @@ class ExportTests(unittest.TestCase):
 
         indexes = [i.get('id') for i in xml.findall('./article/front/article-meta/aff')]
 
-        self.assertEqual([u'A01',
+        self.assertEqual(sorted([u'A01',
                           u'A02',
-                          u'A03'], indexes)
+                          u'A03']), sorted(indexes))
 
     def test_xmlarticle_meta_affiliation_country_pipe(self):
 

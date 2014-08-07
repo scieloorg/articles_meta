@@ -113,8 +113,6 @@ class XMLCitation(object):
             year.text = raw.date[0:4]
             pdate.append(year)
 
-
-
             xml.find('./element-citation').append(pdate)
 
             return data
