@@ -10,7 +10,7 @@ input example:
 
     S0001-37652013000100001|scl|2013|An. Acad. Bras. Ciênc.|v85n1|aff1|Museu Nacional/UFRJ|Brasil|Universidade Federal do Rio de Janeiro|Brazil|iso-3661
 
-CSV Total parameters size: 10
+CSV Total parameters size: 11
 """
 import os
 import logging
@@ -127,6 +127,7 @@ def parse_csv_line(data):
         logging.error('line has an invalid PID (%s)' % line)
         return False
 
+    data[2] = data[2].strip().lower()
     if not data[2] in trans_collections_code:
         logging.error('line has an invalid collection code (%s)' % line)
         return False
@@ -155,6 +156,7 @@ def is_clean_checked(parsed_line, original_article):
         valid. To be valid it must have some similarities with
         the original_article.
     """
+
     if parsed_line['pid'] != original_article.publisher_id:
         logging.error('Invalid metadata (PID) reading line (%s)' % parsed_line['mfn'])
         return False
@@ -201,39 +203,47 @@ def get_original_article(pid, collection):
 
 
 def isis_like_json(data):
-    institution = {}
+    institutions = []
 
-    if 'affiliation_index' in data:
-        institution['i'] = data['affiliation_index'].upper()
+    for item in data:
+        institution = {}
 
-    if 'normalized_affiliation_name' in data:
-        institution['_'] = data['normalized_affiliation_name']
+        if 'affiliation_index' in item:
+            institution['i'] = item['affiliation_index'].upper()
 
-    if 'normalized_affiliation_country' in data:
-        institution['p'] = data['normalized_affiliation_country']
+        if 'normalized_affiliation_name' in item:
+            institution['_'] = item['normalized_affiliation_name']
 
-    return institution
+        if 'normalized_affiliation_iso_3661_country' in item:
+            institution['p'] = item['normalized_affiliation_iso_3661_country']
+
+        institutions.append(institution)
+
+    return institutions
 
 
-def import_affiliation(data):
-    ilj = isis_like_json(data)
+def import_doc_affiliations(data):
+
+    for key, value in data.items():
+        ilj = isis_like_json(value)
+        collection = value[0]['collection']
+        code = value[0]['pid']
 
     try:
         scielo_network_articles.update(
             {
-                'code': data['pid'],
-                'collection': data['collection']
+                'code': code,
+                'collection': collection
             },
             {
-                '$push':
-                {
+                '$set': {
                     'article.v240': ilj
                 }
             }
         )
-        logging.debug('reacording at(%s): ' % (data['pid'], str(ilj)))
+        logging.debug('reacording at(%s): ' % code)
     except:
-        logging.error('Error recording metadata at(%s): ' % (data['pid'], str(ilj)))
+        logging.error('Error recording metadata at (%s): ' % code)
 
 
 def check_affiliations(file_name='processing/normalized_affiliations.csv', import_data=False, encoding='utf-8'):
@@ -243,6 +253,7 @@ def check_affiliations(file_name='processing/normalized_affiliations.csv', impor
     original_article = None
 
     line_count = 0
+    doc_affiliations = {}
     with codecs.open(file_name, 'r') as csvfile:
         spamreader = csv.reader(csvfile, delimiter='|')
         for line in spamreader:
@@ -264,7 +275,14 @@ def check_affiliations(file_name='processing/normalized_affiliations.csv', impor
                 continue
 
             if import_data:
-                import_affiliation(parsed_data)
+                if not parsed_line['pid'] in doc_affiliations and len(doc_affiliations) == 1:
+                    import_doc_affiliations(doc_affiliations)
+                    doc_affiliations = {}
+                pl = doc_affiliations.setdefault(parsed_line['pid'], [])
+                pl.append(parsed_line)
+
+        # import the last document
+        import_doc_affiliations(doc_affiliations)
 
 if __name__ == "__main__":
 
