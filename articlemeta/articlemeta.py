@@ -190,6 +190,10 @@ def get_article(request):
             return Response(
                 Export(article).pipeline_rsps(), content_type="application/xml")
 
+        if fmt == 'xmlpubmed':
+            return Response(
+                Export(article).pipeline_pubmed(), content_type="application/xml")
+
     if fmt == 'xmliahx':
         articles = request.databroker.get_articles(code, collection)
         if articles:

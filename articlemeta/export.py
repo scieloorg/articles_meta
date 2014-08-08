@@ -8,6 +8,7 @@ import export_sci
 import export_rsps
 import export_doaj
 import export_iahx
+import export_pubmed
 
 
 class Export(object):
@@ -94,6 +95,35 @@ class Export(object):
                                export_doaj.XMLArticleMetaFullTextUrlPipe(),
                                export_doaj.XMLArticleMetaKeywordsPipe(),
                                export_doaj.XMLClosePipe())
+
+        transformed_data = ppl.run(xylose_article, rewrap=True)
+
+        return next(transformed_data)
+
+    def pipeline_pubmed(self):
+        xylose_article = Article(self._article, iso_format='iso 639-2')
+
+        ppl = plumber.Pipeline(export_pubmed.SetupArticleSetPipe(),
+                               export_pubmed.XMLArticlePipe(),
+                               export_pubmed.XMLJournalPipe(),
+                               export_pubmed.XMLPublisherNamePipe(),
+                               export_pubmed.XMLJournalTitlePipe(),
+                               export_pubmed.XMLISSNPipe(),
+                               export_pubmed.XMLVolumePipe(),
+                               export_pubmed.XMLIssuePipe(),
+                               export_pubmed.XMLPubDatePipe(),
+                               export_pubmed.XMLReplacesPipe(),
+                               export_pubmed.XMLArticleTitlePipe(),
+                               export_pubmed.XMLFirstPagePipe(),
+                               export_pubmed.XMLLastPagePipe(),
+                               export_pubmed.XMLElocationIDPipe(),
+                               export_pubmed.XMLLanguagePipe(),
+                               export_pubmed.XMLAuthorListPipe(),
+                               export_pubmed.XMLPublicationTypePipe(),
+                               export_pubmed.XMLArticleIDListPipe(),
+                               export_pubmed.XMLHistoryPipe(),
+                               export_pubmed.XMLAbstractPipe(),
+                               export_pubmed.XMLClosePipe())
 
         transformed_data = ppl.run(xylose_article, rewrap=True)
 
