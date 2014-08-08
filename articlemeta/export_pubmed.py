@@ -45,7 +45,7 @@ class XMLPublisherNamePipe(plumber.Pipe):
         publishername = ET.Element('PublisherName')
         publishername.text = raw.publisher_name
 
-        xml.find('./Journal').append(publishername)
+        xml.find('./Article/Journal').append(publishername)
 
         return data
 
@@ -58,7 +58,7 @@ class XMLJournalTitlePipe(plumber.Pipe):
         journaltitle = ET.Element('JournalTitle')
         journaltitle.text = raw.journal_title
 
-        xml.find('./Journal').append(journaltitle)
+        xml.find('./Article/Journal').append(journaltitle)
 
         return data
 
@@ -71,7 +71,7 @@ class XMLISSNPipe(plumber.Pipe):
         issn = ET.Element('Issn')
         issn.text = raw.any_issn(priority='print')
 
-        xml.find('./Journal').append(issn)
+        xml.find('./Article/Journal').append(issn)
 
         return data
 
@@ -84,7 +84,7 @@ class XMLVolumePipe(plumber.Pipe):
         volume = ET.Element('Volume')
         volume.text = raw.volume
 
-        xml.find('./Journal').append(volume)
+        xml.find('./Article/Journal').append(volume)
 
         return data
 
@@ -97,7 +97,7 @@ class XMLIssuePipe(plumber.Pipe):
         issue = ET.Element('Issue')
         issue.text = raw.issue
 
-        xml.find('./Journal').append(issue)
+        xml.find('./Article/Journal').append(issue)
 
         return data
 
@@ -128,7 +128,7 @@ class XMLPubDatePipe(plumber.Pipe):
             day.text = raw.publication_date[8:10]
             pubdate.append(day)
 
-        xml.find('./Journal').append(pubdate)
+        xml.find('./Article/Journal').append(pubdate)
 
         return data
 
@@ -255,6 +255,7 @@ class XMLPublicationTypePipe(plumber.Pipe):
         raw, xml = data
 
         publicationtype = ET.Element('PublicationType')
+        publicationtype.text = raw.document_type
 
         xml.find('./Article').append(publicationtype)
 

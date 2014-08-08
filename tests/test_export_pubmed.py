@@ -65,14 +65,16 @@ class ExportTests(unittest.TestCase):
 
         pxml = ET.Element('ArticleSet')
         pxml.append(ET.Element('Article'))
-        pxml.append(ET.Element('Journal'))
+
+        article = pxml.find('Article')
+        article.append(ET.Element('Journal'))
 
         data = [self._article_meta, pxml]
 
         xmlarticle = export_pubmed.XMLPublisherNamePipe()
         raw, xml = xmlarticle.transform(data)
 
-        publishername = xml.find('./Journal/PublisherName').text
+        publishername = xml.find('./Article/Journal/PublisherName').text
 
         self.assertEqual(u'Faculdade de Saúde Pública da Universidade de São Paulo', publishername)
 
@@ -80,14 +82,16 @@ class ExportTests(unittest.TestCase):
 
         pxml = ET.Element('ArticleSet')
         pxml.append(ET.Element('Article'))
-        pxml.append(ET.Element('Journal'))
+
+        article = pxml.find('Article')
+        article.append(ET.Element('Journal'))
 
         data = [self._article_meta, pxml]
 
         xmlarticle = export_pubmed.XMLJournalTitlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        journaltitle = xml.find('./Journal/JournalTitle').text
+        journaltitle = xml.find('./Article/Journal/JournalTitle').text
 
         self.assertEqual(u'Revista de Saúde Pública', journaltitle)
 
@@ -95,14 +99,16 @@ class ExportTests(unittest.TestCase):
 
         pxml = ET.Element('ArticleSet')
         pxml.append(ET.Element('Article'))
-        pxml.append(ET.Element('Journal'))
+
+        article = pxml.find('Article')
+        article.append(ET.Element('Journal'))
 
         data = [self._article_meta, pxml]
 
         xmlarticle = export_pubmed.XMLISSNPipe()
         raw, xml = xmlarticle.transform(data)
 
-        issn = xml.find('./Journal/Issn').text
+        issn = xml.find('./Article/Journal/Issn').text
 
         self.assertEqual(u'0034-8910', issn)
 
@@ -110,14 +116,16 @@ class ExportTests(unittest.TestCase):
 
         pxml = ET.Element('ArticleSet')
         pxml.append(ET.Element('Article'))
-        pxml.append(ET.Element('Journal'))
+
+        article = pxml.find('Article')
+        article.append(ET.Element('Journal'))
 
         data = [self._article_meta, pxml]
 
         xmlarticle = export_pubmed.XMLVolumePipe()
         raw, xml = xmlarticle.transform(data)
 
-        volume = xml.find('./Journal/Volume').text
+        volume = xml.find('./Article/Journal/Volume').text
 
         self.assertEqual(u'44', volume)
 
@@ -125,14 +133,16 @@ class ExportTests(unittest.TestCase):
 
         pxml = ET.Element('ArticleSet')
         pxml.append(ET.Element('Article'))
-        pxml.append(ET.Element('Journal'))
+
+        article = pxml.find('Article')
+        article.append(ET.Element('Journal'))
 
         data = [self._article_meta, pxml]
 
         xmlarticle = export_pubmed.XMLIssuePipe()
         raw, xml = xmlarticle.transform(data)
 
-        issue = xml.find('./Journal/Issue').text
+        issue = xml.find('./Article/Journal/Issue').text
 
         self.assertEqual(u'4', issue)
 
@@ -140,14 +150,16 @@ class ExportTests(unittest.TestCase):
 
         pxml = ET.Element('ArticleSet')
         pxml.append(ET.Element('Article'))
-        pxml.append(ET.Element('Journal'))
+
+        article = pxml.find('Article')
+        article.append(ET.Element('Journal'))
 
         data = [self._article_meta, pxml]
 
         xmlarticle = export_pubmed.XMLPubDatePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article /><Journal><PubDate PubStatus="ppublish"><Year>2010</Year><Month>08</Month></PubDate></Journal></ArticleSet>', ET.tostring(xml))
+        self.assertEqual('<ArticleSet><Article><Journal><PubDate PubStatus="ppublish"><Year>2010</Year><Month>08</Month></PubDate></Journal></Article></ArticleSet>', ET.tostring(xml))
 
     def test_xmlreplaces_pipe(self):
 
@@ -276,7 +288,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_pubmed.XMLPublicationTypePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article><PublicationType /></Article></ArticleSet>', ET.tostring(xml))
+        self.assertEqual('<ArticleSet><Article><PublicationType>research-article</PublicationType></Article></ArticleSet>', ET.tostring(xml))
 
     def test_xmlarticleidlist_pipe(self):
 
@@ -317,17 +329,10 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'OBJETIVO: Descrever o perfil e', abstract)
 
-    # def test_validating_against_dtd(self):
+    def test_validating_against_dtd(self):
 
-    #     xml = export.Export(self._raw_json).pipeline_pubmed()
+        xml = etree.XML(export.Export(self._raw_json).pipeline_pubmed())
 
-    #     xmlparser = etree.XMLParser(dtd_validation=True, load_dtd=True)
+        dtd = etree.DTD(open('tests/dtd/scielo_pubmed/PubMed.dtd', 'r'))
 
-    #     dtd = open('tests/dtd/scielo_pubmed/PubMed.dtd', 'r').read()
-    #     schema_root = etree.XML(dtd)
-    #     schema = etree.XMLSchema(schema_root)
-    #     xmlparser = etree.parse(schema=schema)
-
-    #     expected = etree.fromstring(xml, xmlparser).tag
-
-    #     self.assertEqual('ArticleSet', expected)
+        self.assertEqual(True, dtd.validate(xml))
