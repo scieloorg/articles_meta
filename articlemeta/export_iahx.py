@@ -4,7 +4,6 @@ import xml.etree.ElementTree as ET
 import plumber
 
 
-
 class SetupDocumentPipe(plumber.Pipe):
 
     def transform(self, data):

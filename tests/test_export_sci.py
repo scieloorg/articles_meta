@@ -1177,7 +1177,7 @@ class ExportTests(unittest.TestCase):
 
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="full_text_page"]').get('href')
 
-        self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_arttext&pid=S0034-89102010000400007', uri)
+        self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_arttext&pid=S0034-89102010000400007&lng=en&tlng=en', uri)
 
     def test_xmlarticle_meta_general_info_fulltext_uri_without_data_pipe(self):
 
@@ -1219,7 +1219,7 @@ class ExportTests(unittest.TestCase):
 
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="issue_page"]').get('href')
 
-        self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_issuetoc&pid=S0034-891020100004', uri)
+        self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_issuetoc&pid=S0034-891020100004&lng=en', uri)
 
     def test_xmlarticle_meta_general_info_issue_uri_without_data_pipe(self):
 
@@ -1261,7 +1261,7 @@ class ExportTests(unittest.TestCase):
 
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="journal_page"]').get('href')
 
-        self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_serial&pid=0034-8910', uri)
+        self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_serial&pid=0034-8910&lng=en', uri)
 
     def test_xmlarticle_meta_general_info_journal_uri_without_data_pipe(self):
 
