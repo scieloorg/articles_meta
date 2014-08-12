@@ -505,7 +505,7 @@ class ExportTests(unittest.TestCase):
 
         uri = xml.find('./record/fullTextUrl/[@format="html"]').text
 
-        self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_arttext&pid=S0034-89102010000400007', uri)
+        self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_arttext&pid=S0034-89102010000400007&lng=en&tlng=en', uri)
 
     def test_xmlarticle_meta_general_info_fulltext_uri_without_data_pipe(self):
 

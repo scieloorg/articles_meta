@@ -620,15 +620,15 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         issue.text = raw.issue
 
         issue_uri = ET.Element('self-uri')
-        issue_uri.set('href', raw.issue_url)
+        issue_uri.set('href', raw.issue_url(language='en'))
         issue_uri.set('content-type', 'issue_page')
 
         journal_uri = ET.Element('self-uri')
-        journal_uri.set('href', raw.journal_url)
+        journal_uri.set('href', raw.journal_url(language='en'))
         journal_uri.set('content-type', 'journal_page')
 
         article_uri = ET.Element('self-uri')
-        article_uri.set('href', raw.html_url)
+        article_uri.set('href', raw.html_url(language='en'))
         article_uri.set('content-type', 'full_text_page')
 
         articlemeta = xml.find('./article/front/article-meta')
@@ -641,11 +641,11 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
             articlemeta.append(fpage)
         if raw.end_page:
             articlemeta.append(lpage)
-        if raw.html_url:
+        if raw.html_url():
             articlemeta.append(article_uri)
-        if raw.issue_url:
+        if raw.issue_url():
             articlemeta.append(issue_uri)
-        if raw.journal_url:
+        if raw.journal_url():
             articlemeta.append(journal_uri)
 
         return data

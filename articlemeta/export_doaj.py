@@ -299,7 +299,7 @@ class XMLArticleMetaFullTextUrlPipe(plumber.Pipe):
 
         url = ET.Element('fullTextUrl')
         url.set('format', 'html')
-        url.text = raw.html_url
+        url.text = raw.html_url(language='en')
 
         xml.find('./record').append(url)
 
