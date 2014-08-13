@@ -205,13 +205,15 @@ class DataBroker(object):
         metadata['code_title'] = list(issns)
         metadata['collection'] = article.collection_acronym
         metadata['document_type'] = article.document_type
-        metadata['doi'] = article.doi
         metadata['publication_year'] = article.publication_date[0:4]
         metadata['validated_scielo'] = 'False'
         metadata['validated_wos'] = 'False'
         metadata['sent_wos'] = 'False'
         metadata['sent_doaj'] = 'False'
         metadata['applicable'] = 'False'
+
+        if article.doi:
+            metadata['doi'] = article.doi
 
         try:
             metadata['processing_date'] = article.processing_date
