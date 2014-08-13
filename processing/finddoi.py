@@ -171,7 +171,7 @@ def load_articles_doi_from_crossref(mongo_uri=settings['app']['mongo_uri']):
     except:
         logging.error('Failing to MongoDB database at %s' % mongo_uri)
 
-    regs = coll.find({'article.doi': {'$exists': 0}}, {'code': 1, 'collection': 1})
+    regs = coll.find({'doi': {'$exists': 0}}, {'code': 1, 'collection': 1})
 
     for code, collection in [[i['code'], i['collection']] for i in regs]:
         article = Article(coll.find_one({'code': code, 'collection': collection}, {'citations': 0, '_id': 0}))
@@ -180,7 +180,7 @@ def load_articles_doi_from_crossref(mongo_uri=settings['app']['mongo_uri']):
         doi = search_doi(article)
 
         if doi:
-            coll.update({'code': code, 'collection': collection}, {'$set': {'article.doi': doi}})
+            coll.update({'code': code, 'collection': collection}, {'$set': {'doi': doi}})
             logging.debug('DOI (%s) Registered for (%s)' % (doi.upper().replace('HTTP://DX.DOI.ORG/',''), code))
 
 

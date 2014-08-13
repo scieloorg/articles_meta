@@ -212,6 +212,9 @@ class DataBroker(object):
         metadata['sent_doaj'] = 'False'
         metadata['applicable'] = 'False'
 
+        if article.doi:
+            metadata['doi'] = article.doi
+
         try:
             metadata['processing_date'] = article.processing_date
         except:
