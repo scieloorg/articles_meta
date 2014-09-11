@@ -587,7 +587,7 @@ class XMLArticleMetaContribGroupPipe(plumber.Pipe):
             for xr in author.get('xref', []):
                 xref = ET.Element('xref')
                 xref.set('ref-type', 'aff')
-                xref.set('rid', xr)
+                xref.set('rid', xr.upper())
                 contrib.append(xref)
 
             contribgroup.append(contrib)
@@ -613,7 +613,7 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
         for affiliation in raw.mixed_affiliations:
 
             aff = ET.Element('aff')
-            aff.set('id', affiliation['index'])
+            aff.set('id', affiliation['index'].upper())
 
             if 'institution' in affiliation:
                 institution = ET.Element('institution')
