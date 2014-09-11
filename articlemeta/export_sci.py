@@ -11,6 +11,8 @@ class XMLCitation(object):
                                      self.RefIdPipe(),
                                      self.ElementCitationPipe(),
                                      self.ArticleTitlePipe(),
+                                     self.ThesisTitlePipe(),
+                                     self.LinkTitlePipe(),
                                      self.SourcePipe(),
                                      self.DatePipe(),
                                      self.StartPagePipe(),
@@ -83,6 +85,44 @@ class XMLCitation(object):
             source = ET.Element('source')
 
             source.text = raw.source
+
+            xml.find('./element-citation').append(source)
+
+            return data
+
+    class ThesisTitlePipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if not raw.thesis_title:
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            source = ET.Element('source')
+
+            source.text = raw.thesis_title
+
+            xml.find('./element-citation').append(source)
+
+            return data
+
+    class LinkTitlePipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if not raw.link_title:
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            source = ET.Element('source')
+
+            source.text = raw.link_title
 
             xml.find('./element-citation').append(source)
 
