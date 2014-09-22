@@ -5,6 +5,7 @@ They are stored into a zip file.
 This processing always harvest the entire database to garantee that all the 
 documents are up to date.
 """
+import os
 import logging
 import zipfile
 import datetime
@@ -13,6 +14,8 @@ import requests
 import argparse
 
 ARTICLEMETA = 'http://192.168.1.162:7000/api/v1/'
+
+trans_acronym = {'scl': 'bra'}
 
 def load_documents():
     offset=0
@@ -31,8 +34,19 @@ def load_documents():
             logging.debug('Loading url: %s' % url_document)
             document = requests.get(url_document)
             yield ('%s_%s' % (collection, code), document.text)
-
+        
+            raise StopIteration
         offset+=1000
+
+def getschema():
+
+    try:
+        xsd = requests.get('https://raw.githubusercontent.com/scieloorg/articles_meta/master/tests/xsd/scielo_sci/ThomsonReuters_publishing.xsd').text
+        logging.debug('Schema download')
+        return xsd
+    except:
+        logging.error('Schema download fail')
+    
 
 def dumpdata(*args, **xargs):
     zip_name = xargs['file_name']
@@ -40,12 +54,19 @@ def dumpdata(*args, **xargs):
     logging.debug('Creating zip file: %s' % zip_name)
     with zipfile.ZipFile(zip_name, 'w', allowZip64=True) as thezip:
         for document in load_documents():
-            xml_file_name = '%s.xml' % document[0]
+            collection = trans_acronym[document[0][0:3]] if document[0][0:3] in trans_acronym else document[0][0:3]
+            issn = document[0][5:14]
+            pid = document[0][5:]
+            xml_file_name = '{0}/{1}/{2}.xml'.format(collection, issn, pid)
             thezip.writestr(xml_file_name, bytes(document[1].encode('utf-8')))
-        
-        readme = bytes("Documents updated at:" % datetime.datetime.now().isoformat())
 
-        thezip.writestr("README.txt", readme)
+        readmef = open(os.path.dirname(__file__)+'templates/dumparticle_readme.txt', 'r').read()
+        readme = '{0}\r\n* Documents updated at: {1}\r\n'.format(readmef, datetime.datetime.now().isoformat())
+
+        thezip.writestr("README.txt", bytes(readme))
+        xsd = getschema()
+        if xsd:
+            thezip.writestr("schema/ThomsonReuters_publishing.xsd", bytes(xsd))
 
 def _config_logging(logging_level='INFO', logging_file=None):
 
