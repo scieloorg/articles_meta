@@ -60,7 +60,7 @@ def dumpdata(*args, **xargs):
             xml_file_name = '{0}/{1}/{2}.xml'.format(collection, issn, pid)
             thezip.writestr(xml_file_name, bytes(document[1].encode('utf-8')))
 
-        readmef = open(os.path.dirname(__file__)+'templates/dumparticle_readme.txt', 'r').read()
+        readmef = open(os.path.dirname(__file__)+'/templates/dumparticle_readme.txt', 'r').read()
         readme = '{0}\r\n* Documents updated at: {1}\r\n'.format(readmef, datetime.datetime.now().isoformat())
 
         thezip.writestr("README.txt", bytes(readme))
