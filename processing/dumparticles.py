@@ -34,8 +34,6 @@ def load_documents():
             logging.debug('Loading url: %s' % url_document)
             document = requests.get(url_document)
             yield ('%s_%s' % (collection, code), document.text)
-        
-            raise StopIteration
         offset+=1000
 
 def getschema():
