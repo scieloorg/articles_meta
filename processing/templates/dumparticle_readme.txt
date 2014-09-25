@@ -1,8 +1,13 @@
 SciELO Network Dump Data
 ========================
 
+Use Lincense
+------------
+
+All content of this zipfile are under the license (CCBY - http://creativecommons.org/licenses/by/4.0/).
+
 Collections acronym
-===================
+-------------------
 
 arg: Argentina
 bra: Brazil
@@ -19,6 +24,6 @@ ven: Venezuela
 spa: Public Health
 
 About
-=====
+-----
 
 * Schema is available in folder "xsd"

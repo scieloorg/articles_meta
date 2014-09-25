@@ -49,8 +49,8 @@ def getschema():
 def dumpdata(*args, **xargs):
     zip_name = xargs['file_name']
 
-    logging.debug('Creating zip file: %s' % zip_name)
-    with zipfile.ZipFile(zip_name, 'w', allowZip64=True) as thezip:
+    logging.info('Creating zip file: %s' % zip_name)
+    with zipfile.ZipFile(zip_name, 'w', compression=zipFile.ZIP_DEFLATED, zipfile allowZip64=True) as thezip:
         for document in load_documents():
             collection = trans_acronym[document[0][0:3]] if document[0][0:3] in trans_acronym else document[0][0:3]
             issn = document[0][5:14]
@@ -65,6 +65,8 @@ def dumpdata(*args, **xargs):
         xsd = getschema()
         if xsd:
             thezip.writestr("schema/ThomsonReuters_publishing.xsd", bytes(xsd))
+
+    logging.info('Zip created: %s' % zip_name)
 
 def _config_logging(logging_level='INFO', logging_file=None):
 
