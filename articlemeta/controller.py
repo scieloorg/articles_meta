@@ -246,7 +246,7 @@ class DataBroker(object):
 
         return metadata
 
-    def journal(self, collection=None, issn=None):
+    def get_journal(self, collection=None, issn=None):
 
         fltr = {}
 
@@ -377,13 +377,27 @@ class DataBroker(object):
 
         return result
 
-    def get_article(self, code, collection=None):
+    def get_article(self, code, collection=None, replace_journal_metadata=False):
+        """
+            replace_journal_metadata: replace the content of the title attribute
+            that cames with the article record. The content is replaced by the
+            oficial and updated journal record. This may be used in cases that
+            the developer intent to retrive the must recent journal data instead
+            of the journal data recorded when the article was inserted in the 
+            collection.
+        """
 
         fltr = {'code': code}
         if collection:
             fltr['collection'] = collection
 
         data = self.db['articles'].find_one(fltr)
+
+        if replace_journal_metadata:
+            journal = self.get_journal(collection=collection, issn=data['title']['v400'][0]['_'])
+
+            if journal and len(journal) == 1:
+                data['title'] = journal[0]
 
         if not data:
             return None

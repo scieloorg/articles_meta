@@ -48,13 +48,13 @@ def collection(request):
 
 @view_config(route_name='journal',
              request_method='GET')
-def journal(request):
+def get_journal(request):
 
     fmt = request.GET.get('format', 'json')
     collection = request.GET.get('collection', None)
     issn = request.GET.get('issn', None)
 
-    journal = request.databroker.journal(collection=collection, issn=issn)
+    journal = request.databroker.get_journal(collection=collection, issn=issn)
 
     return Response(json.dumps(journal), content_type="application/json")
 
@@ -175,7 +175,9 @@ def get_article(request):
     collection = request.GET.get('collection', None)
     fmt = request.GET.get('format', 'json')
 
-    article = request.databroker.get_article(code, collection)
+    article = request.databroker.get_article(
+        code, collection=collection, replace_journal_metadata=True
+    )
 
     if article:
         if fmt == 'xmlwos':
@@ -195,7 +197,9 @@ def get_article(request):
                 Export(article).pipeline_pubmed(), content_type="application/xml")
 
     if fmt == 'xmliahx':
-        articles = request.databroker.get_articles(code, collection)
+        articles = request.databroker.get_articles(
+            code, collection=collection, replace_journal_metadata=True
+        )
         if articles:
             return Response(Export(articles).pipeline_iahx(), content_type="application/xml")
 
