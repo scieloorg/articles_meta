@@ -1,7 +1,8 @@
-porteira
 pymongo==2.5.2
 uuid==1.30
 pyramid
+waitress
+gunicorn
 -e git+ssh://git@github.com/scieloorg/xylose.git#egg=xylose
 -e git+git://github.com/gustavofonseca/plumber.git#egg=plumber
 lxml
