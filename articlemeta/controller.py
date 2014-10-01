@@ -393,14 +393,15 @@ class DataBroker(object):
 
         data = self.db['articles'].find_one(fltr)
 
+        if not data:
+            return None
+
         if replace_journal_metadata:
             journal = self.get_journal(collection=collection, issn=data['title']['v400'][0]['_'])
 
             if journal and len(journal) == 1:
                 data['title'] = journal[0]
 
-        if not data:
-            return None
 
         del(data['_id'])
 
