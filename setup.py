@@ -12,7 +12,6 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
 requires = [
     'uuid==1.30',
     'pymongo==2.5.2',
-    'porteira'
     'pyramid',
     'pyramid_chameleon',
     'pyramid_debugtoolbar',
