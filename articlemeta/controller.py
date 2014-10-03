@@ -7,7 +7,14 @@ from xylose.scielodocument import Article
 
 
 def remove_accents(data):
-    return ''.join(x for x in unicodedata.normalize('NFKD', data) if unicodedata.category(x)[0] == 'L').lower()
+
+    if not isinstance(data, unicode):
+        unicode(data)
+
+    try:
+        return u''.join(x for x in unicodedata.normalize('NFKD', data) if unicodedata.category(x)[0] == 'L').lower()
+    except:
+        return u''
 
 
 def gen_citations_title_keys(article):
@@ -37,7 +44,11 @@ def gen_citations_title_keys(article):
             if not title:
                 continue
 
-            titles.add(remove_accents(title))
+            noaccents_title = remove_accents(title)
+            if not noaccents_title:
+                continue
+            
+            titles.add(noaccents_title)
 
         if len(titles) == 0:
             return []
@@ -65,7 +76,12 @@ def gen_citations_title_keys(article):
 
             start_page = citation.start_page or ''
             end_page = citation.end_page or ''
-            titles.add(remove_accents(title)+start_page+end_page)
+
+            noaccents_title = remove_accents(title)
+            if not noaccents_title:
+                continue
+
+            titles.add(noaccents_title+start_page+end_page)
 
 
         if len(titles) == 0:
@@ -110,7 +126,11 @@ def gen_citations_title_keys(article):
 
             data.append(author)
 
-            key = remove_accents(''.join(data))
+            noaccents_title_author = remove_accents(''.join(data))
+            if not noaccents_title_author:
+                continue
+
+            key = remove_accents(noaccents_title_author)
 
             key += citation.date[0:4]
 
@@ -168,7 +188,10 @@ def gen_title_keys(article):
     no_accents_strings = []
     no_accents_strings_author_year = []
     for title in titles:
-        ra = remove_accents(title)
+        noaccents_title = remove_accents(title)
+        if not noaccents_title:
+            continue
+        ra = noaccents_title
         no_accents_strings.append(ra)
 
         if not article.authors:
