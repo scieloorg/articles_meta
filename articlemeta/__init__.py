@@ -16,14 +16,12 @@ def main(global_config, **settings):
         port=db_url.port
     )
 
-    def add_database():
-        db = config.registry.db[db_url.path[1:]]
-        if db_url.username and db_url.password:
-            db.authenticate(db_url.username, db_url.password)
-        return db
+    db = config.registry.db[db_url.path[1:]]
+    if db_url.username and db_url.password:
+        db.authenticate(db_url.username, db_url.password)
 
     def add_databroker(request):
-        return controller.DataBroker(add_database())
+        return controller.DataBroker(db)
 
     config.add_route('index', '/')
     config.add_route('collection', '/api/v1/collection')
