@@ -50,7 +50,7 @@ def dumpdata(*args, **xargs):
     zip_name = xargs['file_name']
 
     logging.info('Creating zip file: %s' % zip_name)
-    with zipfile.ZipFile(zip_name, 'w', compression=zipFile.ZIP_DEFLATED, zipfile allowZip64=True) as thezip:
+    with zipfile.ZipFile(zip_name, 'w', compression=zipfile.ZIP_DEFLATED, allowZip64=True) as thezip:
         for document in load_documents():
             collection = trans_acronym[document[0][0:3]] if document[0][0:3] in trans_acronym else document[0][0:3]
             issn = document[0][5:14]
