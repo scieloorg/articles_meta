@@ -13,7 +13,7 @@ import datetime
 import requests
 import argparse
 
-ARTICLEMETA = 'http://192.168.1.162:7000/api/v1/'
+ARTICLEMETA = 'http://articlemeta.scielo.org/api/v1/'
 
 trans_acronym = {'scl': 'bra'}
 
