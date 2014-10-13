@@ -430,7 +430,7 @@ class DataBroker(object):
 
         return data
 
-    def get_articles(self, code, collection=None):
+    def get_articles(self, code, collection=None, replace_journal_metadata=False):
 
         fltr = {'code': code}
         if collection:
@@ -438,10 +438,14 @@ class DataBroker(object):
 
         data = self.db['articles'].find(fltr, {'_id': 0})
 
-        if not data.count():
-            return None
+        for article in data:
+            if replace_journal_metadata:
+                journal = self.get_journal(collection=collection, issn=article['title']['v400'][0]['_'])
 
-        return data
+                if journal and len(journal) == 1:
+                    article['title'] = journal[0]
+
+            yield article
 
     def exists_article(self, code, collection=None):
 
