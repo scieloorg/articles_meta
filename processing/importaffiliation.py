@@ -32,9 +32,9 @@ settings = dict(config.items())
 REGEX_ARTICLE = re.compile("^S[0-9]{4}-[0-9]{3}[0-9xX][0-2][0-9]{3}[0-9]{4}[0-9]{5}$")
 
 try:
-    scielo_network_articles = Connection(settings['app']['mongo_uri'])['scielo_network']['articles']
+    scielo_network_articles = Connection(settings['app:main']['mongo_uri'])['scielo_network']['articles']
 except:
-    logging.error('Fail to connect to (%s)' % settings['app']['mongo_uri'])
+    logging.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
 
 
 trans_collections_code = {
@@ -256,33 +256,37 @@ def check_affiliations(file_name='processing/normalized_affiliations.csv', impor
     doc_affiliations = {}
     with codecs.open(file_name, 'r') as csvfile:
         spamreader = csv.reader(csvfile, delimiter='|')
+        lines = []
         for line in spamreader:
-            line_count += 1
+            lines.append(line)
 
-            logging.debug('reading line (%s)' % line_count)
-            parsed_line = parse_csv_line([str(line_count)] + line)
-            if not parsed_line:
-                continue
+    for line in sorted(lines):
+        line_count += 1
 
-            original_article = get_original_article(
-                parsed_line['pid'], parsed_line['collection']
-            )
+        logging.debug('reading line (%s)' % line_count)
+        parsed_line = parse_csv_line([str(line_count)] + line)
+        if not parsed_line:
+            continue
 
-            if not original_article:
-                continue
+        original_article = get_original_article(
+            parsed_line['pid'], parsed_line['collection']
+        )
 
-            if not is_clean_checked(parsed_line, original_article):
-                continue
+        if not original_article:
+            continue
 
-            if import_data:
-                if not parsed_line['pid'] in doc_affiliations and len(doc_affiliations) == 1:
-                    import_doc_affiliations(doc_affiliations)
-                    doc_affiliations = {}
-                pl = doc_affiliations.setdefault(parsed_line['pid'], [])
-                pl.append(parsed_line)
+        if not is_clean_checked(parsed_line, original_article):
+            continue
 
-        # import the last document
-        import_doc_affiliations(doc_affiliations)
+        if import_data:
+            if not parsed_line['pid'] in doc_affiliations and len(doc_affiliations) == 1:
+                import_doc_affiliations(doc_affiliations)
+                doc_affiliations = {}
+            pl = doc_affiliations.setdefault(parsed_line['pid'], [])
+            pl.append(parsed_line)
+
+            # import the last document
+            import_doc_affiliations(doc_affiliations)
 
 if __name__ == "__main__":
 
