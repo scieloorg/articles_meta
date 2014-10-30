@@ -1,6 +1,6 @@
 # coding: utf-8
 import unittest
-import xml.etree.ElementTree as ET
+from lxml import etree as ET
 import json
 import os
 
@@ -398,7 +398,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_sci.XMLClosePipe()
         xml = xmlarticle.transform(data)
 
-        self.assertEqual('<articles><article /></articles>', xml)
+        self.assertEqual('<articles><article/></articles>', xml)
 
     def test_setuppipe_element_name(self):
 
@@ -416,12 +416,9 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_sci.SetupArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        attributes = ['xmlns:xsi',
-                      'xmlns:xlink',
-                      'dtd-version',
-                      'xsi:noNamespaceSchemaLocation']
+        attributes = sorted(['dtd-version', '{http://www.w3.org/2001/XMLSchema-instance}schemaLocation'])
 
-        self.assertEqual(attributes, xml.keys())
+        self.assertEqual(attributes, sorted(xml.keys()))
 
     def test_xmlarticle_pipe(self):
 
@@ -432,7 +429,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_sci.XMLArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<articles><article article-type="research-article" lang_id="pt" /></articles>', ET.tostring(xml))
+        self.assertEqual('<articles><article lang_id="pt" article-type="research-article"/></articles>', ET.tostring(xml))
 
     def test_xmlfront_pipe(self):
 
@@ -444,7 +441,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_sci.XMLFrontPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<articles><article><front><journal-meta /><article-meta /></front></article></articles>', ET.tostring(xml))
+        self.assertEqual('<articles><article><front><journal-meta/><article-meta/></front></article></articles>', ET.tostring(xml))
 
     def test_xmljournal_id_pipe(self):
 

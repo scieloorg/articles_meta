@@ -1,6 +1,6 @@
 # coding: utf-8
 import unittest
-import xml.etree.ElementTree as ET
+from lxml import etree as ET
 import json
 import os
 
@@ -380,7 +380,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLClosePipe()
         xml = xmlarticle.transform(data)
 
-        self.assertEqual('<article />', xml)
+        self.assertEqual('<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.0 20120330//EN" "JATS-journalpublishing1.dtd">\n<article/>', xml)
 
     def test_setuppipe_element_name(self):
 
@@ -398,12 +398,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.SetupArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertTrue('xmlns:xsi' in xml.keys())
-        self.assertTrue('xmlns:xlink' in xml.keys())
         self.assertTrue('dtd-version' in xml.keys())
-        self.assertTrue('xmlns:mml' in xml.keys())
-        self.assertTrue('xmlns:xml' in xml.keys())
-        self.assertTrue('xsi:noNamespaceSchemaLocation' in xml.keys())
 
     def test_xmlarticle_pipe(self):
 
@@ -414,7 +409,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<article article-type="research-article" xml:lang="pt" />', ET.tostring(xml))
+        self.assertEqual('<article lang="pt" article-type="research-article"/>', ET.tostring(xml))
 
     def test_xmlfront_pipe(self):
 
@@ -425,7 +420,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLFrontPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<article><front><journal-meta /><article-meta /></front></article>', ET.tostring(xml))
+        self.assertEqual('<article><front><journal-meta/><article-meta/></front></article>', ET.tostring(xml))
 
     def test_xmljournal_id_pipe(self):
 
@@ -1115,7 +1110,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticleMetaKeywordsPipe()
         raw, xml = xmlarticle.transform(data)
 
-        keywords_language = [i.get('xml:lang') for i in xml.findall('./front/article-meta/kwd-group')]
+        keywords_language = [i.get('lang') for i in xml.findall('./front/article-meta/kwd-group')]
 
         self.assertEqual([u'en', u'es', u'pt'], keywords_language)
 
@@ -1183,16 +1178,3 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(23, citations)
 
-    def test_validating_against_schema(self):
-
-        xml = export.Export(self._raw_json).pipeline_rsps()
-
-        xsd = open('tests/xsd/scielo_rsps/SciELO-journalpublishing1.xsd', 'r').read()
-        schema_root = etree.XML(xsd)
-
-        schema = etree.XMLSchema(schema_root)
-        xmlparser = etree.XMLParser(schema=schema)
-
-        expected = etree.fromstring(xml, xmlparser).tag
-
-        self.assertEqual('article', expected)

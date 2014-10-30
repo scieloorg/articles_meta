@@ -1,5 +1,5 @@
 # coding: utf-8
-import xml.etree.ElementTree as ET
+from lxml import etree as ET
 import plumber
 
 from xylose.scielodocument import Article

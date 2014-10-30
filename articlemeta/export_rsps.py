@@ -1,5 +1,5 @@
 #coding: utf-8
-import xml.etree.ElementTree as ET
+from lxml import etree as ET
 
 import plumber
 
@@ -284,11 +284,11 @@ class SetupArticlePipe(plumber.Pipe):
     def transform(self, data):
 
         xml = ET.Element('article')
-        xml.set('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-        xml.set('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
-        xml.set('xmlns:mml', 'http://www.w3.org/1998/Math/MathML')
-        xml.set('xmlns:xml', 'http://www.w3.org/XML/1998/namespace')
-        xml.set('xsi:noNamespaceSchemaLocation', 'http://static.scielo.org/sps/schema/SciELO-journalpublishing1.xsd')
+        # xml.set('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+        # xml.set('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
+        # xml.set('xmlns:mml', 'http://www.w3.org/1998/Math/MathML')
+        # xml.set('xmlns:xml', 'http://www.w3.org/XML/1998/namespace')
+        # xml.set('xsi:noNamespaceSchemaLocation', 'http://static.scielo.org/sps/schema/SciELO-journalpublishing1.xsd')
         xml.set('dtd-version', '1.0')
 
         return data, xml
@@ -299,7 +299,7 @@ class XMLArticlePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        xml.set('xml:lang', raw.original_language())
+        xml.set('lang', raw.original_language())
         xml.set('article-type', raw.document_type)
 
         return data
@@ -451,7 +451,7 @@ class XMLArticleMetaTitleGroupPipe(plumber.Pipe):
         raw, xml = data
 
         articletitle = ET.Element('article-title')
-        articletitle.set('xml:lang', raw.original_language())
+        articletitle.set('lang', raw.original_language())
 
         articletitle.text = raw.original_title()
 
@@ -481,7 +481,7 @@ class XMLArticleMetaTranslatedTitleGroupPipe(plumber.Pipe):
             transtitle.text = title
 
             transtitlegrp = ET.Element('trans-title-group')
-            transtitlegrp.set('xml:lang', lang)
+            transtitlegrp.set('lang', lang)
             transtitlegrp.append(transtitle)
 
             xml.find('./front/article-meta/title-group').append(transtitlegrp)
@@ -628,7 +628,7 @@ class XMLArticleMetaAbstractsPipe(plumber.Pipe):
         p.text = raw.original_abstract()
 
         abstract = ET.Element('abstract')
-        abstract.set('xml:lang', raw.original_language())
+        abstract.set('lang', raw.original_language())
         abstract.append(p)
 
         articlemeta = xml.find('./front/article-meta')
@@ -642,7 +642,7 @@ class XMLArticleMetaAbstractsPipe(plumber.Pipe):
                 p.text = text
 
                 abstract = ET.Element('trans-abstract')
-                abstract.set('xml:lang', lang)
+                abstract.set('lang', lang)
                 abstract.append(p)
 
                 articlemeta.append(abstract)
@@ -661,7 +661,7 @@ class XMLArticleMetaKeywordsPipe(plumber.Pipe):
 
             for lang, keywords in raw.keywords().items():
                 kwdgroup = ET.Element('kwd-group')
-                kwdgroup.set('xml:lang', lang)
+                kwdgroup.set('lang', lang)
                 kwdgroup.set('kwd-group-type', 'author-generated')
                 for keyword in keywords:
                     kwd = ET.Element('kwd')
@@ -689,7 +689,7 @@ class XMLArticleMetaKeywordsPipe(plumber.Pipe):
 
         for lang, keywords in raw.keywords().items():
             kwdgroup = ET.Element('kwd-group')
-            kwdgroup.set('xml:lang', lang)
+            kwdgroup.set('lang', lang)
             kwdgroup.set('kwd-group-type', 'author-generated')
             for keyword in keywords:
                 kwd = ET.Element('kwd')
@@ -733,6 +733,6 @@ class XMLClosePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        data = ET.tostring(xml, encoding="utf-8", method="xml")
+        data = ET.tostring(xml, encoding="utf-8", method="xml", doctype='<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.0 20120330//EN" "JATS-journalpublishing1.dtd">')
 
         return data
