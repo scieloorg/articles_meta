@@ -1,6 +1,7 @@
 # coding: utf-8
 import unicodedata
 from datetime import datetime, timedelta
+import urlparse
 
 import pymongo
 from xylose.scielodocument import Article
@@ -47,7 +48,7 @@ def gen_citations_title_keys(article):
             noaccents_title = remove_accents(title)
             if not noaccents_title:
                 continue
-            
+
             titles.add(noaccents_title)
 
         if len(titles) == 0:
@@ -208,10 +209,42 @@ def gen_title_keys(article):
     return title_keys
 
 
+def get_dbconn(db_dsn):
+    """Connects to the MongoDB server and returns a database handler.
+    """
+    db_url = urlparse.urlparse(db_dsn)
+    conn = pymongo.Connection(host=db_url.hostname, port=db_url.port)
+    db = conn[db_url.path[1:]]
+    if db_url.username and db_url.password:
+        db.authenticate(db_url.username, db_url.password)
+
+    return db
+
+
 class DataBroker(object):
+    _dbconn_cache = {}
 
     def __init__(self, databroker):
         self.db = databroker
+
+    @classmethod
+    def from_dsn(cls, db_dsn, reuse_dbconn=False):
+        """Returns a DataBroker instance for a given DSN.
+
+        :param db_dsn: Domain Service Name, i.e. mongodb://192.168.1.162:27017/scielo_network
+        :reuse_dbconn: (optional) If connections to MongoDB must be reused
+        """
+        if reuse_dbconn:
+            cached_db = cls._dbconn_cache.get(db_dsn)
+            if cached_db is None:
+                db = get_dbconn(db_dsn)
+                cls._dbconn_cache[db_dsn] = db
+            else:
+                db = cached_db
+        else:
+            db = get_dbconn(db_dsn)
+
+        return cls(db)
 
     def _check_article_meta(self, metadata):
         """
@@ -406,7 +439,7 @@ class DataBroker(object):
             that cames with the article record. The content is replaced by the
             oficial and updated journal record. This may be used in cases that
             the developer intent to retrive the must recent journal data instead
-            of the journal data recorded when the article was inserted in the 
+            of the journal data recorded when the article was inserted in the
             collection.
         """
 
