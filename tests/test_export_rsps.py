@@ -436,7 +436,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLJournalMetaJournalIdPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<article><front><journal-meta><journal-id journal-id-type="publisher">rsp</journal-id></journal-meta></front></article>', ET.tostring(xml))
+        self.assertEqual('<article><front><journal-meta><journal-id journal-id-type="publisher-id">rsp</journal-id></journal-meta></front></article>', ET.tostring(xml))
 
     def test_xmljournal_meta_journal_title_group_pipe(self):
 
@@ -453,12 +453,46 @@ class ExportTests(unittest.TestCase):
         raw, xml = xmlarticle.transform(data)
 
         title = xml.find('./front/journal-meta/journal-title-group/journal-title').text
-        abbrevtitle = xml.find('./front/journal-meta/journal-title-group/abbrev-journal-title').text
 
         self.assertEqual(u'Revista de Saúde Pública', title)
+
+    def test_xmljournal_meta_abbrev_journal_title_pipe(self):
+
+        pxml = ET.Element('article')
+
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('journal-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_rsps.XMLJournalMetaJournalTitleGroupPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        abbrevtitle = xml.find('./front/journal-meta/journal-title-group/abbrev-journal-title').text
+
         self.assertEqual(u'Rev. Saúde Pública', abbrevtitle)
 
-    def test_xmljournal_meta_issn_pipe(self):
+    def test_xmljournal_meta_abbrev_journal_title_pipe(self):
+
+        pxml = ET.Element('article')
+
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('journal-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_rsps.XMLJournalMetaJournalTitleGroupPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        abbrevtype = xml.find('./front/journal-meta/journal-title-group/abbrev-journal-title').get('abbrev-type')
+
+        self.assertEqual(u'publisher', abbrevtype)
+
+    def test_xmljournal_meta_print_issn_pipe(self):
 
         pxml = ET.Element('article')
         pxml.append(ET.Element('front'))
@@ -471,9 +505,29 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLJournalMetaISSNPipe()
         raw, xml = xmlarticle.transform(data)
 
-        issn = xml.find('./front/journal-meta/issn').text
+        issn = xml.find('./front/journal-meta/issn[@pub-type="ppub"]').text
 
         self.assertEqual(u'0034-8910', issn)
+
+    def test_xmljournal_meta_electronic_issn_pipe(self):
+
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('journal-meta'))
+
+        self._article_meta.data['title']['v400'][0]['_'] = 'XXXX-XXXX'
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_rsps.XMLJournalMetaISSNPipe()
+
+        raw, xml = xmlarticle.transform(data)
+
+        issn = xml.find('./front/journal-meta/issn[@pub-type="epub"]').text
+
+        self.assertEqual(u'XXXX-XXXX', issn)
 
     def test_xmljournal_meta_publisher_pipe(self):
 
@@ -567,7 +621,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticleMetaArticleCategoriesPipe()
         raw, xml = xmlarticle.transform(data)
 
-        categories = [i.text for i in xml.findall('./front/article-meta/article-categories/subj-group/subject')]
+        categories = [i.text for i in xml.findall('./front/article-meta/article-categories/subj-group[@subj-group-type="heading"]/subject')]
 
         self.assertEqual([u'PUBLIC, ENVIRONMENTAL & OCCUPATIONAL HEALTH'], categories)
 
@@ -707,8 +761,8 @@ class ExportTests(unittest.TestCase):
 
         fullnames = [i.get('rid') for i in xml.findall('./front/article-meta/contrib-group/contrib/xref')]
 
-        self.assertEqual([u'A01', u'A01', u'A01', u'A01', u'A01', u'A01', u'A02',
-                          u'A01', u'A02', u'A01', u'A03'], fullnames)
+        self.assertEqual([u'aff01', u'aff01', u'aff01', u'aff01', u'aff01', u'aff01', u'aff02',
+                          u'aff01', u'aff02', u'aff01', u'aff03'], fullnames)
 
     def test_xmlarticle_meta_contrib_group_author_without_xrefs_pipe(self):
 
@@ -728,8 +782,8 @@ class ExportTests(unittest.TestCase):
 
         fullnames = [i.get('rid') for i in xml.findall('./front/article-meta/contrib-group/contrib/xref')]
 
-        self.assertEqual([u'A01', u'A01', u'A01', u'A01', u'A01', u'A01', u'A02',
-                          u'A01', u'A02', u'A01', u'A03'], fullnames)
+        self.assertEqual([u'aff01', u'aff01', u'aff01', u'aff01', u'aff01', u'aff01', u'aff02',
+                          u'aff01', u'aff02', u'aff01', u'aff03'], fullnames)
 
     def test_xmlarticle_meta_contrib_group_without_data_pipe(self):
 
@@ -803,9 +857,9 @@ class ExportTests(unittest.TestCase):
 
         indexes = [i.get('id') for i in xml.findall('./front/article-meta/aff')]
 
-        self.assertEqual([u'A01',
-                          u'A02',
-                          u'A03'], indexes)
+        self.assertEqual([u'aff01',
+                          u'aff02',
+                          u'aff03'], indexes)
 
     def test_xmlarticle_meta_affiliation_country_pipe(self):
 

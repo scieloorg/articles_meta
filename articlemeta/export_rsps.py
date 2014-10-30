@@ -284,11 +284,7 @@ class SetupArticlePipe(plumber.Pipe):
     def transform(self, data):
 
         xml = ET.Element('article')
-        # xml.set('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-        # xml.set('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
-        # xml.set('xmlns:mml', 'http://www.w3.org/1998/Math/MathML')
-        # xml.set('xmlns:xml', 'http://www.w3.org/XML/1998/namespace')
-        # xml.set('xsi:noNamespaceSchemaLocation', 'http://static.scielo.org/sps/schema/SciELO-journalpublishing1.xsd')
+        xml.set('{http://www.w3.org/XML/1998/namespace}xml', 'http://www.w3.org/XML/1998/namespace')
         xml.set('dtd-version', '1.0')
 
         return data, xml
@@ -326,7 +322,7 @@ class XMLJournalMetaJournalIdPipe(plumber.Pipe):
 
         journalid = ET.Element('journal-id')
         journalid.text = raw.journal_acronym
-        journalid.set('journal-id-type', 'publisher')
+        journalid.set('journal-id-type', 'publisher-id')
 
         xml.find('./front/journal-meta').append(journalid)
 
@@ -342,6 +338,7 @@ class XMLJournalMetaJournalTitleGroupPipe(plumber.Pipe):
 
         journalabbrevtitle = ET.Element('abbrev-journal-title')
         journalabbrevtitle.text = raw.journal_abbreviated_title
+        journalabbrevtitle.set('abbrev-type', 'publisher')
 
         journaltitlegroup = ET.Element('journal-title-group')
         journaltitlegroup.append(journaltitle)
@@ -356,10 +353,17 @@ class XMLJournalMetaISSNPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        issn = ET.Element('issn')
-        issn.text = raw.any_issn()
-
-        xml.find('./front/journal-meta').append(issn)
+        if raw.journal.print_issn:
+            pissn = ET.Element('issn')
+            pissn.text = raw.journal.print_issn
+            pissn.set('pub-type', 'ppub')
+            xml.find('./front/journal-meta').append(pissn)
+        
+        if raw.journal.electronic_issn:
+            eissn = ET.Element('issn')
+            eissn.text = raw.journal.electronic_issn
+            eissn.set('pub-type', 'epub')
+            xml.find('./front/journal-meta').append(eissn)
 
         return data
 
@@ -431,10 +435,12 @@ class XMLArticleMetaArticleCategoriesPipe(plumber.Pipe):
         raw, xml = data
 
         subjectgroup = ET.Element('subj-group')
+        subjectgroup.set('subj-group-type', 'heading')
 
         for subject in raw.wos_subject_areas:
             sbj = ET.Element('subject')
             sbj.text = subject
+
             subjectgroup.append(sbj)
 
         articlecategories = ET.Element('article-categories')
@@ -528,7 +534,7 @@ class XMLArticleMetaContribGroupPipe(plumber.Pipe):
             for xr in author.get('xref', []):
                 xref = ET.Element('xref')
                 xref.set('ref-type', 'aff')
-                xref.set('rid', xr)
+                xref.set('rid', 'aff%s' % xr.upper().replace('A', ''))
                 contrib.append(xref)
 
             contribgroup.append(contrib)
@@ -554,7 +560,7 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
         for affiliation in raw.affiliations:
 
             aff = ET.Element('aff')
-            aff.set('id', affiliation['index'])
+            aff.set('id', 'aff%s' % affiliation['index'].upper().replace('A',''))
 
             if 'addr_line' in affiliation:
                 addrline = ET.Element('addr-line')
@@ -564,6 +570,7 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
             if 'institution' in affiliation:
                 institution = ET.Element('institution')
                 institution.text = affiliation['institution']
+                institution.set('content-type', 'original')
                 aff.append(institution)
 
             if 'country' in affiliation:
@@ -652,28 +659,6 @@ class XMLArticleMetaAbstractsPipe(plumber.Pipe):
 
 class XMLArticleMetaKeywordsPipe(plumber.Pipe):
 
-    def transform(self, data):
-        raw, xml = data
-
-        if raw.keywords():
-
-            articlemeta = xml.find('./front/article-meta')
-
-            for lang, keywords in raw.keywords().items():
-                kwdgroup = ET.Element('kwd-group')
-                kwdgroup.set('lang', lang)
-                kwdgroup.set('kwd-group-type', 'author-generated')
-                for keyword in keywords:
-                    kwd = ET.Element('kwd')
-                    kwd.text = keyword
-                    kwdgroup.append(kwd)
-                articlemeta.append(kwdgroup)
-
-        return data
-
-
-class XMLArticleMetaKeywordsPipe(plumber.Pipe):
-
     def precond(data):
 
         raw, xml = data
@@ -689,7 +674,7 @@ class XMLArticleMetaKeywordsPipe(plumber.Pipe):
 
         for lang, keywords in raw.keywords().items():
             kwdgroup = ET.Element('kwd-group')
-            kwdgroup.set('lang', lang)
+            kwdgroup.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
             kwdgroup.set('kwd-group-type', 'author-generated')
             for keyword in keywords:
                 kwd = ET.Element('kwd')
