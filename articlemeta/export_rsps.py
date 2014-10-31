@@ -41,8 +41,16 @@ class XMLCitation(object):
         def transform(self, data):
             raw, xml = data
 
+            translate_ptype = {
+                'article': 'journal',
+                'link': 'webpage'
+            }
+
             elementcitation = ET.Element('element-citation')
-            elementcitation.set('publication-type', raw.publication_type)
+            elementcitation.set(
+                'publication-type',
+                translate_ptype.get(raw.publication_type, raw.publication_type)
+            )
 
             xml.find('.').append(elementcitation)
 
@@ -235,7 +243,7 @@ class XMLCitation(object):
             raw, xml = data
 
             persongroup = ET.Element('person-group')
-
+            persongroup.set('person-group-type', 'author')
             if raw.authors:
                 for author in raw.authors:
                     name = ET.Element('name')
@@ -283,8 +291,13 @@ class SetupArticlePipe(plumber.Pipe):
 
     def transform(self, data):
 
-        xml = ET.Element('article')
-        xml.set('{http://www.w3.org/XML/1998/namespace}xml', 'http://www.w3.org/XML/1998/namespace')
+        nsmap = {
+            'xml': 'http://www.w3.org/XML/1998/namespace',
+            'xlink': 'http://www.w3.org/1999/xlink'
+        }
+
+        xml = ET.Element('article', nsmap=nsmap)
+        xml.set('specific-use', 'sps-1.1')
         xml.set('dtd-version', '1.0')
 
         return data, xml
@@ -295,7 +308,7 @@ class XMLArticlePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        xml.set('lang', raw.original_language())
+        xml.set('{http://www.w3.org/XML/1998/namespace}lang', raw.original_language())
         xml.set('article-type', raw.document_type)
 
         return data
@@ -457,7 +470,6 @@ class XMLArticleMetaTitleGroupPipe(plumber.Pipe):
         raw, xml = data
 
         articletitle = ET.Element('article-title')
-        articletitle.set('lang', raw.original_language())
 
         articletitle.text = raw.original_title()
 
@@ -487,7 +499,7 @@ class XMLArticleMetaTranslatedTitleGroupPipe(plumber.Pipe):
             transtitle.text = title
 
             transtitlegrp = ET.Element('trans-title-group')
-            transtitlegrp.set('lang', lang)
+            transtitlegrp.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
             transtitlegrp.append(transtitle)
 
             xml.find('./front/article-meta/title-group').append(transtitlegrp)
@@ -589,6 +601,7 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         raw, xml = data
 
         pubdate = ET.Element('pub-date')
+        pubdate.set('pub-type', 'epub-ppub')
 
         year = ET.Element('year')
         year.text = raw.publication_date[0:4]
@@ -635,7 +648,6 @@ class XMLArticleMetaAbstractsPipe(plumber.Pipe):
         p.text = raw.original_abstract()
 
         abstract = ET.Element('abstract')
-        abstract.set('lang', raw.original_language())
         abstract.append(p)
 
         articlemeta = xml.find('./front/article-meta')
@@ -649,7 +661,7 @@ class XMLArticleMetaAbstractsPipe(plumber.Pipe):
                 p.text = text
 
                 abstract = ET.Element('trans-abstract')
-                abstract.set('lang', lang)
+                abstract.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
                 abstract.append(p)
 
                 articlemeta.append(abstract)
@@ -684,6 +696,82 @@ class XMLArticleMetaKeywordsPipe(plumber.Pipe):
 
         return data
 
+class XMLArticleMetaCountsPipe(plumber.Pipe):
+
+    def transform(self, data):
+        raw, xml = data
+
+        articlemeta = xml.find('./front/article-meta')
+
+        counts = ET.Element('counts')
+
+        count_refs = ET.Element('ref-count')
+        count_refs.set('count', str(len(raw.citations)))
+
+        try:
+            startpage = int(raw.start_page)
+        except:
+            startpage = 0
+
+
+        try:
+            endpage = int(raw.end_page)
+        except:
+            endpage = 0
+
+        pages = endpage - startpage
+        if pages < 0:
+            pages = 0
+
+        count_pages = ET.Element('page-count')
+        count_pages.set('count', str(pages))
+
+        # Esses elementos possuem contagem 0 pois o legado não identifica esses elementos
+        count_fig = ET.Element('fig-count')
+        count_fig.set('count', '0')
+        count_table = ET.Element('table-count')
+        count_table.set('count', '0')
+        count_equation = ET.Element('equation-count')
+        count_equation.set('count', '0')
+
+        counts.append(count_fig)
+        counts.append(count_table)
+        counts.append(count_equation)
+        counts.append(count_refs)
+        counts.append(count_pages)
+
+        articlemeta.append(counts)
+
+        return data
+
+class XMLArticleMetaPermissionPipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.permissions:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        articlemeta = xml.find('./front/article-meta')
+
+        permissions = ET.Element('permissions')
+        dlicense = ET.Element('license')
+        dlicense.set('license-type', 'open-access')
+        dlicense.set('{http://www.w3.org/1999/xlink}href', raw.permissions['url'])
+
+        licensep = ET.Element('license-p')
+        licensep.text = raw.permissions['text']
+
+        dlicense.append(licensep)
+        permissions.append(dlicense)
+        articlemeta.append(permissions)
+
+        return data
 
 class XMLArticleMetaCitationsPipe(plumber.Pipe):
 

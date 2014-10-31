@@ -422,7 +422,7 @@ class DataBroker(object):
         if replace_journal_metadata:
             journal = self.get_journal(collection=collection, issn=data['title']['v400'][0]['_'])
 
-            if journal and len(journal) == 1:
+            if journal and len(journal) != 0:
                 data['title'] = journal[0]
 
 

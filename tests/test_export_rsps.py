@@ -50,9 +50,9 @@ class XMLCitationTests(unittest.TestCase):
 
         raw, xml = self._xmlcitation.ElementCitationPipe().transform(data)
 
-        publicationtype = xml.find('./element-citation[@publication-type="article"]').get('publication-type')
+        publicationtype = xml.find('./element-citation[@publication-type="journal"]').get('publication-type')
 
-        self.assertEqual(u'article', publicationtype)
+        self.assertEqual(u'journal', publicationtype)
 
     def test_xml_citation_article_title_pipe(self):
 
@@ -330,7 +330,7 @@ class XMLCitationTests(unittest.TestCase):
 
         raw, xml = self._xmlcitation.PersonGroupPipe().transform(data)
 
-        result = xml.find('./element-citation/person-group/name/given-names').text
+        result = xml.find('./element-citation/person-group[@person-group-type="author"]/name/given-names').text
 
         self.assertEqual('EL', result)
 
@@ -343,7 +343,7 @@ class XMLCitationTests(unittest.TestCase):
 
         raw, xml = self._xmlcitation.PersonGroupPipe().transform(data)
 
-        result = xml.find('./element-citation/person-group/name/surname').text
+        result = xml.find('./element-citation/person-group[@person-group-type="author"]/name/surname').text
 
         self.assertEqual('Bamgboye', result)
 
@@ -391,14 +391,23 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual('article', xml.tag)
 
-    def test_setuppipe_attributes(self):
+    def test_setuppipe_attributes_specific_use(self):
 
         data = [None, None]
 
         xmlarticle = export_rsps.SetupArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertTrue('dtd-version' in xml.keys())
+        self.assertTrue('sps-1.1', xml.find('.').get('specific-use'))
+
+    def test_setuppipe_attributes_dtd_version(self):
+
+        data = [None, None]
+
+        xmlarticle = export_rsps.SetupArticlePipe()
+        raw, xml = xmlarticle.transform(data)
+
+        self.assertTrue('1.0', xml.find('.').get('dtd-version'))
 
     def test_xmlarticle_pipe(self):
 
@@ -409,7 +418,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<article lang="pt" article-type="research-article"/>', ET.tostring(xml))
+        self.assertEqual('<article xml:lang="pt" article-type="research-article"/>', ET.tostring(xml))
 
     def test_xmlfront_pipe(self):
 
@@ -912,7 +921,26 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
-        pub_year = xml.find('./front/article-meta/pub-date/year').text
+        pub_year = xml.find('./front/article-meta/pub-date[@pub-type="epub-ppub"]/year').text
+
+        self.assertEqual(u'2010', pub_year)
+
+    def test_xmlarticle_meta_general_info_pub_year_pipe(self):
+
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        self._article_meta.data['title']['v35'][0]['_'] = 'ONLIN'
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        pub_year = xml.find('./front/article-meta/pub-date[@pub-type="epub-ppub"]/year').text
 
         self.assertEqual(u'2010', pub_year)
 
@@ -1164,7 +1192,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticleMetaKeywordsPipe()
         raw, xml = xmlarticle.transform(data)
 
-        keywords_language = [i.get('lang') for i in xml.findall('./front/article-meta/kwd-group')]
+        keywords_language = [i.get('{http://www.w3.org/XML/1998/namespace}lang') for i in xml.findall('./front/article-meta/kwd-group')]
 
         self.assertEqual([u'en', u'es', u'pt'], keywords_language)
 
@@ -1195,6 +1223,92 @@ class ExportTests(unittest.TestCase):
                           u'Terapia de Substituição Renal',
                           u'Sistemas de Informação Hospitalar',
                           u'Registros de Mortalidade'], keywords)
+
+    def test_xml_article_meta_counts_citations_pipe(self):
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaCountsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        count = xml.find('./front/article-meta/counts/ref-count').get('count')
+
+        self.assertEqual(23, int(count))
+
+    def test_xml_article_meta_counts_pages_pipe(self):
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaCountsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        count = xml.find('./front/article-meta/counts/page-count').get('count')
+
+        self.assertEqual(10, int(count))
+
+    def test_xml_article_meta_counts_pages_invalid_pages_pipe(self):
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        self._article_meta.data['article']['v14'][0]['l'] = 'invalidpage'
+        self._article_meta.data['article']['v14'][0]['f'] = 'invalidpage'
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaCountsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        count = xml.find('./front/article-meta/counts/page-count').get('count')
+
+        self.assertEqual(0, int(count))
+
+    def test_xml_article_meta_counts_pages_invalid_pages_first_gt_last_pipe(self):
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        self._article_meta.data['article']['v14'][0]['l'] = '100'
+        self._article_meta.data['article']['v14'][0]['f'] = '110'
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaCountsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        count = xml.find('./front/article-meta/counts/page-count').get('count')
+
+        self.assertEqual(0, int(count))
+
+    def test_xml_article_meta_permission_pipe(self):
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaPermissionPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        citations = xml.find('./front/articlemeta/permissions/lincense[@license-type="open-access"]')
+
+        self.assertEqual(None, citations)
 
     def test_xml_citations_without_data_pipe(self):
 

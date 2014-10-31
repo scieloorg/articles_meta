@@ -63,8 +63,10 @@ class Export(object):
                                export_rsps.XMLArticleMetaContribGroupPipe(),
                                export_rsps.XMLArticleMetaAffiliationPipe(),
                                export_rsps.XMLArticleMetaGeneralInfoPipe(),
+                               export_rsps.XMLArticleMetaPermissionPipe(),
                                export_rsps.XMLArticleMetaAbstractsPipe(),
                                export_rsps.XMLArticleMetaKeywordsPipe(),
+                               export_rsps.XMLArticleMetaCountsPipe(),
                                export_rsps.XMLArticleMetaCitationsPipe(),
                                export_rsps.XMLClosePipe())
 
