@@ -1,24 +1,34 @@
 #coding: utf-8
+import re
+
 from lxml import etree as ET
 
 import plumber
 
+AFF_REGEX_JUST_NUMBERS = re.compile(r'\d+')
+XLINK_REGEX = re.compile(r'ns\d:href')
+LANG_REGEX = re.compile(r'ns\d:lang')
+URI_REGEXT = re.compile(r'http://.*')
 
 class XMLCitation(object):
 
     def __init__(self):
         self._ppl = plumber.Pipeline(self.SetupCitationPipe(),
                                      self.RefIdPipe(),
+                                     self.MixedCitationPipe(),
                                      self.ElementCitationPipe(),
                                      self.ArticleTitlePipe(),
+                                     self.ThesisTitlePipe(),
+                                     self.LinkTitlePipe(),
                                      self.SourcePipe(),
                                      self.DatePipe(),
                                      self.StartPagePipe(),
                                      self.EndPagePipe(),
                                      self.IssuePipe(),
                                      self.VolumePipe(),
-                                     self.PersonGroupPipe())
-
+                                     self.PersonGroupPipe(),
+                                     self.CommentPipe()
+        )
     class SetupCitationPipe(plumber.Pipe):
 
         def transform(self, data):
@@ -37,13 +47,34 @@ class XMLCitation(object):
 
             return data
 
+    class MixedCitationPipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if not raw.mixed_citation:
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            mixed_citation = ET.Element('mixed-citation')
+
+            mixed_citation.text = raw.mixed_citation
+
+            xml.append(mixed_citation)
+
+            return data
+
     class ElementCitationPipe(plumber.Pipe):
         def transform(self, data):
             raw, xml = data
 
             translate_ptype = {
                 'article': 'journal',
-                'link': 'webpage'
+                'link': 'webpage',
+                'conference': 'confproc',
+                'undefined': 'other'
             }
 
             elementcitation = ET.Element('element-citation')
@@ -129,6 +160,33 @@ class XMLCitation(object):
             source.text = raw.link_title
 
             xml.find('./element-citation').append(source)
+
+            return data
+
+    class CommentPipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if not raw.comment:
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            comment = ET.Element('comment')
+
+            comment.text = XLINK_REGEX.sub('xlink:href', raw.comment)
+
+            if raw.publication_type == 'link' and raw.link:
+                comment.text = 'Available at:'
+                link = ET.Element('ext-link')
+                link.set('ext-link-type', 'uri')
+                link.set('{http://www.w3.org/1999/xlink}href', URI_REGEXT.findall(raw.link)[0])
+                link.text = 'link'
+                comment.append(link)
+
+            xml.find('./element-citation').append(comment)
 
             return data
 
@@ -228,6 +286,55 @@ class XMLCitation(object):
             volume = ET.Element('volume')
             volume.text = raw.volume
             xml.find('./element-citation').append(volume)
+
+            return data
+
+    class PersonGroupPipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if not raw.authors and not raw.monographic_authors:
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            persongroup = ET.Element('person-group')
+            persongroup.set('person-group-type', 'author')
+            if raw.authors:
+                for author in raw.authors:
+                    name = ET.Element('name')
+
+                    if "surname" in author:
+                        surname = ET.Element('surname')
+                        surname.text = author['surname']
+                        name.append(surname)
+
+                    if "given_names" in author:
+                        givennames = ET.Element('given-names')
+                        givennames.text = author['given_names']
+                        name.append(givennames)                    
+
+                    persongroup.append(name)
+
+            if raw.monographic_authors:
+                for author in raw.monographic_authors:
+                    name = ET.Element('name')
+
+                    if "surname" in author:
+                        surname = ET.Element('surname')
+                        surname.text = author['surname']
+                        name.append(surname)
+
+                    if "given_names" in author:
+                        givennames = ET.Element('given-names')
+                        givennames.text = author['given_names']
+                        name.append(givennames)
+
+                    persongroup.append(name)
+
+            xml.find('./element-citation').append(persongroup)
 
             return data
 
@@ -546,7 +653,7 @@ class XMLArticleMetaContribGroupPipe(plumber.Pipe):
             for xr in author.get('xref', []):
                 xref = ET.Element('xref')
                 xref.set('ref-type', 'aff')
-                xref.set('rid', 'aff%s' % xr.upper().replace('A', ''))
+                xref.set('rid', 'aff%s' % AFF_REGEX_JUST_NUMBERS.findall(xr)[0])
                 contrib.append(xref)
 
             contribgroup.append(contrib)
@@ -572,7 +679,7 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
         for affiliation in raw.affiliations:
 
             aff = ET.Element('aff')
-            aff.set('id', 'aff%s' % affiliation['index'].upper().replace('A',''))
+            aff.set('id', 'aff%s' % AFF_REGEX_JUST_NUMBERS.findall(affiliation['index'])[0])
 
             if 'addr_line' in affiliation:
                 addrline = ET.Element('addr-line')
@@ -706,7 +813,10 @@ class XMLArticleMetaCountsPipe(plumber.Pipe):
         counts = ET.Element('counts')
 
         count_refs = ET.Element('ref-count')
-        count_refs.set('count', str(len(raw.citations)))
+        if raw.citations:
+            count_refs.set('count', str(len(raw.citations)))
+        else:
+            count_refs.set('count', '0')
 
         try:
             startpage = int(raw.start_page)
@@ -737,6 +847,7 @@ class XMLArticleMetaCountsPipe(plumber.Pipe):
         counts.append(count_fig)
         counts.append(count_table)
         counts.append(count_equation)
+
         counts.append(count_refs)
         counts.append(count_pages)
 
