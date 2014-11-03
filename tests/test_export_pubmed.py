@@ -3,8 +3,8 @@ import unittest
 import json
 import os
 
-import xml.etree.ElementTree as ET
-from lxml import etree
+from lxml import etree as ET
+
 from xylose.scielodocument import Article
 
 from articlemeta import export_pubmed
@@ -27,7 +27,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_pubmed.XMLClosePipe()
         xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article /></ArticleSet>', xml)
+        self.assertEqual('<ArticleSet><Article/></ArticleSet>', xml)
 
     def test_setuppipe_element_name(self):
 
@@ -47,7 +47,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_pubmed.XMLArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article /></ArticleSet>', ET.tostring(xml))
+        self.assertEqual('<ArticleSet><Article/></ArticleSet>', ET.tostring(xml))
 
     def test_xmljournal_pipe(self):
 
@@ -59,7 +59,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_pubmed.XMLJournalPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article><Journal /></Article></ArticleSet>', ET.tostring(xml))
+        self.assertEqual('<ArticleSet><Article><Journal/></Article></ArticleSet>', ET.tostring(xml))
 
     def test_xmlpublishername_pipe(self):
 
@@ -313,7 +313,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_pubmed.XMLHistoryPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article><History><PubDate PubStatus="accepted"><Year>2010</Year><Month>02</Month><Day>05</Day></PubDate></History></Article><History /></ArticleSet>', ET.tostring(xml))
+        self.assertEqual('<ArticleSet><Article><History><PubDate PubStatus="accepted"><Year>2010</Year><Month>02</Month><Day>05</Day></PubDate></History></Article><History/></ArticleSet>', ET.tostring(xml))
 
     def test_xmlabstract_pipe(self):
 
@@ -331,8 +331,8 @@ class ExportTests(unittest.TestCase):
 
     def test_validating_against_dtd(self):
 
-        xml = etree.XML(export.Export(self._raw_json).pipeline_pubmed())
+        xml = ET.XML(export.Export(self._raw_json).pipeline_pubmed())
 
-        dtd = etree.DTD(open('tests/dtd/scielo_pubmed/PubMed.dtd', 'r'))
+        dtd = ET.DTD(open('tests/dtd/scielo_pubmed/PubMed.dtd', 'r'))
 
         self.assertEqual(True, dtd.validate(xml))

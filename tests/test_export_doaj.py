@@ -1,6 +1,6 @@
 # coding: utf-8
 import unittest
-import xml.etree.ElementTree as ET
+from lxml import etree as ET
 import json
 import os
 
@@ -27,7 +27,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_doaj.XMLClosePipe()
         xml = xmlarticle.transform(data)
 
-        self.assertEqual('<records><record /></records>', xml)
+        self.assertEqual('<records><record/></records>', xml)
 
     def test_setuppipe_element_name(self):
 
@@ -47,7 +47,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_doaj.XMLArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<records><record /></records>', ET.tostring(xml))
+        self.assertEqual('<records><record/></records>', ET.tostring(xml))
 
     def test_xmljournal_meta_journalTitlepipe(self):
 

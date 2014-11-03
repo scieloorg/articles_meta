@@ -1,5 +1,5 @@
 #coding: utf-8
-import xml.etree.ElementTree as ET
+from lxml import etree as ET
 
 import plumber
 
@@ -307,9 +307,10 @@ class SetupArticlePipe(plumber.Pipe):
     def transform(self, data):
 
         xml = ET.Element('articles')
-        xml.set('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-        xml.set('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
-        xml.set('xsi:noNamespaceSchemaLocation', 'ThomsonReuters_publishing_1.09.xsd')
+        #xml.set('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+        #xml.set('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
+        #xml.set('xsi:noNamespaceSchemaLocation', 'ThomsonReuters_publishing_1.09.xsd')
+        xml.set('{http://www.w3.org/2001/XMLSchema-instance}schemaLocation', 'https://raw.githubusercontent.com/scieloorg/articles_meta/master/tests/xsd/scielo_sci/ThomsonReuters_publishing.xsd')
         xml.set('dtd-version', '1.09')
 
         return data, xml
@@ -659,17 +660,20 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         issue = ET.Element('issue')
         issue.text = raw.issue
 
-        issue_uri = ET.Element('self-uri')
-        issue_uri.set('href', raw.issue_url(language='en'))
-        issue_uri.set('content-type', 'issue_page')
+        if raw.issue_url(language='en'): 
+            issue_uri = ET.Element('self-uri')
+            issue_uri.set('href', raw.issue_url(language='en'))
+            issue_uri.set('content-type', 'issue_page')
 
-        journal_uri = ET.Element('self-uri')
-        journal_uri.set('href', raw.journal_url(language='en'))
-        journal_uri.set('content-type', 'journal_page')
-
-        article_uri = ET.Element('self-uri')
-        article_uri.set('href', raw.html_url(language='en'))
-        article_uri.set('content-type', 'full_text_page')
+        if raw.journal_url(language='en'): 
+            journal_uri = ET.Element('self-uri')
+            journal_uri.set('href', raw.journal_url(language='en'))
+            journal_uri.set('content-type', 'journal_page')
+        
+        if raw.html_url(language='en'): 
+            article_uri = ET.Element('self-uri')
+            article_uri.set('href', raw.html_url(language='en'))
+            article_uri.set('content-type', 'full_text_page')
 
         articlemeta = xml.find('./article/front/article-meta')
         articlemeta.append(pubdate)
