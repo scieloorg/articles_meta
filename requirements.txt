@@ -1,5 +1,6 @@
 pymongo==2.5.2
 uuid==1.30
+zerorpc
 pyramid
 waitress
 gunicorn

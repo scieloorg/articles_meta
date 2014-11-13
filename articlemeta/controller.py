@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import urlparse
 
 import pymongo
-from xylose.scielodocument import Article
+from xylose.scielodocument import Article, Journal
 
 
 def remove_accents(data):
@@ -254,8 +254,8 @@ class DataBroker(object):
 
         article = Article(metadata)
 
-        issns = set([article.any_issn(priority=u'electronic'),
-                    article.any_issn(priority=u'print')])
+        issns = set([article.journal.any_issn(priority=u'electronic'),
+                    article.journal.any_issn(priority=u'print')])
 
         metadata['code_issue'] = article.publisher_id[1:18]
         metadata['code_title'] = list(issns)
@@ -292,7 +292,7 @@ class DataBroker(object):
             This method will check the given metadata and retrieve
             a new dictionary with some new fields.
         """
-        journal = Article({'title': metadata, 'article': {}, 'citations': {}})
+        journal = Journal(metadata)
 
         issns = set([journal.any_issn(priority=u'electronic'),
                      journal.any_issn(priority=u'print')])
@@ -457,7 +457,6 @@ class DataBroker(object):
 
             if journal and len(journal) != 0:
                 data['title'] = journal[0]
-
 
         del(data['_id'])
 
