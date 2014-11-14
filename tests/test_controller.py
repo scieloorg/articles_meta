@@ -124,7 +124,8 @@ class ControllerTest(unittest.TestCase):
 
         article_citation = {
             "v18": [{u"_": u"Thesis Title"}],
-            "v45": [{u"l": u"en", u"_": u"Thesis Title"}],
+            "v45": [{u"l": u"en", u"_": u"20060000"}],
+            "v51": [{"_": u"Thesis Degree"}],
             "v65": [{"_": u"20060000"}],
             "v64": [{"_": u"2006"}],
             "v10": [{"s": u"Bamgboye", "r": u"ND", "_": u"", "n": u"EL"}]
@@ -142,7 +143,8 @@ class ControllerTest(unittest.TestCase):
 
         article_citation = {
             "v18": [{u"_": u"Thesis Title"}],
-            "v45": [{u"l": u"en", u"_": u"Thesis Title"}],
+            "v45": [{u"l": u"en", u"_": u"20060000"}],
+            "v51": [{"_": u"Thesis Degree"}],
             "v65": [{"_": u"20060000"}],
             "v64": [{"_": u"2006"}],
             "v10": [{"s": u"Bamgboye", "r": u"ND", "_": u"", "n": u"EL"}]
@@ -213,7 +215,9 @@ class ControllerTest(unittest.TestCase):
     def test_get_citations_titles_conference_title(self):
 
         article_citation = {
-            "v53": [{u"l": u"en", u"_": u"Conference Title"}],
+            "v53": [{u"l": u"en", u"_": u"Conference Name"}],
+            "v18": [{u"l": u"en", u"_": u"Conference Source"}],
+            "v12": [{u"l": u"en", u"_": u"Conference Title"}],
             "v65": [{"_": u"20060000"}],
             "v64": [{"_": u"2006"}]
             }
