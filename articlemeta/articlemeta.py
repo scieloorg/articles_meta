@@ -7,7 +7,7 @@ from datetime import datetime
 from wsgiref.simple_server import make_server
 import pyramid.httpexceptions as exc
 from pyramid.config import Configurator
-from pyramid.view import view_config
+from pyramid.view import view_config, notfound_view_config
 from pyramid.response import Response
 import pymongo
 
@@ -15,19 +15,13 @@ import utils
 import controller
 from export import Export
 
-from functools import wraps
+from decorators import authenticate
 
 
-def authenticate(func):
-    @wraps(func)
-    def wrapper(request):
-        token = request.registry.settings.get('admintoken', None)
-        giventoken = request.GET.get('admintoken', None)
-        if giventoken != token:
-            raise exc.HTTPUnauthorized('Invalid admin token')
-        result = func(request)
-        return result
-    return wrapper
+@notfound_view_config(append_slash=True)
+def notfound(request):
+    # http://docs.pylonsproject.org/projects/pyramid/en/latest/narr/urldispatch.html#redirecting-to-slash-appended-routes
+    return exc.HTTPNotFound()
 
 
 @view_config(route_name='index', request_method='GET')
@@ -77,8 +71,8 @@ def identifiers_journal(request):
     return Response(json.dumps(ids), content_type="application/json")
 
 
-@view_config(route_name='add_journal',
-             request_method='POST')
+@view_config(route_name='add_journal', request_method='POST')
+@view_config(route_name='add_journal_slash', request_method='POST')
 @authenticate
 def add_journal(request):
 
@@ -90,8 +84,8 @@ def add_journal(request):
     return Response()
 
 
-@view_config(route_name='delete_journal',
-             request_method='DELETE')
+@view_config(route_name='delete_journal', request_method='DELETE')
+@view_config(route_name='delete_journal_slash', request_method='DELETE')
 @authenticate
 def delete_journal(request):
 
@@ -206,8 +200,8 @@ def get_article(request):
     return Response(json.dumps(article), content_type="application/json")
 
 
-@view_config(route_name='add_article',
-             request_method='POST')
+@view_config(route_name='add_article', request_method='POST')
+@view_config(route_name='add_article_slash', request_method='POST')
 @authenticate
 def add_article(request):
 
@@ -219,8 +213,8 @@ def add_article(request):
     return Response()
 
 
-@view_config(route_name='update_article',
-             request_method='UPDATE')
+@view_config(route_name='update_article', request_method='POST')
+@view_config(route_name='update_article_slash', request_method='POST')
 @authenticate
 def update_article(request):
 
@@ -232,8 +226,8 @@ def update_article(request):
     return Response()
 
 
-@view_config(route_name='set_doaj_status_true',
-             request_method='POST')
+@view_config(route_name='set_doaj_status_true', request_method='POST')
+@view_config(route_name='set_doaj_status_true_slash', request_method='POST')
 @authenticate
 def set_doaj_status_true(request):
 
@@ -247,8 +241,8 @@ def set_doaj_status_true(request):
     return Response()
 
 
-@view_config(route_name='set_doaj_status_false',
-             request_method='POST')
+@view_config(route_name='set_doaj_status_false', request_method='POST')
+@view_config(route_name='set_doaj_status_false_slash', request_method='POST')
 @authenticate
 def set_doaj_status_false(request):
 
@@ -262,8 +256,8 @@ def set_doaj_status_false(request):
     return Response()
 
 
-@view_config(route_name='delete_article',
-             request_method='DELETE')
+@view_config(route_name='delete_article', request_method='DELETE')
+@view_config(route_name='delete_article_slash', request_method='DELETE')
 @authenticate
 def delete_article(request):
 
@@ -280,3 +274,47 @@ def delete_article(request):
     request.databroker.delete_article(code, collection=collection)
 
     return Response()
+
+
+@view_config(route_name='list_historychanges_article', request_method='GET')
+@view_config(route_name='list_historychanges_journal', request_method='GET')
+def list_historychanges(request):
+    """
+    This view will attend the request from differents urls:
+    - '/api/v1/article/history'
+    - '/api/v1/article/history/'
+    - '/api/v1/journal/history'
+    - '/api/v1/journal/history/'
+    serving with the same logic, only difference is the type of document
+    requested: 'article' or 'journal'
+    """
+    doc_type_by_route = {
+        '/api/v1/article/history': 'article',
+        '/api/v1/article/history/': 'article',
+        '/api/v1/journal/history': 'journal',
+        '/api/v1/journal/history/': 'journal',
+    }
+    document_type = doc_type_by_route[request.matched_route.path]
+
+    collection = request.GET.get('collection', None)
+    event = request.GET.get('event', None)
+    pid = request.GET.get('pid', None)
+    from_date = request.GET.get('from', '1500-01-01T00:00:00')
+    until_date = request.GET.get('until', datetime.now().isoformat())
+    offset = request.GET.get('offset', 0)
+
+    try:
+        offset = int(offset)
+    except ValueError:
+        raise exc.HTTPBadRequest('offset must be integer')
+
+    objs = request.databroker.historychanges(
+                document_type=document_type,
+                collection=collection,
+                event=event,
+                pid=pid,
+                offset=offset,
+                from_date=from_date,
+                until_date=until_date)
+
+    return Response(json.dumps(objs), content_type="application/json")

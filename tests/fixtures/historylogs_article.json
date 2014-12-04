@@ -1,0 +1,123 @@
+{
+    "meta": {
+        "filter": {
+            "date": {
+                "$lte": "2014-12-04T14:22:30.073042",
+                "$gte": "1500-01-01T00:00:00"
+            }
+        },
+        "total": 18,
+        "limit": 1000,
+        "offset": 0
+    },
+    "objects": [
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "post",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "update",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "delete",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "post",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "update",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "delete",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "post",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "update",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "delete",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "post",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "update",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "delete",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "post",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "update",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "delete",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "post",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "update",
+            "collection": "test"
+        },
+        {
+            "date": "2014-12-03T14:27:14.417061",
+            "pid": "S1681-150X2014000300011",
+            "event": "delete",
+            "collection": "test"
+        }
+    ]
+}

@@ -5,6 +5,7 @@ import urlparse
 
 import pymongo
 from xylose.scielodocument import Article, Journal
+from decorators import LogHistoryChange
 
 
 def remove_accents(data):
@@ -302,6 +303,51 @@ class DataBroker(object):
 
         return metadata
 
+    def _log_changes(self, document_type, pid, event, collection=None, date=None):
+
+        if document_type in ['article', 'journal']:
+            log_data = {
+                'pid': pid,
+                'collection': collection,
+                'event': event,
+                'date': date or datetime.now().isoformat(),
+            }
+            log_id = self.db['historychanges_%s' % document_type].insert(log_data)
+            return log_id
+
+    def historychanges(self, document_type, collection=None, event=None,
+                       pid=None, from_date='1500-01-01T00:00:00',
+                       until_date=None,
+                       limit=1000, offset=0):
+        fltr = {}
+        fltr['date'] = {'$gte': from_date, '$lte': until_date or datetime.now().isoformat()}
+
+        if collection:
+            fltr['collection'] = collection
+
+        if event:
+            fltr['event'] = event
+
+        if pid:
+            fltr['pid'] = pid
+
+        total = self.db['historychanges_%s' % document_type].find(fltr).count()
+        data = self.db['historychanges_%s' % document_type].find(fltr).skip(offset).limit(limit)
+
+        meta = {
+            'limit': limit,
+            'offset': offset,
+            'filter': fltr,
+            'total': total
+        }
+
+        objects = [{'date': i['date'], 'pid': i['pid'], 'collection': i['collection'], 'event': i['event']} for i in data]
+        result = {
+            'meta': meta,
+            'objects': objects
+        }
+        return result
+
     def get_journal(self, collection=None, issn=None):
 
         fltr = {}
@@ -319,6 +365,7 @@ class DataBroker(object):
 
         return [i for i in data]
 
+    @LogHistoryChange(document_type="journal", event_type="delete")
     def delete_journal(self, issn, collection=None):
 
         fltr = {
@@ -328,6 +375,9 @@ class DataBroker(object):
 
         self.db['journals'].remove(fltr)
 
+        return fltr
+
+    @LogHistoryChange(document_type="journal", event_type="post")
     def add_journal(self, metadata):
 
         journal = self._check_journal_meta(metadata)
@@ -374,12 +424,12 @@ class DataBroker(object):
     def identifiers_article(self,
                             collection=None,
                             from_date='1500-01-01',
-                            until_date=datetime.now().date().isoformat(),
+                            until_date=None,
                             limit=1000,
                             offset=0):
 
         fltr = {}
-        fltr['processing_date'] = {'$gte': from_date, '$lte': until_date}
+        fltr['processing_date'] = {'$gte': from_date, '$lte': until_date or datetime.now().date().isoformat()}
 
         hint = [('processing_date', -1)]
         if collection:
@@ -405,12 +455,12 @@ class DataBroker(object):
     def identifiers_press_release(self,
                                   collection=None,
                                   from_date='1500-01-01',
-                                  until_date=datetime.now().date().isoformat(),
+                                  until_date=None,
                                   limit=1000,
                                   offset=0):
 
         fltr = {}
-        fltr['processing_date'] = {'$gte': from_date, '$lte': until_date}
+        fltr['processing_date'] = {'$gte': from_date, '$lte': until_date or datetime.now().date().isoformat()}
 
         fltr['document_type'] = u'press-release'
 
@@ -491,6 +541,7 @@ class DataBroker(object):
 
         return False
 
+    @LogHistoryChange(document_type="article", event_type="delete")
     def delete_article(self, code, collection=None):
 
         fltr = {
@@ -500,6 +551,9 @@ class DataBroker(object):
 
         self.db['articles'].remove(fltr)
 
+        return fltr
+
+    @LogHistoryChange(document_type="article", event_type="post")
     def add_article(self, metadata):
 
         article = self._check_article_meta(metadata)
@@ -521,6 +575,7 @@ class DataBroker(object):
 
         return article
 
+    @LogHistoryChange(document_type="article", event_type="update")
     def update_article(self, metadata):
 
         article = self._check_article_meta(metadata)
