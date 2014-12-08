@@ -25,7 +25,7 @@ class LogHistoryChange(object):
             # view func call
             result = fn(*args, **kwargs)
             # view func post-processing
-            if self.event_type in ['update', 'delete', 'post'] and result:
+            if self.event_type in ['update', 'delete', 'add'] and result:
                 pid = result.get('code', None)
                 collection = result.get('collection', None)
                 log_data = {
