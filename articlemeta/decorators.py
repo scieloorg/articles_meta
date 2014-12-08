@@ -15,6 +15,17 @@ def authenticate(func):
 
 
 class LogHistoryChange(object):
+    """
+    This decorator operate after decorated functions been invoked,
+    logging information about the event made in the decorated view.
+
+    The decorator must receive 2 params:
+    @param document_type: indicate if the operation applies to a Article or Journal object.
+    @param event: indicate if the operation is an: addition (add), change (update), or deletion (delete).
+    The only accepted values for this param is: 'add', 'update', or 'delete'. Other values will be ignored.
+    The decorated view must return a dict as a result that contains a 'collection' and 'pid' as keys.
+    """
+
     def __init__(self, document_type, event_type):
         self.document_type = document_type
         self.event_type = event_type

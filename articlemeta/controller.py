@@ -377,7 +377,7 @@ class DataBroker(object):
 
         return fltr
 
-    @LogHistoryChange(document_type="journal", event_type="post")
+    @LogHistoryChange(document_type="journal", event_type="add")
     def add_journal(self, metadata):
 
         journal = self._check_journal_meta(metadata)
