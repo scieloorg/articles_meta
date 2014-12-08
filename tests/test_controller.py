@@ -355,11 +355,11 @@ class ControllerTest(unittest.TestCase):
         mocker = Mocker()
         databroker = mocker.mock()
         document_types = ['article', 'journal']
-        events = ['post', 'update', 'delete']
+        events = ['add', 'update', 'delete']
 
         # db "insert" must be called len(document_types) * len(events) times
         for document_type in document_types:
-            for event in ['post', 'update', 'delete']:
+            for event in events:
                 databroker['historychanges_%s' % document_type].insert(ANY)
                 mocker.result(123457890)
         mocker.replay()
