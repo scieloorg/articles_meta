@@ -317,10 +317,9 @@ class DataBroker(object):
 
     def historychanges(self, document_type, collection=None, event=None,
                        pid=None, from_date='1500-01-01T00:00:00',
-                       until_date=None,
-                       limit=1000, offset=0):
+                       until_date=None, limit=1000, offset=0):
         fltr = {}
-        fltr['date'] = {'$gte': from_date, '$lte': until_date or datetime.now().isoformat()}
+        fltr['date'] = {'$gt': from_date, '$lte': until_date or datetime.now().isoformat()}
 
         if collection:
             fltr['collection'] = collection
