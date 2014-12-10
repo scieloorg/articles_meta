@@ -33,9 +33,9 @@ class LogHistoryChange(object):
     def __call__(self, fn):
         @wraps(fn)
         def decorated(*args, **kwargs):
-            # view func call
+            # decorated function call
             result = fn(*args, **kwargs)
-            # view func post-processing
+            # decorated function post-processing
             if self.event_type in ['update', 'delete', 'add'] and result:
                 pid = result.get('code', None)
                 collection = result.get('collection', None)
