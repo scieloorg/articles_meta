@@ -395,7 +395,12 @@ class ControllerTest(unittest.TestCase):
             db = DataBroker(databroker)
             result = db.historychanges(document_type)
 
+            # assert date filters are correct in meta
             self.assertIn('meta', result.keys())
+            self.assertIn('filter', result['meta'].keys())
+            self.assertIn('date', result['meta']['filter'].keys())
+            self.assertEqual(['$lte', '$gt'], result['meta']['filter']['date'].keys())
+
             self.assertEqual(
                 historylogs['meta']['total'],
                 result['meta']['total']
