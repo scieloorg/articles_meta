@@ -388,7 +388,7 @@ class ControllerTest(unittest.TestCase):
             databroker = mocker.mock()
             databroker['historychanges_%s' % document_type].find(ANY).count()
             mocker.result(historylogs['meta']['total'])
-            databroker['historychanges_%s' % document_type].find(ANY).skip(ANY).limit(ANY)
+            databroker['historychanges_%s' % document_type].find(ANY).skip(ANY).limit(ANY).sort("date")
             mocker.result(historylogs['objects'])
             mocker.replay()
 

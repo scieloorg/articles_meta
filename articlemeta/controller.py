@@ -332,7 +332,7 @@ class DataBroker(object):
             fltr['pid'] = pid
 
         total = self.db['historychanges_%s' % document_type].find(fltr).count()
-        data = self.db['historychanges_%s' % document_type].find(fltr).skip(offset).limit(limit)
+        data = self.db['historychanges_%s' % document_type].find(fltr).skip(offset).limit(limit).sort("date")
 
         meta = {
             'limit': limit,
