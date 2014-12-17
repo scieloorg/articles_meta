@@ -18,6 +18,31 @@ from export import Export
 from decorators import authenticate
 
 
+def _get_request_limit_param(request, default_limit=1000,
+                             only_positive_limit=True, force_max_limit_to_default=True):
+    """
+    Extract from request's querystring, the limit param,
+    and apply some restrictions if necessary.
+
+    @param request: the request object!
+    @param default_limit: if not limit was found in querystring
+    @param only_positive_limit: if true, then NOT accept limits <= 0
+    @param force_max_limit_to_default: if true, then NOT accept limits > default_limit
+    """
+
+    limit = request.GET.get('limit', default_limit)
+    try:
+        limit = int(limit)
+    except ValueError:
+        raise exc.HTTPBadRequest('limit must be integer')
+    else:
+        if limit <= 0 and only_positive_limit:
+            raise exc.HTTPBadRequest('limit must be a positive (non zero) integer')
+        elif limit >= default_limit and force_max_limit_to_default:
+            limit = default_limit
+    return limit
+
+
 @notfound_view_config(append_slash=True)
 def notfound(request):
     # http://docs.pylonsproject.org/projects/pyramid/en/latest/narr/urldispatch.html#redirecting-to-slash-appended-routes
@@ -58,6 +83,7 @@ def get_journal(request):
 def identifiers_journal(request):
 
     collection = request.GET.get('collection', None)
+    limit = _get_request_limit_param(request)
     offset = request.GET.get('offset', 0)
 
     try:
@@ -66,6 +92,7 @@ def identifiers_journal(request):
         raise exc.HTTPBadRequest('offset must be integer')
 
     ids = request.databroker.identifiers_journal(collection=collection,
+                                                 limit=limit,
                                                  offset=offset)
 
     return Response(json.dumps(ids), content_type="application/json")
@@ -110,6 +137,7 @@ def identifiers_article(request):
     collection = request.GET.get('collection', None)
     from_date = request.GET.get('from', '1500-01-01')
     until_date = request.GET.get('until', datetime.now().date().isoformat())
+    limit = _get_request_limit_param(request)
     offset = request.GET.get('offset', 0)
 
     try:
@@ -118,6 +146,7 @@ def identifiers_article(request):
         raise exc.HTTPBadRequest('offset must be integer')
 
     ids = request.databroker.identifiers_article(collection=collection,
+                                                 limit=limit,
                                                  offset=offset,
                                                  from_date=from_date,
                                                  until_date=until_date)
@@ -132,6 +161,7 @@ def identifiers_press_release(request):
     collection = request.GET.get('collection', None)
     from_date = request.GET.get('from', '1500-01-01')
     until_date = request.GET.get('until', datetime.now().date().isoformat())
+    limit = _get_request_limit_param(request)
     offset = request.GET.get('offset', 0)
 
     try:
@@ -140,6 +170,7 @@ def identifiers_press_release(request):
         raise exc.HTTPBadRequest('offset must be integer')
 
     ids = request.databroker.identifiers_press_release(collection=collection,
+                                                       limit=limit,
                                                        offset=offset,
                                                        from_date=from_date,
                                                        until_date=until_date)
@@ -302,6 +333,7 @@ def list_historychanges(request):
     from_date = request.GET.get('from', '1500-01-01T00:00:00')
     until_date = request.GET.get('until', datetime.now().isoformat())
     offset = request.GET.get('offset', 0)
+    limit = _get_request_limit_param(request, force_max_limit_to_default=True)
 
     try:
         offset = int(offset)
@@ -313,6 +345,7 @@ def list_historychanges(request):
                 collection=collection,
                 event=event,
                 pid=pid,
+                limit=limit,
                 offset=offset,
                 from_date=from_date,
                 until_date=until_date)
