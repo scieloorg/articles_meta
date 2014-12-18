@@ -388,14 +388,19 @@ class ControllerTest(unittest.TestCase):
             databroker = mocker.mock()
             databroker['historychanges_%s' % document_type].find(ANY).count()
             mocker.result(historylogs['meta']['total'])
-            databroker['historychanges_%s' % document_type].find(ANY).skip(ANY).limit(ANY)
+            databroker['historychanges_%s' % document_type].find(ANY).skip(ANY).limit(ANY).sort("date")
             mocker.result(historylogs['objects'])
             mocker.replay()
 
             db = DataBroker(databroker)
             result = db.historychanges(document_type)
 
+            # assert date filters are correct in meta
             self.assertIn('meta', result.keys())
+            self.assertIn('filter', result['meta'].keys())
+            self.assertIn('date', result['meta']['filter'].keys())
+            self.assertEqual(['$lte', '$gt'], result['meta']['filter']['date'].keys())
+
             self.assertEqual(
                 historylogs['meta']['total'],
                 result['meta']['total']
