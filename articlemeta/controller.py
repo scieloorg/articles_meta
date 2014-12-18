@@ -258,6 +258,7 @@ class DataBroker(object):
         issns = set([article.journal.any_issn(priority=u'electronic'),
                     article.journal.any_issn(priority=u'print')])
 
+        metadata['code'] = article.publisher_id
         metadata['code_issue'] = article.publisher_id[1:18]
         metadata['code_title'] = list(issns)
         metadata['collection'] = article.collection_acronym
@@ -561,13 +562,10 @@ class DataBroker(object):
         if not article:
             return None
 
-        code = article['article']['v880'][0]['_']
-        collection = article['article']['v992'][0]['_']
-
         article['created_at'] = article['processing_date']
 
         self.db['articles'].update(
-            {'code': code, 'collection': collection},
+            {'code': article['code'], 'collection': article['collection']},
             {'$set': article},
             safe=False,
             upsert=True
@@ -583,11 +581,8 @@ class DataBroker(object):
         if not article:
             return None
 
-        code = article['article']['v880'][0]['_']
-        collection = article['article']['v992'][0]['_']
-
         self.db['articles'].update(
-            {'code': code, 'collection': collection},
+            {'code': article['code'], 'collection': article['collection']},
             {'$set': article},
             safe=False,
             upsert=True
