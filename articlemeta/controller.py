@@ -378,7 +378,7 @@ class DataBroker(object):
             'total': total
         }
 
-        objects = [{'date': i['date'], 'code': i['pid'], 'collection': i['collection'], 'event': i['event']} for i in data]
+        objects = [{'date': i['date'], 'code': i['code'], 'collection': i['collection'], 'event': i['event']} for i in data]
         result = {
             'meta': meta,
             'objects': objects
