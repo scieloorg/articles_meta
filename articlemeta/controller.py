@@ -354,7 +354,7 @@ class DataBroker(object):
             return log_id
 
     def historychanges(self, document_type, collection=None, event=None,
-                       pid=None, from_date='1500-01-01T00:00:00',
+                       code=None, from_date='1500-01-01T00:00:00',
                        until_date=None, limit=1000, offset=0):
         fltr = {}
         fltr['date'] = {'$gt': from_date, '$lte': until_date or datetime.now().isoformat()}
@@ -365,8 +365,8 @@ class DataBroker(object):
         if event:
             fltr['event'] = event
 
-        if pid:
-            fltr['pid'] = pid
+        if code:
+            fltr['code'] = code
 
         total = self.db['historychanges_%s' % document_type].find(fltr).count()
         data = self.db['historychanges_%s' % document_type].find(fltr).skip(offset).limit(limit).sort("date")
@@ -378,7 +378,7 @@ class DataBroker(object):
             'total': total
         }
 
-        objects = [{'date': i['date'], 'pid': i['pid'], 'collection': i['collection'], 'event': i['event']} for i in data]
+        objects = [{'date': i['date'], 'code': i['pid'], 'collection': i['collection'], 'event': i['event']} for i in data]
         result = {
             'meta': meta,
             'objects': objects

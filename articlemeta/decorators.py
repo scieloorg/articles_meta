@@ -37,12 +37,12 @@ class LogHistoryChange(object):
             result = fn(*args, **kwargs)
             # decorated function post-processing
             if self.event_type in ['update', 'delete', 'add'] and result:
-                pid = result.get('code', None)
+                code = result.get('code', None)
                 collection = result.get('collection', None)
                 log_data = {
                     'document_type': self.document_type,
                     'event': self.event_type,
-                    'pid': pid,
+                    'code': code,
                     'collection': collection,
                 }
                 db_broker = args[0]

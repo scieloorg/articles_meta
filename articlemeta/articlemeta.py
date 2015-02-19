@@ -329,7 +329,7 @@ def list_historychanges(request):
 
     collection = request.GET.get('collection', None)
     event = request.GET.get('event', None)
-    pid = request.GET.get('pid', None)
+    code = request.GET.get('code', None)
     from_date = request.GET.get('from', '1500-01-01T00:00:00')
     until_date = request.GET.get('until', datetime.now().isoformat())
     offset = request.GET.get('offset', 0)
@@ -344,7 +344,7 @@ def list_historychanges(request):
                 document_type=document_type,
                 collection=collection,
                 event=event,
-                pid=pid,
+                code=code,
                 limit=limit,
                 offset=offset,
                 from_date=from_date,
