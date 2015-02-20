@@ -149,7 +149,7 @@ class Export(object):
                                export_iahx.XMLIssueLabelPipe(),
                                export_iahx.XMLJournalTitlePipe(),
                                export_iahx.XMLJournalAbbrevTitlePipe(),
-                               export_iahx.XMLOriginalLanguagePipe(),
+                               export_iahx.XMLAvailableLanguagesPipe(),
                                export_iahx.XMLPublicationDatePipe(),
                                export_iahx.XMLAbstractPipe(),
                                export_iahx.XMLAffiliationCountryPipe(),

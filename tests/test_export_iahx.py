@@ -430,19 +430,48 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'Rev. Saúde Pública', result)
 
-    def test_xml_document_original_language_pipe(self):
+    def test_xml_document_available_languages_pipe(self):
 
         pxml = ET.Element('doc')
         pxml.append(ET.Element('doc'))
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_iahx.XMLOriginalLanguagePipe()
+        xmlarticle = export_iahx.XMLAvailableLanguagesPipe()
         raw, xml = xmlarticle.transform(data)
 
         result = xml.find('./field[@name="la"]').text
 
         self.assertEqual(u'pt', result)
+
+    def test_xml_document_available_languages_pipe(self):
+
+        pxml = ET.Element('doc')
+        pxml.append(ET.Element('doc'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_iahx.XMLAvailableLanguagesPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        result = xml.find('./field[@name="la"]').text
+
+        self.assertEqual(u'pt', result)
+
+    def test_xml_document_available_languages_plus_601_pipe(self):
+
+        pxml = ET.Element('doc')
+        pxml.append(ET.Element('doc'))
+
+        self._article_meta.data['article']['v601'] = [{'_': 'en'}]
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_iahx.XMLAvailableLanguagesPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        result = sorted([i.text for i in xml.findall('./field[@name="la"]')])
+
+        self.assertEqual([u'en', u'pt'], result)
 
     def test_xml_document_publication_date_pipe(self):
 

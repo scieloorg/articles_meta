@@ -341,11 +341,11 @@ class DataBroker(object):
 
         return metadata
 
-    def _log_changes(self, document_type, pid, event, collection=None, date=None):
+    def _log_changes(self, document_type, code, event, collection=None, date=None):
 
         if document_type in ['article', 'journal']:
             log_data = {
-                'pid': pid,
+                'code': code,
                 'collection': collection,
                 'event': event,
                 'date': date or datetime.now().isoformat(),

@@ -370,7 +370,7 @@ class ControllerTest(unittest.TestCase):
             for event in events:
                 log_data = {
                     'document_type': document_type,
-                    'pid': '123',
+                    'code': '123',
                     'collection': 'test_collection',
                     'event': event,
                     'date': datetime.now().isoformat(),
@@ -409,5 +409,5 @@ class ControllerTest(unittest.TestCase):
             self.assertEqual(historylogs['objects'], result['objects'])
             self.assertEqual(
                 result['objects'][0].keys(),
-                ['date', 'pid', 'event', 'collection']
+                ['date', 'code', 'event', 'collection']
             )

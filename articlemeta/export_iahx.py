@@ -313,18 +313,21 @@ class XMLJournalAbbrevTitlePipe(plumber.Pipe):
         return data
 
 
-class XMLOriginalLanguagePipe(plumber.Pipe):
+class XMLAvailableLanguagesPipe(plumber.Pipe):
 
     def transform(self, data):
         raw, xml = data
 
-        field = ET.Element('field')
-        field.text = raw.original_language()
-        field.set('name', 'la')
-        xml.find('.').append(field)
+        langs = set([i for i in raw.languages()])
+        langs.add(raw.original_language())
+
+        for language in langs:
+            field = ET.Element('field')
+            field.text = language
+            field.set('name', 'la')
+            xml.find('.').append(field)
 
         return data
-
 
 class XMLPublicationDatePipe(plumber.Pipe):
 
