@@ -93,7 +93,7 @@ def load_documents(collection, all_records=False):
         'collection': collection
     }
 
-    if not all_records:
+    if all_records == False:
         fltr['fulltexts'] = {'$exists': 0}
 
     documents = articlemeta_db['articles'].find(
