@@ -344,8 +344,6 @@ def main(collection, all_records):
             {'$set': static_catalogs.fulltexts(document)}
         )
 
-        print document.publisher_id, document.collection_acronym, static_catalogs.fulltexts(document)
-
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
