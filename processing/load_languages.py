@@ -195,7 +195,7 @@ class StaticCatalog(object):
         type:
             'html' or 'pdf'
         """
-        logger.debug('Checking fulltexts in {0} {1} for {2}, {3}, {4}'.format(
+        logger.debug(u'Checking fulltexts in {0} {1} for {2}, {3}, {4}'.format(
             type,
             language,
             file_id[0],
@@ -213,7 +213,7 @@ class StaticCatalog(object):
         try:
             files = self.catalog[file_id[0]][file_id[1]][type]
         except:
-            logger.warning('Issue not found int catalog for {0} {1} for {2}, {3}, {4}'.format(
+            logger.warning(u'Issue not found int catalog for {0} {1} for {2}, {3}, {4}'.format(
                 type,
                 language,
                 file_id[0],
@@ -330,6 +330,11 @@ def main(collection, all_records):
     static_catalogs = StaticCatalog(coll_info['domain'])
 
     for document in load_documents(collection, all_records=all_records):
+        logger.debug(u'Checking fulltexts for %s_%s' % (
+            collection,
+            document.publisher_id
+        ))
+
         fulltexts = static_catalogs.fulltexts(document)
 
         if not isinstance(fulltexts, dict):
