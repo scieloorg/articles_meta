@@ -325,7 +325,7 @@ def main(collection, all_records):
         fulltexts = static_catalogs.fulltexts(document)
 
         if not isinstance(fulltexts, dict):
-            logger.warning('Document not loaded for %s_%s'.format(
+            logger.warning('Document not loaded for %s_%s' % (
                 collection,
                 document.publisher_id
             ))
@@ -333,7 +333,7 @@ def main(collection, all_records):
 
         for key in fulltexts.keys():
             if not data_struct_regex.match(key):
-                logger.warning('Document not loaded for %s_%s'.format(
+                logger.warning('Document not loaded for %s_%s' % (
                     collection,
                     document.publisher_id
                 ))
@@ -344,7 +344,7 @@ def main(collection, all_records):
             {'$set': static_catalogs.fulltexts(document)}
         )
 
-        logger.debug('Update made for %s_%s'.format(
+        logger.debug('Update made for %s_%s' % (
             collection,
             document.publisher_id
         ))
