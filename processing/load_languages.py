@@ -163,10 +163,14 @@ class StaticCatalog(object):
     def _file_id(self, file_code):
         file_code = file_code.lower().replace('/', '___').replace('\\', '___')
 
-        file_code = file_regex.search(
-            file_code
-        ).group().replace(
-            'serial___', '').replace('markup___', '').split('___')
+        try:
+            file_code = file_regex.search(
+                file_code
+            ).group().replace(
+                'serial___', '').replace('markup___', '').split('___')
+        except:
+            logger.error('Fail to parse the file_id for %s' % file_code)
+            return None
 
         file_code[2] = file_code[2].replace('.html', '.htm')[:-4]
 
@@ -245,6 +249,10 @@ class StaticCatalog(object):
         """
 
         file_id = self._file_id(document.file_code(fullpath=True))
+
+        if not file_id:
+            logger.error(u'Fail to parse file_id for %s_%s' % (document.collection_acronym, document.publisher_id))
+            return None
 
         if not document.journal.languages:
             logger.info(u'Journal without publication languages defined %s' %file_id[0])
