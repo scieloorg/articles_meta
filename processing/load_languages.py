@@ -265,7 +265,7 @@ class StaticCatalog(object):
             for lang in document.xml_languages():
                 data['fulltexts.html'].add(lang)
 
-        languages = document.journal.languages + document.languages().keys()
+        languages = document.journal.languages + document.languages()
         languages.append(document.original_language())
 
         for language in set(languages):
