@@ -458,6 +458,30 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'pt', result)
 
+    def test_xml_document_fulltexts_pipe(self):
+
+        pxml = ET.Element('doc')
+        pxml.append(ET.Element('doc'))
+
+        self._article_meta.data['fulltexts'] = {
+            'pdf': {
+                'en': 'url_pdf_en',
+            },
+            'html': {
+                'en': 'url_html_en',
+            },            
+        }
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_iahx.XMLFulltextsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        result_pdf = xml.find('./field[@name="fulltext_pdf_en"]').text
+        result_html = xml.find('./field[@name="fulltext_html_en"]').text
+
+        self.assertEqual(u'url_pdf_en', result_pdf)
+        self.assertEqual(u'url_html_en', result_html)
+
     def test_xml_document_available_languages_plus_fulltexts_pipe(self):
 
         pxml = ET.Element('doc')

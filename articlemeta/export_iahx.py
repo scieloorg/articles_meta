@@ -329,6 +329,35 @@ class XMLAvailableLanguagesPipe(plumber.Pipe):
 
         return data
 
+class XMLFulltextsPipe(plumber.Pipe):
+
+    def precond(data):
+        raw, xml = data
+
+        if not raw.fulltexts():
+            raise plumber.UnmetPrecondition()
+
+    def transform(self, data):
+        raw, xml = data
+
+        ft = raw.fulltexts()
+
+        for language, url in ft['pdf'].items():
+
+            field = ET.Element('field')
+            field.text = url
+            field.set('name', 'fulltext_pdf_%s' % language)
+            xml.find('.').append(field)
+
+        for language, url in ft['html'].items():
+
+            field = ET.Element('field')
+            field.text = url
+            field.set('name', 'fulltext_html_%s' % language)
+            xml.find('.').append(field)
+
+        return data
+
 class XMLPublicationDatePipe(plumber.Pipe):
 
     def transform(self, data):
