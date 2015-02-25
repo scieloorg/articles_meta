@@ -80,7 +80,7 @@ def do_request(url, json=True):
     try:
         document = requests.get(url)
     except:
-        logger.error('HTTP request error for: %s' % url)
+        logger.error(u'HTTP request error for: %s' % url)
     else:
         if json:
             return document.json()
@@ -144,7 +144,7 @@ class StaticCatalog(object):
         }
         """
 
-        logger.info('Loading static_%s_catalog.txt from server %s' % (type, source))
+        logger.info(u'Loading static_%s_catalog.txt from server %s' % (type, source))
 
         filename = 'static_%s_files.txt' % type
 
@@ -169,7 +169,7 @@ class StaticCatalog(object):
             ).group().replace(
                 'serial___', '').replace('markup___', '').split('___')
         except:
-            logger.error('Fail to parse the file_id for %s' % file_code)
+            logger.error(u'Fail to parse the file_id for %s' % file_code)
             return None
 
         file_code[2] = file_code[2].replace('.html', '.htm')[:-4]
@@ -338,7 +338,7 @@ def main(collection, all_records):
         fulltexts = static_catalogs.fulltexts(document)
 
         if not isinstance(fulltexts, dict):
-            logger.warning('Document not loaded for %s_%s' % (
+            logger.warning(u'Document not loaded for %s_%s' % (
                 collection,
                 document.publisher_id
             ))
@@ -346,7 +346,7 @@ def main(collection, all_records):
 
         for key in fulltexts.keys():
             if not data_struct_regex.match(key):
-                logger.warning('Document not loaded for %s_%s' % (
+                logger.warning(u'Document not loaded for %s_%s' % (
                     collection,
                     document.publisher_id
                 ))
@@ -357,7 +357,7 @@ def main(collection, all_records):
             {'$set': static_catalogs.fulltexts(document)}
         )
 
-        logger.debug('Update made for %s_%s' % (
+        logger.debug(u'Update made for %s_%s' % (
             collection,
             document.publisher_id
         ))

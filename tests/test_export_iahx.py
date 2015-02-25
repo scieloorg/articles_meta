@@ -458,12 +458,19 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'pt', result)
 
-    def test_xml_document_available_languages_plus_601_pipe(self):
+    def test_xml_document_available_languages_plus_fulltexts_pipe(self):
 
         pxml = ET.Element('doc')
         pxml.append(ET.Element('doc'))
 
-        self._article_meta.data['article']['v601'] = [{'_': 'en'}]
+        self._article_meta.data['fulltexts'] = {
+            'pdf': {
+                'en': 'url_pdf_en',
+            },
+            'html': {
+                'en': 'url_html_en',
+            },            
+        }
         data = [self._article_meta, pxml]
 
         xmlarticle = export_iahx.XMLAvailableLanguagesPipe()
