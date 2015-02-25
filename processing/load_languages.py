@@ -344,6 +344,11 @@ def main(collection, all_records):
             {'$set': static_catalogs.fulltexts(document)}
         )
 
+        logger.debug('Update made for %s_%s'.format(
+            collection,
+            document.publisher_id
+        ))
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
