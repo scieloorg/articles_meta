@@ -2,11 +2,13 @@
 import unicodedata
 from datetime import datetime, timedelta
 import urlparse
+import warnings
 
 import pymongo
 from xylose.scielodocument import Article, Journal
 from decorators import LogHistoryChange
 
+LIMIT = 1000
 
 def remove_accents(data):
 
@@ -355,7 +357,14 @@ class DataBroker(object):
 
     def historychanges(self, document_type, collection=None, event=None,
                        code=None, from_date='1500-01-01T00:00:00',
-                       until_date=None, limit=1000, offset=0):
+                       until_date=None, limit=LIMIT, offset=0):
+
+        if offset < 0:
+            offset = 0
+
+        if limit < 0:
+            limit = LIMIT
+
         fltr = {}
         fltr['date'] = {'$gt': from_date, '$lte': until_date or datetime.now().isoformat()}
 
@@ -431,7 +440,7 @@ class DataBroker(object):
 
         return journal
 
-    def collection(self):
+    def identifiers_collection(self):
 
         data = self.db['collections'].find({}, {'_id': 0})
 
@@ -440,7 +449,28 @@ class DataBroker(object):
 
         return [i for i in data]
 
-    def identifiers_journal(self, collection=None, limit=1000, offset=0):
+
+    def get_collection(self, collection):
+
+        fltr = {'code': collection}
+
+        return self.db['collections'].find_one(fltr, {'_id': 0})
+
+    def collection(self, collection=None):
+        """
+        DEPRECATED
+        """
+        warnings.warn("deprecated: replaced by identifiers_collection and get_collection", DeprecationWarning)
+
+        self.get_collection(collection=collection)
+
+    def identifiers_journal(self, collection=None, limit=LIMIT, offset=0):
+
+        if offset < 0:
+            offset = 0
+
+        if limit < 0:
+            limit = LIMIT
 
         fltr = {}
         if collection:
@@ -462,8 +492,14 @@ class DataBroker(object):
                             collection=None,
                             from_date='1500-01-01',
                             until_date=None,
-                            limit=1000,
+                            limit=LIMIT,
                             offset=0):
+
+        if offset < 0:
+            offset = 0
+
+        if limit < 0:
+            limit = LIMIT
 
         fltr = {}
         fltr['processing_date'] = {'$gte': from_date, '$lte': until_date or datetime.now().date().isoformat()}
@@ -493,8 +529,14 @@ class DataBroker(object):
                                   collection=None,
                                   from_date='1500-01-01',
                                   until_date=None,
-                                  limit=1000,
+                                  limit=LIMIT,
                                   offset=0):
+
+        if offset < 0:
+            offset = 0
+
+        if limit < 0:
+            limit = LIMIT
 
         fltr = {}
         fltr['processing_date'] = {'$gte': from_date, '$lte': until_date or datetime.now().date().isoformat()}

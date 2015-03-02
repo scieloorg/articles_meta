@@ -56,20 +56,28 @@ def index(request):
 
 @view_config(route_name='collection',
              request_method='GET')
-def collection(request):
+def get_collection(request):
 
-    fmt = request.GET.get('format', 'json')
+    code = request.GET.get('code', None)
 
-    collection = request.databroker.collection()
+    collection = request.databroker.get_collection(code)
 
     return Response(json.dumps(collection), content_type="application/json")
+
+
+@view_config(route_name='identifiers_collection',
+             request_method='GET')
+def identifier_collection(request):
+
+    collections = request.databroker.identifiers_collection()
+
+    return Response(json.dumps(collections), content_type="application/json")
 
 
 @view_config(route_name='journal',
              request_method='GET')
 def get_journal(request):
 
-    fmt = request.GET.get('format', 'json')
     collection = request.GET.get('collection', None)
     issn = request.GET.get('issn', None)
 
@@ -89,7 +97,10 @@ def identifiers_journal(request):
     try:
         offset = int(offset)
     except ValueError:
-        raise exc.HTTPBadRequest('offset must be integer')
+        raise exc.HTTPBadRequest('offset must be integer >= 0')
+
+    if offset < 0 :
+        raise exc.HTTPBadRequest('offset must be integer >= 0')
 
     ids = request.databroker.identifiers_journal(collection=collection,
                                                  limit=limit,
@@ -144,6 +155,9 @@ def identifiers_article(request):
         offset = int(offset)
     except ValueError:
         raise exc.HTTPBadRequest('offset must be integer')
+
+    if offset < 0 :
+        raise exc.HTTPBadRequest('offset must be integer >= 0')
 
     ids = request.databroker.identifiers_article(collection=collection,
                                                  limit=limit,

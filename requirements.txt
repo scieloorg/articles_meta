@@ -7,3 +7,5 @@ gunicorn
 -e git+git://github.com/scieloorg/xylose.git#egg=xylose
 -e git+git://github.com/gustavofonseca/plumber.git#egg=plumber
 lxml
+cython
+thriftpy

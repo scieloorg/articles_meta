@@ -18,6 +18,7 @@ def main(global_config, **settings):
     config.add_route('index', '/')
     # collections - GET method:
     config.add_route('collection', '/api/v1/collection/')
+    config.add_route('identifiers_collection', '/api/v1/collection/identifiers/')
     # journals - GET method:
     config.add_route('journal', '/api/v1/journal/')
     config.add_route('identifiers_journal', '/api/v1/journal/identifiers/')
