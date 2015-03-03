@@ -85,29 +85,55 @@ class Dispatcher(object):
             data['domain']
         )
 
+    def article_history_changes(self, collection, event, code, from_date, until_date, limit, offset):
+
+        from_date = from_date or '1500-01-01'
+        limit = limit or 1000
+        offset = offset or 0
+
+        try:
+            data = self._databroker.historychanges(
+                document_type= 'article',
+                collection=collection,
+                event=event,
+                code=code,
+                from_date=from_date,
+                until_date=until_date,
+                limit=limit,
+                offset=offset
+            )
+        except:
+            articlemeta_thrift.ServerError('Server error: DataBroker.historychanges')
+
+        
+        objs = [articlemeta_thrift.event_document(code=i['code'], collection=i['collection'], event=i['event'], date=i['date']) for i in data['objects']]
+
+        return objs
+
     def get_article_identifiers(self, collection, from_date, until_date, limit, offset):
 
         from_date = from_date or '1500-01-01'
-        limit = limit or 0
+        limit = limit or 1000
         offset = offset or 0
 
-        data = self._databroker.identifiers_article(
-            collection=collection,
-            from_date=from_date,
-            until_date=until_date,
-            limit=limit,
-            offset=offset
-        )
-
         try:
-            objs = [articlemeta_thrift.article_identifiers(code=i['code'], collection=i['collection'], processing_date=i['processing_date']) for i in data['objects']]
+            data = self._databroker.identifiers_article(
+                collection=collection,
+                from_date=from_date,
+                until_date=until_date,
+                limit=limit,
+                offset=offset
+            )
         except:
             articlemeta_thrift.ServerError('Server error: DataBroker.identifiers_article')
+
+        
+        objs = [articlemeta_thrift.article_identifiers(code=i['code'], collection=i['collection'], processing_date=i['processing_date']) for i in data['objects']]
 
         return objs
 
 
-    def get_article(self, code, collection, replace_journal_metadata):
+    def get_article(self, code, collection, replace_journal_metadata, format):
 
         try:
             data = self._databroker.get_article(code, collection=collection, replace_journal_metadata=replace_journal_metadata)
@@ -115,6 +141,30 @@ class Dispatcher(object):
             articlemeta_thrift.ServerError('Server error: DataBroker.get_article')
 
         return json.dumps(data)
+
+    def journal_history_changes(self, collection, event, code, from_date, until_date, limit, offset):
+
+        from_date = from_date or '1500-01-01'
+        limit = limit or 1000
+        offset = offset or 0
+
+        try:
+            data = self._databroker.historychanges(
+                document_type= 'journal',
+                collection=collection,
+                event=event,
+                code=code,
+                from_date=from_date,
+                until_date=until_date,
+                limit=limit,
+                offset=offset
+            )
+        except:
+            articlemeta_thrift.ServerError('Server error: DataBroker.historychanges')
+
+        objs = [articlemeta_thrift.event_journal(code=i['code'], collection=i['collection'], event=i['event'], date=i['date']) for i in data['objects']]
+
+        return objs
 
     def get_journal_identifiers(self, collection, limit, offset):
 
