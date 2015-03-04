@@ -237,7 +237,8 @@ def import_doc_affiliations(data):
             },
             {
                 '$set': {
-                    'article.v240': ilj
+                    'article.v240': ilj,
+                    'sent_wos': 'False'
                 }
             }
         )
