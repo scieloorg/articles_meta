@@ -8,7 +8,7 @@ input: CSV file formated as below
 
 input example:
 
-    S0001-37652013000100001|scl|2013|An. Acad. Bras. Ciênc.|v85n1|aff1|Museu Nacional/UFRJ|Brasil|Universidade Federal do Rio de Janeiro|Brazil|iso-3661
+    scl|S0001-37652013000100001|2013|An. Acad. Bras. Ciênc.|v85n1|aff1|Museu Nacional/UFRJ|Brasil|Universidade Federal do Rio de Janeiro|Brazil|iso-3661
 
 CSV Total parameters size: 11
 """
@@ -121,20 +121,20 @@ def parse_csv_line(data):
         logging.error('line has an invalid number of fields (%s)' % line)
         return False
 
-    pid = data[1].strip()
+    pid = data[2].strip()
 
     if not is_valid_pid(pid):
         logging.error('line has an invalid PID (%s)' % line)
         return False
 
-    data[2] = data[2].strip().lower()
-    if not data[2] in trans_collections_code:
+    data[1] = data[1].strip().lower()
+    if not data[1] in trans_collections_code:
         logging.error('line has an invalid collection code (%s)' % line)
         return False
 
     parsed_data['mfn'] = data[0].strip()
     parsed_data['pid'] = pid
-    parsed_data['collection'] = trans_collections_code[data[2]]
+    parsed_data['collection'] = trans_collections_code[data[1]]
     parsed_data['publication_year'] = data[3].strip()
     parsed_data['journal_title'] = data[4].strip()
     parsed_data['issue_label'] = data[5].strip()
