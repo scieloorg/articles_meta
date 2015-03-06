@@ -133,7 +133,7 @@ class Dispatcher(object):
         return objs
 
 
-    def get_article(self, code, collection, replace_journal_metadata, format):
+    def get_article(self, code, collection, replace_journal_metadata):
 
         try:
             data = self._databroker.get_article(code, collection=collection, replace_journal_metadata=replace_journal_metadata)
