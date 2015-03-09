@@ -11,6 +11,55 @@ from decorators import LogHistoryChange
 
 LIMIT = 1000
 
+
+def get_dbconn(db_dsn):
+    """Connects to the MongoDB server and returns a database handler."""
+
+    def _ensure_indexes(db):
+        """
+        Ensures that an index exists on specified collections.
+
+        Definitions:
+        index_by_collection = {
+            'collection_name': [
+                ('field_name_1', pymongo.DESCENDING),
+                ('field_name_2', pymongo.ASCENDING),
+                ...
+            ],
+        }
+
+        Obs:
+        Care must be taken when the database is being accessed through multiple clients at once.
+        If an index is created using this client and deleted using another,
+        any call to ensure_index() within the cache window will fail to re-create the missing index.
+
+        Docs:
+        http://api.mongodb.org/python/current/api/pymongo/collection.html#pymongo.collection.Collection.ensure_index
+        """
+        index_by_collection = {
+            'historychanges_article': [
+                ('date', pymongo.ASCENDING),
+                ('collection', pymongo.ASCENDING),
+                ('pid', pymongo.ASCENDING),
+            ],
+            'historychanges_journal': [
+                ('date', pymongo.ASCENDING),
+                ('collection', pymongo.ASCENDING),
+                ('pid', pymongo.ASCENDING),
+            ],
+        }
+
+        for collection, indexes in index_by_collection.iteritems():
+            db[collection].ensure_index(indexes)
+
+    db_url = urlparse.urlparse(db_dsn)
+    conn = pymongo.Connection(host=db_url.hostname, port=db_url.port)
+    db = conn[db_url.path[1:]]
+    if db_url.username and db_url.password:
+        db.authenticate(db_url.username, db_url.password)
+    _ensure_indexes(db)
+    return db
+
 class DataBroker(object):
     _dbconn_cache = {}
 
