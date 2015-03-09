@@ -3,263 +3,13 @@ import unicodedata
 from datetime import datetime, timedelta
 import urlparse
 import warnings
+import uuid
 
 import pymongo
 from xylose.scielodocument import Article, Journal
 from decorators import LogHistoryChange
 
 LIMIT = 1000
-
-def remove_accents(data):
-
-    if not isinstance(data, unicode):
-        unicode(data)
-
-    try:
-        return u''.join(x for x in unicodedata.normalize('NFKD', data) if unicodedata.category(x)[0] == 'L').lower()
-    except:
-        return u''
-
-
-def gen_citations_title_keys(article):
-    """
-    This method is responsible to receive an array having the article titles
-    available for the a given article and convert then into keys exemple.
-    from: ['Health care after 60th', 'Cuidados de saúde após os sessenta anos']
-    to: ['healthcareafter60th', 'cuidadosdesaudeaposossessentaanos']
-    """
-
-    def get_citation_titles():
-        titles = set()
-
-        for citation in article.citations:
-            title = ''
-            if citation.article_title:
-                title = citation.article_title
-            elif citation.chapter_title:
-                title = citation.chapter_title
-            elif citation.thesis_title:
-                title = citation.thesis_title
-            elif citation.conference_title:
-                title = citation.conference_title
-            elif citation.link_title:
-                title = citation.link_title
-
-            if not title:
-                continue
-
-            noaccents_title = remove_accents(title)
-            if not noaccents_title:
-                continue
-
-            titles.add(noaccents_title)
-
-        if len(titles) == 0:
-            return []
-
-        return list(titles)
-
-    def get_citation_titles_pages():
-        titles = set()
-
-        for citation in article.citations:
-            title = ''
-            if citation.article_title:
-                title = citation.article_title
-            elif citation.chapter_title:
-                title = citation.chapter_title
-            elif citation.thesis_title:
-                title = citation.thesis_title
-            elif citation.conference_title:
-                title = citation.conference_title
-            elif citation.link_title:
-                title = citation.link_title
-
-            if not title:
-                continue
-
-            start_page = citation.start_page or ''
-            end_page = citation.end_page or ''
-
-            noaccents_title = remove_accents(title)
-            if not noaccents_title:
-                continue
-
-            titles.add(noaccents_title+start_page+end_page)
-
-
-        if len(titles) == 0:
-            return []
-
-        return list(titles)
-
-    def get_citation_titles_author_year():
-        titles = set()
-
-        for citation in article.citations:
-
-            if not citation.date:
-                continue
-
-            data = []
-            title = ''
-            if citation.article_title:
-                title = citation.article_title
-            elif citation.chapter_title:
-                title = citation.chapter_title
-            elif citation.thesis_title:
-                title = citation.thesis_title
-            elif citation.conference_title:
-                title = citation.conference_title
-            elif citation.link_title:
-                title = citation.link_title
-
-            if not title:
-                continue
-
-            data.append(title)
-
-            author = ''
-            if citation.authors:
-                author = citation.authors[0].get('given_names', '')+citation.authors[0].get('surname', '')
-            elif citation.monographic_authors:
-                author = citation.monographic_authors[0].get('given_names', '')+citation.monographic_authors[0].get('surname', '')
-
-            if not author:
-                continue
-
-            data.append(author)
-
-            noaccents_title_author = remove_accents(''.join(data))
-            if not noaccents_title_author:
-                continue
-
-            key = remove_accents(noaccents_title_author)
-
-            key += citation.date[0:4]
-
-            if key:
-                titles.add(key)
-
-        if len(titles) == 0:
-            return []
-
-        return list(titles)
-
-    if not article.citations:
-        return []
-
-    no_accents_strings = get_citation_titles()
-    no_accents_strings_author_year = get_citation_titles_author_year()
-    no_accents_strings_pages = get_citation_titles_pages()
-
-    if not no_accents_strings:
-        return []
-
-    title_keys = {}
-    title_keys['citations_keys'] = no_accents_strings + no_accents_strings_author_year + no_accents_strings_pages
-
-    return title_keys
-
-
-def gen_title_keys(article):
-    """
-    This method is responsible to receive an array having the article titles
-    available for the a given article and convert then into keys exemple.
-    from: ['Health care after 60th', 'Cuidados de saúde após os sessenta anos']
-    to: ['healthcareafter60th', 'cuidadosdesaudeaposossessentaanos']
-    """
-
-    def titles():
-        titles = []
-        if article.original_title():
-            titles.append(article.original_title())
-
-        if article.translated_titles():
-            for title in article.translated_titles().values():
-                titles.append(title)
-
-        if len(titles) == 0:
-            return []
-
-        return titles
-
-    titles = titles()
-
-    if not titles:
-        return []
-
-    no_accents_strings = []
-    no_accents_strings_author_year = []
-    for title in titles:
-        noaccents_title = remove_accents(title)
-        if not noaccents_title:
-            continue
-        ra = noaccents_title
-        no_accents_strings.append(ra)
-
-        if not article.authors:
-            continue
-
-        author = article.authors[0].get('given_names', '')+article.authors[0].get('surname', '')
-        author = remove_accents(author)
-        no_accents_strings_author_year.append(
-            ra+author+article.publication_date[0:4])
-
-    title_keys = {}
-    title_keys['title_keys'] = no_accents_strings + no_accents_strings_author_year
-
-    return title_keys
-
-
-def get_dbconn(db_dsn):
-    """Connects to the MongoDB server and returns a database handler."""
-
-    def _ensure_indexes(db):
-        """
-        Ensures that an index exists on specified collections.
-
-        Definitions:
-        index_by_collection = {
-            'collection_name': [
-                ('field_name_1', pymongo.DESCENDING),
-                ('field_name_2', pymongo.ASCENDING),
-                ...
-            ],
-        }
-
-        Obs:
-        Care must be taken when the database is being accessed through multiple clients at once.
-        If an index is created using this client and deleted using another,
-        any call to ensure_index() within the cache window will fail to re-create the missing index.
-
-        Docs:
-        http://api.mongodb.org/python/current/api/pymongo/collection.html#pymongo.collection.Collection.ensure_index
-        """
-        index_by_collection = {
-            'historychanges_article': [
-                ('date', pymongo.ASCENDING),
-                ('collection', pymongo.ASCENDING),
-                ('pid', pymongo.ASCENDING),
-            ],
-            'historychanges_journal': [
-                ('date', pymongo.ASCENDING),
-                ('collection', pymongo.ASCENDING),
-                ('pid', pymongo.ASCENDING),
-            ],
-        }
-
-        for collection, indexes in index_by_collection.iteritems():
-            db[collection].ensure_index(indexes)
-
-    db_url = urlparse.urlparse(db_dsn)
-    conn = pymongo.Connection(host=db_url.hostname, port=db_url.port)
-    db = conn[db_url.path[1:]]
-    if db_url.username and db_url.password:
-        db.authenticate(db_url.username, db_url.password)
-    _ensure_indexes(db)
-    return db
-
 
 class DataBroker(object):
     _dbconn_cache = {}
@@ -308,6 +58,7 @@ class DataBroker(object):
         metadata['sent_wos'] = 'False'
         metadata['sent_doaj'] = 'False'
         metadata['applicable'] = 'False'
+        metadata['_shard_id'] = uuid.uuid4().hex
 
         if article.doi:
             metadata['doi'] = article.doi
@@ -317,14 +68,6 @@ class DataBroker(object):
         except:
             if article.publication_date > datetime.now().date().isoformat():
                 metadata['processing_date'] = datetime.now().date().isoformat()
-
-        gtk = gen_title_keys(article)
-        if gtk:
-            metadata.update(gtk)
-
-        gctk = gen_citations_title_keys(article)
-        if gctk:
-            metadata.update(gctk)
 
         return metadata
 
