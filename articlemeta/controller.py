@@ -40,12 +40,12 @@ def get_dbconn(db_dsn):
             'historychanges_article': [
                 ('date', pymongo.ASCENDING),
                 ('collection', pymongo.ASCENDING),
-                ('pid', pymongo.ASCENDING),
+                ('code', pymongo.ASCENDING),
             ],
             'historychanges_journal': [
                 ('date', pymongo.ASCENDING),
                 ('collection', pymongo.ASCENDING),
-                ('pid', pymongo.ASCENDING),
+                ('code', pymongo.ASCENDING),
             ],
         }
 
