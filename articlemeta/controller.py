@@ -296,17 +296,15 @@ class DataBroker(object):
         fltr = {}
         fltr['processing_date'] = {'$gte': from_date, '$lte': until_date or datetime.now().date().isoformat()}
 
-        hint = [('processing_date', -1)]
         if collection:
             fltr['collection'] = collection
-            hint.insert(0, ('collection', 1))
 
-        total = self.db['articles'].find(fltr).hint(hint).count()
+        total = self.db['articles'].find(fltr).count()
         data = self.db['articles'].find(fltr, {
             'code': 1,
             'collection': 1,
             'processing_date': 1}
-        ).hint(hint).skip(offset).limit(limit)
+        ).skip(offset).limit(limit)
 
         meta = {'limit': limit,
                 'offset': offset,
@@ -338,12 +336,12 @@ class DataBroker(object):
         if collection:
             fltr['collection'] = collection
 
-        total = self.db['articles'].find(fltr).hint([('document_type', 1), ('collection', 1), ('processing_date', -1)]).count()
+        total = self.db['articles'].find(fltr).count()
         data = self.db['articles'].find(fltr, {
             'code': 1,
             'collection': 1,
             'processing_date': 1}
-        ).hint([('document_type', 1), ('collection', 1), ('processing_date', -1)]).skip(offset).limit(limit)
+        ).skip(offset).limit(limit)
 
         meta = {'limit': limit,
                 'offset': offset,
