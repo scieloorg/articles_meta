@@ -1,5 +1,5 @@
-Servidor RPC para estatísticas de publicação
-============================================
+Servidor RPC para recuperação de metadados de artigos e periódicos
+==================================================================
 
 Este servidor RPC fornece um conjunto de endpoints para recuperação de
 registros de artigo, periódico e coleção da Rede SciELO. Os registros retornados
