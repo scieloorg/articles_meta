@@ -6,46 +6,19 @@ import os
 import sys
 
 import thriftpy
-from thriftpy.rpc import make_server
+from thriftpy.thrift import TProcessor
 
 from articlemeta.controller import DataBroker
 from articlemeta import utils
 from xylose.scielodocument import Article
 
-DEFAULT_HOST = '127.0.0.1'
-DEFAULT_PORT = '11720'
+
+logger = logging.getLogger(__name__)
 
 articlemeta_thrift = thriftpy.load(
     os.path.dirname(__file__)+'/articlemeta.thrift',
     module_name='articlemeta_thrift'
 )
-
-def _config_logging(logging_level='INFO', logging_file=None):
-
-    allowed_levels = {
-        'DEBUG': logging.DEBUG,
-        'INFO': logging.INFO,
-        'WARNING': logging.WARNING,
-        'ERROR': logging.ERROR,
-        'CRITICAL': logging.CRITICAL
-    }
-
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-    logger = logging.getLogger('rpc_articlemeta')
-    logger.setLevel(allowed_levels.get(logging_level, 'INFO'))
-
-    if logging_file:
-        hl = logging.FileHandler(logging_file, mode='a')
-    else:
-        hl = logging.StreamHandler()
-
-    hl.setFormatter(formatter)
-    hl.setLevel(allowed_levels.get(logging_level, 'INFO'))
-
-    logger.addHandler(hl)
-
-    return logger
 
 
 class Dispatcher(object):
@@ -192,59 +165,4 @@ class Dispatcher(object):
 
         return json.dumps(data)
 
-def main(host=DEFAULT_HOST, port=DEFAULT_PORT):
-
-    server = make_server(
-        articlemeta_thrift.ArticleMeta,
-        Dispatcher(),
-        host,
-        port
-    )
-
-    logger.info('Starting Server on %s:%s' % (host, port))
-
-    server.serve()
-
-if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser(
-        description="RPC Server for Article Meta"
-    )
-
-    parser.add_argument(
-        '--host',
-        '-i',
-        default=DEFAULT_HOST,
-        help='RPC Server host'
-    )
-
-    parser.add_argument(
-        '--port',
-        '-p',
-        default=DEFAULT_PORT,
-        help='RPC Server port'
-    )
-
-    parser.add_argument(
-        '--logging_file',
-        '-o',
-        default='/var/log/rpc_articlemeta.log',
-        help='Full path to the log file'
-    )
-
-    parser.add_argument(
-        '--logging_level',
-        '-l',
-        default='DEBUG',
-        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-        help='Logggin level'
-    )
-
-    args = parser.parse_args()
-
-    logger = _config_logging(args.logging_level, args.logging_file)
-
-    main(
-        host=args.host,
-        port=args.port
-    )
+app = TProcessor(articlemeta_thrift.ArticleMeta, Dispatcher())
