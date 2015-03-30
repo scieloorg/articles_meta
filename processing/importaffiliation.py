@@ -4,7 +4,7 @@ This processing import affiliation metadata for the Article Meta database.
 
 input: CSV file formated as below
 
-    PID;Collection;Publication Year;Journal Title;number label;Affiliation ID [aff1, aff2];Affiliaton as it was markedup; Affiliation Country as it was markedup;Normalized Affiliation;Normalized Affiliation Country;iso-3661
+    Collection|PID|Publication Year|Journal Title|number label|Affiliation ID [aff1, aff2]|Affiliaton as it was markedup|Affiliation Country as it was markedup|Normalized Affiliation|Normalized Affiliation Country|iso-3661
 
 input example:
 
