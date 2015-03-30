@@ -1,3 +1,4 @@
+requests
 pymongo==2.5.2
 uuid==1.30
 pyramid
