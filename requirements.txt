@@ -1,6 +1,7 @@
 pymongo==2.5.2
 uuid==1.30
 pyramid
+pyramid_debugtoolbar
 waitress
 gunicorn
 gunicorn_thrift

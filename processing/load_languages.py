@@ -32,7 +32,7 @@ config = utils.Configuration.from_file(os.environ.get('CONFIG_INI', os.path.dirn
 settings = dict(config.items())
 
 try:
-    articlemeta_db = Connection(settings['app:main']['mongo_uri'])['scielo_network']
+    articlemeta_db = Connection(settings['app:main']['mongo_uri'])['articlemeta']
 except:
     logging.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
 
