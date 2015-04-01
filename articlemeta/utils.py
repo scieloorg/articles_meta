@@ -38,7 +38,7 @@ class Configuration(SingletonMixin):
     @classmethod
     def from_env(cls):
         try:
-            filepath = os.environ['ARTICLEMETA_SETTINGS_FILE']
+            filepath =  os.environ['ARTICLEMETA_SETTINGS_FILE']
         except KeyError:
             if __debug__:
                 # load the test configurations
