@@ -25,10 +25,7 @@ class Dispatcher(object):
 
     def __init__(self):
 
-        config = utils.Configuration.from_file(os.environ.get(
-            'CONFIG_INI',
-            os.path.dirname(__file__)+'/../../config.ini')
-        )
+        config = utils.Configuration.from_env()
         settings = dict(config.items())
 
         self._databroker = DataBroker.from_dsn(settings['app:main']['mongo_uri'], reuse_dbconn=True)
