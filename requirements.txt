@@ -1,13 +1,12 @@
-requests
+requests==2.6.0
 pymongo==2.5.2
 uuid==1.30
-pyramid
-pyramid_debugtoolbar
-waitress
-gunicorn
-gunicorn_thrift
--e git+git://github.com/scieloorg/xylose.git#egg=xylose
--e git+git://github.com/gustavofonseca/plumber.git#egg=plumber
-lxml
-cython
-thriftpy
+pyramid==1.5.4
+chaussette==1.2
+lxml==3.4.2
+gunicorn_thrift==0.2.1
+cython==0.22
+thriftpy==0.2.0
+picles.plumber==0.10
+-e git+https://github.com/scieloorg/xylose@v0.5b#egg=xylose
+-e git+https://github.com/scieloorg/articlemeta@0.1#egg=articlemeta
