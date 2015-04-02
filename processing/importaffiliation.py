@@ -289,7 +289,7 @@ def check_affiliations(file_name='processing/normalized_affiliations.csv', impor
             # import the last document
             import_doc_affiliations(doc_affiliations)
 
-if __name__ == "__main__":
+def main():
 
     parser = argparse.ArgumentParser(
         description="Load normalized affiliation data to the article meta database"

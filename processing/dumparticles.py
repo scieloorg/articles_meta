@@ -89,7 +89,7 @@ def _config_logging(logging_level='INFO', logging_file=None):
     logging.basicConfig(**logging_config)
 
 
-if __name__ == "__main__":
+def main():
 
     parser = argparse.ArgumentParser(
         description="Dump SciELO Network metadata"

@@ -320,7 +320,7 @@ class StaticCatalog(object):
         return ldata
             
 
-def main(collection, all_records):
+def run(collection, all_records):
 
     coll_info = collection_info(collection)
 
@@ -362,8 +362,7 @@ def main(collection, all_records):
             document.publisher_id
         ))
 
-if __name__ == "__main__":
-
+def main():
     parser = argparse.ArgumentParser(
         description="Load Languages from SciELO static files available in the file system"
     )
@@ -402,4 +401,4 @@ if __name__ == "__main__":
 
     logger = _config_logging(args.logging_level, args.logging_file)
 
-    main(args.collection, args.all_records)
+    run(args.collection, args.all_records)
