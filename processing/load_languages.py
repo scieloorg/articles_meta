@@ -28,7 +28,7 @@ FROM.isoformat()[:10]
 file_regex = re.compile(r'serial.*.htm|.*.xml')
 data_struct_regex = re.compile(r'^fulltexts\.(pdf|html)\.[a-z][a-z]$')
 
-config = utils.Configuration.from_file(os.environ.get('CONFIG_INI', os.path.dirname(__file__)+'/../config.ini'))
+config = utils.Configuration.from_env()
 settings = dict(config.items())
 
 try:
