@@ -26,15 +26,17 @@ from articlemeta import utils
 
 from xylose.scielodocument import Article
 
-config = utils.Configuration.from_file(os.environ.get('CONFIG_INI', os.path.dirname(__file__)+'/../config.ini'))
+logger = logging.getLogger(__name__)
+
+config = utils.Configuration.from_env()
 settings = dict(config.items())
 
 REGEX_ARTICLE = re.compile("^S[0-9]{4}-[0-9]{3}[0-9xX][0-2][0-9]{3}[0-9]{4}[0-9]{5}$")
 
 try:
-    scielo_network_articles = Connection(settings['app:main']['mongo_uri'])['scielo_network']['articles']
+    scielo_network_articles = Connection(settings['app:main']['mongo_uri'])['articlemeta']['articles']
 except:
-    logging.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
+    logger.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
 
 
 trans_collections_code = {
@@ -93,15 +95,22 @@ def _config_logging(logging_level='INFO', logging_file=None):
         'CRITICAL': logging.CRITICAL
     }
 
-    logging_config = {
-        'level': allowed_levels.get(logging_level, 'INFO'),
-        'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    }
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    
+    logger.setLevel(allowed_levels.get(logging_level, 'INFO'))
 
     if logging_file:
-        logging_config['filename'] = logging_file
+        hl = logging.FileHandler(logging_file, mode='a')
+    else:
+        hl = logging.StreamHandler()
 
-    logging.basicConfig(**logging_config)
+    hl.setFormatter(formatter)
+    hl.setLevel(allowed_levels.get(logging_level, 'INFO'))
+
+    logger.addHandler(hl)
+
+    return logger
 
 
 def is_valid_pid(pid):
@@ -118,18 +127,18 @@ def parse_csv_line(data):
     line = '|'.join(data)
 
     if len(data) != 12:
-        logging.error('line has an invalid number of fields (%s)' % line)
+        logger.error('line has an invalid number of fields (%s)' % line)
         return False
 
     pid = data[2].strip()
 
     if not is_valid_pid(pid):
-        logging.error('line has an invalid PID (%s)' % line)
+        logger.error('line has an invalid PID (%s)' % line)
         return False
 
     data[1] = data[1].strip().lower()
     if not data[1] in trans_collections_code:
-        logging.error('line has an invalid collection code (%s)' % line)
+        logger.error('line has an invalid collection code (%s)' % line)
         return False
 
     parsed_data['mfn'] = data[0].strip()
@@ -145,7 +154,7 @@ def parse_csv_line(data):
     parsed_data['normalized_affiliation_country'] = data[10].strip()
     parsed_data['normalized_affiliation_iso_3661_country'] = data[11].strip()
 
-    logging.debug('line has been parsed')
+    logger.debug('line has been parsed')
 
     return parsed_data
 
@@ -158,31 +167,31 @@ def is_clean_checked(parsed_line, original_article):
     """
 
     if parsed_line['pid'] != original_article.publisher_id:
-        logging.error('Invalid metadata (PID) reading line (%s)' % parsed_line['mfn'])
+        logger.error('Invalid metadata (PID) reading line (%s)' % parsed_line['mfn'])
         return False
 
     affstr = parsed_line['affiliation_index'].strip().lower()
 
     if not original_article.affiliations:
-        logging.error('Invalid metadata (Affiliation Index) reading (%s). Record does not have affiliations' % parsed_line['mfn'])
+        logger.error('Invalid metadata (Affiliation Index) reading (%s). Record does not have affiliations' % parsed_line['mfn'])
         return False
 
     if not parsed_line['normalized_affiliation_iso_3661_country'] in iso3661codes:
-        logging.error('Invalid metadata (Country ISO-3661 code: %s) reading line (%s).' % (parsed_line['normalized_affiliation_iso_3661_country'], parsed_line['mfn']))
+        logger.error('Invalid metadata (Country ISO-3661 code: %s) reading line (%s).' % (parsed_line['normalized_affiliation_iso_3661_country'], parsed_line['mfn']))
 
     aff = False
     for affiliation in original_article.affiliations:
         affstrorig = affiliation.get('index', '').strip().lower()
         if affstr == affstrorig:
-            logging.debug('Affiliation match index input (%s) original (%s)' % (affstr, affstrorig))
+            logger.debug('Affiliation match index input (%s) original (%s)' % (affstr, affstrorig))
             aff = True
             break
 
     if not aff:
-        logging.error('Invalid metadata (Affiliation Index) reading line (%s). Record does not have a matching affiliation' % parsed_line['mfn'])
+        logger.error('Invalid metadata (Affiliation Index) reading line (%s). Record does not have a matching affiliation' % parsed_line['mfn'])
         return False
 
-    logging.debug('line was validated agains original metadata (PID, Affiliation Index, Country ISO-3661 code)')
+    logger.debug('line was validated agains original metadata (PID, Affiliation Index, Country ISO-3661 code)')
 
     return True
 
@@ -196,10 +205,10 @@ def get_original_article(pid, collection):
             return None
 
         article = Article(json_article)
-        logging.debug('original metadata retrieved from Article Meta')
+        logger.debug('original metadata retrieved from Article Meta')
         return article
     except:
-        logging.error('Fail to retrieve (%s)' % str(query))
+        logger.error('Fail to retrieve (%s)' % str(query))
 
 
 def isis_like_json(data):
@@ -242,14 +251,14 @@ def import_doc_affiliations(data):
                 }
             }
         )
-        logging.debug('reacording at(%s): ' % code)
+        logger.debug('reacording at(%s): ' % code)
     except:
-        logging.error('Error recording metadata at (%s): ' % code)
+        logger.error('Error recording metadata at (%s): ' % code)
 
 
 def check_affiliations(file_name='processing/normalized_affiliations.csv', import_data=False, encoding='utf-8'):
 
-    logging.info('reading file (%s)' % file_name)
+    logger.info('reading file (%s)' % file_name)
 
     original_article = None
 
@@ -264,8 +273,9 @@ def check_affiliations(file_name='processing/normalized_affiliations.csv', impor
     for line in sorted(lines):
         line_count += 1
 
-        logging.debug('reading line (%s)' % line_count)
+        logger.debug('reading line (%s)' % line_count)
         parsed_line = parse_csv_line([str(line_count)] + line)
+
         if not parsed_line:
             continue
 

@@ -9,4 +9,4 @@ cython==0.22
 thriftpy==0.2.0
 picles.plumber==0.10
 -e git+https://github.com/scieloorg/xylose@v0.5b#egg=xylose
--e git+https://github.com/scieloorg/articles_meta@0.2.4#egg=articles_meta
+-e git+https://github.com/scieloorg/articles_meta@0.2.5#egg=articles_meta
