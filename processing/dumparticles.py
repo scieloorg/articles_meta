@@ -13,6 +13,8 @@ import datetime
 import requests
 import argparse
 
+logger = logging.getLogger(__name__)
+
 ARTICLEMETA = 'http://articlemeta.scielo.org/api/v1/'
 
 trans_acronym = {'scl': 'bra'}
@@ -21,7 +23,7 @@ def load_documents():
     offset=0
     while True:
         url = '%sarticle/identifiers?offset=%s' % (ARTICLEMETA, str(offset))
-        logging.debug('Loading url: %s' % url)
+        logger.debug('Loading url: %s' % url)
         identifiers = requests.get(url).json()
 
         if len(identifiers['objects']) == 0:
@@ -31,7 +33,7 @@ def load_documents():
             code = identifier['code']
             collection = identifier['collection']
             url_document = '%sarticle?code=%s&format=xmlwos' % (ARTICLEMETA, code)
-            logging.debug('Loading url: %s' % url_document)
+            logger.debug('Loading url: %s' % url_document)
             document = requests.get(url_document)
             yield ('%s_%s' % (collection, code), document.text)
         offset+=1000
@@ -40,16 +42,16 @@ def getschema():
 
     try:
         xsd = requests.get('https://raw.githubusercontent.com/scieloorg/articles_meta/master/tests/xsd/scielo_sci/ThomsonReuters_publishing.xsd').text
-        logging.debug('Schema download')
+        logger.debug('Schema download')
         return xsd
     except:
-        logging.error('Schema download fail')
+        logger.error('Schema download fail')
     
 
 def dumpdata(*args, **xargs):
     zip_name = xargs['file_name']
 
-    logging.info('Creating zip file: %s' % zip_name)
+    logger.info('Creating zip file: %s' % zip_name)
     with zipfile.ZipFile(zip_name, 'w', compression=zipfile.ZIP_DEFLATED, allowZip64=True) as thezip:
         for document in load_documents():
             collection = trans_acronym[document[0][0:3]] if document[0][0:3] in trans_acronym else document[0][0:3]
@@ -78,16 +80,22 @@ def _config_logging(logging_level='INFO', logging_file=None):
         'CRITICAL': logging.CRITICAL
     }
 
-    logging_config = {
-        'level': allowed_levels.get(logging_level, 'INFO'),
-        'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    }
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    
+    logger.setLevel(allowed_levels.get(logging_level, 'INFO'))
 
     if logging_file:
-        logging_config['filename'] = logging_file
+        hl = logging.FileHandler(logging_file, mode='a')
+    else:
+        hl = logging.StreamHandler()
 
-    logging.basicConfig(**logging_config)
+    hl.setFormatter(formatter)
+    hl.setLevel(allowed_levels.get(logging_level, 'INFO'))
 
+    logger.addHandler(hl)
+
+    return logger
 
 def main():
 

@@ -22,6 +22,8 @@ from pymongo import Connection
 from articlemeta import utils
 from xylose.scielodocument import Article
 
+logger = logging.getLogger(__name__)
+
 FROM = datetime.now() - timedelta(days=15)
 FROM.isoformat()[:10]
 
@@ -48,7 +50,7 @@ def _config_logging(logging_level='INFO', logging_file=None):
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    logger = logging.getLogger('load_languages')
+    
     logger.setLevel(allowed_levels.get(logging_level, 'INFO'))
 
     if logging_file:
@@ -399,6 +401,6 @@ def main():
 
     args = parser.parse_args()
 
-    logger = _config_logging(args.logging_level, args.logging_file)
+    _config_logging(args.logging_level, args.logging_file)
 
     run(args.collection, args.all_records)
