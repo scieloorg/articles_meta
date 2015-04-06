@@ -20,6 +20,9 @@ articlemeta_thrift = thriftpy.load(
     module_name='articlemeta_thrift'
 )
 
+ADDRESS = '127.0.0.1'
+PORT = '11720'
+
 
 class Dispatcher(object):
 
@@ -162,24 +165,29 @@ class Dispatcher(object):
 
         return json.dumps(data)
 
-parser = argparse.ArgumentParser(
-    description="Articlemeta Thrift Server."
-)
+def main():
 
-parser.add_argument(
-    '--address',
-    '-a',
-    default='127.0.0.1',
-    help='Binding Address'
-)
+    parser = argparse.ArgumentParser(
+        description="Articlemeta Thrift Server."
+    )
+
+    parser.add_argument(
+        '--address',
+        '-a',
+        default=ADDRESS,
+        help='Binding Address'
+    )
 
 
-parser.add_argument(
-    '--port',
-    '-p',
-    default='11720',
-    help='Binding Port'
-)
+    parser.add_argument(
+        '--port',
+        '-p',
+        default=PORT,
+        help='Binding Port'
+    )
+    
+    args = parser.parse_args()
 
-server = make_server(articlemeta_thrift.ArticleMeta, Dispatcher(), '0.0.0.0', '11720')
-server.serve()
+    server = make_server(articlemeta_thrift.ArticleMeta,
+        Dispatcher(), args.address, args.port)
+    server.serve()
