@@ -6,7 +6,7 @@ import os
 import sys
 
 import thriftpy
-from thriftpy.thrift import TProcessor
+from thriftpy.rpc import make_server
 
 from articlemeta.controller import DataBroker
 from articlemeta import utils
@@ -162,4 +162,24 @@ class Dispatcher(object):
 
         return json.dumps(data)
 
-app = TProcessor(articlemeta_thrift.ArticleMeta, Dispatcher())
+parser = argparse.ArgumentParser(
+    description="Articlemeta Thrift Server."
+)
+
+parser.add_argument(
+    '--address',
+    '-a',
+    default='127.0.0.1',
+    help='Binding Address'
+)
+
+
+parser.add_argument(
+    '--port',
+    '-p',
+    default='11720',
+    help='Binding Port'
+)
+
+server = make_server(articlemeta_thrift.ArticleMeta, Dispatcher(), '0.0.0.0', '11720')
+server.serve()

@@ -40,12 +40,7 @@ class Configuration(SingletonMixin):
         try:
             filepath =  os.environ['ARTICLEMETA_SETTINGS_FILE']
         except KeyError:
-            if __debug__:
-                # load the test configurations
-                cwd = os.path.join(os.path.dirname(__file__))
-                filepath = os.path.join(cwd, '..', 'config-test.ini')
-            else:
-                raise ValueError('missing env variable ARTICLE_SETTINGS_FILE')
+            raise ValueError('missing env variable ARTICLEMETA_SETTINGS_FILE')
 
         return cls.from_file(filepath)
 
