@@ -10,8 +10,8 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
     CHANGES = f.read()
 
 requires = [
-    'uuid==1.30',
-    'pymongo==2.5.2',
+    'uuid>=1.30',
+    'pymongo>=2.5.2',
     'pyramid',
     'pyramid_chameleon',
     'pyramid_debugtoolbar',
@@ -23,7 +23,7 @@ test_requires = requires+['mocker']
 
 setup(
     name="articlemeta",
-    version='0.2.6',
+    version='0.2.7',
     description="A SciELO API to load SciELO Articles metadata",
     author="SciELO",
     author_email="scielo-dev@googlegroups.com",

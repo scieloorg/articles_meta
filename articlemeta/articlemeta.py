@@ -146,6 +146,7 @@ def delete_journal(request):
 def identifiers_article(request):
 
     collection = request.GET.get('collection', None)
+    issn = request.GET.get('issn', None)
     from_date = request.GET.get('from', '1500-01-01')
     until_date = request.GET.get('until', datetime.now().date().isoformat())
     limit = _get_request_limit_param(request)
@@ -160,6 +161,7 @@ def identifiers_article(request):
         raise exc.HTTPBadRequest('offset must be integer >= 0')
 
     ids = request.databroker.identifiers_article(collection=collection,
+                                                 issn=issn,
                                                  limit=limit,
                                                  offset=offset,
                                                  from_date=from_date,
@@ -173,6 +175,7 @@ def identifiers_article(request):
 def identifiers_press_release(request):
 
     collection = request.GET.get('collection', None)
+    issn = request.GET.get('issn', None)
     from_date = request.GET.get('from', '1500-01-01')
     until_date = request.GET.get('until', datetime.now().date().isoformat())
     limit = _get_request_limit_param(request)
@@ -184,6 +187,7 @@ def identifiers_press_release(request):
         raise exc.HTTPBadRequest('offset must be integer')
 
     ids = request.databroker.identifiers_press_release(collection=collection,
+                                                       issn=issn,
                                                        limit=limit,
                                                        offset=offset,
                                                        from_date=from_date,

@@ -41,12 +41,11 @@ struct event_journal {
 
 service ArticleMeta {
     list<event_document> article_history_changes(1: string collection, 2: string event, 3: string code 4: string from, 5: string until, 6: i32 limit, 7: i32 offset) throws (1: ValueError value_err, 2:ServerError server_err),
-
     list<event_journal> journal_history_changes(1: string collection, 2: string event, 3: string code, 4: string from, 5: string until, 6:i32 limit, 7: i32 offset) throws (1: ValueError value_err, 2:ServerError server_err),
     collection get_collection(1: string code) throws (1: ValueError value_err, 2:ServerError server_err),
     string get_article(1: string code, 2: string collection, 3: bool replace_journal_metadata) throws (1: ValueError value_err, 2:ServerError server_err),
     string get_journal(1: string code, 2: string collection) throws (1: ValueError value_err, 2:ServerError server_err),
     list<journal_identifiers> get_journal_identifiers(1: optional string collection, 2: i32 limit, 3: i32 offset) throws (1: ValueError value_err, 2:ServerError server_err),
-    list<article_identifiers> get_article_identifiers(1: optional string collection, 2: optional string from, 3: optional string until, 4: i32 limit, 5: i32 offset) throws (1:ValueError value_err, 2:ServerError server_err),
+    list<article_identifiers> get_article_identifiers(1: optional string collection, 2: optional string issn, 3: optional string from, 4: optional string until, 5: i32 limit, 6: i32 offset) throws (1:ValueError value_err, 2:ServerError server_err),
     list<collection> get_collection_identifiers() throws(1: ServerError server_err)
 }

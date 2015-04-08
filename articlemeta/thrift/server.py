@@ -83,7 +83,7 @@ class Dispatcher(object):
 
         return objs
 
-    def get_article_identifiers(self, collection, from_date, until_date, limit, offset):
+    def get_article_identifiers(self, collection, issn, from_date, until_date, limit, offset):
 
         from_date = from_date or '1500-01-01'
         limit = limit or 1000
@@ -92,6 +92,7 @@ class Dispatcher(object):
         try:
             data = self._databroker.identifiers_article(
                 collection=collection,
+                issn=issn,
                 from_date=from_date,
                 until_date=until_date,
                 limit=limit,

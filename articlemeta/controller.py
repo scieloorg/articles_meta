@@ -282,6 +282,7 @@ class DataBroker(object):
 
     def identifiers_article(self,
                             collection=None,
+                            issn=None,
                             from_date='1500-01-01',
                             until_date=None,
                             limit=LIMIT,
@@ -298,6 +299,9 @@ class DataBroker(object):
 
         if collection:
             fltr['collection'] = collection
+
+        if issn:
+            fltr['code_title'] = issn
 
         total = self.db['articles'].find(fltr).count()
         data = self.db['articles'].find(fltr, {
@@ -317,6 +321,7 @@ class DataBroker(object):
 
     def identifiers_press_release(self,
                                   collection=None,
+                                  issn=None,
                                   from_date='1500-01-01',
                                   until_date=None,
                                   limit=LIMIT,
@@ -335,6 +340,9 @@ class DataBroker(object):
 
         if collection:
             fltr['collection'] = collection
+
+        if issn:
+            fltr['code_title'] = issn
 
         total = self.db['articles'].find(fltr).count()
         data = self.db['articles'].find(fltr, {
