@@ -380,14 +380,13 @@ def main():
     parser.add_argument(
         '--all_records',
         '-a',
-        action='store_false',
+        action='store_true',
         help='Apply processing to all records or just records without the fulltexts parameter'
     )
 
     parser.add_argument(
         '--logging_file',
         '-o',
-        default='/var/log/articlemeta/load_languages.log',
         help='Full path to the log file'
     )
 
