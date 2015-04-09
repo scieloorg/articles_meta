@@ -16,7 +16,9 @@ requires = [
     'pyramid_chameleon',
     'pyramid_debugtoolbar',
     'waitress',
-    'gunicorn'
+    'gunicorn',
+    'thriftpy',
+    'thriftpywrap',
     ]
 
 test_requires = requires+['mocker']
