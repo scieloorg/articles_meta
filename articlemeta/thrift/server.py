@@ -180,4 +180,4 @@ class Dispatcher(object):
         return json.dumps(data)
 
 
-main = thriftpywrap.ConsoleApp(articlemeta_thrift, Dispatcher)
+main = thriftpywrap.ConsoleApp(articlemeta_thrift.ArticleMeta, Dispatcher)

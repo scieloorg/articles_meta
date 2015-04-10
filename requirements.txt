@@ -4,10 +4,9 @@ uuid==1.30
 pyramid==1.5.4
 chaussette==1.2
 lxml==3.4.2
-gunicorn_thrift==0.2.1
 cython==0.22
 thriftpy==0.2.0
 picles.plumber==0.10
 -e git+https://github.com/scieloorg/xylose@v0.5b#egg=xylose
--e git+https://github.com/scieloorg/thriftpy-wrap@0.1#egg=thriftpywrap
+-e git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap
 -e git+https://github.com/scieloorg/articles_meta@0.2.9#egg=articles_meta
