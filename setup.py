@@ -21,11 +21,11 @@ requires = [
     'thriftpywrap',
     ]
 
-test_requires = requires+['mocker']
+test_requires = ['mocker']
 
 setup(
     name="articlemeta",
-    version='0.2.9',
+    version='0.2.10',
     description="A SciELO API to load SciELO Articles metadata",
     author="SciELO",
     author_email="scielo-dev@googlegroups.com",
@@ -42,8 +42,12 @@ setup(
         "Topic :: System",
         "Topic :: Utilities",
     ],
+    dependency_links=[
+        "git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap"
+    ],
     setup_requires=["nose>=1.0", "coverage"],
-    tests_require=test_requires,
+    install_requires=requires,
+    tests_requires=test_requires,
     test_suite="nose.collector",
     entry_points="""\
     [paste.app_factory]
