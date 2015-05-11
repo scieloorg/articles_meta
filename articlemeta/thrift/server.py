@@ -31,7 +31,7 @@ class Dispatcher(object):
         try:
             data = self._databroker.identifiers_collection()
         except:
-            articlemeta_thrift.ServerError(
+            raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.identifiers_collection')
 
         return [articlemeta_thrift.collection(
