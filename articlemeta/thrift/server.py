@@ -43,7 +43,7 @@ class Dispatcher(object):
         try:
             data = self._databroker.get_collection(code)
         except:
-            articlemeta_thrift.ServerError(
+            raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.get_collection')
 
         return articlemeta_thrift.collection(data['code'], data['acron'],
@@ -67,7 +67,7 @@ class Dispatcher(object):
                                                    limit=limit,
                                                    offset=offset)
         except:
-            articlemeta_thrift.ServerError(
+            raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.historychanges')
 
         objs = [articlemeta_thrift.event_document(code=i['code'],
@@ -93,7 +93,7 @@ class Dispatcher(object):
                                                         limit=limit,
                                                         offset=offset)
         except:
-            articlemeta_thrift.ServerError(
+            raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.identifiers_article')
 
         objs = [articlemeta_thrift.article_identifiers(
@@ -111,7 +111,7 @@ class Dispatcher(object):
                 collection=collection,
                 replace_journal_metadata=replace_journal_metadata)
         except:
-            articlemeta_thrift.ServerError(
+            raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.get_article')
 
         return json.dumps(data)
@@ -133,7 +133,7 @@ class Dispatcher(object):
                                                    limit=limit,
                                                    offset=offset)
         except:
-            articlemeta_thrift.ServerError(
+            raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.historychanges')
 
         objs = [articlemeta_thrift.event_journal(code=i['code'],
@@ -154,7 +154,7 @@ class Dispatcher(object):
                                                         limit=limit,
                                                         offset=offset)
         except:
-            articlemeta_thrift.ServerError(
+            raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.identifiers_journal')
 
         objs = [
@@ -171,7 +171,7 @@ class Dispatcher(object):
             data = self._databroker.get_journal(collection=collection,
                                                 issn=code)
         except:
-            articlemeta_thrift.ServerError(
+            raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.get_journal')
 
         if isinstance(data, list):
