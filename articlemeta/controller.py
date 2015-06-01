@@ -370,7 +370,7 @@ class DataBroker(object):
             collection.
         """
 
-        fltr = {'code': code}
+        fltr = {'$or': [{'code': code}, {'doi': code}]}
         if collection:
             fltr['collection'] = collection
 

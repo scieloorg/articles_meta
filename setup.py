@@ -19,13 +19,14 @@ requires = [
     'gunicorn',
     'thriftpy',
     'thriftpywrap',
+    'xylose'
     ]
 
 test_requires = ['mocker']
 
 setup(
     name="articlemeta",
-    version='0.2.11',
+    version='0.2.12',
     description="A SciELO API to load SciELO Articles metadata",
     author="SciELO",
     author_email="scielo-dev@googlegroups.com",
@@ -43,7 +44,8 @@ setup(
         "Topic :: Utilities",
     ],
     dependency_links=[
-        "git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap"
+        "git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap",
+        "git+https://github.com/scieloorg/xylose@v0.9b#egg=xylose"
     ],
     setup_requires=["nose>=1.0", "coverage"],
     install_requires=requires,
