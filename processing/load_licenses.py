@@ -126,7 +126,7 @@ def run(collection, all_records):
         try:
             license = scrap_license(
                 do_request(
-                    document.html_url().replace('www.scielo.br', 'homolog.scielo.br'), json=False
+                    document.html_url(), json=False
                 )
             )
         except:
