@@ -18,7 +18,7 @@ import re
 import os
 import requests
 
-from pymongo import Connection
+from pymongo import MongoClient
 from articlemeta import utils
 from xylose.scielodocument import Article
 
@@ -34,7 +34,7 @@ config = utils.Configuration.from_env()
 settings = dict(config.items())
 
 try:
-    articlemeta_db = Connection(settings['app:main']['mongo_uri'])['articlemeta']
+    articlemeta_db = MongoClient(settings['app:main']['mongo_uri'])['articlemeta']
 except:
     logging.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
 

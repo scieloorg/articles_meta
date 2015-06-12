@@ -56,6 +56,7 @@ setup(
     main = articlemeta:main
     [console_scripts]
     articlemeta_loadlanguages=processing.load_languages:main
+    articlemeta_loadlicenses=processing.load_licenses:main
     articlemeta_importaffiliation=processing.importaffiliation:main
     articlemeta_dumparticles=processing.dumparticles:main
     articlemeta_thrift_server=articlemeta.thrift.server:main
