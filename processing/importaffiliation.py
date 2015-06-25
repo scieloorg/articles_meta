@@ -173,11 +173,11 @@ def is_clean_checked(parsed_line, original_article):
     affstr = parsed_line['affiliation_index'].strip().lower()
 
     if not original_article.affiliations:
-        logger.error('Invalid metadata (Affiliation Index) reading (%s). Record does not have affiliations' % parsed_line['mfn'])
+        logger.error('Invalid metadata for document (%s) (Affiliation Index) reading (%s). Record does not have affiliations' % (parsed_line['pid'], parsed_line['mfn']))
         return False
 
     if not parsed_line['normalized_affiliation_iso_3661_country'] in iso3661codes:
-        logger.error('Invalid metadata (Country ISO-3661 code: %s) reading line (%s).' % (parsed_line['normalized_affiliation_iso_3661_country'], parsed_line['mfn']))
+        logger.error('Invalid metadata for document (%s) (Country ISO-3661 code: %s) reading line (%s).' % (parsed_line['pid'], parsed_line['normalized_affiliation_iso_3661_country'], parsed_line['mfn']))
 
     aff = False
     for affiliation in original_article.affiliations:
@@ -188,7 +188,7 @@ def is_clean_checked(parsed_line, original_article):
             break
 
     if not aff:
-        logger.error('Invalid metadata (Affiliation Index) reading line (%s). Record does not have a matching affiliation' % parsed_line['mfn'])
+        logger.error('Invalid metadata for document (%s) (Affiliation Index) reading line (%s). Record does not have a matching affiliation' % (parsed_line['pid'], parsed_line['mfn']))
         return False
 
     logger.debug('line was validated agains original metadata (PID, Affiliation Index, Country ISO-3661 code)')

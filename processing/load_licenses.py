@@ -117,7 +117,7 @@ def run(collection, all_records):
 
     coll_info = collection_info(collection)
 
-    logger.info(u'Loading languages for %s' % coll_info['domain'])
+    logger.info(u'Loading licenses for %s' % coll_info['domain'])
     logger.info(u'Using mode all_records %s' % str(all_records))
 
     for document in load_documents(collection, all_records=all_records):
@@ -134,6 +134,7 @@ def run(collection, all_records):
             continue
 
         if not license:
+            logger.debug('No license defined for: %s' % document.publisher_id)
             continue
 
         articlemeta_db['articles'].update(
