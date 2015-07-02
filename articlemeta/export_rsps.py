@@ -2,6 +2,7 @@
 import re
 
 from lxml import etree as ET
+from lxml.etree import CDATA
 
 import plumber
 
@@ -434,6 +435,64 @@ class XMLFrontPipe(plumber.Pipe):
 
         return data
 
+class XMLBodyPipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.original_html():
+            raise plumber.UnmetPrecondition()
+
+    def transform(self, data):
+        raw, xml = data
+
+        xml.append(ET.Element('body'))
+        body = xml.find('body')
+        body.text = raw.original_html()
+        body.set('specific-use', 'quirks-mode')
+        xml.append(body)
+
+        return data
+
+class XMLSubArticlePipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.body:
+            raise plumber.UnmetPrecondition()
+
+    def transform(self, data):
+        raw, xml = data
+
+        for language, body in raw.translated_htmls().items():
+            if language == raw.original_language():
+                continue
+            subarticle = ET.Element('sub-article')
+            frontstub = ET.Element('front-stub')
+            if raw.translated_abstracts():
+                for lang, text in raw.translated_abstracts().items():
+                    if lang != language:
+                        continue
+                    p = ET.Element('p')
+                    p.text = text
+                    abstract = ET.Element('abstract')
+                    abstract.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
+                    abstract.append(p)
+                    frontstub.append(abstract)
+
+            subarticle.append(frontstub)
+            subarticle.set('article-type', 'translation')
+            subarticle.set('id', 'TR%s' % language)
+            subarticle_body = ET.Element('body')
+            subarticle_body.set('specific-use', 'quirks-mode')
+            subarticle_body.text = body
+            subarticle.append(subarticle_body)
+            xml.append(subarticle)
+
+        return data
 
 class XMLJournalMetaJournalIdPipe(plumber.Pipe):
 

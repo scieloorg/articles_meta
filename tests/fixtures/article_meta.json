@@ -2,11 +2,21 @@
     "sent_doaj": "True", 
     "code": "S0034-89102010000400007", 
     "doi": "10.1590/S0034-89102010000400007",
-    "article_title_md5": [
-        "79f5d0c40db5366c638d401d291fffc2", 
-        "1e8b399129eb4793ca02fee5f8e66d66", 
-        "96497b0183a6b8a3ff7c333d6c9e5fd6"
-    ], 
+    "fulltexts": {
+        "pdf": {
+            "en": "http://www.scielo.br/pdf/rsp/v44n4/en_07.pdf",
+            "pt": "http://www.scielo.br/pdf/rsp/v44n4/07.pdf"
+        },
+        "html": {
+            "en": "http://www.scielo.br?script=sci_arttext&pid=S0034-89102010000400007&tlng=en",
+            "pt": "http://www.scielo.br?script=sci_arttext&pid=S0034-89102010000400007&tlng=pt"
+        }
+    },
+    "body": {
+        "en": "Body en",
+        "pt": "Body pt",
+        "es": "Body es"
+    },
     "title": {
         "v992": [
             {

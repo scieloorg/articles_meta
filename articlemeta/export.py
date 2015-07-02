@@ -67,7 +67,9 @@ class Export(object):
                                export_rsps.XMLArticleMetaAbstractsPipe(),
                                export_rsps.XMLArticleMetaKeywordsPipe(),
                                export_rsps.XMLArticleMetaCountsPipe(),
+                               export_rsps.XMLBodyPipe(),
                                export_rsps.XMLArticleMetaCitationsPipe(),
+                               export_rsps.XMLSubArticlePipe(),
                                export_rsps.XMLClosePipe())
 
         transformed_data = ppl.run(xylose_article, rewrap=True)

@@ -20,6 +20,14 @@ class XMLCitationTests(unittest.TestCase):
 
         self._xmlcitation = export_rsps.XMLCitation()
 
+    def test_xml_multilanguage(self):
+
+        raw_json = json.loads(open(os.path.dirname(__file__)+'/fixtures/fulltexts_multilanguage_sample.json').read())
+        citation_meta = Article(self._raw_json).citations[0]
+        xmlcitation = export_rsps.XMLCitation()
+
+        self.assertEqual('ref', 'dd')
+
     def test_xml_citation_setup_pipe(self):
 
         data = [self._citation_meta, None]
