@@ -120,8 +120,13 @@ def scrap_body(data, language):
         return None
 
     lic = etree_body.find('./div[@class="article-license"]')
-    if lic:
+    if lic != None:
         etree_body.remove(lic)
+
+    reflinks = etree_body.xpath('.//a[@href="javascript:void(0);" and text()="Links"]')
+
+    for reflink in reflinks:
+        reflink.getparent().remove(reflink)
 
     parsed_body = etree.tostring(etree_body, encoding='unicode', pretty_print=False).rstrip('\r\n')
 
