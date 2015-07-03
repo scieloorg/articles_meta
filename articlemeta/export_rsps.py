@@ -444,13 +444,15 @@ class XMLBodyPipe(plumber.Pipe):
         if not raw.original_html():
             raise plumber.UnmetPrecondition()
 
+    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
-        xml.append(ET.Element('body'))
-        body = xml.find('body')
-        body.text = raw.original_html()
+        body = ET.Element('body')
+        p = ET.Element('p')
+        p.text = raw.original_html()
         body.set('specific-use', 'quirks-mode')
+        body.append(p)
         xml.append(body)
 
         return data
@@ -461,9 +463,10 @@ class XMLSubArticlePipe(plumber.Pipe):
 
         raw, xml = data
 
-        if not raw.body:
+        if not raw.translated_htmls():
             raise plumber.UnmetPrecondition()
 
+    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
@@ -472,6 +475,31 @@ class XMLSubArticlePipe(plumber.Pipe):
                 continue
             subarticle = ET.Element('sub-article')
             frontstub = ET.Element('front-stub')
+
+            # ARTICLE CATEGORY
+            if raw.session_code:
+                subjectgroup = ET.Element('subj-group')
+                subjectgroup.set('subj-group-type', 'heading')
+                sbj = ET.Element('subject')
+                sbj.text = raw.session_code
+                subjectgroup.append(sbj)
+                articlecategories = ET.Element('article-categories')
+                articlecategories.append(subjectgroup)
+                frontstub.append(articlecategories)
+
+            # ARTICLE TITLE
+            if raw.translated_titles():
+                titlegroup = ET.Element('title-group')
+                for lang, text in raw.translated_titles().items():
+                    if lang != language:
+                        continue
+                    articletitle = ET.Element('article-title')
+                    articletitle.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
+                    articletitle.text = text
+                    titlegroup.append(articletitle)
+                frontstub.append(titlegroup)
+
+            # ABSTRACT
             if raw.translated_abstracts():
                 for lang, text in raw.translated_abstracts().items():
                     if lang != language:
@@ -482,13 +510,29 @@ class XMLSubArticlePipe(plumber.Pipe):
                     abstract.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
                     abstract.append(p)
                     frontstub.append(abstract)
+            
+            # KEYWORDS
+            if raw.keywords():
+                for lang, keywords in raw.keywords().items():
+                    if lang != language:
+                        continue
+                    kwd_group = ET.Element('kwd-group')
+                    kwd_group.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
+                    for keyword in keywords:
+                        kwd = ET.Element('kwd')
+                        kwd.text = keyword
+                        kwd_group.append(kwd)
+                    frontstub.append(kwd_group)
 
             subarticle.append(frontstub)
             subarticle.set('article-type', 'translation')
             subarticle.set('id', 'TR%s' % language)
+            subarticle.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
             subarticle_body = ET.Element('body')
             subarticle_body.set('specific-use', 'quirks-mode')
-            subarticle_body.text = body
+            p = ET.Element('p')
+            p.text = body
+            subarticle_body.append(p)
             subarticle.append(subarticle_body)
             xml.append(subarticle)
 
@@ -566,6 +610,53 @@ class XMLJournalMetaPublisherPipe(plumber.Pipe):
         return data
 
 
+class XMLArticleMetaHistoryPipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        if not 'ddd':
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        history = ET.Element('history')
+
+        dates = {
+         'received': raw.receive_date,
+         'accepted': raw.acceptance_date,
+         'rev-recd': raw.review_date,
+        }
+
+        for hist_type, hist_date in dates.items():
+            if hist_date:
+                year = hist_date[0:4]
+                month = hist_date[5:7]
+                day = hist_date[8:10]
+
+                hdate = ET.Element('date')
+                hdate.set('date-type', hist_type)
+                if day:
+                    hdate_day = ET.Element('day')
+                    hdate_day.text = day
+                    hdate.append(hdate_day)
+                if month:
+                    hdate_month = ET.Element('month')
+                    hdate_month.text = month
+                    hdate.append(hdate_month)
+                if year:
+                    hdate_year = ET.Element('year')
+                    hdate_year.text = year
+                    hdate.append(hdate_year)
+                history.append(hdate)
+
+        xml.find('./front/article-meta').append(history)
+
+        return data
+
 class XMLArticleMetaArticleIdPublisherPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
@@ -606,7 +697,7 @@ class XMLArticleMetaArticleCategoriesPipe(plumber.Pipe):
 
         raw, xml = data
 
-        if not raw.wos_subject_areas:
+        if not raw.session_code:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
@@ -616,11 +707,10 @@ class XMLArticleMetaArticleCategoriesPipe(plumber.Pipe):
         subjectgroup = ET.Element('subj-group')
         subjectgroup.set('subj-group-type', 'heading')
 
-        for subject in raw.wos_subject_areas:
-            sbj = ET.Element('subject')
-            sbj.text = subject
+        sbj = ET.Element('subject')
+        sbj.text = raw.session_code
 
-            subjectgroup.append(sbj)
+        subjectgroup.append(sbj)
 
         articlecategories = ET.Element('article-categories')
         articlecategories.append(subjectgroup)
@@ -660,7 +750,15 @@ class XMLArticleMetaTranslatedTitleGroupPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
+        html_fulltext_langs = []
+        if raw.translated_htmls():
+            html_fulltext_langs = [i for i in raw.translated_htmls().keys()]
+
         for lang, title in raw.translated_titles().items():
+
+            if lang in html_fulltext_langs:
+                continue
+
             transtitle = ET.Element('trans-title')
             transtitle.text = title
 
@@ -728,14 +826,14 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
 
         raw, xml = data
 
-        if not raw.affiliations:
+        if not raw.mixed_affiliations:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
-        for affiliation in raw.affiliations:
+        for affiliation in raw.mixed_affiliations:
 
             aff = ET.Element('aff')
             aff.set('id', 'aff%s' % AFF_REGEX_JUST_NUMBERS.findall(affiliation['index'])[0])
@@ -754,7 +852,10 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
             if 'country' in affiliation:
                 country = ET.Element('country')
                 country.text = affiliation['country']
+                if 'country_iso_3166' in affiliation:
+                    country.set('country', affiliation['country_iso_3166'])
                 aff.append(country)
+
 
             xml.find('./front/article-meta').append(aff)
 
@@ -822,7 +923,16 @@ class XMLArticleMetaAbstractsPipe(plumber.Pipe):
             articlemeta.append(abstract)
 
         if raw.translated_abstracts():
+
+            html_fulltext_langs = []
+            if raw.translated_htmls():
+                html_fulltext_langs = [i for i in raw.translated_htmls().keys()]
+
             for lang, text in raw.translated_abstracts().items():
+
+                if lang in html_fulltext_langs:
+                    continue
+
                 p = ET.Element('p')
                 p.text = text
 
@@ -851,6 +961,14 @@ class XMLArticleMetaKeywordsPipe(plumber.Pipe):
         articlemeta = xml.find('./front/article-meta')
 
         for lang, keywords in raw.keywords().items():
+
+            html_fulltext_langs = []
+            if raw.translated_htmls():
+                html_fulltext_langs = [i for i in raw.translated_htmls().keys()]
+
+            if lang in html_fulltext_langs:
+                continue
+
             kwdgroup = ET.Element('kwd-group')
             kwdgroup.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
             kwdgroup.set('kwd-group-type', 'author-generated')
@@ -888,7 +1006,7 @@ class XMLArticleMetaCountsPipe(plumber.Pipe):
         except:
             endpage = 0
 
-        pages = endpage - startpage
+        pages = (endpage - startpage) + 1
         if pages < 0:
             pages = 0
 

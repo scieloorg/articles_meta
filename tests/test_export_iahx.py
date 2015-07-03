@@ -440,23 +440,9 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_iahx.XMLAvailableLanguagesPipe()
         raw, xml = xmlarticle.transform(data)
 
-        result = xml.find('./field[@name="la"]').text
+        result = sorted([i.text for i in xml.findall('./field[@name="la"]')])
 
-        self.assertEqual(u'pt', result)
-
-    def test_xml_document_available_languages_pipe(self):
-
-        pxml = ET.Element('doc')
-        pxml.append(ET.Element('doc'))
-
-        data = [self._article_meta, pxml]
-
-        xmlarticle = export_iahx.XMLAvailableLanguagesPipe()
-        raw, xml = xmlarticle.transform(data)
-
-        result = xml.find('./field[@name="la"]').text
-
-        self.assertEqual(u'pt', result)
+        self.assertEqual([u'en', u'pt'], result)
 
     def test_xml_document_fulltexts_pipe(self):
 

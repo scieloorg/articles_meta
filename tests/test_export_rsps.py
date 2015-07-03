@@ -20,14 +20,6 @@ class XMLCitationTests(unittest.TestCase):
 
         self._xmlcitation = export_rsps.XMLCitation()
 
-    def test_xml_multilanguage(self):
-
-        raw_json = json.loads(open(os.path.dirname(__file__)+'/fixtures/fulltexts_multilanguage_sample.json').read())
-        citation_meta = Article(self._raw_json).citations[0]
-        xmlcitation = export_rsps.XMLCitation()
-
-        self.assertEqual('ref', 'dd')
-
     def test_xml_citation_setup_pipe(self):
 
         data = [self._citation_meta, None]
@@ -625,6 +617,41 @@ class ExportTests(unittest.TestCase):
         else:
             self.assertTrue(False)
 
+    def test_xml_article_body_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {'v40': [{'_': 'pt'}]}, 'title': {}, 'body': {'pt': 'body pt', 'es': 'body es'}})
+
+        pxml = ET.Element('article')
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export_rsps.XMLBodyPipe()
+
+        raw, xml = xmlarticle.transform(data)
+
+        body = xml.find('./body/p').text
+
+        self.assertEqual('body pt', body)
+
+    def test_xml_article_body_without_data_pipe(self):
+
+        fakexylosearticle = Article({'article': {'v40': [{'_': 'pt'}]}, 'title': {}})
+
+        pxml = ET.Element('article')
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export_rsps.XMLBodyPipe()
+
+        raw, xml = xmlarticle.transform(data)
+
+        try:
+            xml.find('./body/p').text
+        except AttributeError:
+            self.assertTrue(True)
+        else:
+            self.assertTrue(False)
+
     def test_xmlarticle_meta_article_categories_pipe(self):
 
         pxml = ET.Element('article')
@@ -640,7 +667,7 @@ class ExportTests(unittest.TestCase):
 
         categories = [i.text for i in xml.findall('./front/article-meta/article-categories/subj-group[@subj-group-type="heading"]/subject')]
 
-        self.assertEqual([u'PUBLIC, ENVIRONMENTAL & OCCUPATIONAL HEALTH'], categories)
+        self.assertEqual([u'RSP010'], categories)
 
     def test_xmlarticle_meta_article_categories_without_data_pipe(self):
 
@@ -694,8 +721,7 @@ class ExportTests(unittest.TestCase):
 
         titles = [i.find('trans-title').text for i in xml.findall('./front/article-meta/title-group/trans-title-group')]
 
-        self.assertEqual([u'Epidemiological profile of patients on renal replacement therapy in Brazil, 2000-2004',
-                          u'Perfil epidemiológico de los pacientes en terapia renal substitutiva en Brasil, 2000-2004'], titles)
+        self.assertEqual([u'Perfil epidemiológico de los pacientes en terapia renal substitutiva en Brasil, 2000-2004'], titles)
 
     def test_xmlarticle_meta_translated_title_group_without_data_pipe(self):
 
@@ -853,11 +879,11 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticleMetaAffiliationPipe()
         raw, xml = xmlarticle.transform(data)
 
-        affiliations = [i.find('institution').text for i in xml.findall('./front/article-meta/aff')]
+        affiliations = sorted([i.find('institution').text for i in xml.findall('./front/article-meta/aff')])
 
-        self.assertEqual([u'Universidade Federal de Minas Gerais',
+        self.assertEqual(sorted([u'Universidade Federal de Minas Gerais',
                           u'Universidade Federal de São Paulo',
-                          u'Universidade Federal de Minas Gerais'], affiliations)
+                          u'Universidade Federal de Minas Gerais']), affiliations)
 
     def test_xmlarticle_meta_affiliation_index_pipe(self):
 
@@ -872,11 +898,11 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticleMetaAffiliationPipe()
         raw, xml = xmlarticle.transform(data)
 
-        indexes = [i.get('id') for i in xml.findall('./front/article-meta/aff')]
+        indexes = sorted([i.get('id') for i in xml.findall('./front/article-meta/aff')])
 
-        self.assertEqual([u'aff01',
+        self.assertEqual(sorted([u'aff01',
                           u'aff02',
-                          u'aff03'], indexes)
+                          u'aff03']), indexes)
 
     def test_xmlarticle_meta_affiliation_country_pipe(self):
 
@@ -910,11 +936,11 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticleMetaAffiliationPipe()
         raw, xml = xmlarticle.transform(data)
 
-        address = [i.find('addr-line').text for i in xml.findall('./front/article-meta/aff')]
+        address = sorted([i.find('addr-line').text for i in xml.findall('./front/article-meta/aff')])
 
-        self.assertEqual([u'Belo Horizonte',
+        self.assertEqual(sorted([u'Belo Horizonte',
                           u'São Paulo',
-                          u'Belo Horizonte'], address)
+                          u'Belo Horizonte']), address)
 
     def test_xmlarticle_meta_general_info_pub_year_pipe(self):
 
@@ -1200,9 +1226,9 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticleMetaKeywordsPipe()
         raw, xml = xmlarticle.transform(data)
 
-        keywords_language = [i.get('{http://www.w3.org/XML/1998/namespace}lang') for i in xml.findall('./front/article-meta/kwd-group')]
+        keywords_language = sorted([i.get('{http://www.w3.org/XML/1998/namespace}lang') for i in xml.findall('./front/article-meta/kwd-group')])
 
-        self.assertEqual([u'en', u'es', u'pt'], keywords_language)
+        self.assertEqual(sorted([u'es', u'pt']), keywords_language)
 
     def test_xmlarticle_meta_keywords_pipe(self):
 
@@ -1219,11 +1245,7 @@ class ExportTests(unittest.TestCase):
 
         keywords = [i.text for i in xml.findall('.//kwd')]
 
-        self.assertEqual([u'Renal Insufficiency, Chronic',
-                          u'Renal Replacement Therapy',
-                          u'Hospital Information Systems',
-                          u'Mortality Registries',
-                          u'Insuficiencia Renal Crónica',
+        self.assertEqual([u'Insuficiencia Renal Crónica',
                           u'Terapia de Reemplazo Renal',
                           u'Sistemas de Información en Hospital',
                           u'Registros de Mortalidad',
@@ -1262,7 +1284,7 @@ class ExportTests(unittest.TestCase):
 
         count = xml.find('./front/article-meta/counts/page-count').get('count')
 
-        self.assertEqual(10, int(count))
+        self.assertEqual(11, int(count))
 
     def test_xml_article_meta_counts_pages_invalid_pages_pipe(self):
         pxml = ET.Element('article')
@@ -1281,7 +1303,7 @@ class ExportTests(unittest.TestCase):
 
         count = xml.find('./front/article-meta/counts/page-count').get('count')
 
-        self.assertEqual(0, int(count))
+        self.assertEqual(1, int(count))
 
     def test_xml_article_meta_counts_pages_invalid_pages_first_gt_last_pipe(self):
         pxml = ET.Element('article')
