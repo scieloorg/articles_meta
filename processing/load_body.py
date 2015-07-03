@@ -23,6 +23,7 @@ FROM = datetime.now() - timedelta(days=15)
 FROM.isoformat()[:10]
 
 BODY_REGEX = re.compile(r'<div class="index,(?P<language>.*?)">(?P<body>.*)</div>')
+REMOVE_LINKS_REGEX = re.compile(r'\[.*?Links.*?\]', re.IGNORECASE)
 
 config = utils.Configuration.from_env()
 settings = dict(config.items())
@@ -122,11 +123,6 @@ def scrap_body(data, language):
     if lic != None:
         etree_body.remove(lic)
 
-    reflinks = etree_body.xpath('.//a[@href="javascript:void(0);" and text()="Links"]')
-
-    for reflink in reflinks:
-        reflink.getparent().remove(reflink)
-
     parsed_body = etree.tostring(etree_body, encoding='unicode', pretty_print=False).rstrip('\r\n')
 
     if not parsed_body:
@@ -142,6 +138,10 @@ def scrap_body(data, language):
     body_language = result.groupdict().get('language', None)
 
     body = result.groupdict().get('body', None).strip()
+
+    ## Removing Reference links
+
+    body = REMOVE_LINKS_REGEX.sub(' ', body)
     
     return body
 

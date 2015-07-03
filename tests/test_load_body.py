@@ -15,6 +15,25 @@ class LoadLicensesTest(unittest.TestCase):
 
         self.assertEqual(result, '<div class="title">Crazy <i>Title</i></div><p>Crazy Body</p><p>Really Crazy Body</p>')
 
+    def test_regex_remove_links(self):
+      import re
+
+      data = """<p>ref 1: [ <a href="javascript:void(0);" onclick="javascript: window.open('/scielo.php?script=sci_nlinks&amp;ref=000129&amp;pid=S0001-3765200400030001400030&amp;lng=pt','','width=640,height=500,resizable=yes,scrollbars=1,menubar=yes,');">Links</a> ]</p><p>ref 2:    [ <a href="javascript:void(0);" onclick="javascript: window.open('/scielo.php?script=sci_nlinks&amp;ref=000129&amp;pid=S0001-3765200400030001400030&amp;lng=pt','','width=640,height=500,resizable=yes,scrollbars=1,menubar=yes,');">Links</a> ]</p>"""
+
+      result = load_body.REMOVE_LINKS_REGEX.sub(' ', data, count=0)
+
+      self.assertEqual(result, '<p>ref 1:  </p><p>ref 2:     </p>')
+
+
+    def test_regex_remove_links_ignore_case(self):
+      import re
+
+      data = """<p>ref 1: [ <a href="javascript:void(0);" onclick="javascript: window.open('/scielo.php?script=sci_nlinks&amp;ref=000129&amp;pid=S0001-3765200400030001400030&amp;lng=pt','','width=640,height=500,resizable=yes,scrollbars=1,menubar=yes,');">Links</a> ]</p><p>ref 2:    [ <a href="javascript:void(0);" onclick="javascript: window.open('/scielo.php?script=sci_nlinks&amp;ref=000129&amp;pid=S0001-3765200400030001400030&amp;lng=pt','','width=640,height=500,resizable=yes,scrollbars=1,menubar=yes,');">links</a> ]</p>"""
+
+      result = load_body.REMOVE_LINKS_REGEX.sub(' ', data, count=0)
+
+      self.assertEqual(result, '<p>ref 1:  </p><p>ref 2:     </p>')
+
     def test_scrapt_body_line_breaked(self):
 
         data = u"""
