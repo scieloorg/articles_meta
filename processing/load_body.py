@@ -12,6 +12,7 @@ import requests
 from lxml import etree
 from StringIO import StringIO
 import HTMLParser
+from bs4 import BeautifulSoup
 
 from pymongo import MongoClient
 from xylose.scielodocument import Article
@@ -48,7 +49,8 @@ def collection_info(collection):
 def load_documents(collection, all_records=False):
 
     fltr = {
-        'collection': collection
+        'collection': collection,
+        'code': 'S0044-59672009000100015'
     }
 
     if all_records == False:
@@ -105,25 +107,25 @@ def do_request(url, json=True):
 
 def scrap_body(data, language):
 
-    # html_parser = HTMLParser.HTMLParser()
-    # unescaped = html_parser.unescape(data)
-
     data = ' '.join([i.strip() for i in data.split('\n')])
-
-    parser = etree.HTMLParser(remove_blank_text=True)
-    tree = etree.parse(StringIO(data), parser)
-
-    etree_body = tree.find('.//div[@class="content"]/div[@class="index,%s"]' % language)
+    tree = BeautifulSoup(data, 'html.parser')
+    etree_body = None
+    for div in tree.find_all('div'):
+        if 'index' in div.get('class', [''])[0]:
+            etree_body = div
+            break
 
     if etree_body is None:
         logger.debug('Body not found')
         return None
 
-    lic = etree_body.find('./div[@class="article-license"]')
-    if lic != None:
-        etree_body.remove(lic)
+    # lic = etree_body.find('./div[@class="article-license"]')
+    # if lic != None:
+    #     etree_body.remove(lic)
 
-    parsed_body = etree.tostring(etree_body, encoding='unicode', pretty_print=False).rstrip('\r\n')
+    #parsed_body = etree.tostring(etree_body, encoding='unicode', pretty_print=False).rstrip('\r\n')
+
+    parsed_body = str(etree_body)
 
     if not parsed_body:
         logger.debug('Body not found')
@@ -140,8 +142,7 @@ def scrap_body(data, language):
     body = result.groupdict().get('body', None).strip()
 
     ## Removing Reference links
-
-    body = REMOVE_LINKS_REGEX.sub(' ', body)
+    body = REMOVE_LINKS_REGEX.sub(' ', parsed_body)
     
     return body
 

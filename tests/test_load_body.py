@@ -131,3 +131,13 @@ class LoadLicensesTest(unittest.TestCase):
       # Text on the end of the document
       self.assertTrue(u'Boa leitura!' in result)
 
+
+    def test_body_sample_7(self):
+      data = ' '.join([i.strip() for i in codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_6.html', 'r', encoding='utf-8').readlines()])
+
+      result = load_body.scrap_body(data, 'pt')
+
+      # Text on the begining of the document
+      self.assertTrue(u'Editorial' in result)
+      # Text on the end of the document
+      self.assertTrue(u'Boa leitura!' in result)
