@@ -48,8 +48,7 @@ def collection_info(collection):
 def load_documents(collection, all_records=False):
 
     fltr = {
-        'collection': collection,
-        'code': 'S0044-59672009000100015'
+        'collection': collection
     }
 
     if all_records == False:
