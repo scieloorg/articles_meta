@@ -23,7 +23,7 @@ FROM = datetime.now() - timedelta(days=15)
 FROM.isoformat()[:10]
 
 BODY_REGEX = re.compile(r'<div class="index,(?P<language>.*?)">(?P<body>.*)</div>')
-REMOVE_LINKS_REGEX = re.compile(r'\[ <a href="javascript\:void\(0\);".*?Links.*? \]', re.IGNORECASE)
+REMOVE_LINKS_REGEX = re.compile(r'\[.<a href="javascript\:void\(0\);".*?>Links</a>.\]', re.IGNORECASE)
 
 config = utils.Configuration.from_env()
 settings = dict(config.items())
