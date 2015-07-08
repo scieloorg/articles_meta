@@ -37,8 +37,6 @@ def load_documents(xml_format='xmlwos'):
             document = requests.get(url_document)
             yield ('%s_%s' % (collection, code), document.text)
 
-        raise StopIteration
-
         offset+=1000
 
 def getschema():
