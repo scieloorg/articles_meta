@@ -1303,7 +1303,7 @@ class ExportTests(unittest.TestCase):
 
         count = xml.find('./front/article-meta/counts/page-count').get('count')
 
-        self.assertEqual(1, int(count))
+        self.assertEqual(0, int(count))
 
     def test_xml_article_meta_counts_pages_invalid_pages_first_gt_last_pipe(self):
         pxml = ET.Element('article')

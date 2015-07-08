@@ -54,10 +54,7 @@ def load_documents(collection, all_records=False):
     if all_records == False:
         fltr['body'] = {'$exists': 0}
 
-    documents = articlemeta_db['articles'].find(
-        fltr,
-        {'_id': 0, 'citations': 0}
-    )
+    documents = articlemeta_db['articles'].find(fltr,{'_id': 0, 'citations': 0})
 
     for document in documents:
         yield Article(document)
@@ -193,7 +190,7 @@ def run(collection, all_records):
             {'$set': {'body': bodies}}
         )
 
-        logger.debug('Bodies colected for: %s' % (document.publisher_id))
+        logger.debug('Bodies collected for: %s' % (document.publisher_id))
 
 def main():
     parser = argparse.ArgumentParser(

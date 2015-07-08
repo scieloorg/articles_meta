@@ -19,7 +19,7 @@ ARTICLEMETA = 'http://articlemeta.scielo.org/api/v1/'
 
 trans_acronym = {'scl': 'bra'}
 
-def load_documents():
+def load_documents(xml_format='xmlwos'):
     offset=0
     while True:
         url = '%sarticle/identifiers?offset=%s' % (ARTICLEMETA, str(offset))
@@ -32,10 +32,13 @@ def load_documents():
         for identifier in identifiers['objects']:
             code = identifier['code']
             collection = identifier['collection']
-            url_document = '%sarticle?code=%s&format=xmlwos' % (ARTICLEMETA, code)
+            url_document = '%sarticle?code=%s&format=%s' % (ARTICLEMETA, code, xml_format)
             logger.debug('Loading url: %s' % url_document)
             document = requests.get(url_document)
             yield ('%s_%s' % (collection, code), document.text)
+
+        raise StopIteration
+
         offset+=1000
 
 def getschema():
@@ -50,10 +53,12 @@ def getschema():
 
 def dumpdata(*args, **xargs):
     zip_name = xargs['file_name']
+    xml_format = xargs['xml_format']
 
     logger.info('Creating zip file: %s' % zip_name)
+    logger.info('XML Format: %s' % xml_format)
     with zipfile.ZipFile(zip_name, 'w', compression=zipfile.ZIP_DEFLATED, allowZip64=True) as thezip:
-        for document in load_documents():
+        for document in load_documents(xml_format=xml_format):
             collection = trans_acronym[document[0][0:3]] if document[0][0:3] in trans_acronym else document[0][0:3]
             issn = document[0][5:14]
             pid = document[0][5:]
@@ -64,9 +69,11 @@ def dumpdata(*args, **xargs):
         readme = '{0}\r\n* Documents updated at: {1}\r\n'.format(readmef, datetime.datetime.now().isoformat())
 
         thezip.writestr("README.txt", bytes(readme))
-        xsd = getschema()
-        if xsd:
-            thezip.writestr("schema/ThomsonReuters_publishing.xsd", bytes(xsd))
+
+        if xml_format == 'xmlwos':
+            xsd = getschema()
+            if xsd:
+                thezip.writestr("schema/ThomsonReuters_publishing.xsd", bytes(xsd))
 
     logging.info('Zip created: %s' % zip_name)
 
@@ -111,6 +118,14 @@ def main():
     )
 
     parser.add_argument(
+        '--xml_format',
+        '-x',
+        default='xmlwos',
+        choices=['xmlwos', 'xmlrsps'],
+        help='XML output format'
+    )
+
+    parser.add_argument(
         '--logging_file',
         '-o',
         default='/tmp/dumpdata.log',
@@ -130,5 +145,6 @@ def main():
     _config_logging(args.logging_level, args.logging_file)
 
     dumpdata(
-        file_name=args.zip_file
+        file_name=args.zip_file,
+        xml_format=args.xml_format
     )

@@ -653,7 +653,8 @@ class XMLArticleMetaHistoryPipe(plumber.Pipe):
                     hdate.append(hdate_year)
                 history.append(hdate)
 
-        xml.find('./front/article-meta').append(history)
+        if len(history.items()) > 0:
+            xml.find('./front/article-meta').append(history)
 
         return data
 
@@ -998,17 +999,19 @@ class XMLArticleMetaCountsPipe(plumber.Pipe):
         try:
             startpage = int(raw.start_page)
         except:
-            startpage = 0
+            startpage = None
 
 
         try:
             endpage = int(raw.end_page)
         except:
-            endpage = 0
+            endpage = None
 
-        pages = (endpage - startpage) + 1
-        if pages < 0:
-            pages = 0
+        pages = 0;
+        if startpage != None and endpage !=None:
+            pages = (endpage - startpage) + 1
+            if pages < 0:
+                pages = 0
 
         count_pages = ET.Element('page-count')
         count_pages.set('count', str(pages))
