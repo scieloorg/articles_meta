@@ -416,8 +416,14 @@ class XMLArticlePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
+        translate_document_type = {
+            u'news': 'announcement',
+            u'addendum': 'other',
+            u'press_release': 'in-brief'
+        }
+
         xml.set('{http://www.w3.org/XML/1998/namespace}lang', raw.original_language())
-        xml.set('article-type', raw.document_type)
+        xml.set('article-type', translate_document_type.get(raw.document_type, raw.document_type))
 
         return data
 
