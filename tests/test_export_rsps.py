@@ -936,8 +936,8 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticleMetaAffiliationPipe()
         raw, xml = xmlarticle.transform(data)
 
-        address = sorted([i.find('addr-line').text for i in xml.findall('./front/article-meta/aff')])
-
+        address = sorted([i.text for i in xml.findall('./front/article-meta/aff/addr-line/named-content[@content-type="city"]')])
+        
         self.assertEqual(sorted([u'Belo Horizonte',
                           u'São Paulo',
                           u'Belo Horizonte']), address)

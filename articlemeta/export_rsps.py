@@ -618,14 +618,6 @@ class XMLJournalMetaPublisherPipe(plumber.Pipe):
 
 class XMLArticleMetaHistoryPipe(plumber.Pipe):
 
-    def precond(data):
-
-        raw, xml = data
-
-        if not 'ddd':
-            raise plumber.UnmetPrecondition()
-
-    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
@@ -659,7 +651,7 @@ class XMLArticleMetaHistoryPipe(plumber.Pipe):
                     hdate.append(hdate_year)
                 history.append(hdate)
 
-        if len(history.items()) > 0:
+        if len(history.findall('date')) > 0:
             xml.find('./front/article-meta').append(history)
 
         return data
@@ -845,15 +837,36 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
             aff = ET.Element('aff')
             aff.set('id', 'aff%s' % AFF_REGEX_JUST_NUMBERS.findall(affiliation['index'])[0])
 
-            if 'addr_line' in affiliation:
+            if 'city' in affiliation or 'state' in affiliation:
                 addrline = ET.Element('addr-line')
-                addrline.text = affiliation['addr_line']
+                if 'city' in affiliation:
+                    city = ET.Element('named-content')
+                    city.set('content-type', 'city')
+                    city.text = affiliation['city']
+                    addrline.append(city)
+                if 'state' in affiliation:
+                    state = ET.Element('named-content')
+                    state.set('content-type', 'state')
+                    state.text = affiliation['state']
+                    addrline.append(state)
                 aff.append(addrline)
 
             if 'institution' in affiliation:
                 institution = ET.Element('institution')
                 institution.text = affiliation['institution']
-                institution.set('content-type', 'original')
+                institution.set('content-type', 'orgname')
+                aff.append(institution)
+
+            if 'orgdiv1' in affiliation or 'division' in affiliation:
+                institution = ET.Element('institution')
+                institution.text = ' '.join([affiliation.get('orgdiv1', ''), affiliation.get('division', '')])
+                institution.set('content-type', 'orgdiv1')
+                aff.append(institution)
+
+            if 'orgdiv2' in affiliation:
+                institution = ET.Element('institution')
+                institution.text = affiliation['orgdiv2']
+                institution.set('content-type', 'orgdiv2')
                 aff.append(institution)
 
             if 'country' in affiliation:
@@ -862,6 +875,11 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
                 if 'country_iso_3166' in affiliation:
                     country.set('country', affiliation['country_iso_3166'])
                 aff.append(country)
+
+            if 'email' in affiliation:
+                email = ET.Element('email')
+                email.text = affiliation['email']
+                aff.append(email)
 
 
             xml.find('./front/article-meta').append(aff)
