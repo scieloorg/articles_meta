@@ -106,9 +106,6 @@ class Dispatcher(object):
 
     def get_article(self, code, collection, replace_journal_metadata, fmt):
 
-        if not fmt:
-            fmt = 'json'
-
         try:
             data = self._databroker.get_article(
                 code,
