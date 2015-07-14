@@ -239,13 +239,6 @@ def get_article(request):
             return Response(
                 Export(article).pipeline_pubmed(), content_type="application/xml")
 
-    if fmt == 'xmliahx':
-        articles = request.databroker.get_articles(
-            code, collection=collection, replace_journal_metadata=True
-        )
-        if articles:
-            return Response(Export(articles).pipeline_iahx(), content_type="application/xml")
-
     return Response(json.dumps(article), content_type="application/json")
 
 

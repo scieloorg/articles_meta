@@ -8,6 +8,7 @@ import thriftpy
 
 from articlemeta.controller import DataBroker
 from articlemeta import utils
+from articlemeta.export import Export
 from xylose.scielodocument import Article
 
 logger = logging.getLogger(__name__)
@@ -103,7 +104,10 @@ class Dispatcher(object):
 
         return objs
 
-    def get_article(self, code, collection, replace_journal_metadata):
+    def get_article(self, code, collection, replace_journal_metadata, fmt):
+
+        if not fmt:
+            fmt = 'json'
 
         try:
             data = self._databroker.get_article(
@@ -113,6 +117,19 @@ class Dispatcher(object):
         except:
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.get_article')
+
+        if data:
+            if fmt == 'xmlwos':
+                return Export(data).pipeline_sci()
+
+            if fmt == 'xmldoaj':
+                return Export(data).pipeline_doaj()
+
+            if fmt == 'xmlrsps':
+                return Export(data).pipeline_rsps()
+
+            if fmt == 'xmlpubmed':
+                return Export(data).pipeline_pubmed()
 
         return json.dumps(data)
 
