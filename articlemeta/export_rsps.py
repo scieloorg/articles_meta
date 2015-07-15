@@ -832,10 +832,19 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
+        import pdb; pdb.set_trace()
         for affiliation in raw.mixed_affiliations:
 
             aff = ET.Element('aff')
-            aff.set('id', 'aff%s' % AFF_REGEX_JUST_NUMBERS.findall(affiliation['index'])[0])
+
+            ndx = AFF_REGEX_JUST_NUMBERS.findall(affiliation['index'])
+
+            if len(ndx) == 0:
+                ndx = affiliation['index']
+            else:
+                ndx = 'aff%s' % ndx[0]
+
+            aff.set('id', ndx)
 
             if 'city' in affiliation or 'state' in affiliation:
                 addrline = ET.Element('addr-line')
