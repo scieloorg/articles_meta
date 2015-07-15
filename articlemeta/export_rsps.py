@@ -832,7 +832,6 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        import pdb; pdb.set_trace()
         for affiliation in raw.mixed_affiliations:
 
             aff = ET.Element('aff')
