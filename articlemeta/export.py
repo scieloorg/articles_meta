@@ -7,7 +7,6 @@ from xylose.scielodocument import Article
 import export_sci
 import export_rsps
 import export_doaj
-import export_iahx
 import export_pubmed
 
 
