@@ -183,7 +183,7 @@ class XMLCitation(object):
                 comment.text = 'Available at:'
                 link = ET.Element('ext-link')
                 link.set('ext-link-type', 'uri')
-                link.set('{http://www.w3.org/1999/xlink}href', URI_REGEXT.findall(raw.link)[0])
+                link.set('{http://www.w3.org/1999/xlink}href', raw.link)
                 link.text = 'link'
                 comment.append(link)
 
