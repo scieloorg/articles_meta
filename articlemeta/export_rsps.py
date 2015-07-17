@@ -533,7 +533,7 @@ class XMLSubArticlePipe(plumber.Pipe):
             subarticle.append(frontstub)
             subarticle.set('article-type', 'translation')
             subarticle.set('id', 'TR%s' % language)
-            subarticle.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
+            subarticle.set('{http://www.w3.org/XML/1998/namespace}lang', language)
             subarticle_body = ET.Element('body')
             subarticle_body.set('specific-use', 'quirks-mode')
             p = ET.Element('p')
