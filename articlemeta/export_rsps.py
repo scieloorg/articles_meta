@@ -809,7 +809,15 @@ class XMLArticleMetaContribGroupPipe(plumber.Pipe):
             for xr in author.get('xref', []):
                 xref = ET.Element('xref')
                 xref.set('ref-type', 'aff')
-                xref.set('rid', 'aff%s' % AFF_REGEX_JUST_NUMBERS.findall(xr)[0])
+
+                ndx = AFF_REGEX_JUST_NUMBERS.findall(xr)
+
+                if len(ndx) == 0:
+                    ndx = xr
+                else:
+                    ndx = 'aff%s' % ndx[0]
+
+                xref.set('rid', ndx)
                 contrib.append(xref)
 
             contribgroup.append(contrib)
