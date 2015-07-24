@@ -92,8 +92,12 @@ def _config_logging(logging_level='INFO', logging_file=None):
 
 def do_request(url, json=True):
 
+    headers = {
+        'User-Agent': 'SciELO Processing ArticleMeta: LoadLicense'
+    }
+
     try:
-        document = requests.get(url)
+        document = requests.get(url.replace('www', 'vagrant'), headers=headers)
     except:
         logger.error(u'HTTP request error for: %s' % url)
     else:
