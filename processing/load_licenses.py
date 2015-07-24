@@ -97,7 +97,7 @@ def do_request(url, json=True):
     }
 
     try:
-        document = requests.get(url.replace('www', 'vagrant'), headers=headers)
+        document = requests.get(url, headers=headers)
     except:
         logger.error(u'HTTP request error for: %s' % url)
     else:
