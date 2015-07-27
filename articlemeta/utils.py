@@ -1,9 +1,13 @@
 #coding: utf-8
 import os
 import weakref
+import re
+import unicodedata
 
 from ConfigParser import SafeConfigParser
 
+def remove_control_characters(s):
+    return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
 
 class SingletonMixin(object):
     """

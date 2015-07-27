@@ -6,6 +6,8 @@ from lxml.etree import CDATA
 
 import plumber
 
+from utils import remove_control_characters
+
 AFF_REGEX_JUST_NUMBERS = re.compile(r'\d+')
 XLINK_REGEX = re.compile(r'ns\d:href')
 LANG_REGEX = re.compile(r'ns\d:lang')
@@ -120,7 +122,7 @@ class XMLCitation(object):
 
             source = ET.Element('source')
 
-            source.text = raw.source
+            source.text = remove_control_characters(raw.source)
 
             xml.find('./element-citation').append(source)
 
@@ -139,7 +141,7 @@ class XMLCitation(object):
 
             source = ET.Element('source')
 
-            source.text = raw.thesis_title
+            source.text = remove_control_characters(raw.thesis_title)
 
             xml.find('./element-citation').append(source)
 
@@ -158,7 +160,7 @@ class XMLCitation(object):
 
             source = ET.Element('source')
 
-            source.text = raw.link_title
+            source.text = remove_control_characters(raw.link_title)
 
             xml.find('./element-citation').append(source)
 

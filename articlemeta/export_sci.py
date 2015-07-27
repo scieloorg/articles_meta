@@ -3,6 +3,7 @@ from lxml import etree as ET
 
 import plumber
 
+from utils import remove_control_characters
 
 class XMLCitation(object):
 
@@ -84,7 +85,7 @@ class XMLCitation(object):
 
             source = ET.Element('source')
 
-            source.text = raw.source
+            source.text = remove_control_characters(raw.source)
 
             xml.find('./element-citation').append(source)
 
