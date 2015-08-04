@@ -110,7 +110,8 @@ class Dispatcher(object):
             data = self._databroker.get_article(
                 code,
                 collection=collection,
-                replace_journal_metadata=replace_journal_metadata)
+                replace_journal_metadata=replace_journal_metadata
+            )
         except:
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.get_article')

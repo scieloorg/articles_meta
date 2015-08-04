@@ -654,20 +654,22 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_article_categories_pipe(self):
 
+        fakexylosearticle = Article({'article': {'v40': [{'_': 'pt'}]}, 'section': {u'pt': u'label pt', u'es': u'label es'}})
+
         pxml = ET.Element('article')
         pxml.append(ET.Element('front'))
 
         front = pxml.find('front')
         front.append(ET.Element('article-meta'))
 
-        data = [self._article_meta, pxml]
+        data = [fakexylosearticle, pxml]
 
         xmlarticle = export_rsps.XMLArticleMetaArticleCategoriesPipe()
         raw, xml = xmlarticle.transform(data)
 
-        categories = [i.text for i in xml.findall('./front/article-meta/article-categories/subj-group[@subj-group-type="heading"]/subject')]
+        categories = xml.find('./front/article-meta/article-categories/subj-group[@subj-group-type="heading"]/subject').text
 
-        self.assertEqual([u'RSP010'], categories)
+        self.assertEqual(u'label pt', categories)
 
     def test_xmlarticle_meta_article_categories_without_data_pipe(self):
 

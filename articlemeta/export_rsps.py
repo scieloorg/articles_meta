@@ -485,14 +485,17 @@ class XMLSubArticlePipe(plumber.Pipe):
             frontstub = ET.Element('front-stub')
 
             # ARTICLE CATEGORY
-            if raw.session_code:
-                subjectgroup = ET.Element('subj-group')
-                subjectgroup.set('subj-group-type', 'heading')
-                sbj = ET.Element('subject')
-                sbj.text = raw.session_code
-                subjectgroup.append(sbj)
-                articlecategories = ET.Element('article-categories')
-                articlecategories.append(subjectgroup)
+            if raw.section:
+                for lang, text in raw.translated_section().items():
+                    if lang != language:
+                        continue
+                    subjectgroup = ET.Element('subj-group')
+                    subjectgroup.set('subj-group-type', 'heading')
+                    sbj = ET.Element('subject')
+                    sbj.text = text
+                    subjectgroup.append(sbj)
+                    articlecategories = ET.Element('article-categories')
+                    articlecategories.append(subjectgroup)
                 frontstub.append(articlecategories)
 
             # ARTICLE TITLE
@@ -517,7 +520,7 @@ class XMLSubArticlePipe(plumber.Pipe):
                     abstract = ET.Element('abstract')
                     abstract.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
                     abstract.append(p)
-                    frontstub.append(abstract)
+                frontstub.append(abstract)
             
             # KEYWORDS
             if raw.keywords():
@@ -698,7 +701,7 @@ class XMLArticleMetaArticleCategoriesPipe(plumber.Pipe):
 
         raw, xml = data
 
-        if not raw.session_code:
+        if not raw.original_section():
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
@@ -709,7 +712,7 @@ class XMLArticleMetaArticleCategoriesPipe(plumber.Pipe):
         subjectgroup.set('subj-group-type', 'heading')
 
         sbj = ET.Element('subject')
-        sbj.text = raw.session_code
+        sbj.text = raw.original_section()
 
         subjectgroup.append(sbj)
 
