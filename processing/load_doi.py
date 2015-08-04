@@ -54,7 +54,7 @@ def load_documents(collection, all_records=False):
     documents = articlemeta_db['articles'].find(
         fltr,
         {'_id': 0, 'citations': 0}
-    ).limit(10)
+    )
 
     for document in documents:
         yield Article(document)
@@ -139,12 +139,14 @@ def run(collections, all_records=False):
         for document in load_documents(collection, all_records=all_records):
 
             doi = None
+            try:                
+                data  = do_request(document.html_url(), json=False)
+            except:
+                logger.error('Fail to load url: %s' % document.html_url())
+                continue
+
             try:
-                doi = scrap_license(
-                    do_request(
-                        document.html_url(), json=False
-                    )
-                )
+                doi = scrap_doi(data)
             except:
                 logger.error('Fail to scrap: %s' % document.publisher_id)
                 continue
@@ -153,12 +155,12 @@ def run(collections, all_records=False):
                 logger.debug('No DOI defined for: %s' % document.publisher_id)
                 continue
 
-            # articlemeta_db['articles'].update(
-            #     {'code': document.publisher_id,'collection': document.collection_acronym}, 
-            #     {'$set': {'doi': doi}}
-            # )
+            articlemeta_db['articles'].update(
+                {'code': document.publisher_id,'collection': document.collection_acronym}, 
+                {'$set': {'doi': doi}}
+            )
 
-            logger.debug('%s: %s' % (document.publisher_id, license))
+            logger.debug('DOI Found %s: %s' % (document.publisher_id, doi))
 
 def main():
     parser = argparse.ArgumentParser(
