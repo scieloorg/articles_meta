@@ -146,55 +146,61 @@ def scrap_body(data, language):
     
     return body
 
-def run(collection, all_records):
+def run(collections, all_records=False):
 
-    coll_info = collection_info(collection)
+    if not isinstance(collections, list):
+        logger.error('Collections must be a list o collection acronym')
+        exit()
 
-    logger.info(u'Loading body for %s' % coll_info['domain'])
-    logger.info(u'Using mode all_records %s' % str(all_records))
+    for collection in collections:
 
-    for document in load_documents(collection, all_records=all_records):
+        coll_info = collection_info(collection)
 
-        fulltexts = document.fulltexts()
-        if not fulltexts:
-            logger.debug('Fulltexts not availiable for %s' % document.publisher_id)
-            continue
+        logger.info(u'Loading body for %s' % coll_info['domain'])
+        logger.info(u'Using mode all_records %s' % str(all_records))
 
-        html_fulltexts = fulltexts.get('html', None)
+        for document in load_documents(collection, all_records=all_records):
 
-        if not html_fulltexts:
-            logger.debug('HTML Fulltexts not availiable for %s' % document.publisher_id)
-            continue
-
-        bodies = {}
-        for language, url in html_fulltexts.items():        
-    
-            try:
-                body = scrap_body(do_request(url, json=False), language)
-            except:
-                logger.error('Fail to scrap: %s, %s' % (document.publisher_id, language))
+            fulltexts = document.fulltexts()
+            if not fulltexts:
+                logger.debug('Fulltexts not availiable for %s, %s' % (collection, document.publisher_id))
                 continue
 
-            if not body:
-                logger.error('No body defined for: %s, %s' % (document.publisher_id, language))
+            html_fulltexts = fulltexts.get('html', None)
+
+            if not html_fulltexts:
+                logger.debug('HTML Fulltexts not availiable for %s, %s' % (collection, document.publisher_id))
                 continue
 
-            bodies[language] = body
+            bodies = {}
+            for language, url in html_fulltexts.items():        
+        
+                try:
+                    body = scrap_body(do_request(url, json=False), language)
+                except:
+                    logger.error('Fail to scrap: %s, %s, %s' % (collection, document.publisher_id, language))
+                    continue
 
-        if len(bodies) < len(html_fulltexts):
-            logger.error('Fail to scrap some of the documents for: %s' % (document.publisher_id))
-            continue
+                if not body:
+                    logger.error('No body defined for: %s, %s, %s' % (collection, document.publisher_id, language))
+                    continue
 
-        if len(bodies) == 0:
-            logger.error('No bodies found for: %s' % (document.publisher_id))
-            continue
+                bodies[language] = body
 
-        articlemeta_db['articles'].update(
-            {'code': document.publisher_id,'collection': document.collection_acronym}, 
-            {'$set': {'body': bodies}}
-        )
+            if len(bodies) < len(html_fulltexts):
+                logger.error('Fail to scrap some of the documents for: %s, %s' % (collection, document.publisher_id))
+                continue
 
-        logger.debug('Bodies collected for: %s' % (document.publisher_id))
+            if len(bodies) == 0:
+                logger.error('No bodies found for: %s, %s' % (collection, document.publisher_id))
+                continue
+
+            articlemeta_db['articles'].update(
+                {'code': document.publisher_id,'collection': document.collection_acronym}, 
+                {'$set': {'body': bodies}}
+            )
+
+            logger.debug('Bodies collected for: %s, %s' % (collection, document.publisher_id))
 
 def main():
     parser = argparse.ArgumentParser(
@@ -205,7 +211,6 @@ def main():
         '--collection',
         '-c',
         choices=collections_acronym(),
-        required=True,
         help='Collection acronym'
     )
 
@@ -213,7 +218,7 @@ def main():
         '--all_records',
         '-a',
         action='store_true',
-        help='Apply processing to all records or just records without the license parameter'
+        help='Apply processing to all records or just records without the body parameter'
     )
 
     parser.add_argument(
@@ -234,4 +239,6 @@ def main():
 
     _config_logging(args.logging_level, args.logging_file)
 
-    run(args.collection, args.all_records)
+    collections = [args.collection] if args.collection else collections_acronym()
+
+    run(collections, args.all_records)

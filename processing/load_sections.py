@@ -72,8 +72,13 @@ def collection_info(collection):
 
 def do_request(url, json=True):
 
+
+    headers = {
+        'User-Agent': 'SciELO Processing ArticleMeta: LoadSection'
+    }
+
     try:
-        document = requests.get(url)
+        document = requests.get(url, headers=headers)
     except:
         logger.error(u'HTTP request error for: %s' % url)
     else:
@@ -195,7 +200,7 @@ class StaticCatalog(object):
         pid = document.publisher_id
         issue_pid = document.publisher_id[1:18]
         collection = document.collection_acronym
-        section_code = document.session_code
+        section_code = document.section_code
 
         section = self.get_section_available(pid, collection, issue_pid, section_code)
 
@@ -205,39 +210,45 @@ class StaticCatalog(object):
         return section
             
 
-def run(collection, all_records):
+def run(collections, all_records=False):
 
-    coll_info = collection_info(collection)
+    if not isinstance(collections, list):
+        logger.error('Collections must be a list of collection acronym')
+        exit()
 
-    logger.info(u'Loading sections for %s' % coll_info['domain'])
-    logger.info(u'Using mode all_records %s' % str(all_records))
+    for collection in collections:
 
-    static_catalogs = StaticCatalog(coll_info['domain'])
+        coll_info = collection_info(collection)
 
-    for document in load_documents(collection, all_records=all_records):
-        logger.debug(u'Checking section for %s_%s' % (
-            collection,
-            document.publisher_id
-        ))
+        logger.info(u'Loading sections for %s' % coll_info['domain'])
+        logger.info(u'Using mode all_records %s' % str(all_records))
 
-        section = static_catalogs.section(document)
+        static_catalogs = StaticCatalog('www.scielo.br')
 
-        if not isinstance(section, dict):
-            logger.warning(u'Section not loaded for %s_%s' % (
+        for document in load_documents(collection, all_records=all_records):
+            logger.debug(u'Checking section for %s_%s' % (
                 collection,
                 document.publisher_id
             ))
-            continue
 
-        articlemeta_db['articles'].update(
-            {'code': document.publisher_id,'collection': document.collection_acronym}, 
-            {'$set': {'section': section}}
-        )
+            section = static_catalogs.section(document)
 
-        logger.debug(u'Update made for %s_%s' % (
-            collection,
-            document.publisher_id
-        ))
+            if not isinstance(section, dict):
+                logger.warning(u'Section not loaded for %s_%s' % (
+                    collection,
+                    document.publisher_id
+                ))
+                continue
+
+            articlemeta_db['articles'].update(
+                {'code': document.publisher_id,'collection': document.collection_acronym}, 
+                {'$set': {'section': section}}
+            )
+
+            logger.debug(u'Update made for %s_%s' % (
+                collection,
+                document.publisher_id
+            ))
 
 def main():
     parser = argparse.ArgumentParser(
@@ -248,7 +259,6 @@ def main():
         '--collection',
         '-c',
         choices=collections_acronym(),
-        required=True,
         help='Collection acronym'
     )
 
@@ -256,7 +266,7 @@ def main():
         '--all_records',
         '-a',
         action='store_true',
-        help='Apply processing to all records or just records without the fulltexts parameter'
+        help='Apply processing to all records or just records without the section parameter'
     )
 
     parser.add_argument(
@@ -277,4 +287,6 @@ def main():
 
     _config_logging(args.logging_level, args.logging_file)
 
-    run(args.collection, args.all_records)
+    collections = [args.collection] if args.collection else collections_acronym()
+
+    run(collections, args.all_records)

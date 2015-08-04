@@ -79,8 +79,12 @@ def collection_info(collection):
 
 def do_request(url, json=True):
 
+    headers = {
+        'User-Agent': 'SciELO Processing ArticleMeta: LoadLanguage'
+    }
+
     try:
-        document = requests.get(url)
+        document = requests.get(url, headers=headers)
     except:
         logger.error(u'HTTP request error for: %s' % url)
     else:
@@ -313,7 +317,7 @@ class StaticCatalog(object):
 
         if len(data['fulltexts.html']) > 0:
             for lang in data['fulltexts.html']:
-                ldata['fulltexts.html.%s' % lang] = 'http://%s?script=sci_arttext&pid=%s&tlng=%s' % (
+                ldata['fulltexts.html.%s' % lang] = 'http://%s/scielo.php?script=sci_arttext&pid=%s&tlng=%s' % (
                     document.scielo_domain,
                     document.publisher_id,
                     lang
@@ -322,47 +326,53 @@ class StaticCatalog(object):
         return ldata
             
 
-def run(collection, all_records):
+def run(collections, all_records=False):
 
-    coll_info = collection_info(collection)
+    if not isinstance(collections, list):
+        logger.error('Collections must be a list o collection acronym')
+        exit()
 
-    logger.info(u'Loading languages for %s' % coll_info['domain'])
-    logger.info(u'Using mode all_records %s' % str(all_records))
+    for collection in collections:
 
-    static_catalogs = StaticCatalog(coll_info['domain'])
+        coll_info = collection_info(collection)
 
-    for document in load_documents(collection, all_records=all_records):
-        logger.debug(u'Checking fulltexts for %s_%s' % (
-            collection,
-            document.publisher_id
-        ))
+        logger.info(u'Loading languages for %s' % coll_info['domain'])
+        logger.info(u'Using mode all_records %s' % str(all_records))
 
-        fulltexts = static_catalogs.fulltexts(document)
+        static_catalogs = StaticCatalog(coll_info['domain'])
 
-        if not isinstance(fulltexts, dict):
-            logger.warning(u'Document not loaded for %s_%s' % (
+        for document in load_documents(collection, all_records=all_records):
+            logger.debug(u'Checking fulltexts for %s_%s' % (
                 collection,
                 document.publisher_id
             ))
-            continue
 
-        for key in fulltexts.keys():
-            if not data_struct_regex.match(key):
+            fulltexts = static_catalogs.fulltexts(document)
+
+            if not isinstance(fulltexts, dict):
                 logger.warning(u'Document not loaded for %s_%s' % (
                     collection,
                     document.publisher_id
                 ))
                 continue
 
-        articlemeta_db['articles'].update(
-            {'code': document.publisher_id,'collection': document.collection_acronym}, 
-            {'$set': static_catalogs.fulltexts(document)}
-        )
+            for key in fulltexts.keys():
+                if not data_struct_regex.match(key):
+                    logger.warning(u'Document not loaded for %s_%s' % (
+                        collection,
+                        document.publisher_id
+                    ))
+                    continue
 
-        logger.debug(u'Update made for %s_%s' % (
-            collection,
-            document.publisher_id
-        ))
+            articlemeta_db['articles'].update(
+                {'code': document.publisher_id,'collection': document.collection_acronym}, 
+                {'$set': static_catalogs.fulltexts(document)}
+            )
+
+            logger.debug(u'Update made for %s_%s' % (
+                collection,
+                document.publisher_id
+            ))
 
 def main():
     parser = argparse.ArgumentParser(
@@ -373,7 +383,6 @@ def main():
         '--collection',
         '-c',
         choices=collections_acronym(),
-        required=True,
         help='Collection acronym'
     )
 
@@ -381,7 +390,7 @@ def main():
         '--all_records',
         '-a',
         action='store_true',
-        help='Apply processing to all records or just records without the fulltexts parameter'
+        help='Apply processing to all records or just records without the languages parameter'
     )
 
     parser.add_argument(
@@ -402,4 +411,6 @@ def main():
 
     _config_logging(args.logging_level, args.logging_file)
 
-    run(args.collection, args.all_records)
+    collections = [args.collection] if args.collection else collections_acronym()
+
+    run(collections, args.all_records)

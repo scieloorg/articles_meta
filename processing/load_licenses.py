@@ -117,36 +117,41 @@ def scrap_license(data):
     if lc.split('/')[0] in allowed_licenses:
         return lc
 
-def run(collection, all_records):
+def run(collections, all_records=False):
 
-    coll_info = collection_info(collection)
+    if not isinstance(collections, list):
+        logger.error('Collections must be a list o collection acronym')
+        exit()
 
-    logger.info(u'Loading licenses for %s' % coll_info['domain'])
-    logger.info(u'Using mode all_records %s' % str(all_records))
+    for collection in collections:
+        coll_info = collection_info(collection)
 
-    for document in load_documents(collection, all_records=all_records):
+        logger.info(u'Loading licenses for %s' % coll_info['domain'])
+        logger.info(u'Using mode all_records %s' % str(all_records))
 
-        license = None
-        try:
-            license = scrap_license(
-                do_request(
-                    document.html_url(), json=False
+        for document in load_documents(collection, all_records=all_records):
+
+            license = None
+            try:
+                license = scrap_license(
+                    do_request(
+                        document.html_url(), json=False
+                    )
                 )
+            except:
+                logger.error('Fail to scrap: %s' % document.publisher_id)
+                continue
+
+            if not license:
+                logger.debug('No license defined for: %s' % document.publisher_id)
+                continue
+
+            articlemeta_db['articles'].update(
+                {'code': document.publisher_id,'collection': document.collection_acronym}, 
+                {'$set': {'license': license}}
             )
-        except:
-            logger.error('Fail to scrap: %s' % document.publisher_id)
-            continue
 
-        if not license:
-            logger.debug('No license defined for: %s' % document.publisher_id)
-            continue
-
-        articlemeta_db['articles'].update(
-            {'code': document.publisher_id,'collection': document.collection_acronym}, 
-            {'$set': {'license': license}}
-        )
-
-        logger.debug('%s: %s' % (document.publisher_id, license))
+            logger.debug('%s: %s' % (document.publisher_id, license))
 
 def main():
     parser = argparse.ArgumentParser(
@@ -157,7 +162,6 @@ def main():
         '--collection',
         '-c',
         choices=collections_acronym(),
-        required=True,
         help='Collection acronym'
     )
 
@@ -186,4 +190,6 @@ def main():
 
     _config_logging(args.logging_level, args.logging_file)
 
-    run(args.collection, args.all_records)
+    collections = [args.collection] if args.collection else collections_acronym()
+
+    run(collections, args.all_records)
