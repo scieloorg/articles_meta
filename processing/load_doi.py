@@ -49,7 +49,7 @@ def load_documents(collection, all_records=False):
     }
 
     if all_records == False:
-        fltr['license'] = {'$exists': 0}
+        fltr['doi'] = {'$exists': 0}
 
     documents = articlemeta_db['articles'].find(
         fltr,
