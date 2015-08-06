@@ -104,11 +104,14 @@ def load_documents(collection, all_records=False):
 
     documents = articlemeta_db['articles'].find(
         fltr,
-        {'_id': 0, 'citations': 0}
+        {'_id': 0, 'citations': 0},
+        no_cursor_timeout=True
     )
 
     for document in documents:
         yield Article(document)
+
+    documents.close()
 
 class StaticCatalog(object):
 

@@ -54,11 +54,16 @@ def load_documents(collection, all_records=False):
     if all_records == False:
         fltr['body'] = {'$exists': 0}
 
-    documents = articlemeta_db['articles'].find(fltr,{'_id': 0, 'citations': 0})
+    documents = articlemeta_db['articles'].find(
+        fltr,
+        {'_id': 0, 'citations': 0},
+        no_cursor_timeout=True
+    )
 
     for document in documents:
         yield Article(document)
 
+    documents.close()
 
 def _config_logging(logging_level='INFO', logging_file=None):
 
