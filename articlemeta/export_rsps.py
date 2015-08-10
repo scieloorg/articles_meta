@@ -6,8 +6,6 @@ from lxml.etree import CDATA
 
 import plumber
 
-from utils import remove_control_characters
-
 AFF_REGEX_JUST_NUMBERS = re.compile(r'\d+')
 XLINK_REGEX = re.compile(r'ns\d:href')
 LANG_REGEX = re.compile(r'ns\d:lang')
@@ -122,7 +120,7 @@ class XMLCitation(object):
 
             source = ET.Element('source')
 
-            source.text = remove_control_characters(raw.source)
+            source.text = raw.source
 
             xml.find('./element-citation').append(source)
 
@@ -141,7 +139,7 @@ class XMLCitation(object):
 
             source = ET.Element('source')
 
-            source.text = remove_control_characters(raw.thesis_title)
+            source.text = raw.thesis_title
 
             xml.find('./element-citation').append(source)
 
@@ -160,7 +158,7 @@ class XMLCitation(object):
 
             source = ET.Element('source')
 
-            source.text = remove_control_characters(raw.link_title)
+            source.text = raw.link_title
 
             xml.find('./element-citation').append(source)
 
@@ -421,7 +419,7 @@ class XMLArticlePipe(plumber.Pipe):
         translate_document_type = {
             u'news': 'announcement',
             u'addendum': 'other',
-            u'press_release': 'in-brief'
+            u'press-release': 'in-brief'
         }
 
         xml.set('{http://www.w3.org/XML/1998/namespace}lang', raw.original_language())
@@ -932,18 +930,35 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         lpage = ET.Element('lpage')
         lpage.text = raw.end_page
 
+        label_volume = raw.volume.replace('ahead', '0') if raw.volume else '0'
         vol = ET.Element('volume')
-        vol.text = raw.volume
+        vol.text = label_volume.strip()
+
+        lable_suppl_issue = ' suppl %s' % raw.supplement_issue if raw.supplement_issue else ''
+        lable_suppl_issue = lable_suppl_issue.replace('0', '')
+
+        label_issue = raw.issue.replace('ahead', '0') if raw.issue else '0'
+
+        if lable_suppl_issue:
+            label_issue += lable_suppl_issue
+            label_issue = label_issue.replace('0', '')
+
+        label_suppl_volume = ' suppl %s' % raw.supplement_volume if raw.supplement_volume else ''
+        label_suppl_volume = label_suppl_volume.replace('0', '')
+
+        if label_suppl_volume:
+            label_issue += label_suppl_volume
+            label_issue = label_issue.replace('0', '')
 
         issue = ET.Element('issue')
-        issue.text = raw.issue
+        issue.text = label_issue.strip()
 
         articlemeta = xml.find('./front/article-meta')
         articlemeta.append(pubdate)
-        if raw.volume:
-            articlemeta.append(vol)
-        if raw.issue:
-            articlemeta.append(issue)
+
+        articlemeta.append(vol)
+        articlemeta.append(issue)
+
         if raw.start_page:
             articlemeta.append(fpage)
         if raw.end_page:

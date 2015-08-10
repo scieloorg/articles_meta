@@ -3,7 +3,6 @@ from lxml import etree as ET
 
 import plumber
 
-from utils import remove_control_characters
 
 class XMLCitation(object):
 
@@ -85,7 +84,7 @@ class XMLCitation(object):
 
             source = ET.Element('source')
 
-            source.text = remove_control_characters(raw.source)
+            source.text = raw.source
 
             xml.find('./element-citation').append(source)
 
@@ -655,12 +654,28 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         lpage = ET.Element('lpage')
         lpage.text = raw.end_page
 
+        label_volume = raw.volume.replace('ahead', '0') if raw.volume else '0'
         vol = ET.Element('volume')
-        vol.text = raw.volume
+        vol.text = label_volume.strip()
+
+        lable_suppl_issue = ' suppl %s' % raw.supplement_issue if raw.supplement_issue else ''
+        lable_suppl_issue = lable_suppl_issue.replace('0', '')
+
+        label_issue = raw.issue.replace('ahead', '0') if raw.issue else '0'
+
+        if lable_suppl_issue:
+            label_issue += lable_suppl_issue
+            label_issue = label_issue.replace('0', '')
+
+        label_suppl_volume = ' suppl %s' % raw.supplement_volume if raw.supplement_volume else ''
+        label_suppl_volume = label_suppl_volume.replace('0', '')
+
+        if label_suppl_volume:
+            label_issue += label_suppl_volume
+            label_issue = label_issue.replace('0', '')
 
         issue = ET.Element('issue')
-        issue.text = raw.issue
-
+        issue.text = label_issue.strip()
         if raw.issue_url(language='en'): 
             issue_uri = ET.Element('self-uri')
             issue_uri.set('href', raw.issue_url(language='en'))
@@ -678,10 +693,10 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
 
         articlemeta = xml.find('./article/front/article-meta')
         articlemeta.append(pubdate)
-        if raw.volume:
-            articlemeta.append(vol)
-        if raw.issue:
-            articlemeta.append(issue)
+        
+        articlemeta.append(vol)
+        articlemeta.append(issue)
+
         if raw.start_page:
             articlemeta.append(fpage)
         if raw.end_page:

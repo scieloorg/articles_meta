@@ -1110,9 +1110,9 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
-        volume = xml.find('./article/front/article-meta/volume')
+        volume = xml.find('./article/front/article-meta/volume').text
 
-        self.assertEqual(None, volume)
+        self.assertEqual('0', volume)
 
     def test_xmlarticle_meta_general_info_issue_pipe(self):
 
@@ -1152,9 +1152,119 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
-        issue = xml.find('./article/front/article-meta/issue')
+        issue = xml.find('./article/front/article-meta/issue').text
 
-        self.assertEqual(None, issue)
+        self.assertEqual('0', issue)
+
+    def test_xmlarticle_meta_general_info_suppl_vol_pipe(self):
+
+        fakexylosearticle = Article({'article': 
+            {  
+                'v65': [{'_': '201008'}],
+                'v31': [{'_': '10'}],
+                'v131': [{'_': '1'}],
+            }, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        issue = xml.find('./article/front/article-meta/issue').text
+
+        self.assertEqual(u'suppl 1', issue)
+
+    def test_xmlarticle_meta_general_info_suppl_vol_0_pipe(self):
+
+        fakexylosearticle = Article({'article': 
+            {  
+                'v65': [{'_': '201008'}],
+                'v31': [{'_': '10'}],
+                'v131': [{'_': '0'}],
+            }, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        issue = xml.find('./article/front/article-meta/issue').text
+
+        self.assertEqual(u'suppl', issue)
+
+    def test_xmlarticle_meta_general_info_suppl_issue_pipe(self):
+
+        fakexylosearticle = Article({'article': 
+            {  
+                'v65': [{'_': '201008'}],
+                'v31': [{'_': '10'}],
+                'v32': [{'_': '1'}],
+                'v131': [{'_': '2'}],
+            }, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        issue = xml.find('./article/front/article-meta/issue').text
+
+        self.assertEqual(u'1 suppl 2', issue)
+
+    def test_xmlarticle_meta_general_info_suppl__vol_0_issue_1_pipe(self):
+
+        fakexylosearticle = Article({'article': 
+            {  
+                'v65': [{'_': '201008'}],
+                'v31': [{'_': '10'}],
+                'v32': [{'_': '1'}],
+                'v131': [{'_': '0'}],
+            }, 'title': {}})
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+
+        front = article.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        issue = xml.find('./article/front/article-meta/issue').text
+
+        self.assertEqual(u'1 suppl', issue)
 
     def test_xmlarticle_meta_general_info_fulltext_uri_pipe(self):
 
