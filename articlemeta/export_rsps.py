@@ -10,6 +10,8 @@ AFF_REGEX_JUST_NUMBERS = re.compile(r'\d+')
 XLINK_REGEX = re.compile(r'ns\d:href')
 LANG_REGEX = re.compile(r'ns\d:lang')
 URI_REGEXT = re.compile(r'http://.*')
+SUPPLBEG_REGEX = re.compile(r'^0 ')
+SUPPLEND_REGEX = re.compile(r' 0$')
 
 class XMLCitation(object):
 
@@ -931,24 +933,23 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         lpage.text = raw.end_page
 
         label_volume = raw.volume.replace('ahead', '0') if raw.volume else '0'
+        label_issue = raw.issue.replace('ahead', '0') if raw.issue else '0'
+
         vol = ET.Element('volume')
         vol.text = label_volume.strip()
 
         lable_suppl_issue = ' suppl %s' % raw.supplement_issue if raw.supplement_issue else ''
-        lable_suppl_issue = lable_suppl_issue.replace('0', '')
-
-        label_issue = raw.issue.replace('ahead', '0') if raw.issue else '0'
 
         if lable_suppl_issue:
             label_issue += lable_suppl_issue
-            label_issue = label_issue.replace('0', '')
 
         label_suppl_volume = ' suppl %s' % raw.supplement_volume if raw.supplement_volume else ''
-        label_suppl_volume = label_suppl_volume.replace('0', '')
 
         if label_suppl_volume:
             label_issue += label_suppl_volume
-            label_issue = label_issue.replace('0', '')
+        
+        label_issue = SUPPLBEG_REGEX.sub('', label_issue)
+        label_issue = SUPPLEND_REGEX.sub('', label_issue)
 
         issue = ET.Element('issue')
         issue.text = label_issue.strip()

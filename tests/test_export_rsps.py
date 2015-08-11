@@ -1214,7 +1214,7 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'1 suppl 2', issue)
 
-    def test_xmlarticle_meta_general_info_suppl__vol_0_issue_1_pipe(self):
+    def test_xmlarticle_meta_general_info_suppl__vol_10_issue_1_pipe(self):
 
         fakexylosearticle = Article({'article': 
             {  
@@ -1238,6 +1238,56 @@ class ExportTests(unittest.TestCase):
         issue = xml.find('./front/article-meta/issue').text
 
         self.assertEqual(u'1 suppl', issue)
+
+    def test_xmlarticle_meta_general_info_suppl__vol_10_issue_20_pipe(self):
+
+        fakexylosearticle = Article({'article': 
+            {  
+                'v65': [{'_': '201008'}],
+                'v31': [{'_': '10'}],
+                'v32': [{'_': '20'}],
+                'v131': [{'_': '0'}],
+            }, 'title': {}})
+
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        issue = xml.find('./front/article-meta/issue').text
+
+        self.assertEqual(u'20 suppl', issue)
+
+    def test_xmlarticle_meta_general_info_suppl__vol_10_issue_20_suppl_10_pipe(self):
+
+        fakexylosearticle = Article({'article': 
+            {  
+                'v65': [{'_': '201008'}],
+                'v31': [{'_': '10'}],
+                'v32': [{'_': '20'}],
+                'v131': [{'_': '10'}],
+            }, 'title': {}})
+
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        issue = xml.find('./front/article-meta/issue').text
+
+        self.assertEqual(u'20 suppl 10', issue)
 
     def test_xmlarticle_meta_original_language_abstract_pipe(self):
 
