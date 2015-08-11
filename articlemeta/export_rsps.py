@@ -484,6 +484,7 @@ class XMLSubArticlePipe(plumber.Pipe):
 
             # ARTICLE CATEGORY
             if raw.section:
+                articlecategories = ET.Element('article-categories')
                 for lang, text in raw.translated_section().items():
                     if lang != language:
                         continue
@@ -491,8 +492,7 @@ class XMLSubArticlePipe(plumber.Pipe):
                     subjectgroup.set('subj-group-type', 'heading')
                     sbj = ET.Element('subject')
                     sbj.text = text
-                    subjectgroup.append(sbj)
-                    articlecategories = ET.Element('article-categories')
+                    subjectgroup.append(sbj)    
                     articlecategories.append(subjectgroup)
                 frontstub.append(articlecategories)
 
