@@ -702,6 +702,11 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         articlemeta.append(vol)
         articlemeta.append(issue)
 
+        if raw.elocation:
+            elocation = ET.Element('elocation-id')
+            elocation.text = raw.elocation
+            articlemeta.append(elocation)
+
         if raw.start_page:
             articlemeta.append(fpage)
         if raw.end_page:

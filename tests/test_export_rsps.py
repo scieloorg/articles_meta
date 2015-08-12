@@ -997,6 +997,57 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'08', pub_month)
 
+    def test_xmlarticle_meta_general_info_elocation_pipe(self):
+
+        fakexylosearticle = Article({
+            'article': {
+                'v65': [{'_': '201008'}],
+                'v14': [{'_': '', 'e': 'eloc1'}]
+            },
+            'title': {}}
+        )
+
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        eloc = xml.find('./front/article-meta/elocation-id').text
+
+        self.assertEqual(u'eloc1', eloc)
+
+    def test_xmlarticle_meta_general_info_without_elocation_pipe(self):
+
+        fakexylosearticle = Article({
+            'article': {
+                'v65': [{'_': '201008'}],
+                'v14': [{'_': '100'}]
+            },
+            'title': {}}
+        )
+
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaGeneralInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        eloc = xml.find('./front/article-meta/elocation-id')
+
+        self.assertEqual(None, eloc)
+
+
     def test_xmlarticle_meta_general_info_first_page_pipe(self):
 
         pxml = ET.Element('article')

@@ -554,11 +554,13 @@ class XMLJournalMetaJournalIdPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
+        journal_meta = xml.find('./front/journal-meta')
+
         journalid = ET.Element('journal-id')
         journalid.text = raw.journal_acronym
         journalid.set('journal-id-type', 'publisher-id')
 
-        xml.find('./front/journal-meta').append(journalid)
+        journal_meta.append(journalid)
 
         return data
 
@@ -665,11 +667,19 @@ class XMLArticleMetaArticleIdPublisherPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
+        article_meta = xml.find('./front/article-meta')
+
+        if raw.is_ahead_of_print:
+            otherid = ET.Element('article-id')
+            otherid.text = raw.order
+            otherid.set('article-id-type', 'other')
+            article_meta.append(otherid)
+
         articleidpublisher = ET.Element('article-id')
         articleidpublisher.set('pub-id-type', 'publisher-id')
         articleidpublisher.text = raw.publisher_id
 
-        xml.find('./front/article-meta').append(articleidpublisher)
+        article_meta.append(articleidpublisher)
 
         return data
 
@@ -959,6 +969,11 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
 
         articlemeta.append(vol)
         articlemeta.append(issue)
+
+        if raw.elocation:
+            elocation = ET.Element('elocation-id')
+            elocation.text = raw.elocation
+            articlemeta.append(elocation)
 
         if raw.start_page:
             articlemeta.append(fpage)
