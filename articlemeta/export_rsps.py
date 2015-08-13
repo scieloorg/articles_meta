@@ -672,7 +672,7 @@ class XMLArticleMetaArticleIdPublisherPipe(plumber.Pipe):
         if raw.is_ahead_of_print:
             otherid = ET.Element('article-id')
             otherid.text = raw.order
-            otherid.set('article-id-type', 'other')
+            otherid.set('pub-id-type', 'other')
             article_meta.append(otherid)
 
         articleidpublisher = ET.Element('article-id')
