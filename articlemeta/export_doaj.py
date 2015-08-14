@@ -122,22 +122,20 @@ class XMLArticleMetaArticleIdDOIPipe(plumber.Pipe):
 
 class XMLArticleMetaTitlePipe(plumber.Pipe):
 
-    def precond(data):
-
-        raw, xml = data
-
-        if not raw.original_title():
-            raise plumber.UnmetPrecondition()
-
-    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
-        title = ET.Element('title')
-        title.text = raw.original_title()
-        title.set('language', ISO6392T_TO_ISO6392B.get(raw.original_language(), raw.original_language()))
-
-        xml.find('./record').append(title)
+        if raw.original_title():
+            title = ET.Element('title')
+            title.text = raw.original_title()
+            title.set('language', ISO6392T_TO_ISO6392B.get(raw.original_language(), raw.original_language()))
+            xml.find('./record').append(title)
+        elif raw.translated_titles() and len(raw.translated_titles()) != 0:
+            item = [(k,v) for k, v in raw.translated_titles().items()][0]
+            title = ET.Element('title')
+            title.text = item[1]
+            title.set('language', ISO6392T_TO_ISO6392B.get(item[0], item[0]))
+            xml.find('./record').append(title)
 
         return data
 
