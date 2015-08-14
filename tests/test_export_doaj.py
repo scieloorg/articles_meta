@@ -456,12 +456,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_doaj.XMLArticleMetaIssuePipe()
         raw, xml = xmlarticle.transform(data)
 
-        try:
-            xml.find('./record/issue').text
-        except AttributeError:
-            self.assertTrue(True)
-        else:
-            self.assertTrue(False)
+        self.assertEqual(xml.find('./record/issue').text, '0')
 
     def test_xmlarticle_meta_general_info_document_type_pipe(self):
 

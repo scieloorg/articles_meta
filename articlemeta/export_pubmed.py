@@ -1,8 +1,11 @@
 #coding: utf-8
 from lxml import etree as ET
+import re
 
 import plumber
 
+SUPPLBEG_REGEX = re.compile(r'^0 ')
+SUPPLEND_REGEX = re.compile(r' 0$')
 
 class SetupArticleSetPipe(plumber.Pipe):
 
@@ -94,10 +97,30 @@ class XMLIssuePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        issue = ET.Element('Issue')
-        issue.text = raw.issue
+        label_volume = raw.volume.replace('ahead', '0') if raw.volume else '0'
+        label_issue = raw.issue.replace('ahead', '0') if raw.issue else '0'
 
-        xml.find('./Article/Journal').append(issue)
+
+        vol = ET.Element('volume')
+        vol.text = label_volume.strip()
+
+        label_suppl_issue = ' suppl %s' % raw.supplement_issue if raw.supplement_issue else ''
+
+        if label_suppl_issue:
+            label_issue += label_suppl_issue
+
+        label_suppl_volume = ' suppl %s' % raw.supplement_volume if raw.supplement_volume else ''
+
+        if label_suppl_volume:
+            label_issue += label_suppl_volume
+
+        label_issue = SUPPLBEG_REGEX.sub('', label_issue)
+        label_issue = SUPPLEND_REGEX.sub('', label_issue)
+
+        if label_issue.strip():
+            issue = ET.Element('Issue')
+            issue.text = label_issue
+            xml.find('./Article/Journal').append(issue)
 
         return data
 
@@ -306,6 +329,7 @@ class XMLHistoryPipe(plumber.Pipe):
             day = ET.Element('Day')
             day.text = raw.receive_date[8:10]
             pubdate.append(day)
+            history.append(pubdate)
         #acceptance date
         if raw.acceptance_date:
             pubdate = ET.Element('PubDate', PubStatus='accepted')
@@ -321,6 +345,7 @@ class XMLHistoryPipe(plumber.Pipe):
             day = ET.Element('Day')
             day.text = raw.acceptance_date[8:10]
             pubdate.append(day)
+            history.append(pubdate)
         #ahead of print date
         if raw.ahead_publication_date:
             pubdate = ET.Element('PubDate', PubStatus='aheadofprint')
@@ -336,8 +361,7 @@ class XMLHistoryPipe(plumber.Pipe):
             day = ET.Element('Day')
             day.text = raw.ahead_publication_date[8:10]
             pubdate.append(day)
-
-        history.append(pubdate)
+            history.append(pubdate)
 
         xml.find('./Article').append(history)
 

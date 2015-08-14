@@ -945,13 +945,10 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         label_volume = raw.volume.replace('ahead', '0') if raw.volume else '0'
         label_issue = raw.issue.replace('ahead', '0') if raw.issue else '0'
 
-        vol = ET.Element('volume')
-        vol.text = label_volume.strip()
+        label_suppl_issue = ' suppl %s' % raw.supplement_issue if raw.supplement_issue else ''
 
-        lable_suppl_issue = ' suppl %s' % raw.supplement_issue if raw.supplement_issue else ''
-
-        if lable_suppl_issue:
-            label_issue += lable_suppl_issue
+        if label_suppl_issue:
+            label_issue += label_suppl_issue
 
         label_suppl_volume = ' suppl %s' % raw.supplement_volume if raw.supplement_volume else ''
 
@@ -961,14 +958,18 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         label_issue = SUPPLBEG_REGEX.sub('', label_issue)
         label_issue = SUPPLEND_REGEX.sub('', label_issue)
 
-        issue = ET.Element('issue')
-        issue.text = label_issue.strip()
-
         articlemeta = xml.find('./front/article-meta')
         articlemeta.append(pubdate)
 
-        articlemeta.append(vol)
-        articlemeta.append(issue)
+        if label_volume:
+            vol = ET.Element('volume')
+            vol.text = label_volume.strip()
+            articlemeta.append(vol)
+
+        if label_issue:
+            issue = ET.Element('issue')
+            issue.text = label_issue.strip()        
+            articlemeta.append(issue)
 
         if raw.elocation:
             elocation = ET.Element('elocation-id')

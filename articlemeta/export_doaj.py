@@ -1,8 +1,11 @@
 #coding: utf-8
 from lxml import etree as ET
+import re
 
 import plumber
 
+SUPPLBEG_REGEX = re.compile(r'^0 ')
+SUPPLEND_REGEX = re.compile(r' 0$')
 
 class SetupArticlePipe(plumber.Pipe):
 
@@ -254,20 +257,33 @@ class XMLArticleMetaVolumePipe(plumber.Pipe):
 
 class XMLArticleMetaIssuePipe(plumber.Pipe):
 
-    def precond(data):
-
-        raw, xml = data
-        if not raw.issue:
-            raise plumber.UnmetPrecondition()
-
-    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
-        issue = ET.Element('issue')
-        issue.text = raw.issue
+        label_volume = raw.volume.replace('ahead', '0') if raw.volume else '0'
+        label_issue = raw.issue.replace('ahead', '0') if raw.issue else '0'
 
-        xml.find('./record').append(issue)
+
+        vol = ET.Element('volume')
+        vol.text = label_volume.strip()
+
+        label_suppl_issue = ' suppl %s' % raw.supplement_issue if raw.supplement_issue else ''
+
+        if label_suppl_issue:
+            label_issue += label_suppl_issue
+
+        label_suppl_volume = ' suppl %s' % raw.supplement_volume if raw.supplement_volume else ''
+
+        if label_suppl_volume:
+            label_issue += label_suppl_volume
+
+        label_issue = SUPPLBEG_REGEX.sub('', label_issue)
+        label_issue = SUPPLEND_REGEX.sub('', label_issue)
+
+        if label_issue.strip():
+            issue = ET.Element('issue')
+            issue.text = label_issue.strip()
+            xml.find('./record').append(issue)
 
         return data
 

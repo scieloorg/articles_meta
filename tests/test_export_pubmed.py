@@ -306,14 +306,13 @@ class ExportTests(unittest.TestCase):
 
         pxml = ET.Element('ArticleSet')
         pxml.append(ET.Element('Article'))
-        pxml.append(ET.Element('History'))
 
         data = [self._article_meta, pxml]
 
         xmlarticle = export_pubmed.XMLHistoryPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article><History><PubDate PubStatus="accepted"><Year>2010</Year><Month>02</Month><Day>05</Day></PubDate></History></Article><History/></ArticleSet>', ET.tostring(xml))
+        self.assertEqual('<ArticleSet><Article><History><PubDate PubStatus="received"><Year>2009</Year><Month>08</Month><Day>14</Day></PubDate><PubDate PubStatus="accepted"><Year>2010</Year><Month>02</Month><Day>05</Day></PubDate></History></Article></ArticleSet>', ET.tostring(xml))
 
     def test_xmlabstract_pipe(self):
 
