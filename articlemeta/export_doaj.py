@@ -7,6 +7,29 @@ import plumber
 SUPPLBEG_REGEX = re.compile(r'^0 ')
 SUPPLEND_REGEX = re.compile(r' 0$')
 
+ISO6392T_TO_ISO6392B = {
+    u'sqi': u'alb',
+    u'hye': u'arm',
+    u'eus': u'baq',
+    u'mya': u'bur',
+    u'zho': u'chi',
+    u'ces': u'cze',
+    u'nld': u'dut',
+    u'fra': u'fre',
+    u'kat': u'geo',
+    u'deu': u'ger',
+    u'ell': u'gre',
+    u'isl': u'ice',
+    u'mkd': u'mac',
+    u'msa': u'may',
+    u'mri': u'mao',
+    u'fas': u'per',
+    u'ron': u'rum',
+    u'slk': u'slo',
+    u'bod': u'tib',
+    u'cym': u'wel'
+}
+
 class SetupArticlePipe(plumber.Pipe):
 
     def transform(self, data):
@@ -112,7 +135,7 @@ class XMLArticleMetaTitlePipe(plumber.Pipe):
 
         title = ET.Element('title')
         title.text = raw.original_title()
-        title.set('language', raw.original_language())
+        title.set('language', ISO6392T_TO_ISO6392B.get(raw.original_language(), raw.original_language()))
 
         xml.find('./record').append(title)
 
@@ -338,14 +361,14 @@ class XMLArticleMetaAbstractsPipe(plumber.Pipe):
 
         if raw.original_abstract():
             abstract = ET.Element('abstract')
-            abstract.set('language', raw.original_language())
+            abstract.set('language', ISO6392T_TO_ISO6392B.get(raw.original_language(), raw.original_language()))
             abstract.text = raw.original_abstract()
             articlemeta.append(abstract)
 
         if raw.translated_abstracts():
             for lang, text in raw.translated_abstracts().items():
                 abstract = ET.Element('abstract')
-                abstract.set('language', lang)
+                abstract.set('language', ISO6392T_TO_ISO6392B.get(lang, lang))
                 abstract.text = text
                 articlemeta.append(abstract)
 
@@ -369,7 +392,7 @@ class XMLArticleMetaKeywordsPipe(plumber.Pipe):
         if raw.keywords():
             for lang, keywords in raw.keywords().items():
                 kwdgroup = ET.Element('keywords')
-                kwdgroup.set('language', lang)
+                kwdgroup.set('language', ISO6392T_TO_ISO6392B.get(lang, lang))
                 for keyword in keywords:
                     kwd = ET.Element('keyword')
                     kwd.text = keyword
