@@ -19,7 +19,6 @@ articlemeta_thrift = thriftpy.load(
 
 class Dispatcher(object):
     def __init__(self):
-
         config = utils.Configuration.from_env()
         settings = dict(config.items())
 
@@ -28,16 +27,15 @@ class Dispatcher(object):
             reuse_dbconn=True)
 
     def get_collection_identifiers(self):
-
         try:
             data = self._databroker.identifiers_collection()
         except:
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.identifiers_collection')
 
-        return [articlemeta_thrift.collection(
-            i['code'], i['acron'], i['acron2'], i['status'], i['domain'],
-            data['original_name'], data['has_analytics']) for i in data]
+        return [articlemeta_thrift.collection(i['code'], i['acron'],
+            i['acron2'], i['status'], i['domain'], i['original_name'],
+            i['has_analytics']) for i in data]
 
     def get_collection(self, code):
 
@@ -194,6 +192,5 @@ class Dispatcher(object):
             return json.dumps(data[0])
 
         return json.dumps(data)
-
 
 main = thriftpywrap.ConsoleApp(articlemeta_thrift.ArticleMeta, Dispatcher)
