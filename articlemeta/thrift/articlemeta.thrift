@@ -13,7 +13,7 @@ struct collection {
     4: string status
     5: string domain
     6: string name
-    7: boolean has_analytics
+    7: bool has_analytics
 }
 
 struct journal_identifiers {
