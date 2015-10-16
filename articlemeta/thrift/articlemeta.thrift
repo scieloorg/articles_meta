@@ -12,6 +12,8 @@ struct collection {
     3: string acronym2letters
     4: string status
     5: string domain
+    6: string name
+    7: boolean has_analytics
 }
 
 struct journal_identifiers {

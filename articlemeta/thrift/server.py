@@ -36,8 +36,8 @@ class Dispatcher(object):
                 'Server error: DataBroker.identifiers_collection')
 
         return [articlemeta_thrift.collection(
-            i['code'], i['acron'], i['acron2'], i['status'], i['domain'])
-                for i in data]
+            i['code'], i['acron'], i['acron2'], i['status'], i['domain'],
+            data['original_name'], data['has_analytics']) for i in data]
 
     def get_collection(self, code):
 
@@ -49,7 +49,8 @@ class Dispatcher(object):
 
         return articlemeta_thrift.collection(data['code'], data['acron'],
                                              data['acron2'], data['status'],
-                                             data['domain'])
+                                             data['domain'], data['original_name']
+                                             data['has_analytics'])
 
     def article_history_changes(self, collection, event, code, from_date,
                                 until_date, limit, offset):
