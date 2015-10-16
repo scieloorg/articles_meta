@@ -49,7 +49,7 @@ class Dispatcher(object):
 
         return articlemeta_thrift.collection(data['code'], data['acron'],
                                              data['acron2'], data['status'],
-                                             data['domain'], data['original_name']
+                                             data['domain'], data['original_name'],
                                              data['has_analytics'])
 
     def article_history_changes(self, collection, event, code, from_date,
