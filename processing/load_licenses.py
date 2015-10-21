@@ -55,11 +55,22 @@ def load_documents(collection, all_records=False):
 
     documents = articlemeta_db['articles'].find(
         fltr,
-        {'_id': 0, 'citations': 0},
-        no_cursor_timeout=True
+        {'code': 1}
     )
 
+    if 'license' in fltr:
+        del(fltr['license'])
+
+    pids = []
     for document in documents:
+        pids.append(document['code'])
+
+    for pid in pids:
+        fltr['code'] = pid
+        document = articlemeta_db['articles'].find_one(
+            fltr,
+            {'_id': 0, 'citations': 0}
+        )
         yield Article(document)
 
     documents.close() ## Release the cursor once it has no timeout.

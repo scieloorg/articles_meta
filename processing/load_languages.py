@@ -104,11 +104,22 @@ def load_documents(collection, all_records=False):
 
     documents = articlemeta_db['articles'].find(
         fltr,
-        {'_id': 0, 'citations': 0},
-        no_cursor_timeout=True
+        {'code': 1}
     )
 
+    if 'fulltexts' in fltr:
+        del(fltr['fulltexts'])
+
+    pids = []
     for document in documents:
+        pids.append(document['code'])
+
+    for pid in pids:
+        fltr['code'] = pid
+        documents = articlemeta_db['articles'].find(
+            fltr,
+            {'_id': 0, 'citations': 0}
+        )
         yield Article(document)
 
     documents.close()
