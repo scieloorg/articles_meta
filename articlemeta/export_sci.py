@@ -8,6 +8,8 @@ import plumber
 SUPPLBEG_REGEX = re.compile(r'^0 ')
 SUPPLEND_REGEX = re.compile(r' 0$')
 
+ALLOWED_LANGUAGES = ['af', 'de', 'en', 'es', 'fr', 'it', 'la', 'pt', 'po']
+
 
 class XMLCitation(object):
 
@@ -312,11 +314,8 @@ class SetupArticlePipe(plumber.Pipe):
     def transform(self, data):
 
         xml = ET.Element('articles')
-        #xml.set('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-        #xml.set('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
-        #xml.set('xsi:noNamespaceSchemaLocation', 'ThomsonReuters_publishing_1.09.xsd')
         xml.set('{http://www.w3.org/2001/XMLSchema-instance}schemaLocation', 'https://raw.githubusercontent.com/scieloorg/articles_meta/master/tests/xsd/scielo_sci/ThomsonReuters_publishing.xsd')
-        xml.set('dtd-version', '1.09')
+        xml.set('dtd-version', '1.10')
 
         return data, xml
 
@@ -326,8 +325,10 @@ class XMLArticlePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
+        lang_id = raw.original_language() if raw.original_language() in ALLOWED_LANGUAGES else 'zz'
+
         article = ET.Element('article')
-        article.set('lang_id', raw.original_language())
+        article.set('lang_id', land_id)
         article.set('article-type', raw.document_type)
 
         xml.append(article)
@@ -515,8 +516,10 @@ class XMLArticleMetaTitleGroupPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
+        lang_id = raw.original_language() if raw.original_language() in ALLOWED_LANGUAGES else 'zz'
+
         articletitle = ET.Element('article-title')
-        articletitle.set('lang_id', raw.original_language())
+        articletitle.set('lang_id', lang_id)
 
         articletitle.text = raw.original_title()
 
@@ -544,7 +547,7 @@ class XMLArticleMetaTranslatedTitleGroupPipe(plumber.Pipe):
         for lang, title in raw.translated_titles().items():
             transtitle = ET.Element('trans-title')
             transtitle.text = title
-
+            lang_id = lang if lang in ALLOWED_LANGUAGES else 'zz'
             transtitlegrp = ET.Element('trans-title-group')
             transtitlegrp.set('lang_id', lang)
             transtitlegrp.append(transtitle)
@@ -730,8 +733,10 @@ class XMLArticleMetaAbstractsPipe(plumber.Pipe):
         p = ET.Element('p')
         p.text = raw.original_abstract()
 
+        lang_id = raw.original_language() if raw.original_language() in ALLOWED_LANGUAGES else 'zz'
+        
         abstract = ET.Element('abstract')
-        abstract.set('lang_id', raw.original_language())
+        abstract.set('lang_id', lang_id)
         abstract.append(p)
 
         articlemeta = xml.find('./article/front/article-meta')
@@ -743,7 +748,7 @@ class XMLArticleMetaAbstractsPipe(plumber.Pipe):
             for lang, text in raw.translated_abstracts().items():
                 p = ET.Element('p')
                 p.text = text
-
+                lang_id = lang if lang in ALLOWED_LANGUAGES else 'zz'
                 abstract = ET.Element('trans-abstract')
                 abstract.set('lang_id', lang)
                 abstract.append(p)
@@ -764,6 +769,7 @@ class XMLArticleMetaKeywordsPipe(plumber.Pipe):
 
             for lang, keywords in raw.keywords().items():
                 kwdgroup = ET.Element('kwd-group')
+                lang_id = lang if lang in ALLOWED_LANGUAGES else 'zz'
                 kwdgroup.set('lang_id', lang)
                 kwdgroup.set('kwd-group-type', 'author-generated')
                 for keyword in keywords:
@@ -792,6 +798,7 @@ class XMLArticleMetaKeywordsPipe(plumber.Pipe):
 
         for lang, keywords in raw.keywords().items():
             kwdgroup = ET.Element('kwd-group')
+            lang_id = lang if lang in ALLOWED_LANGUAGES else 'zz'
             kwdgroup.set('lang_id', lang)
             kwdgroup.set('kwd-group-type', 'author-generated')
             for keyword in keywords:

@@ -4,9 +4,9 @@
 <!-- Based in part on, but not fully compatible with, the NLM Journal Archiving and Interchange Tag Suite. -->
 <!-- Version 1.09 -->
 <xs:schema xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
-	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="tests/xsd/scielo_sci/xlink.xsd"/>
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
 	<!-- XSD import of namespace  suppressed -->
-	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="tests/xsd/scielo_sci/xml.xsd"/>
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
 	<xs:element name="articles">
 		<xs:complexType>
 			<xs:sequence maxOccurs="unbounded">
@@ -2973,6 +2973,7 @@
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
 							<xs:enumeration value="SciELO Argentina"/>
+							<xs:enumeration value="SciELO Bolivia"/>
 							<xs:enumeration value="SciELO Brazil"/>
 							<xs:enumeration value="SciELO Chile"/>
 							<xs:enumeration value="SciELO Colombia"/>
@@ -2980,10 +2981,11 @@
 							<xs:enumeration value="SciELO Cuba"/>
 							<xs:enumeration value="SciELO Spain"/>
 							<xs:enumeration value="SciELO Mexico"/>
+							<xs:enumeration value="SciELO Peru"/>
 							<xs:enumeration value="SciELO Portugal"/>
 							<xs:enumeration value="SciELO South Africa"/>
-							<xs:enumeration value="SciELO Venezuela"/>
-							<xs:enumeration value="SciELO Peru"/>
+							<xs:enumeration value="SciELO Uruguay"/>
+							<xs:enumeration value="SciELO Venezuela"/>												
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
