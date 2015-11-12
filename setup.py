@@ -47,9 +47,11 @@ setup(
         "git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap",
         "git+https://github.com/scieloorg/xylose@0.35#egg=xylose"
     ],
+    include_package_data=True,
+    zip_safe=False,
     setup_requires=["nose>=1.0", "coverage"],
-    install_requires=requires,
     tests_require=test_requires,
+    install_requires=requires,
     test_suite="nose.collector",
     entry_points="""\
     [paste.app_factory]
