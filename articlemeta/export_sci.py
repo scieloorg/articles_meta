@@ -328,7 +328,7 @@ class XMLArticlePipe(plumber.Pipe):
         lang_id = raw.original_language() if raw.original_language() in ALLOWED_LANGUAGES else 'zz'
 
         article = ET.Element('article')
-        article.set('lang_id', land_id)
+        article.set('lang_id', lang_id)
         article.set('article-type', raw.document_type)
 
         xml.append(article)

@@ -21,7 +21,7 @@ import csv
 
 from ConfigParser import SafeConfigParser
 
-from pymongo import Connection
+from pymongo import MongoClient
 from articlemeta import utils
 
 from xylose.scielodocument import Article
@@ -34,7 +34,7 @@ settings = dict(config.items())
 REGEX_ARTICLE = re.compile("^S[0-9]{4}-[0-9]{3}[0-9xX][0-2][0-9]{3}[0-9]{4}[0-9]{5}$")
 
 try:
-    scielo_network_articles = Connection(settings['app:main']['mongo_uri'])['articlemeta']['articles']
+    scielo_network_articles = MongoClient(settings['app:main']['mongo_uri'])['articlemeta']['articles']
 except:
     logger.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
 
