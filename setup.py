@@ -4,7 +4,7 @@ import os
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(here, 'README.txt')) as f:
+with open(os.path.join(here, 'README.rst')) as f:
     README = f.read()
 with open(os.path.join(here, 'CHANGES.txt')) as f:
     CHANGES = f.read()
@@ -12,6 +12,9 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
 requires = [
     'uuid>=1.30',
     'pymongo>=2.5.2',
+    'lxml>=3.4.2',
+    'requests>=2.6.0',
+    'picles.plumber>=0.10',
     'pyramid',
     'pyramid_chameleon',
     'pyramid_debugtoolbar',
@@ -26,7 +29,7 @@ test_requires = ['mocker']
 
 setup(
     name="articlemeta",
-    version='0.2.44',
+    version='0.2.45',
     description="A SciELO API to load SciELO Articles metadata",
     author="SciELO",
     author_email="scielo-dev@googlegroups.com",
@@ -45,11 +48,13 @@ setup(
     ],
     dependency_links=[
         "git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap",
-        "git+https://github.com/scieloorg/xylose@0.34#egg=xylose"
+        "git+https://github.com/scieloorg/xylose@0.35#egg=xylose"
     ],
+    include_package_data=True,
+    zip_safe=False,
     setup_requires=["nose>=1.0", "coverage"],
+    tests_require=test_requires,
     install_requires=requires,
-    tests_requires=test_requires,
     test_suite="nose.collector",
     entry_points="""\
     [paste.app_factory]
