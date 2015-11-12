@@ -2,17 +2,17 @@
 <!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Roberta Seich (Thomson ISI) -->
 <!-- CONFIDENTIAL Thomson Reuters 2013 -->
 <!-- Based in part on, but not fully compatible with, the NLM Journal Archiving and Interchange Tag Suite. -->
-<!-- Version 1.09 -->
+<!-- Version 1.10 -->
 <xs:schema xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
-	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="tests/xsd/scielo_sci/xlink.xsd"/>
 	<!-- XSD import of namespace  suppressed -->
-	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="tests/xsd/scielo_sci/xml.xsd"/>
 	<xs:element name="articles">
 		<xs:complexType>
 			<xs:sequence maxOccurs="unbounded">
 				<xs:element ref="article"/>
 			</xs:sequence>
-			<xs:attribute ref="dtd-version" default="1.09"/>
+			<xs:attribute ref="dtd-version" default="1.10"/>
 		</xs:complexType>
 		<xs:unique name="unique_article_id">
 			<xs:selector xpath="article"/>
@@ -2985,7 +2985,7 @@
 							<xs:enumeration value="SciELO Portugal"/>
 							<xs:enumeration value="SciELO South Africa"/>
 							<xs:enumeration value="SciELO Uruguay"/>
-							<xs:enumeration value="SciELO Venezuela"/>												
+							<xs:enumeration value="SciELO Venezuela"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
@@ -4629,7 +4629,7 @@
 			<xs:attribute name="glyph-data" type="xs:IDREF"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:attribute name="dtd-version" default="1.09">
+	<xs:attribute name="dtd-version" default="1.10">
 		<xs:simpleType>
 			<xs:restriction base="xs:string">
 				<xs:enumeration value="1.04"/>
@@ -4638,6 +4638,7 @@
 				<xs:enumeration value="1.07"/>
 				<xs:enumeration value="1.08"/>
 				<xs:enumeration value="1.09"/>
+				<xs:enumeration value="1.10"/>
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:attribute>
