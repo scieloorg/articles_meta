@@ -115,8 +115,7 @@ class DataBroker(object):
         try:
             metadata['processing_date'] = article.processing_date
         except:
-            if article.publication_date > datetime.now().date().isoformat():
-                metadata['processing_date'] = datetime.now().date().isoformat()
+            metadata['processing_date'] = datetime.now().date().isoformat()
 
         return metadata
 
@@ -433,10 +432,14 @@ class DataBroker(object):
     @LogHistoryChange(document_type="article", event_type="add")
     def add_article(self, metadata):
 
+
         article = self._check_article_meta(metadata)
 
         if not article:
             return None
+
+        if exists_article(article.publisher_id, article.collection_acronym):
+            return self.update_article(metadata)
 
         article['created_at'] = article['processing_date']
 
@@ -456,6 +459,8 @@ class DataBroker(object):
 
         if not article:
             return None
+
+        article['updated_at'] = datetime.now().date().isoformat()
 
         self.db['articles'].update(
             {'code': article['code'], 'collection': article['collection']},
