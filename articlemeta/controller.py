@@ -53,7 +53,7 @@ def get_dbconn(db_dsn):
             db[collection].ensure_index(indexes)
 
     db_url = urlparse.urlparse(db_dsn)
-    conn = pymongo.Connection(host=db_url.hostname, port=db_url.port)
+    conn = pymongo.MongoClient(host=db_url.hostname, port=db_url.port)
     db = conn[db_url.path[1:]]
     if db_url.username and db_url.password:
         db.authenticate(db_url.username, db_url.password)
@@ -105,7 +105,6 @@ class DataBroker(object):
         metadata['validated_scielo'] = 'False'
         metadata['validated_wos'] = 'False'
         metadata['sent_wos'] = 'False'
-        metadata['sent_doaj'] = 'False'
         metadata['applicable'] = 'False'
         metadata['_shard_id'] = uuid.uuid4().hex
 
@@ -210,7 +209,7 @@ class DataBroker(object):
             'collection': collection
         }
 
-        self.db['journals'].remove(fltr)
+        self.db['journals'].delete_one(fltr)
 
         return fltr
 
@@ -222,10 +221,9 @@ class DataBroker(object):
         if not journal:
             return None
 
-        self.db['journals'].update(
+        self.db['journals'].update_one(
             {'code': journal['code'], 'collection': journal['collection']},
             {'$set': journal},
-            safe=False,
             upsert=True
         )
 
@@ -406,7 +404,6 @@ class DataBroker(object):
             yield article
 
     def exists_article(self, code, collection=None):
-
         fltr = {'code': code}
 
         if collection:
@@ -425,7 +422,7 @@ class DataBroker(object):
             'collection': collection
         }
 
-        self.db['articles'].remove(fltr)
+        self.db['articles'].delete_one(fltr)
 
         return fltr
 
@@ -443,10 +440,9 @@ class DataBroker(object):
 
         article['created_at'] = article['processing_date']
 
-        self.db['articles'].update(
+        self.db['articles'].update_one(
             {'code': article['code'], 'collection': article['collection']},
             {'$set': article},
-            safe=False,
             upsert=True
         )
 
@@ -462,19 +458,17 @@ class DataBroker(object):
 
         article['updated_at'] = datetime.now().date().isoformat()
 
-        self.db['articles'].update(
+        self.db['articles'].update_one(
             {'code': article['code'], 'collection': article['collection']},
             {'$set': article},
-            safe=False,
             upsert=True
         )
 
         return article
 
-    def set_doaj_status(self, code, status):
+    def set_doaj_id(self, code, collection, doaj_id):
 
-        self.db['articles'].update(
-            {'code': code},
-            {'$set': {'sent_doaj': str(status)}},
-            safe=False
+        self.db['articles'].update_one(
+            {'code': code, 'collection': collection},
+            {'$set': {'doaj_id': str(doaj_id)}}
         )

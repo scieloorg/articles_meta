@@ -193,4 +193,23 @@ class Dispatcher(object):
 
         return json.dumps(data)
 
+    def set_doaj_id(self, code, collection, doaj_id):
+        try:
+            self._databroker.set_doaj_id(code, collection, doaj_id)
+            return True
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.set_doaj_id')
+
+        return False
+
+    def exists_article(self, code, collection):
+        try:
+            return self._databroker.exists_article(code, collection)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.set_doaj_id')
+
+        return False
+
 main = thriftpywrap.ConsoleApp(articlemeta_thrift.ArticleMeta, Dispatcher)
