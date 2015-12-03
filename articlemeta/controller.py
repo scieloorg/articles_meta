@@ -435,7 +435,7 @@ class DataBroker(object):
         if not article:
             return None
 
-        if self.exists_article(article.publisher_id, article.collection_acronym):
+        if self.exists_article(article['code'], article['collection']):
             return self.update_article(metadata)
 
         article['created_at'] = article['processing_date']
