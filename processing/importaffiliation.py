@@ -249,7 +249,7 @@ def isis_like_json(data):
         if 'normalized_affiliation_iso_3661_country' in item:
             institution['p'] = item['normalized_affiliation_iso_3661_country']
 
-        if 'normalized_affiliation_state' in item:
+        if 'normalized_affiliation_state' in item and item['normalized_affiliation_state']:
             institution['s'] = item['normalized_affiliation_state']
 
         institutions.append(institution)
@@ -257,12 +257,24 @@ def isis_like_json(data):
     return institutions
 
 
-def import_doc_affiliations(data):
+def import_doc_affiliations(data, normalized_affiliations):
 
     for key, value in data.items():
         ilj = isis_like_json(value)
         collection = value[0]['collection']
         code = value[0]['pid']
+
+    for item in normalized_affiliations:
+        if item['index'].lower() in [i['i'].lower() for i in ilj]:
+            continue
+        from_normalized =   {
+            'i': item['index'],
+            '_': item['institution'],
+            'p': item['country_iso_3166']
+        }
+        if 'normalized_affiliation_state' in item and item['normalized_affiliation_state']:
+            from_normalized['s'] = item['normalized_affiliation_state']
+        ilj.append(from_normalized)
 
     try:
         scielo_network_articles.update(
@@ -315,15 +327,21 @@ def check_affiliations(file_name='processing/normalized_affiliations.csv', impor
         if not is_clean_checked(parsed_line, original_article):
             continue
 
-        if import_data:
-            if not parsed_line['pid'] in doc_affiliations and len(doc_affiliations) == 1:
-                import_doc_affiliations(doc_affiliations)
-                doc_affiliations = {}
-            pl = doc_affiliations.setdefault(parsed_line['pid'], [])
-            pl.append(parsed_line)
+        if not import_data:
+            continue
 
-            # import the last document
-            import_doc_affiliations(doc_affiliations)
+        if not parsed_line['pid'] in doc_affiliations and len(doc_affiliations) == 1:
+            previous_article = get_original_article(
+                doc_affiliations.keys()[0], parsed_line['collection']
+            )
+            import_doc_affiliations(doc_affiliations, previous_article.normalized_affiliations)
+            doc_affiliations = {}
+
+        pl = doc_affiliations.setdefault(parsed_line['pid'], [])
+        pl.append(parsed_line)
+
+    # import the last document
+    import_doc_affiliations(doc_affiliations, original_article.normalized_affiliations)
 
 def main():
 
