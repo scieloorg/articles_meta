@@ -101,16 +101,16 @@ def load_documents(collection, all_records=False):
         {'code': 1}
     )
 
-    if 'section' in fltr:
-        del(fltr['section'])
-
     pids = []
     for document in documents:
         pids.append(document['code'])
 
+    if 'section' in fltr:
+        del(fltr['section'])
+
     for pid in pids:
         fltr['code'] = pid
-        documents = articlemeta_db['articles'].find(
+        document = articlemeta_db['articles'].find_one(
             fltr,
             {'_id': 0, 'citations': 0},
             no_cursor_timeout=True

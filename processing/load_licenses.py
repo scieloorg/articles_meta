@@ -58,12 +58,12 @@ def load_documents(collection, all_records=False):
         {'code': 1}
     )
 
-    if 'license' in fltr:
-        del(fltr['license'])
-
     pids = []
     for document in documents:
         pids.append(document['code'])
+
+    if 'license' in fltr:
+        del(fltr['license'])
 
     for pid in pids:
         fltr['code'] = pid
