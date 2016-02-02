@@ -340,8 +340,9 @@ def check_affiliations(file_name='processing/normalized_affiliations.csv', impor
         pl = doc_affiliations.setdefault(parsed_line['pid'], [])
         pl.append(parsed_line)
 
-    # import the last document
-    import_doc_affiliations(doc_affiliations, original_article.normalized_affiliations)
+    if doc_affiliations and original_article.normalized_affiliations:
+        # import the last document
+        import_doc_affiliations(doc_affiliations, original_article.normalized_affiliations)
 
 def main():
 

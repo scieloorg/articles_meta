@@ -77,15 +77,20 @@ def do_request(url, json=True):
         'User-Agent': 'SciELO Processing ArticleMeta: LoadSection'
     }
 
+    document = None
     try:
         document = requests.get(url, headers=headers)
     except:
         logger.error(u'HTTP request error for: %s' % url)
+
+    if document.status_code == 404:
+        logger.error(u'Data not found for: %s' % url)
+        return None
+
+    if json:
+        return document.json()
     else:
-        if json:
-            return document.json()
-        else:
-            return document
+        return document
 
 def load_documents(collection, all_records=False):
 
@@ -122,9 +127,9 @@ def load_documents(collection, all_records=False):
 class StaticCatalog(object):
 
     def __init__(self, collection):
-        self.catalog = self._load_static_catalog(collection, 'section')
+        self.catalog = self._load_static_catalog(collection)
 
-    def _load_static_catalog(self, source, type):
+    def _load_static_catalog(self, source):
         """
         source: www.scielo.br
         type: in ['section']
@@ -143,52 +148,53 @@ class StaticCatalog(object):
         }
         """
 
-        logger.info(u'Loading static_%s_catalog.txt from server %s' % (type, source))
+        logger.info(u'Loading static_section_catalog.txt from server %s' % (source['domain']))
 
-        filename = 'static_%s_catalog.txt' % type
+        url = '/'.join(['http:/', source['domain'], 'static_section_catalog.txt'])
+        content = do_request(url, json=False)
 
-        url = '/'.join(['http:/', source, filename])
-        content = do_request(url, json=False).iter_lines()
+        if not content:
+            logger.warning(u'Section catalog not found: %s' % url)
+            return None
+
+        content = cotent.iter_lines()
 
         items = set([i.decode('iso-8859-1') for i in content])
 
         sections = {}
         for line in sorted(items):
             splited_line = [i.strip() for i in line.split('|')]
-            if len(splited_line) != 5:
+            if len(splited_line) != 4:
                 continue
-            collection = splited_line[0]
-            issue = splited_line[1]
-            language = splited_line[2]
-            code = splited_line[3]
-            label = splited_line[4]
+            collection = source['code']
+            issue = splited_line[0]
+            language = splited_line[1]
+            code = splited_line[2]
+            label = splited_line[3]
 
-            sections.setdefault(collection, {})
-            sections[collection].setdefault(issue, {})
-            sections[collection][issue].setdefault(code, {})
-            sections[collection][issue][code].update({language: label})
+            sections.setdefault(issue, {})
+            sections[issue].setdefault(code, {})
+            sections[issue][code].update({language: label})
         
         return sections
 
-    def get_section_available(self, pid, collection, issue, section_code):
+    def get_section_available(self, pid, issue, section_code):
         """
         This method checks the existence of the section agains the catalog.
         collection: scl <acronym 3 letters>
         issue: 1690-751520090003 <PID SciELO for issues>
         code: ENL010 <section legacy code>
         """
-        logger.debug(u'Checking sessions in {0}, {1}, {2} for {3}'.format(
-            collection,
+        logger.debug(u'Checking sessions in {0}, {1} for {2}'.format(
             issue,
             section_code,
             pid)
         )
 
         try:
-            section = self.catalog[collection][issue][section_code]
+            section = self.catalog[issue][section_code]
         except:
-            logger.warning(u'Session not found int catalog for {0}, {1}, {2} for {3}'.format(
-                collection,
+            logger.warning(u'Session not found int catalog for {0}, {1} for {2}'.format(
                 issue,
                 section_code,
                 pid)
@@ -214,10 +220,9 @@ class StaticCatalog(object):
         """
         pid = document.publisher_id
         issue_pid = document.publisher_id[1:18]
-        collection = document.collection_acronym
         section_code = document.section_code
 
-        section = self.get_section_available(pid, collection, issue_pid, section_code)
+        section = self.get_section_available(pid, issue_pid, section_code)
 
         if not section:
             return None
@@ -238,7 +243,11 @@ def run(collections, all_records=False):
         logger.info(u'Loading sections for %s' % coll_info['domain'])
         logger.info(u'Using mode all_records %s' % str(all_records))
 
-        static_catalogs = StaticCatalog('www.scielo.br')
+        static_catalogs = StaticCatalog(coll_info)
+
+        if not static_catalogs.catalog:
+            logger.info(u'Section Catalog not found for: %s Processing Interrupited' % coll_info['domain'])
+            exit()
 
         for document in load_documents(collection, all_records=all_records):
             logger.debug(u'Checking section for %s_%s' % (
