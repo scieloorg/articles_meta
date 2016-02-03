@@ -157,7 +157,7 @@ class StaticCatalog(object):
             logger.warning(u'Section catalog not found: %s' % url)
             return None
 
-        content = cotent.iter_lines()
+        content = content.iter_lines()
 
         items = set([i.decode('iso-8859-1') for i in content])
 
