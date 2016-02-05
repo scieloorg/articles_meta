@@ -264,7 +264,7 @@ def import_doc_affiliations(data, normalized_affiliations):
         collection = value[0]['collection']
         code = value[0]['pid']
 
-    for item in normalized_affiliations:
+    for item in normalized_affiliations or []:
         if item['index'].lower() in [i['i'].lower() for i in ilj]:
             continue
         from_normalized =   {
