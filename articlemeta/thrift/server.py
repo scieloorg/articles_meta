@@ -203,6 +203,16 @@ class Dispatcher(object):
 
         return False
 
+    def set_aid(self, code, collection, aid):
+        try:
+            self._databroker.set_aid(code, collection, aid)
+            return True
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.set_doaj_id')
+
+        return False
+
     def exists_article(self, code, collection):
         try:
             return self._databroker.exists_article(code, collection)
