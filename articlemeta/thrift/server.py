@@ -209,7 +209,7 @@ class Dispatcher(object):
             return True
         except:
             raise articlemeta_thrift.ServerError(
-                'Server error: DataBroker.set_doaj_id')
+                'Server error: DataBroker.set_aid')
 
         return False
 
@@ -218,7 +218,7 @@ class Dispatcher(object):
             return self._databroker.exists_article(code, collection)
         except:
             raise articlemeta_thrift.ServerError(
-                'Server error: DataBroker.set_doaj_id')
+                'Server error: DataBroker.exists_article')
 
         return False
 

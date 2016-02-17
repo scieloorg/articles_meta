@@ -477,5 +477,5 @@ class DataBroker(object):
 
         self.db['articles'].update_one(
             {'code': code, 'collection': collection},
-            {'$set': {'aid': str(doaj_id)}}
+            {'$set': {'aid': str(aid)}}
         )
