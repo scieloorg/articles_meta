@@ -24,8 +24,7 @@ struct journal_identifiers {
 struct article_identifiers {
     1: string code,
     2: string collection,
-    3: string processing_date,
-    1: string aid,
+    3: string processing_date
 }
 
 struct event_document {
