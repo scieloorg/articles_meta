@@ -99,7 +99,7 @@ def identifiers_journal(request):
     except ValueError:
         raise exc.HTTPBadRequest('offset must be integer >= 0')
 
-    if offset < 0 :
+    if offset < 0:
         raise exc.HTTPBadRequest('offset must be integer >= 0')
 
     ids = request.databroker.identifiers_journal(collection=collection,
@@ -157,7 +157,7 @@ def identifiers_article(request):
     except ValueError:
         raise exc.HTTPBadRequest('offset must be integer')
 
-    if offset < 0 :
+    if offset < 0:
         raise exc.HTTPBadRequest('offset must be integer >= 0')
 
     ids = request.databroker.identifiers_article(collection=collection,

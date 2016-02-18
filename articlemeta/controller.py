@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import urlparse
 import warnings
 import uuid
+import json
 
 import pymongo
 from xylose.scielodocument import Article, Journal
@@ -238,7 +239,6 @@ class DataBroker(object):
 
         return [i for i in data]
 
-
     def get_collection(self, collection):
 
         fltr = {'code': collection}
@@ -253,7 +253,7 @@ class DataBroker(object):
 
         self.get_collection(collection=collection)
 
-    def identifiers_journal(self, collection=None, limit=LIMIT, offset=0):
+    def identifiers_journal(self, collection=None, limit=LIMIT, offset=0, extra_filter=None):
 
         if offset < 0:
             offset = 0
@@ -264,6 +264,9 @@ class DataBroker(object):
         fltr = {}
         if collection:
             fltr['collection'] = collection
+
+        if extra_filter:
+            fltr.update(json.loads(extra_filter))
 
         total = self.db['journals'].find(fltr).count()
         data = self.db['journals'].find(fltr, {'code': 1, 'collection': 1}).skip(offset).limit(limit)
@@ -283,7 +286,8 @@ class DataBroker(object):
                             from_date='1500-01-01',
                             until_date=None,
                             limit=LIMIT,
-                            offset=0):
+                            offset=0,
+                            extra_filter=None):
 
         if offset < 0:
             offset = 0
@@ -300,11 +304,16 @@ class DataBroker(object):
         if issn:
             fltr['code_title'] = issn
 
+        if extra_filter:
+            fltr.update(json.loads(extra_filter))
+
         total = self.db['articles'].find(fltr).count()
         data = self.db['articles'].find(fltr, {
             'code': 1,
             'collection': 1,
-            'processing_date': 1}
+            'processing_date': 1,
+            'aid': 1,
+            'doi': 1}
         ).skip(offset).limit(limit)
 
         meta = {'limit': limit,
@@ -312,7 +321,20 @@ class DataBroker(object):
                 'filter': fltr,
                 'total': total}
 
-        result = {'meta': meta, 'objects': [{'code': i['code'], 'collection': i['collection'], 'processing_date': i['processing_date']} for i in data]}
+        result = {'meta': meta, 'objects': []}
+        for i in data:
+            rec = {
+                'code': i['code'],
+                'collection': i['collection'],
+                'processing_date': i['processing_date']
+            }
+            if 'aid' in i:
+                rec['aid'] = i['aid']
+
+            if 'doi' in i:
+                rec['doi'] = i['doi']
+
+            result['objects'].append(rec)
 
         return result
 
@@ -345,7 +367,9 @@ class DataBroker(object):
         data = self.db['articles'].find(fltr, {
             'code': 1,
             'collection': 1,
-            'processing_date': 1}
+            'processing_date': 1,
+            'aid': 1,
+            'doi': 1}
         ).skip(offset).limit(limit)
 
         meta = {'limit': limit,
@@ -353,7 +377,20 @@ class DataBroker(object):
                 'filter': fltr,
                 'total': total}
 
-        result = {'meta': meta, 'objects': [{'code': i['code'], 'collection': i['collection'], 'processing_date': i['processing_date']} for i in data]}
+        result = {'meta': meta, 'objects': []}
+        for i in data:
+            rec = {
+                'code': i['code'],
+                'collection': i['collection'],
+                'processing_date': i['processing_date']
+            }
+            if 'aid' in i:
+                rec['aid'] = i['aid']
+
+            if 'doi' in i:
+                rec['doi'] = i['doi']
+
+            result['objects'].append(rec)
 
         return result
 
@@ -367,7 +404,7 @@ class DataBroker(object):
             collection.
         """
 
-        fltr = {'$or': [{'code': code}, {'doi': code}]}
+        fltr = {'$or': [{'code': code}, {'doi': code}, {'aid': code}]}
         if collection:
             fltr['collection'] = collection
 
@@ -417,10 +454,10 @@ class DataBroker(object):
     @LogHistoryChange(document_type="article", event_type="delete")
     def delete_article(self, code, collection=None):
 
-        fltr = {
-            'code': code,
-            'collection': collection
-        }
+        fltr = {'$or': [{'code': code}, {'doi': code}, {'aid': code}]}
+
+        if collection:
+            fltr['collection'] = collection
 
         self.db['articles'].delete_one(fltr)
 
@@ -428,7 +465,6 @@ class DataBroker(object):
 
     @LogHistoryChange(document_type="article", event_type="add")
     def add_article(self, metadata):
-
 
         article = self._check_article_meta(metadata)
 
@@ -468,14 +504,18 @@ class DataBroker(object):
 
     def set_doaj_id(self, code, collection, doaj_id):
 
-        self.db['articles'].update_one(
-            {'code': code, 'collection': collection},
-            {'$set': {'doaj_id': str(doaj_id)}}
-        )
+        fltr = {'$or': [{'code': code}, {'doi': code}, {'aid': code}]}
+
+        if collection:
+            fltr['collection'] = collection
+
+        self.db['articles'].update_one(fltr, {'$set': {'doaj_id': str(doaj_id)}})
 
     def set_aid(self, code, collection, aid):
 
-        self.db['articles'].update_one(
-            {'code': code, 'collection': collection},
-            {'$set': {'aid': str(aid)}}
-        )
+        fltr = {'$or': [{'code': code}, {'doi': code}, {'aid': code}]}
+
+        if collection:
+            fltr['collection'] = collection
+
+        self.db['articles'].update_one(fltr, {'$set': {'aid': str(aid)}})

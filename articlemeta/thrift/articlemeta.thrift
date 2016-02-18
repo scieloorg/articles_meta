@@ -25,7 +25,8 @@ struct article_identifiers {
     1: string code,
     2: string collection,
     3: string processing_date,
-    1: string aid,
+    4: string aid,
+    5: string doi,
 }
 
 struct event_document {
@@ -48,8 +49,8 @@ service ArticleMeta {
     collection get_collection(1: string code) throws (1: ValueError value_err, 2:ServerError server_err),
     string get_article(1: string code, 2: string collection, 3: bool replace_journal_metadata, 4: string fmt) throws (1: ValueError value_err, 2:ServerError server_err),
     string get_journal(1: string code, 2: string collection) throws (1: ValueError value_err, 2:ServerError server_err),
-    list<journal_identifiers> get_journal_identifiers(1: optional string collection, 2: i32 limit, 3: i32 offset) throws (1: ValueError value_err, 2:ServerError server_err),
-    list<article_identifiers> get_article_identifiers(1: optional string collection, 2: optional string issn, 3: optional string from_date, 4: optional string until_date, 5: i32 limit, 6: i32 offset) throws (1:ValueError value_err, 2:ServerError server_err),
+    list<journal_identifiers> get_journal_identifiers(1: optional string collection, 2: i32 limit, 3: i32 offset, 4: optional string extra_filter) throws (1: ValueError value_err, 2:ServerError server_err),
+    list<article_identifiers> get_article_identifiers(1: optional string collection, 2: optional string issn, 3: optional string from_date, 4: optional string until_date, 5: i32 limit, 6: i32 offset, 7: optional string extra_filter) throws (1:ValueError value_err, 2:ServerError server_err),
     list<collection> get_collection_identifiers() throws(1: ServerError server_err),
     bool set_doaj_id(1: string code, 2: string collection, 3: string doaj_id) throws (1: ValueError value_err, 2:ServerError server_err),
     bool set_aid(1: string code, 2: string collection, 3: string aid) throws (1: ValueError value_err, 2:ServerError server_err),

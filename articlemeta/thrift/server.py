@@ -79,7 +79,7 @@ class Dispatcher(object):
         return objs
 
     def get_article_identifiers(self, collection, issn, from_date, until_date,
-                                limit, offset):
+                                limit, offset, extra_filter=None):
 
         from_date = from_date or '1500-01-01'
         limit = limit or 1000
@@ -91,7 +91,8 @@ class Dispatcher(object):
                                                         from_date=from_date,
                                                         until_date=until_date,
                                                         limit=limit,
-                                                        offset=offset)
+                                                        offset=offset,
+                                                        extra_filter=extra_filter)
         except:
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.identifiers_article')
@@ -99,7 +100,9 @@ class Dispatcher(object):
         objs = [articlemeta_thrift.article_identifiers(
             code=i['code'],
             collection=i['collection'],
-            processing_date=i['processing_date']) for i in data['objects']]
+            processing_date=i['processing_date'],
+            aid=i.get('aid', ''),
+            doi=i.get('doi', '')) for i in data['objects']]
 
         return objs
 
@@ -158,7 +161,7 @@ class Dispatcher(object):
 
         return objs
 
-    def get_journal_identifiers(self, collection, limit, offset):
+    def get_journal_identifiers(self, collection, limit, offset, extra_filter):
 
         limit = limit or 0
         offset = offset or 0
@@ -166,7 +169,8 @@ class Dispatcher(object):
         try:
             data = self._databroker.identifiers_journal(collection=collection,
                                                         limit=limit,
-                                                        offset=offset)
+                                                        offset=offset,
+                                                        extra_filter=extra_filter)
         except:
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.identifiers_journal')
