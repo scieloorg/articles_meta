@@ -107,6 +107,7 @@ class DataBroker(object):
         metadata['validated_wos'] = 'False'
         metadata['sent_wos'] = 'False'
         metadata['applicable'] = 'False'
+        metadata['version'] = article.data_model_version
         metadata['_shard_id'] = uuid.uuid4().hex
 
         if article.doi:
