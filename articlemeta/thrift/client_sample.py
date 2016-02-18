@@ -19,9 +19,10 @@ if __name__ == '__main__':
 
     print u"Carregando 1 artigo"
     article = client.get_article('S0034-71672014000600891', collection='scl', replace_journal_metadata=True)
-    identifiers = client.get_journal_identifiers(collection='scl', limit=10, offset=0)
+    print json.loads(article)['code']
 
     print u"Listando ID's de periódicos"
+    identifiers = client.get_journal_identifiers(collection='scl', limit=10, offset=0)
     for i in identifiers:
         print i.collection, i.code
 
