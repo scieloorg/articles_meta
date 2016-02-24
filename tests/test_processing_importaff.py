@@ -7,6 +7,12 @@ from processing import importaffiliation
 class ProcessingImportAffiliationTests(unittest.TestCase):
 
     def setUp(self):
+        class MockJournal(object):
+
+            @property
+            def title(self):
+                return 'Title'
+
         class MockArticle(object):
             def __init__(self):
                 self.publisher_id = u'S0001-37652013000100001'
@@ -20,8 +26,10 @@ class ProcessingImportAffiliationTests(unittest.TestCase):
                 ]
 
             @property
-            def journal_title(self):
-                return 'Title'
+            def journal(self):
+
+                j = MockJournal()
+                return j
 
         self.mockarticle = MockArticle()
 

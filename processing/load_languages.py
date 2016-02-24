@@ -50,7 +50,6 @@ def _config_logging(logging_level='INFO', logging_file=None):
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    
     logger.setLevel(allowed_levels.get(logging_level, 'INFO'))
 
     if logging_file:
@@ -65,17 +64,20 @@ def _config_logging(logging_level='INFO', logging_file=None):
 
     return logger
 
+
 def collections_acronym():
 
     collections = articlemeta_db['collections'].find({}, {'_id': 0})
 
     return [i['code'] for i in collections]
 
+
 def collection_info(collection):
 
     info = articlemeta_db['collections'].find_one({'acron': collection}, {'_id': 0})
 
     return info
+
 
 def do_request(url, json=True):
 
@@ -93,13 +95,14 @@ def do_request(url, json=True):
         else:
             return document
 
+
 def load_documents(collection, all_records=False):
 
     fltr = {
         'collection': collection
     }
 
-    if all_records == False:
+    if all_records is False:
         fltr['fulltexts'] = {'$exists': 0}
 
     documents = articlemeta_db['articles'].find(
@@ -123,6 +126,7 @@ def load_documents(collection, all_records=False):
         yield Article(document)
 
     documents.close()
+
 
 class StaticCatalog(object):
 
@@ -202,7 +206,6 @@ class StaticCatalog(object):
 
         return file_code.split('___')[-1][:-4]
 
-
     def is_file_available(self, file_id, type, language, original_language):
         """
         This method checks the existence of the file_id agains the catalog.
@@ -278,7 +281,6 @@ class StaticCatalog(object):
             logger.info(u'Journal without publication languages defined %s' %file_id[0])
             return None
 
-
         data = {'fulltexts.pdf': set(), 'fulltexts.html': set()}
         data['fulltexts.html'].add(document.original_language()) # Original language must have fulltext in html.
         if document.data_model_version == 'xml':
@@ -306,7 +308,6 @@ class StaticCatalog(object):
                     file_id[1],
                     file_id[2]
                 ))
-
 
         ldata = {}
 
@@ -338,7 +339,7 @@ class StaticCatalog(object):
                 )
 
         return ldata
-            
+
 
 def run(collections, all_records=False):
 
@@ -379,7 +380,7 @@ def run(collections, all_records=False):
                     continue
 
             articlemeta_db['articles'].update(
-                {'code': document.publisher_id,'collection': document.collection_acronym}, 
+                {'code': document.publisher_id, 'collection': document.collection_acronym},
                 {'$set': static_catalogs.fulltexts(document)}
             )
 
@@ -387,6 +388,7 @@ def run(collections, all_records=False):
                 collection,
                 document.publisher_id
             ))
+
 
 def main():
     parser = argparse.ArgumentParser(

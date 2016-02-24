@@ -30,6 +30,7 @@ ISO6392T_TO_ISO6392B = {
     u'cym': u'wel'
 }
 
+
 class SetupArticlePipe(plumber.Pipe):
 
     def transform(self, data):
@@ -56,7 +57,7 @@ class XMLJournalMetaJournalTitlePipe(plumber.Pipe):
         raw, xml = data
 
         journaltitle = ET.Element('journalTitle')
-        journaltitle.text = raw.journal_title
+        journaltitle.text = raw.journal.title
 
         xml.find('./record').append(journaltitle)
 
@@ -80,7 +81,7 @@ class XMLJournalMetaPublisherPipe(plumber.Pipe):
         raw, xml = data
 
         publisher = ET.Element('publisher')
-        publisher.text = raw.publisher_name
+        publisher.text = raw.journal.publisher_name
 
         xml.find('./record').append(publisher)
 
@@ -261,7 +262,7 @@ class XMLArticleMetaVolumePipe(plumber.Pipe):
     def precond(data):
 
         raw, xml = data
-        if not raw.volume:
+        if not raw.issue.volume:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
@@ -269,7 +270,7 @@ class XMLArticleMetaVolumePipe(plumber.Pipe):
         raw, xml = data
 
         volume = ET.Element('volume')
-        volume.text = raw.volume
+        volume.text = raw.issue.volume
 
         xml.find('./record').append(volume)
 
@@ -281,19 +282,19 @@ class XMLArticleMetaIssuePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        label_volume = raw.volume.replace('ahead', '0') if raw.volume else '0'
-        label_issue = raw.issue.replace('ahead', '0') if raw.issue else '0'
+        label_volume = raw.issue.volume.replace('ahead', '0') if raw.issue.volume else '0'
+        label_issue = raw.issue.number.replace('ahead', '0') if raw.issue.number else '0'
 
 
         vol = ET.Element('volume')
         vol.text = label_volume.strip()
 
-        label_suppl_issue = ' suppl %s' % raw.supplement_issue if raw.supplement_issue else ''
+        label_suppl_issue = ' suppl %s' % raw.issue.supplement_number if raw.issue.supplement_number else ''
 
         if label_suppl_issue:
             label_issue += label_suppl_issue
 
-        label_suppl_volume = ' suppl %s' % raw.supplement_volume if raw.supplement_volume else ''
+        label_suppl_volume = ' suppl %s' % raw.issue.supplement_volume if raw.issue.supplement_volume else ''
 
         if label_suppl_volume:
             label_issue += label_suppl_volume

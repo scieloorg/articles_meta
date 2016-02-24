@@ -7,6 +7,7 @@ import plumber
 SUPPLBEG_REGEX = re.compile(r'^0 ')
 SUPPLEND_REGEX = re.compile(r' 0$')
 
+
 class SetupArticleSetPipe(plumber.Pipe):
 
     def transform(self, data):
@@ -46,7 +47,7 @@ class XMLPublisherNamePipe(plumber.Pipe):
         raw, xml = data
 
         publishername = ET.Element('PublisherName')
-        publishername.text = raw.publisher_name
+        publishername.text = raw.journal.publisher_name
 
         xml.find('./Article/Journal').append(publishername)
 
@@ -59,7 +60,7 @@ class XMLJournalTitlePipe(plumber.Pipe):
         raw, xml = data
 
         journaltitle = ET.Element('JournalTitle')
-        journaltitle.text = raw.journal_title
+        journaltitle.text = raw.journal.title
 
         xml.find('./Article/Journal').append(journaltitle)
 
@@ -85,7 +86,7 @@ class XMLVolumePipe(plumber.Pipe):
         raw, xml = data
 
         volume = ET.Element('Volume')
-        volume.text = raw.volume
+        volume.text = raw.issue.volume
 
         xml.find('./Article/Journal').append(volume)
 
@@ -97,19 +98,18 @@ class XMLIssuePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        label_volume = raw.volume.replace('ahead', '0') if raw.volume else '0'
-        label_issue = raw.issue.replace('ahead', '0') if raw.issue else '0'
-
+        label_volume = raw.issue.volume.replace('ahead', '0') if raw.issue.volume else '0'
+        label_issue = raw.issue.number.replace('ahead', '0') if raw.issue.number else '0'
 
         vol = ET.Element('volume')
         vol.text = label_volume.strip()
 
-        label_suppl_issue = ' suppl %s' % raw.supplement_issue if raw.supplement_issue else ''
+        label_suppl_issue = ' suppl %s' % raw.issue.supplement_number if raw.issue.supplement_number else ''
 
         if label_suppl_issue:
             label_issue += label_suppl_issue
 
-        label_suppl_volume = ' suppl %s' % raw.supplement_volume if raw.supplement_volume else ''
+        label_suppl_volume = ' suppl %s' % raw.issue.supplement_volume if raw.issue.supplement_volume else ''
 
         if label_suppl_volume:
             label_issue += label_suppl_volume

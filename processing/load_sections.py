@@ -31,6 +31,7 @@ try:
 except:
     logging.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
 
+
 def _config_logging(logging_level='INFO', logging_file=None):
 
     allowed_levels = {
@@ -43,7 +44,6 @@ def _config_logging(logging_level='INFO', logging_file=None):
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    
     logger.setLevel(allowed_levels.get(logging_level, 'INFO'))
 
     if logging_file:
@@ -58,17 +58,20 @@ def _config_logging(logging_level='INFO', logging_file=None):
 
     return logger
 
+
 def collections_acronym():
 
     collections = articlemeta_db['collections'].find({}, {'_id': 0})
 
     return [i['code'] for i in collections]
 
+
 def collection_info(collection):
 
     info = articlemeta_db['collections'].find_one({'acron': collection}, {'_id': 0})
 
     return info
+
 
 def do_request(url, json=True):
 
@@ -92,13 +95,14 @@ def do_request(url, json=True):
     else:
         return document
 
+
 def load_documents(collection, all_records=False):
 
     fltr = {
         'collection': collection
     }
 
-    if all_records == False:
+    if all_records is False:
         fltr['section'] = {'$exists': 0}
 
     documents = articlemeta_db['articles'].find(
@@ -123,6 +127,7 @@ def load_documents(collection, all_records=False):
         yield Article(document)
 
     documents.close()
+
 
 class StaticCatalog(object):
 
@@ -208,10 +213,10 @@ class StaticCatalog(object):
 
     def section(self, document):
         """
-        This method retrieve a dictionary of the available section of a given 
+        This method retrieve a dictionary of the available section of a given
         document
         input:
-            xylose.scielo_document.Article() 
+            xylose.scielo_document.Article()
         output:
             {
                 'pt': 'label',
@@ -228,7 +233,6 @@ class StaticCatalog(object):
             return None
 
         return section
-            
 
 def run(collections, all_records=False):
 
@@ -265,7 +269,7 @@ def run(collections, all_records=False):
                 continue
 
             articlemeta_db['articles'].update(
-                {'code': document.publisher_id,'collection': document.collection_acronym}, 
+                {'code': document.publisher_id, 'collection': document.collection_acronym}, 
                 {'$set': {'section': section}}
             )
 
@@ -273,6 +277,7 @@ def run(collections, all_records=False):
                 collection,
                 document.publisher_id
             ))
+
 
 def main():
     parser = argparse.ArgumentParser(
