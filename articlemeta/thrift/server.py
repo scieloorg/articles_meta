@@ -106,13 +106,14 @@ class Dispatcher(object):
 
         return objs
 
-    def get_article(self, code, collection, replace_journal_metadata, fmt):
+    def get_article(self, code, collection, replace_journal_metadata, fmt, body=False):
 
         try:
             data = self._databroker.get_article(
                 code,
                 collection=collection,
-                replace_journal_metadata=replace_journal_metadata
+                replace_journal_metadata=replace_journal_metadata,
+                body=body
             )
         except:
             raise articlemeta_thrift.ServerError(

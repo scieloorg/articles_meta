@@ -47,7 +47,7 @@ service ArticleMeta {
     list<event_document> article_history_changes(1: string collection, 2: string event, 3: string code, 4: string from_date, 5: string until_date, 6: i32 limit, 7: i32 offset) throws (1: ValueError value_err, 2:ServerError server_err),
     list<event_journal> journal_history_changes(1: string collection, 2: string event, 3: string code, 4: string from_date, 5: string until_date, 6:i32 limit, 7: i32 offset) throws (1: ValueError value_err, 2:ServerError server_err),
     collection get_collection(1: string code) throws (1: ValueError value_err, 2:ServerError server_err),
-    string get_article(1: string code, 2: string collection, 3: bool replace_journal_metadata, 4: string fmt) throws (1: ValueError value_err, 2:ServerError server_err),
+    string get_article(1: string code, 2: string collection, 3: bool replace_journal_metadata, 4: string fmt, 5: bool body) throws (1: ValueError value_err, 2:ServerError server_err),
     string get_journal(1: string code, 2: string collection) throws (1: ValueError value_err, 2:ServerError server_err),
     list<journal_identifiers> get_journal_identifiers(1: optional string collection, 2: i32 limit, 3: i32 offset, 4: optional string extra_filter) throws (1: ValueError value_err, 2:ServerError server_err),
     list<article_identifiers> get_article_identifiers(1: optional string collection, 2: optional string issn, 3: optional string from_date, 4: optional string until_date, 5: i32 limit, 6: i32 offset, 7: optional string extra_filter) throws (1:ValueError value_err, 2:ServerError server_err),

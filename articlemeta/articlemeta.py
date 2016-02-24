@@ -9,8 +9,9 @@ import pyramid.httpexceptions as exc
 from pyramid.config import Configurator
 from pyramid.view import view_config, notfound_view_config
 from pyramid.response import Response
-import pymongo
+from pyramid.settings import asbool
 
+import pymongo
 import utils
 import controller
 from export import Export
@@ -217,9 +218,15 @@ def get_article(request):
     code = request.GET.get('code', None)
     collection = request.GET.get('collection', None)
     fmt = request.GET.get('format', 'json')
+    body = request.GET.get('body', 'false')
+
+    if not body in ['true', 'false']:
+        raise HTTPBadRequest("parameter 'metaonly' must be 'true' or 'false'")
+
+    body = asbool(body)
 
     article = request.databroker.get_article(
-        code, collection=collection, replace_journal_metadata=True
+        code, collection=collection, replace_journal_metadata=True, body=body
     )
 
     if article:

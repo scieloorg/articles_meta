@@ -61,6 +61,7 @@ def get_dbconn(db_dsn):
     _ensure_indexes(db)
     return db
 
+
 class DataBroker(object):
     _dbconn_cache = {}
 
@@ -395,7 +396,7 @@ class DataBroker(object):
 
         return result
 
-    def get_article(self, code, collection=None, replace_journal_metadata=False):
+    def get_article(self, code, collection=None, replace_journal_metadata=False, body=False):
         """
             replace_journal_metadata: replace the content of the title attribute
             that cames with the article record. The content is replaced by the
@@ -409,7 +410,15 @@ class DataBroker(object):
         if collection:
             fltr['collection'] = collection
 
-        data = self.db['articles'].find_one(fltr)
+        fields = None
+
+        if not body:
+            fields = {'body': 0}
+
+        if fields:
+            data = self.db['articles'].find_one(fltr, fields)
+        else:
+            data = self.db['articles'].find_one(fltr)
 
         if not data:
             return None
