@@ -30,17 +30,20 @@ try:
 except:
     logging.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
 
+
 def collections_acronym():
 
     collections = articlemeta_db['collections'].find({}, {'_id': 0})
 
     return [i['code'] for i in collections]
 
+
 def collection_info(collection):
 
     info = articlemeta_db['collections'].find_one({'acron': collection}, {'_id': 0})
 
     return info
+
 
 def load_documents(collection, all_records=False):
 
@@ -75,7 +78,6 @@ def _config_logging(logging_level='INFO', logging_file=None):
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    
     logger.setLevel(allowed_levels.get(logging_level, 'INFO'))
 
     if logging_file:
@@ -107,6 +109,7 @@ def do_request(url, json=True):
         else:
             return document.text
 
+
 def scrap_doi(data):
 
     data = ' '.join([i.strip() for i in data.split('\n')])
@@ -127,6 +130,7 @@ def scrap_doi(data):
 
     return result
 
+
 def run(collections, all_records=False):
 
     if not isinstance(collections, list):
@@ -142,8 +146,8 @@ def run(collections, all_records=False):
         for document in load_documents(collection, all_records=all_records):
 
             doi = None
-            try:                
-                data  = do_request(document.html_url(), json=False)
+            try:
+                data = do_request(document.html_url(), json=False)
             except:
                 logger.error('Fail to load url: %s' % document.html_url())
                 continue
@@ -159,11 +163,12 @@ def run(collections, all_records=False):
                 continue
 
             articlemeta_db['articles'].update(
-                {'code': document.publisher_id,'collection': document.collection_acronym}, 
+                {'code': document.publisher_id, 'collection': document.collection_acronym},
                 {'$set': {'doi': doi}}
             )
 
             logger.debug('DOI Found %s: %s' % (document.publisher_id, doi))
+
 
 def main():
     parser = argparse.ArgumentParser(

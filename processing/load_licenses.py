@@ -32,17 +32,21 @@ try:
 except:
     logging.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
 
+
 def collections_acronym():
 
     collections = articlemeta_db['collections'].find({}, {'_id': 0})
 
     return [i['code'] for i in collections]
 
+
 def collection_info(collection):
 
-    info = articlemeta_db['collections'].find_one({'acron': collection}, {'_id': 0})
+    info = articlemeta_db['collections'].find_one(
+        {'acron': collection}, {'_id': 0})
 
     return info
+
 
 def load_documents(collection, all_records=False):
 
@@ -50,7 +54,7 @@ def load_documents(collection, all_records=False):
         'collection': collection
     }
 
-    if all_records == False:
+    if all_records is False:
         fltr['license'] = {'$exists': 0}
 
     documents = articlemeta_db['articles'].find(
@@ -73,7 +77,7 @@ def load_documents(collection, all_records=False):
         )
         yield Article(document)
 
-    documents.close() ## Release the cursor once it has no timeout.
+    documents.close()  # Release the cursor once it has no timeout.
 
 
 def _config_logging(logging_level='INFO', logging_file=None):
@@ -88,7 +92,6 @@ def _config_logging(logging_level='INFO', logging_file=None):
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    
     logger.setLevel(allowed_levels.get(logging_level, 'INFO'))
 
     if logging_file:
@@ -120,6 +123,7 @@ def do_request(url, json=True):
         else:
             return document.text
 
+
 def scrap_license(data):
 
     result = LICENSE_IMG_REGEX.search(data) or LICENSE_A_REGEX.search(data)
@@ -130,6 +134,7 @@ def scrap_license(data):
     lc = result.groupdict().get('license', None)
     if lc.split('/')[0] in allowed_licenses:
         return lc
+
 
 def run(collections, all_records=False):
 
@@ -161,11 +166,12 @@ def run(collections, all_records=False):
                 continue
 
             articlemeta_db['articles'].update(
-                {'code': document.publisher_id,'collection': document.collection_acronym}, 
+                {'code': document.publisher_id, 'collection': document.collection_acronym},
                 {'$set': {'license': license}}
             )
 
             logger.debug('%s: %s' % (document.publisher_id, license))
+
 
 def main():
     parser = argparse.ArgumentParser(

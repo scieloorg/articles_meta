@@ -159,8 +159,9 @@ def scrap_body(data, language):
     ## Removing Reference links
 
     body = REMOVE_LINKS_REGEX.sub(' ', body)
-    
+
     return body
+
 
 def run(collections, all_records=False):
 
@@ -212,11 +213,12 @@ def run(collections, all_records=False):
                 continue
 
             articlemeta_db['articles'].update(
-                {'code': document.publisher_id,'collection': document.collection_acronym}, 
+                {'code': document.publisher_id,'collection': document.collection_acronym},
                 {'$set': {'body': bodies}}
             )
 
             logger.debug('Bodies collected for: %s, %s' % (collection, document.publisher_id))
+
 
 def main():
     parser = argparse.ArgumentParser(

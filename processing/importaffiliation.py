@@ -175,12 +175,9 @@ def is_clean_checked(parsed_line, original_article):
         return False
 
     afftitle = parsed_line['journal_title'].strip().lower()
-    afftitleorig = original_article.journal_title.strip().lower()
+    afftitleorig = original_article.journal.title.strip().lower()
     if afftitle != afftitleorig:
-        try:
-            logger.error(u'Invalid metadata for document (%s) (Journal Title) reading line (%s). Journal title do not match, given (%s), original (%s)' % (parsed_line['pid'], parsed_line['mfn'], afftitle, afftitleorig))
-        except:
-            import pdb; pdb.set_trace()
+        logger.error(u'Invalid metadata for document (%s) (Journal Title) reading line (%s). Journal title do not match, given (%s), original (%s)' % (parsed_line['pid'], parsed_line['mfn'], afftitle, afftitleorig))
 
     if not original_article.affiliations:
         logger.error(u'Invalid metadata for document (%s) (Affiliation Index) reading line (%s). Record does not have affiliations' % (parsed_line['pid'], parsed_line['mfn']))
