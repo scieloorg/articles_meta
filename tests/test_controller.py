@@ -21,7 +21,7 @@ class ControllerTest(unittest.TestCase):
 
         mocker = Mocker()
         databroker = mocker.mock()
-        databroker['articles'].find_one(ANY)
+        databroker['articles'].find_one(ANY, ANY)
         mocker.result(self._raw_json)
         mocker.replay()
 
@@ -33,7 +33,7 @@ class ControllerTest(unittest.TestCase):
 
         mocker = Mocker()
         databroker = mocker.mock()
-        databroker['articles'].find_one(ANY)
+        databroker['articles'].find_one(ANY, ANY)
         mocker.result(None)
         mocker.replay()
 
