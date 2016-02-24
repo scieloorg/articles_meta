@@ -357,7 +357,7 @@ class XMLJournalMetaJournalIdPipe(plumber.Pipe):
         raw, xml = data
 
         journalid = ET.Element('journal-id')
-        journalid.text = raw.journal_acronym
+        journalid.text = raw.journal.acronym
         journalid.set('journal-id-type', 'publisher')
 
         xml.find('./article/front/journal-meta').append(journalid)
@@ -370,10 +370,10 @@ class XMLJournalMetaJournalTitleGroupPipe(plumber.Pipe):
         raw, xml = data
 
         journaltitle = ET.Element('journal-title')
-        journaltitle.text = raw.journal_title
+        journaltitle.text = raw.journal.title
 
         journalabbrevtitle = ET.Element('abbrev-journal-title')
-        journalabbrevtitle.text = raw.journal_abbreviated_title
+        journalabbrevtitle.text = raw.journal.abbreviated_title
 
         journaltitlegroup = ET.Element('journal-title-group')
         journaltitlegroup.append(journaltitle)
@@ -422,10 +422,10 @@ class XMLJournalMetaPublisherPipe(plumber.Pipe):
         raw, xml = data
 
         publishername = ET.Element('publisher-name')
-        publishername.text = raw.publisher_name
+        publishername.text = raw.journal.publisher_name
 
         publisherloc = ET.Element('publisher-loc')
-        publisherloc.text = raw.publisher_loc
+        publisherloc.text = raw.journal.publisher_loc
 
         publisher = ET.Element('publisher')
         publisher.append(publishername)
@@ -489,7 +489,7 @@ class XMLArticleMetaArticleCategoriesPipe(plumber.Pipe):
 
         raw, xml = data
 
-        if not raw.wos_subject_areas:
+        if not raw.journal.wos_subject_areas:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
@@ -498,7 +498,7 @@ class XMLArticleMetaArticleCategoriesPipe(plumber.Pipe):
 
         subjectgroup = ET.Element('subj-group')
 
-        for subject in raw.wos_subject_areas:
+        for subject in raw.journal.wos_subject_areas:
             sbj = ET.Element('subject')
             sbj.text = subject
             subjectgroup.append(sbj)
@@ -662,15 +662,15 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         lpage = ET.Element('lpage')
         lpage.text = raw.end_page
 
-        label_volume = raw.volume.replace('ahead', '0') if raw.volume else '0'
-        label_issue = raw.issue.replace('ahead', '0') if raw.issue else '0'
+        label_volume = raw.issue.volume.replace('ahead', '0') if raw.issue.volume else '0'
+        label_issue = raw.issue.number.replace('ahead', '0') if raw.issue.number else '0'
 
-        label_suppl_issue = ' suppl %s' % raw.supplement_issue if raw.supplement_issue else ''
+        label_suppl_issue = ' suppl %s' % raw.issue.supplement_number if raw.issue.supplement_number else ''
 
         if label_suppl_issue:
             label_issue += label_suppl_issue
 
-        label_suppl_volume = ' suppl %s' % raw.supplement_volume if raw.supplement_volume else ''
+        label_suppl_volume = ' suppl %s' % raw.issue.supplement_volume if raw.issue.supplement_volume else ''
 
         if label_suppl_volume:
             label_issue += label_suppl_volume
@@ -678,14 +678,14 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         label_issue = SUPPLBEG_REGEX.sub('', label_issue)
         label_issue = SUPPLEND_REGEX.sub('', label_issue)
 
-        if raw.issue_url(language='en'): 
+        if raw.issue.url(language='en'): 
             issue_uri = ET.Element('self-uri')
-            issue_uri.set('href', raw.issue_url(language='en'))
+            issue_uri.set('href', raw.issue.url(language='en'))
             issue_uri.set('content-type', 'issue_page')
 
-        if raw.journal_url(language='en'): 
+        if raw.journal.url(language='en'): 
             journal_uri = ET.Element('self-uri')
-            journal_uri.set('href', raw.journal_url(language='en'))
+            journal_uri.set('href', raw.journal.url(language='en'))
             journal_uri.set('content-type', 'journal_page')
         
         if raw.html_url(language='en'): 
@@ -717,9 +717,9 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
             articlemeta.append(lpage)
         if raw.html_url():
             articlemeta.append(article_uri)
-        if raw.issue_url():
+        if raw.issue.url():
             articlemeta.append(issue_uri)
-        if raw.journal_url():
+        if raw.journal.url():
             articlemeta.append(journal_uri)
 
         return data

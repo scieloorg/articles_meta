@@ -549,6 +549,7 @@ class XMLSubArticlePipe(plumber.Pipe):
 
         return data
 
+
 class XMLJournalMetaJournalIdPipe(plumber.Pipe):
 
     def transform(self, data):
@@ -557,7 +558,7 @@ class XMLJournalMetaJournalIdPipe(plumber.Pipe):
         journal_meta = xml.find('./front/journal-meta')
 
         journalid = ET.Element('journal-id')
-        journalid.text = raw.journal_acronym
+        journalid.text = raw.journal.acronym
         journalid.set('journal-id-type', 'publisher-id')
 
         journal_meta.append(journalid)
@@ -570,10 +571,10 @@ class XMLJournalMetaJournalTitleGroupPipe(plumber.Pipe):
         raw, xml = data
 
         journaltitle = ET.Element('journal-title')
-        journaltitle.text = raw.journal_title
+        journaltitle.text = raw.journal.title
 
         journalabbrevtitle = ET.Element('abbrev-journal-title')
-        journalabbrevtitle.text = raw.journal_abbreviated_title
+        journalabbrevtitle.text = raw.journal.abbreviated_title
         journalabbrevtitle.set('abbrev-type', 'publisher')
 
         journaltitlegroup = ET.Element('journal-title-group')
@@ -594,7 +595,7 @@ class XMLJournalMetaISSNPipe(plumber.Pipe):
             pissn.text = raw.journal.print_issn
             pissn.set('pub-type', 'ppub')
             xml.find('./front/journal-meta').append(pissn)
-        
+
         if raw.journal.electronic_issn:
             eissn = ET.Element('issn')
             eissn.text = raw.journal.electronic_issn
@@ -609,10 +610,10 @@ class XMLJournalMetaPublisherPipe(plumber.Pipe):
         raw, xml = data
 
         publishername = ET.Element('publisher-name')
-        publishername.text = raw.publisher_name
+        publishername.text = raw.journal.publisher_name
 
         publisherloc = ET.Element('publisher-loc')
-        publisherloc.text = raw.publisher_loc
+        publisherloc.text = raw.journal.publisher_loc
 
         publisher = ET.Element('publisher')
         publisher.append(publishername)
@@ -942,19 +943,19 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         lpage = ET.Element('lpage')
         lpage.text = raw.end_page
 
-        label_volume = raw.volume.replace('ahead', '0') if raw.volume else '0'
-        label_issue = raw.issue.replace('ahead', '0') if raw.issue else '0'
+        label_volume = raw.issue.volume.replace('ahead', '0') if raw.issue.volume else '0'
+        label_issue = raw.issue.number.replace('ahead', '0') if raw.issue.number else '0'
 
-        label_suppl_issue = ' suppl %s' % raw.supplement_issue if raw.supplement_issue else ''
+        label_suppl_issue = ' suppl %s' % raw.issue.supplement_number if raw.issue.supplement_number else ''
 
         if label_suppl_issue:
             label_issue += label_suppl_issue
 
-        label_suppl_volume = ' suppl %s' % raw.supplement_volume if raw.supplement_volume else ''
+        label_suppl_volume = ' suppl %s' % raw.issue.supplement_volume if raw.issue.supplement_volume else ''
 
         if label_suppl_volume:
             label_issue += label_suppl_volume
-        
+
         label_issue = SUPPLBEG_REGEX.sub('', label_issue)
         label_issue = SUPPLEND_REGEX.sub('', label_issue)
 
@@ -968,7 +969,7 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
 
         if label_issue:
             issue = ET.Element('issue')
-            issue.text = label_issue.strip()        
+            issue.text = label_issue.strip()
             articlemeta.append(issue)
 
         if raw.elocation:

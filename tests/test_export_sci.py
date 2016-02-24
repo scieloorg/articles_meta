@@ -1438,7 +1438,7 @@ class ExportTests(unittest.TestCase):
 
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="issue_page"]').get('href')
 
-        self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_issuetoc&pid=S0034-891020100004&lng=en', uri)
+        self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_issuetoc&pid=0034-891020100004&lng=en', uri)
 
     def test_xmlarticle_meta_general_info_issue_uri_without_data_pipe(self):
 
