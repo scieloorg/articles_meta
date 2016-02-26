@@ -7,7 +7,7 @@ import uuid
 import json
 
 import pymongo
-from xylose.scielodocument import Article, Journal
+from xylose.scielodocument import Article, Journal, Issue
 from decorators import LogHistoryChange
 
 LIMIT = 1000
@@ -130,8 +130,8 @@ class DataBroker(object):
 
         issue = Issue(metadata)
 
-        issns = set([article.journal.any_issn(priority=u'electronic'),
-                    article.journal.any_issn(priority=u'print')])
+        issns = set([issue.any_issn(priority=u'electronic'),
+                    issue.any_issn(priority=u'print')])
 
         metadata['code'] = issue.publisher_id
         metadata['code_title'] = list(issns)
@@ -361,7 +361,7 @@ class DataBroker(object):
 
         return result
 
-    def get_issue(self, code, collection=None):
+    def get_issue(self, code, collection=None, load_articles=False):
 
         fltr = {'code': code}
 
@@ -374,6 +374,11 @@ class DataBroker(object):
 
         if not data:
             return None
+
+        journal = self.get_journal(collection=collection, issn=code[0:8])
+
+        if journal and len(journal) != 0:
+            data['title'] = journal[0]
 
         del(data['_id'])
 
@@ -403,7 +408,7 @@ class DataBroker(object):
         return False
 
     @LogHistoryChange(document_type="issue", event_type="delete")
-    def delete_article(self, code, collection=None):
+    def delete_issue(self, code, collection=None):
 
         fltr = {'code': code}
 
@@ -415,7 +420,7 @@ class DataBroker(object):
         return fltr
 
     @LogHistoryChange(document_type="issue", event_type="add")
-    def add_article(self, metadata):
+    def add_issue(self, metadata):
 
         issue = self._check_issue_meta(metadata)
 
@@ -436,7 +441,7 @@ class DataBroker(object):
         return issue
 
     @LogHistoryChange(document_type="issue", event_type="update")
-    def update_article(self, metadata):
+    def update_issue(self, metadata):
 
         issue = self._check_issue_meta(metadata)
 
