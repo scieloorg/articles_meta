@@ -195,7 +195,8 @@ def get_issue(request):
     collection = request.GET.get('collection', None)
     fmt = request.GET.get('format', 'json')
 
-    issue = request.databroker.get_issue(code, collection=collection)
+    issue = request.databroker.get_issue(code, collection=collection,
+        replace_journal_metadata=True)
 
     return Response(json.dumps(issue), content_type="application/json")
 

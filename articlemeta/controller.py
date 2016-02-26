@@ -361,7 +361,7 @@ class DataBroker(object):
 
         return result
 
-    def get_issue(self, code, collection=None, load_articles=False):
+    def get_issue(self, code, collection=None, replace_journal_metadata=False):
 
         fltr = {'code': code}
 
@@ -375,16 +375,16 @@ class DataBroker(object):
         if not data:
             return None
 
-        journal = self.get_journal(collection=collection, issn=code[0:9])
-
-        if journal and len(journal) != 0:
-            data['title'] = journal[0]
+        if replace_journal_metadata is True:
+            journal = self.get_journal(collection=collection, issn=code[0:9])
+            if journal and len(journal) != 0:
+                data['title'] = journal[0]
 
         del(data['_id'])
 
         return data
 
-    def get_issues(self, code, collection=None):
+    def get_issues(self, code, collection=None, replace_journal_metadata=False):
 
         fltr = {'code': code}
 
@@ -394,6 +394,11 @@ class DataBroker(object):
         data = self.db['issues'].find(fltr, {'_id': 0})
 
         for issue in data:
+            if replace_journal_metadata is True:
+                journal = self.get_journal(collection=collection, issn=code[0:9])
+                if journal and len(journal) != 0:
+                    data['title'] = journal[0]
+
             yield issue
 
     def exists_issue(self, code, collection=None):
@@ -599,11 +604,19 @@ class DataBroker(object):
         if not data:
             return None
 
-        if replace_journal_metadata:
-            journal = self.get_journal(collection=collection, issn=data['title']['v400'][0]['_'])
+        if replace_journal_metadata is True:
+            journal = self.get_journal(
+                collection=collection, issn=data['title']['v400'][0]['_'])
 
             if journal and len(journal) != 0:
                 data['title'] = journal[0]
+
+        issue = self.get_issue(collection=collection, code=data['code'][1:18])
+
+        if issue:
+            data['issue'] = issue
+            if 'title' in data['issue']:
+                del(data['issue']['title'])
 
         del(data['_id'])
 
@@ -623,6 +636,11 @@ class DataBroker(object):
 
                 if journal and len(journal) == 1:
                     article['title'] = journal[0]
+
+            issue = self.get_issue(collection=collection, code=article['code_issue'])
+
+            if issue:
+                article['issue'] = issue
 
             yield article
 
