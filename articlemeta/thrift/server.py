@@ -78,6 +78,34 @@ class Dispatcher(object):
 
         return objs
 
+    def issue_history_changes(self, collection, event, code, from_date,
+                              until_date, limit, offset):
+
+        from_date = from_date or '1500-01-01'
+        limit = limit or 1000
+        offset = offset or 0
+
+        try:
+            data = self._databroker.historychanges(document_type='issue',
+                                                   collection=collection,
+                                                   event=event,
+                                                   code=code,
+                                                   from_date=from_date,
+                                                   until_date=until_date,
+                                                   limit=limit,
+                                                   offset=offset)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.historychanges')
+
+        objs = [articlemeta_thrift.event_issue(code=i['code'],
+                                                  collection=i['collection'],
+                                                  event=i['event'],
+                                                  date=i['date'])
+                for i in data['objects']]
+
+        return objs
+
     def get_article_identifiers(self, collection, issn, from_date, until_date,
                                 limit, offset, extra_filter=None):
 
@@ -106,6 +134,32 @@ class Dispatcher(object):
 
         return objs
 
+    def get_issue_identifiers(self, collection, issn, from_date, until_date,
+                                limit, offset, extra_filter=None):
+
+        from_date = from_date or '1500-01-01'
+        limit = limit or 1000
+        offset = offset or 0
+
+        try:
+            data = self._databroker.identifiers_issue(collection=collection,
+                                                        issn=issn,
+                                                        from_date=from_date,
+                                                        until_date=until_date,
+                                                        limit=limit,
+                                                        offset=offset,
+                                                        extra_filter=extra_filter)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.identifiers_issue')
+
+        objs = [articlemeta_thrift.issue_identifiers(
+            code=i['code'],
+            collection=i['collection'],
+            processing_date=i['processing_date']) for i in data['objects']]
+
+        return objs
+
     def get_article(self, code, collection, replace_journal_metadata, fmt, body=False):
 
         try:
@@ -131,6 +185,20 @@ class Dispatcher(object):
 
             if fmt == 'xmlpubmed':
                 return Export(data).pipeline_pubmed()
+
+        return json.dumps(data)
+
+    def get_issue(self, code, collection, replace_journal_metadata):
+
+        try:
+            data = self._databroker.get_issue(
+                code,
+                collection=collection,
+                replace_journal_metadata=replace_journal_metadata
+            )
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.get_issue')
 
         return json.dumps(data)
 
@@ -224,6 +292,15 @@ class Dispatcher(object):
         except:
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.exists_article')
+
+        return False
+
+    def exists_issue(self, code, collection):
+        try:
+            return self._databroker.exists_issue(code, collection)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.exists_issue')
 
         return False
 
