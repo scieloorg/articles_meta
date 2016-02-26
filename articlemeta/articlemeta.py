@@ -195,7 +195,7 @@ def get_issue(request):
     collection = request.GET.get('collection', None)
     fmt = request.GET.get('format', 'json')
 
-    issue = request.databroker.get_article(code, collection=collection)
+    issue = request.databroker.get_issue(code, collection=collection)
 
     return Response(json.dumps(issue), content_type="application/json")
 
@@ -216,10 +216,10 @@ def add_issue(request):
 @view_config(route_name='update_issue', request_method='POST')
 @view_config(route_name='update_issue_slash', request_method='POST')
 @authenticate
-def update_article(request):
+def update_issue(request):
 
     try:
-        issue = request.databroker.update_article(request.json_body)
+        issue = request.databroker.update_issue(request.json_body)
     except ValueError:
         raise exc.HTTPBadRequest('The posted JSON data is not valid')
 

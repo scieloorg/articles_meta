@@ -370,6 +370,7 @@ class DataBroker(object):
 
         fields = None
 
+        import pdb; pdb.set_trace()
         data = self.db['issues'].find_one(fltr)
 
         if not data:
