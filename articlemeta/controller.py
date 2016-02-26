@@ -130,8 +130,8 @@ class DataBroker(object):
 
         issue = Issue(metadata)
 
-        issns = set([issue.any_issn(priority=u'electronic'),
-                    issue.any_issn(priority=u'print')])
+        issns = set([issue.journal.any_issn(priority=u'electronic'),
+                    issue.journal.any_issn(priority=u'print')])
 
         metadata['code'] = issue.publisher_id
         metadata['code_title'] = list(issns)
@@ -375,7 +375,7 @@ class DataBroker(object):
         if not data:
             return None
 
-        journal = self.get_journal(collection=collection, issn=code[0:8])
+        journal = self.get_journal(collection=collection, issn=code[0:9])
 
         if journal and len(journal) != 0:
             data['title'] = journal[0]
