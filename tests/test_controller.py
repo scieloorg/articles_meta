@@ -17,30 +17,6 @@ class ControllerTest(unittest.TestCase):
             open(os.path.dirname(__file__)+'/fixtures/article_meta.json').read())
         self._raw_json['_id'] = 'xx'
 
-    def test_get_article_available_code(self):
-
-        mocker = Mocker()
-        databroker = mocker.mock()
-        databroker['articles'].find_one(ANY, ANY)
-        mocker.result(self._raw_json)
-        mocker.replay()
-
-        db = DataBroker(databroker)
-
-        self.assertEqual(db.get_article('xx')['code'], 'S0034-89102010000400007')
-
-    def test_get_article_unavailable_code(self):
-
-        mocker = Mocker()
-        databroker = mocker.mock()
-        databroker['articles'].find_one(ANY, ANY)
-        mocker.result(None)
-        mocker.replay()
-
-        db = DataBroker(databroker)
-
-        self.assertEqual(db.get_article('xx'), None)
-
     def test_exists_article_False(self):
 
         mocker = Mocker()
