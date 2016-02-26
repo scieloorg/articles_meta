@@ -415,7 +415,7 @@ class DataBroker(object):
         if collection:
             fltr['collection'] = collection
 
-        self.db['issue'].delete_one(fltr)
+        self.db['issues'].delete_one(fltr)
 
         return fltr
 
