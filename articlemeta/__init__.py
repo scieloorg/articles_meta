@@ -27,6 +27,17 @@ def main(global_config, **settings):
     config.add_route('add_journal_slash', '/api/v1/journal/add/')
     config.add_route('delete_journal', '/api/v1/journal/delete')
     config.add_route('delete_journal_slash', '/api/v1/journal/delete/')
+    # issues - GET method:
+    config.add_route('get_issue', '/api/v1/issue/')
+    config.add_route('identifiers_issue', '/api/v1/issue/identifiers/')
+    config.add_route('exists_issue', '/api/v1/issue/exists/')
+    # issues - non GET method:
+    config.add_route('add_issue', '/api/v1/issue/add')
+    config.add_route('add_issue_slash', '/api/v1/issue/add/')
+    config.add_route('update_issue', '/api/v1/issue/update')
+    config.add_route('update_issue_slash', '/api/v1/issue/update/')
+    config.add_route('delete_issue', '/api/v1/issue/delete')
+    config.add_route('delete_issue_slash', '/api/v1/issue/delete/')
     # articles - GET method:
     config.add_route('get_article', '/api/v1/article/')
     config.add_route('identifiers_article', '/api/v1/article/identifiers/')
@@ -48,6 +59,7 @@ def main(global_config, **settings):
     # logs historychanges - GET method:
     config.add_route('list_historychanges_article', '/api/v1/article/history/')
     config.add_route('list_historychanges_journal', '/api/v1/journal/history/')
+    config.add_route('list_historychanges_issue', '/api/v1/issue/history/')
     # others
     config.add_request_method(add_databroker, 'databroker', reify=True)
     config.scan()

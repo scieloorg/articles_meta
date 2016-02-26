@@ -142,6 +142,90 @@ def delete_journal(request):
     return Response()
 
 
+@view_config(route_name='identifiers_issue',
+             request_method='GET')
+def identifiers_issue(request):
+
+    collection = request.GET.get('collection', None)
+    issn = request.GET.get('issn', None)
+    from_date = request.GET.get('from', '1500-01-01')
+    until_date = request.GET.get('until', datetime.now().date().isoformat())
+    limit = _get_request_limit_param(request)
+    offset = request.GET.get('offset', 0)
+
+    try:
+        offset = int(offset)
+    except ValueError:
+        raise exc.HTTPBadRequest('offset must be integer')
+
+    if offset < 0:
+        raise exc.HTTPBadRequest('offset must be integer >= 0')
+
+    ids = request.databroker.identifiers_issue(
+        collection=collection,
+        issn=issn,
+        limit=limit,
+        offset=offset,
+        from_date=from_date,
+        until_date=until_date
+    )
+
+    return Response(json.dumps(ids), content_type="application/json")
+
+
+@view_config(route_name='exists_issue',
+             request_method='GET',
+             request_param=['code'])
+def exists_issue(request):
+
+    code = request.GET.get('code', None)
+    collection = request.GET.get('collection', None)
+
+    issue = request.databroker.exists_issue(code, collection=collection)
+
+    return Response(json.dumps(issue), content_type="application/json")
+
+
+@view_config(route_name='get_issue',
+             request_method='GET',
+             request_param=['code'])
+def get_issue(request):
+
+    code = request.GET.get('code', None)
+    collection = request.GET.get('collection', None)
+    fmt = request.GET.get('format', 'json')
+
+    issue = request.databroker.get_issue(code, collection=collection)
+
+    return Response(json.dumps(issue), content_type="application/json")
+
+
+@view_config(route_name='add_issue', request_method='POST')
+@view_config(route_name='add_issue_slash', request_method='POST')
+@authenticate
+def add_issue(request):
+
+    try:
+        issue = request.databroker.add_issue(request.json_body)
+    except ValueError:
+        raise exc.HTTPBadRequest('The posted JSON data is not valid')
+
+    return Response()
+
+
+@view_config(route_name='update_issue', request_method='POST')
+@view_config(route_name='update_issue_slash', request_method='POST')
+@authenticate
+def update_issue(request):
+
+    try:
+        issue = request.databroker.update_issue(request.json_body)
+    except ValueError:
+        raise exc.HTTPBadRequest('The posted JSON data is not valid')
+
+    return Response()
+
+
 @view_config(route_name='identifiers_article',
              request_method='GET')
 def identifiers_article(request):
@@ -327,6 +411,7 @@ def delete_article(request):
 
 @view_config(route_name='list_historychanges_article', request_method='GET')
 @view_config(route_name='list_historychanges_journal', request_method='GET')
+@view_config(route_name='list_historychanges_issue', request_method='GET')
 def list_historychanges(request):
     """
     This view will attend the request from differents urls:
@@ -334,6 +419,8 @@ def list_historychanges(request):
     - '/api/v1/article/history/'
     - '/api/v1/journal/history'
     - '/api/v1/journal/history/'
+    - '/api/v1/issue/history'
+    - '/api/v1/issue/history/'
     serving with the same logic, only difference is the type of document
     requested: 'article' or 'journal'
     """
@@ -342,6 +429,9 @@ def list_historychanges(request):
         '/api/v1/article/history/': 'article',
         '/api/v1/journal/history': 'journal',
         '/api/v1/journal/history/': 'journal',
+        '/api/v1/issue/history': 'issue',
+        '/api/v1/issue/history/': 'issue',
+
     }
     document_type = doc_type_by_route[request.matched_route.path]
 
@@ -359,13 +449,14 @@ def list_historychanges(request):
         raise exc.HTTPBadRequest('offset must be integer')
 
     objs = request.databroker.historychanges(
-                document_type=document_type,
-                collection=collection,
-                event=event,
-                code=code,
-                limit=limit,
-                offset=offset,
-                from_date=from_date,
-                until_date=until_date)
+        document_type=document_type,
+        collection=collection,
+        event=event,
+        code=code,
+        limit=limit,
+        offset=offset,
+        from_date=from_date,
+        until_date=until_date
+    )
 
     return Response(json.dumps(objs), content_type="application/json")

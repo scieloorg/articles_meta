@@ -7,7 +7,7 @@ import uuid
 import json
 
 import pymongo
-from xylose.scielodocument import Article, Journal
+from xylose.scielodocument import Article, Journal, Issue
 from decorators import LogHistoryChange
 
 LIMIT = 1000
@@ -104,6 +104,7 @@ class DataBroker(object):
         metadata['collection'] = article.collection_acronym
         metadata['document_type'] = article.document_type
         metadata['publication_year'] = article.publication_date[0:4]
+        metadata['publication_date'] = article.publication_date
         metadata['validated_scielo'] = 'False'
         metadata['validated_wos'] = 'False'
         metadata['sent_wos'] = 'False'
@@ -116,6 +117,32 @@ class DataBroker(object):
 
         try:
             metadata['processing_date'] = article.processing_date
+        except:
+            metadata['processing_date'] = datetime.now().date().isoformat()
+
+        return metadata
+
+    def _check_issue_meta(self, metadata):
+        """
+            This method will check the given metadata and retrieve
+            a new dictionary with some new fields.
+        """
+
+        issue = Issue(metadata)
+
+        issns = set([issue.journal.any_issn(priority=u'electronic'),
+                    issue.journal.any_issn(priority=u'print')])
+
+        metadata['code'] = issue.publisher_id
+        metadata['code_title'] = list(issns)
+        metadata['collection'] = issue.collection_acronym
+        metadata['issue_type'] = issue.type
+        metadata['publication_year'] = issue.publication_date[0:4]
+        metadata['publication_date'] = issue.publication_date
+        metadata['_shard_id'] = uuid.uuid4().hex
+
+        try:
+            metadata['processing_date'] = issue.processing_date
         except:
             metadata['processing_date'] = datetime.now().date().isoformat()
 
@@ -138,7 +165,7 @@ class DataBroker(object):
 
     def _log_changes(self, document_type, code, event, collection=None, date=None):
 
-        if document_type in ['article', 'journal']:
+        if document_type in ['article', 'journal', 'issue']:
             log_data = {
                 'code': code,
                 'collection': collection,
@@ -281,6 +308,155 @@ class DataBroker(object):
         result = {'meta': meta, 'objects': [{'code': i['code'], 'collection': i['collection']} for i in data]}
 
         return result
+
+    def identifiers_issue(
+            self,
+            collection=None,
+            issn=None,
+            from_date='1500-01-01',
+            until_date=None,
+            limit=LIMIT,
+            offset=0,
+            extra_filter=None):
+
+        if offset < 0:
+            offset = 0
+
+        if limit < 0:
+            limit = LIMIT
+
+        fltr = {}
+        fltr['processing_date'] = {'$gte': from_date, '$lte': until_date or datetime.now().date().isoformat()}
+
+        if collection:
+            fltr['collection'] = collection
+
+        if issn:
+            fltr['code_title'] = issn
+
+        if extra_filter:
+            fltr.update(json.loads(extra_filter))
+
+        total = self.db['issues'].find(fltr).count()
+        data = self.db['issues'].find(fltr, {
+            'code': 1,
+            'collection': 1,
+            'processing_date': 1}
+        ).skip(offset).limit(limit)
+
+        meta = {'limit': limit,
+                'offset': offset,
+                'filter': fltr,
+                'total': total}
+
+        result = {'meta': meta, 'objects': []}
+        for i in data:
+            rec = {
+                'code': i['code'],
+                'collection': i['collection'],
+                'processing_date': i['processing_date']
+            }
+
+            result['objects'].append(rec)
+
+        return result
+
+    def get_issue(self, code, collection=None, load_articles=False):
+
+        fltr = {'code': code}
+
+        if collection:
+            fltr['collection'] = collection
+
+        fields = None
+
+        data = self.db['issues'].find_one(fltr)
+
+        if not data:
+            return None
+
+        journal = self.get_journal(collection=collection, issn=code[0:9])
+
+        if journal and len(journal) != 0:
+            data['title'] = journal[0]
+
+        del(data['_id'])
+
+        return data
+
+    def get_issues(self, code, collection=None):
+
+        fltr = {'code': code}
+
+        if collection:
+            fltr['collection'] = collection
+
+        data = self.db['issues'].find(fltr, {'_id': 0})
+
+        for issue in data:
+            yield issue
+
+    def exists_issue(self, code, collection=None):
+        fltr = {'code': code}
+
+        if collection:
+            fltr['collection'] = collection
+
+        if self.db['issues'].find(fltr).count() >= 1:
+            return True
+
+        return False
+
+    @LogHistoryChange(document_type="issue", event_type="delete")
+    def delete_issue(self, code, collection=None):
+
+        fltr = {'code': code}
+
+        if collection:
+            fltr['collection'] = collection
+
+        self.db['issues'].delete_one(fltr)
+
+        return fltr
+
+    @LogHistoryChange(document_type="issue", event_type="add")
+    def add_issue(self, metadata):
+
+        issue = self._check_issue_meta(metadata)
+
+        if not issue:
+            return None
+
+        if self.exists_issue(issue['code'], issue['collection']):
+            return self.update_issue(metadata)
+
+        issue['created_at'] = issue['processing_date']
+
+        self.db['issues'].update_one(
+            {'code': issue['code'], 'collection': issue['collection']},
+            {'$set': issue},
+            upsert=True
+        )
+
+        return issue
+
+    @LogHistoryChange(document_type="issue", event_type="update")
+    def update_issue(self, metadata):
+
+        issue = self._check_issue_meta(metadata)
+
+        if not issue:
+            return None
+
+        issue['updated_at'] = datetime.now().date().isoformat()
+
+        self.db['issues'].update_one(
+            {'code': issue['code'], 'collection': issue['collection']},
+            {'$set': issue},
+            upsert=True
+        )
+
+        return issue
 
     def identifiers_article(self,
                             collection=None,

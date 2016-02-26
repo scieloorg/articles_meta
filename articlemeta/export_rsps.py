@@ -13,6 +13,7 @@ URI_REGEXT = re.compile(r'http://.*')
 SUPPLBEG_REGEX = re.compile(r'^0 ')
 SUPPLEND_REGEX = re.compile(r' 0$')
 
+
 class XMLCitation(object):
 
     def __init__(self):
@@ -30,8 +31,8 @@ class XMLCitation(object):
                                      self.IssuePipe(),
                                      self.VolumePipe(),
                                      self.PersonGroupPipe(),
-                                     self.CommentPipe()
-        )
+                                     self.CommentPipe())
+
     class SetupCitationPipe(plumber.Pipe):
 
         def transform(self, data):
