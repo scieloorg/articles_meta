@@ -41,7 +41,20 @@ if __name__ == '__main__':
 
     print u"Listando ID's de artigos com filtro extra"
     extra_filter = {'aid': {'$exists': 1}}
-    identifiers = client.get_article_identifiers(collection='scl', issn='2317-4889', extra_filter=json.dumps(extra_filter))
+    identifiers = client.get_article_identifiers(collection='scl', issn='0103-4979', extra_filter=json.dumps(extra_filter))
 
     for i in identifiers:
         print i.collection, i.code, i.doi, i.aid
+
+    print u"Listando ID's de issues"
+    identifiers = client.get_issue_identifiers(collection='scl', issn='0103-4979', limit=10, offset=0)
+
+    for i in identifiers:
+        print i.collection, i.code
+
+    print u"Listando ID's de issues com filtro extra"
+    extra_filter = {'issue_type': 'special'}
+    identifiers = client.get_issue_identifiers(collection='scl', issn='0103-4979', extra_filter=json.dumps(extra_filter))
+
+    for i in identifiers:
+        print i.collection, i.code
