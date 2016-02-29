@@ -13,7 +13,7 @@ from thriftpy.rpc import make_client
 if __name__ == '__main__':
     client = make_client(
         articlemeta_thrift.ArticleMeta,
-        'articlemeta.scielo.org',
+        'localhost',
         11720
     )
 
@@ -58,3 +58,8 @@ if __name__ == '__main__':
 
     for i in identifiers:
         print i.collection, i.code
+
+    print u"Recuperando um issues"
+    issue = client.get_issue(code='0103-733120080004', collection='scl')
+
+    print issue
