@@ -99,7 +99,7 @@ class DataBroker(object):
                     article.journal.any_issn(priority=u'print')])
 
         metadata['code'] = article.publisher_id
-        metadata['code_issue'] = article.issue.publisher_id
+        metadata['code_issue'] = article.issue.publisher_id or article.publication_date[1:18]
         metadata['code_title'] = list(issns)
         metadata['collection'] = article.collection_acronym
         metadata['document_type'] = article.document_type
