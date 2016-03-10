@@ -168,7 +168,7 @@ class StaticCatalog(object):
         }
         """
 
-        logger.info(u'Loading static_%s_catalog.txt from server %s' % (type, source))
+        logger.info(u'Loading static_%s_files.txt from server %s' % (type, source))
 
         filename = 'static_%s_files.txt' % type
 
@@ -255,7 +255,7 @@ class StaticCatalog(object):
         document type ['pdf', 'html', 'xml']
         input:
             xylose.scielo_document.Article()
-            ex: 
+            ex:
                 output:
                 {
                     'pdf': {
@@ -266,7 +266,7 @@ class StaticCatalog(object):
                     'html': {
                         'pt': 'url',
                         'es': 'url',
-                        'en': 'url'                
+                        'en': 'url'
                     }
                 }
         """
@@ -284,7 +284,7 @@ class StaticCatalog(object):
         data = {'fulltexts.pdf': set(), 'fulltexts.html': set()}
         data['fulltexts.html'].add(document.original_language()) # Original language must have fulltext in html.
         if document.data_model_version == 'xml':
-            for lang in document.xml_languages():
+            for lang in document.xml_languages() or []:
                 data['fulltexts.html'].add(lang)
 
         languages = document.journal.languages + document.languages()
