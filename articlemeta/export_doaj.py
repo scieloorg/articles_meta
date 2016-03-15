@@ -80,10 +80,11 @@ class XMLJournalMetaPublisherPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        publisher = ET.Element('publisher')
-        publisher.text = raw.journal.publisher_name
+        for item in raw.journal.publisher_name or []:
+            publisher = ET.Element('publisher')
+            publisher.text = item
 
-        xml.find('./record').append(publisher)
+            xml.find('./record').append(publisher)
 
         return data
 

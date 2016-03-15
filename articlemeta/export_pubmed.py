@@ -46,10 +46,11 @@ class XMLPublisherNamePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        publishername = ET.Element('PublisherName')
-        publishername.text = raw.journal.publisher_name
+        for item in raw.journal.publisher_name or []:
+            publishername = ET.Element('PublisherName')
+            publishername.text = item
 
-        xml.find('./Article/Journal').append(publishername)
+            xml.find('./Article/Journal').append(publishername)
 
         return data
 

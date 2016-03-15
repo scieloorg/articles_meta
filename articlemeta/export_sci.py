@@ -421,17 +421,14 @@ class XMLJournalMetaPublisherPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        publishername = ET.Element('publisher-name')
-        publishername.text = raw.journal.publisher_name
+        for item in raw.journal.publisher_name or []:
+            publishername = ET.Element('publisher-name')
+            publishername.text = item
 
-        publisherloc = ET.Element('publisher-loc')
-        publisherloc.text = raw.journal.publisher_loc
+            publisher = ET.Element('publisher')
+            publisher.append(publishername)
 
-        publisher = ET.Element('publisher')
-        publisher.append(publishername)
-        publisher.append(publisherloc)
-
-        xml.find('./article/front/journal-meta').append(publisher)
+            xml.find('./article/front/journal-meta').append(publisher)
 
         return data
 
