@@ -232,16 +232,16 @@ def update_issue(request):
 @authenticate
 def delete_issue(request):
 
-    issn = request.GET.get('issn', None)
+    code = request.GET.get('code', None)
     collection = request.GET.get('collection', None)
     admintoken = request.GET.get('admintoken', None)
 
-    if not admintoken or not issn:
+    if not admintoken or not code:
         raise exc.HTTPBadRequest(
             'The attribute code and admintoken must be given'
         )
 
-    request.databroker.delete_issue(issn, collection=collection)
+    request.databroker.delete_issue(code, collection=collection)
 
     return Response()
 
