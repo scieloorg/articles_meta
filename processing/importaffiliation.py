@@ -10,7 +10,7 @@ input example:
 
     scl|S0001-37652013000100001|2013|An. Acad. Bras. Ciênc.|v85n1|aff1|Museu Nacional/UFRJ|Brasil|Universidade Federal do Rio de Janeiro|Brazil|iso-3661|São Paulo|SP
 
-CSV Total parameters size: 11
+CSV Total parameters size: 13
 """
 import os
 import logging

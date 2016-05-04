@@ -227,6 +227,25 @@ def update_issue(request):
     return Response()
 
 
+@view_config(route_name='delete_issue', request_method='DELETE')
+@view_config(route_name='delete_issue_slash', request_method='DELETE')
+@authenticate
+def delete_issue(request):
+
+    issn = request.GET.get('issn', None)
+    collection = request.GET.get('collection', None)
+    admintoken = request.GET.get('admintoken', None)
+
+    if not admintoken or not issn:
+        raise exc.HTTPBadRequest(
+            'The attribute code and admintoken must be given'
+        )
+
+    request.databroker.delete_issue(issn, collection=collection)
+
+    return Response()
+
+
 @view_config(route_name='identifiers_article',
              request_method='GET')
 def identifiers_article(request):
