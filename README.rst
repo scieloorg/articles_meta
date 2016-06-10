@@ -57,3 +57,9 @@ Passos para Instalação
 .. code-block::
 
     #> pserve development.ini
+    
+#. Iniciar RPC server
+
+.. code-block::
+
+    #> articlemeta_thrift_server --port 11620 --host 0.0.0.0
