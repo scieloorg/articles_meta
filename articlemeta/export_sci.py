@@ -432,7 +432,6 @@ class XMLJournalMetaPublisherPipe(plumber.Pipe):
 
         return data
 
-
 class XMLArticleMetaUniqueArticleIdPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
@@ -671,21 +670,21 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
 
         if label_suppl_volume:
             label_issue += label_suppl_volume
-        
+
         label_issue = SUPPLBEG_REGEX.sub('', label_issue)
         label_issue = SUPPLEND_REGEX.sub('', label_issue)
 
-        if raw.issue.url(language='en'): 
+        if raw.issue.url(language='en'):
             issue_uri = ET.Element('self-uri')
             issue_uri.set('href', raw.issue.url(language='en'))
             issue_uri.set('content-type', 'issue_page')
 
-        if raw.journal.url(language='en'): 
+        if raw.journal.url(language='en'):
             journal_uri = ET.Element('self-uri')
             journal_uri.set('href', raw.journal.url(language='en'))
             journal_uri.set('content-type', 'journal_page')
-        
-        if raw.html_url(language='en'): 
+
+        if raw.html_url(language='en'):
             article_uri = ET.Element('self-uri')
             article_uri.set('href', raw.html_url(language='en'))
             article_uri.set('content-type', 'full_text_page')

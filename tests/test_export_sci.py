@@ -540,10 +540,8 @@ class ExportTests(unittest.TestCase):
         raw, xml = xmlarticle.transform(data)
 
         publishername = xml.find('./article/front/journal-meta/publisher/publisher-name').text
-        publisherloc = xml.find('./article/front/journal-meta/publisher/publisher-loc').text
 
         self.assertEqual(u'Faculdade de Saúde Pública da Universidade de São Paulo', publishername)
-        self.assertEqual(u'São Paulo', publisherloc)
 
     def test_xml_article_meta_unique_article_id_pipe(self):
 
@@ -1010,7 +1008,7 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_general_info_without_first_page_pipe(self):
 
-        fakexylosearticle = Article({'article': {'v65': [{'_': '201008'}]}, 'title': {}})
+        del(self._article_meta.data['article']['v14'][0]['f'])
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -1021,7 +1019,7 @@ class ExportTests(unittest.TestCase):
         front = article.find('front')
         front.append(ET.Element('article-meta'))
 
-        data = [fakexylosearticle, pxml]
+        data = [self._article_meta, pxml]
 
         xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
@@ -1052,7 +1050,7 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_general_info_without_last_page_pipe(self):
 
-        fakexylosearticle = Article({'article': {'v65': [{'_': '201008'}]}, 'title': {}})
+        del(self._article_meta.data['article']['v14'][0]['l'])
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -1063,7 +1061,7 @@ class ExportTests(unittest.TestCase):
         front = article.find('front')
         front.append(ET.Element('article-meta'))
 
-        data = [fakexylosearticle, pxml]
+        data = [self._article_meta, pxml]
 
         xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
@@ -1094,7 +1092,7 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_general_info_without_volume_pipe(self):
 
-        fakexylosearticle = Article({'article': {'v65': [{'_': '201008'}]}, 'title': {}})
+        del(self._article_meta.data['issue']['issue']['v31'])
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -1105,7 +1103,7 @@ class ExportTests(unittest.TestCase):
         front = article.find('front')
         front.append(ET.Element('article-meta'))
 
-        data = [fakexylosearticle, pxml]
+        data = [self._article_meta, pxml]
 
         xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
@@ -1136,7 +1134,7 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_general_info_without_issue_pipe(self):
 
-        fakexylosearticle = Article({'article': {'v65': [{'_': '201008'}]}, 'title': {}})
+        del(self._article_meta.data['issue']['issue']['v32'])
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -1147,7 +1145,7 @@ class ExportTests(unittest.TestCase):
         front = article.find('front')
         front.append(ET.Element('article-meta'))
 
-        data = [fakexylosearticle, pxml]
+        data = [self._article_meta, pxml]
 
         xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
@@ -1158,13 +1156,7 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_general_info_elocation_pipe(self):
 
-        fakexylosearticle = Article({
-            'article': {
-                'v65': [{'_': '201008'}],
-                'v14': [{'_': '', 'e': 'eloc1'}]
-            },
-            'title': {}}
-        )
+        self._article_meta.data['article']['v14'][0]['e'] = 'eloc1'
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -1175,7 +1167,7 @@ class ExportTests(unittest.TestCase):
         front = article.find('front')
         front.append(ET.Element('article-meta'))
 
-        data = [fakexylosearticle, pxml]
+        data = [self._article_meta, pxml]
 
         xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
@@ -1186,14 +1178,6 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_general_info_without_elocation_pipe(self):
 
-        fakexylosearticle = Article({
-            'article': {
-                'v65': [{'_': '201008'}],
-                'v14': [{'_': '100'}]
-            },
-            'title': {}}
-        )
-
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
 
@@ -1203,7 +1187,7 @@ class ExportTests(unittest.TestCase):
         front = article.find('front')
         front.append(ET.Element('article-meta'))
 
-        data = [fakexylosearticle, pxml]
+        data = [self._article_meta, pxml]
 
         xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
@@ -1214,12 +1198,9 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_general_info_suppl_vol_pipe(self):
 
-        fakexylosearticle = Article({'article': 
-            {  
-                'v65': [{'_': '201008'}],
-                'v31': [{'_': '10'}],
-                'v131': [{'_': '1'}],
-            }, 'title': {}})
+        self._article_meta.data['issue']['issue']['v65'] = [{'_': '201008'}]
+        del(self._article_meta.data['issue']['issue']['v32'])
+        self._article_meta.data['issue']['issue']['v131'] = [{'_': '1'}]
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -1230,7 +1211,7 @@ class ExportTests(unittest.TestCase):
         front = article.find('front')
         front.append(ET.Element('article-meta'))
 
-        data = [fakexylosearticle, pxml]
+        data = [self._article_meta, pxml]
 
         xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
@@ -1241,12 +1222,10 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_general_info_suppl_vol_0_pipe(self):
 
-        fakexylosearticle = Article({'article': 
-            {  
-                'v65': [{'_': '201008'}],
-                'v31': [{'_': '10'}],
-                'v131': [{'_': '0'}],
-            }, 'title': {}})
+        self._article_meta.data['issue']['issue']['v65'] = [{'_': '201008'}]
+        del(self._article_meta.data['issue']['issue']['v32'])
+        self._article_meta.data['issue']['issue']['v31'] = [{'_': '10'}]
+        self._article_meta.data['issue']['issue']['v131'] = [{'_': '0'}]
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -1257,7 +1236,7 @@ class ExportTests(unittest.TestCase):
         front = article.find('front')
         front.append(ET.Element('article-meta'))
 
-        data = [fakexylosearticle, pxml]
+        data = [self._article_meta, pxml]
 
         xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
@@ -1268,13 +1247,10 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_general_info_suppl_issue_pipe(self):
 
-        fakexylosearticle = Article({'article': 
-            {  
-                'v65': [{'_': '201008'}],
-                'v31': [{'_': '10'}],
-                'v32': [{'_': '1'}],
-                'v131': [{'_': '2'}],
-            }, 'title': {}})
+        self._article_meta.data['issue']['issue']['v65'] = [{'_': '201008'}]
+        self._article_meta.data['issue']['issue']['v31'] = [{'_': '10'}]
+        self._article_meta.data['issue']['issue']['v32'] = [{'_': '1'}]
+        self._article_meta.data['issue']['issue']['v131'] = [{'_': '2'}]
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -1285,7 +1261,7 @@ class ExportTests(unittest.TestCase):
         front = article.find('front')
         front.append(ET.Element('article-meta'))
 
-        data = [fakexylosearticle, pxml]
+        data = [self._article_meta, pxml]
 
         xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
@@ -1296,13 +1272,10 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_general_info_suppl__vol_0_issue_1_pipe(self):
 
-        fakexylosearticle = Article({'article': 
-            {  
-                'v65': [{'_': '201008'}],
-                'v31': [{'_': '10'}],
-                'v32': [{'_': '1'}],
-                'v131': [{'_': '0'}],
-            }, 'title': {}})
+        self._article_meta.data['issue']['issue']['v65'] = [{'_': '201008'}]
+        self._article_meta.data['issue']['issue']['v31'] = [{'_': '10'}]
+        self._article_meta.data['issue']['issue']['v32'] = [{'_': '1'}]
+        self._article_meta.data['issue']['issue']['v131'] = [{'_': '0'}]
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -1313,7 +1286,7 @@ class ExportTests(unittest.TestCase):
         front = article.find('front')
         front.append(ET.Element('article-meta'))
 
-        data = [fakexylosearticle, pxml]
+        data = [self._article_meta, pxml]
 
         xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
@@ -1324,13 +1297,10 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_general_info_suppl__vol_10_issue_20_pipe(self):
 
-        fakexylosearticle = Article({'article': 
-            {  
-                'v65': [{'_': '201008'}],
-                'v31': [{'_': '10'}],
-                'v32': [{'_': '20'}],
-                'v131': [{'_': '0'}],
-            }, 'title': {}})
+        self._article_meta.data['issue']['issue']['v65'] = [{'_': '201008'}]
+        self._article_meta.data['issue']['issue']['v31'] = [{'_': '10'}]
+        self._article_meta.data['issue']['issue']['v32'] = [{'_': '20'}]
+        self._article_meta.data['issue']['issue']['v131'] = [{'_': '0'}]
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -1341,7 +1311,7 @@ class ExportTests(unittest.TestCase):
         front = article.find('front')
         front.append(ET.Element('article-meta'))
 
-        data = [fakexylosearticle, pxml]
+        data = [self._article_meta, pxml]
 
         xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
@@ -1352,13 +1322,10 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_general_info_suppl__vol_10_issue_20_suppl_10_pipe(self):
 
-        fakexylosearticle = Article({'article': 
-            {  
-                'v65': [{'_': '201008'}],
-                'v31': [{'_': '10'}],
-                'v32': [{'_': '20'}],
-                'v131': [{'_': '10'}],
-            }, 'title': {}})
+        self._article_meta.data['issue']['issue']['v65'] = [{'_': '201008'}]
+        self._article_meta.data['issue']['issue']['v31'] = [{'_': '10'}]
+        self._article_meta.data['issue']['issue']['v32'] = [{'_': '20'}]
+        self._article_meta.data['issue']['issue']['v131'] = [{'_': '10'}]
 
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
@@ -1369,7 +1336,7 @@ class ExportTests(unittest.TestCase):
         front = article.find('front')
         front.append(ET.Element('article-meta'))
 
-        data = [fakexylosearticle, pxml]
+        data = [self._article_meta, pxml]
 
         xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
         raw, xml = xmlarticle.transform(data)
@@ -1398,28 +1365,6 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_arttext&pid=S0034-89102010000400007&lng=en&tlng=en', uri)
 
-    def test_xmlarticle_meta_general_info_fulltext_uri_without_data_pipe(self):
-
-        fakexylosearticle = Article({'article': {'v65': [{'_': '201008'}]}, 'title': {}})
-
-        pxml = ET.Element('articles')
-        pxml.append(ET.Element('article'))
-
-        article = pxml.find('article')
-        article.append(ET.Element('front'))
-
-        front = article.find('front')
-        front.append(ET.Element('article-meta'))
-
-        data = [fakexylosearticle, pxml]
-
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
-        raw, xml = xmlarticle.transform(data)
-
-        uri = xml.find('./article/front/article-meta/self-uri[@content-type="full_text_page"]')
-
-        self.assertEqual(None, uri)
-
     def test_xmlarticle_meta_general_info_issue_uri_pipe(self):
 
         pxml = ET.Element('articles')
@@ -1440,28 +1385,6 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_issuetoc&pid=0034-891020100004&lng=en', uri)
 
-    def test_xmlarticle_meta_general_info_issue_uri_without_data_pipe(self):
-
-        fakexylosearticle = Article({'article': {'v65': [{'_': '201008'}]}, 'title': {}})
-
-        pxml = ET.Element('articles')
-        pxml.append(ET.Element('article'))
-
-        article = pxml.find('article')
-        article.append(ET.Element('front'))
-
-        front = article.find('front')
-        front.append(ET.Element('article-meta'))
-
-        data = [fakexylosearticle, pxml]
-
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
-        raw, xml = xmlarticle.transform(data)
-
-        uri = xml.find('./article/front/article-meta/self-uri[@content-type="issue_page"]')
-
-        self.assertEqual(None, uri)
-
     def test_xmlarticle_meta_general_info_journal_uri_pipe(self):
 
         pxml = ET.Element('articles')
@@ -1481,28 +1404,6 @@ class ExportTests(unittest.TestCase):
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="journal_page"]').get('href')
 
         self.assertEqual(u'http://www.scielo.br/scielo.php?script=sci_serial&pid=0034-8910&lng=en', uri)
-
-    def test_xmlarticle_meta_general_info_journal_uri_without_data_pipe(self):
-
-        fakexylosearticle = Article({'article': {'v65': [{'_': '201008'}]}, 'title': {}})
-
-        pxml = ET.Element('articles')
-        pxml.append(ET.Element('article'))
-
-        article = pxml.find('article')
-        article.append(ET.Element('front'))
-
-        front = article.find('front')
-        front.append(ET.Element('article-meta'))
-
-        data = [fakexylosearticle, pxml]
-
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
-        raw, xml = xmlarticle.transform(data)
-
-        uri = xml.find('./article/front/article-meta/self-uri[@content-type="journal_page"]')
-
-        self.assertEqual(None, uri)
 
     def test_xmlarticle_meta_original_language_abstract_pipe(self):
 

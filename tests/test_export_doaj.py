@@ -413,12 +413,12 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_general_info_volume_without_data_pipe(self):
 
-        fakexylosearticle = Article({'article': {}, 'title': {}})
+        del(self._article_meta.data['issue']['issue']['v31'])
 
         pxml = ET.Element('records')
         pxml.append(ET.Element('record'))
 
-        data = [fakexylosearticle, pxml]
+        data = [self._article_meta, pxml]
 
         xmlarticle = export_doaj.XMLArticleMetaVolumePipe()
         raw, xml = xmlarticle.transform(data)
@@ -446,12 +446,12 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_general_info_issue_without_data_pipe(self):
 
-        fakexylosearticle = Article({'article': {}, 'title': {}})
+        del(self._article_meta.data['issue']['issue']['v32'])
 
         pxml = ET.Element('records')
         pxml.append(ET.Element('record'))
 
-        data = [fakexylosearticle, pxml]
+        data = [self._article_meta, pxml]
 
         xmlarticle = export_doaj.XMLArticleMetaIssuePipe()
         raw, xml = xmlarticle.transform(data)

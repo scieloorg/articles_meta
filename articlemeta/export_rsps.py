@@ -607,17 +607,32 @@ class XMLJournalMetaISSNPipe(plumber.Pipe):
 
 
 class XMLJournalMetaPublisherPipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
-        for item in raw.journal.publisher_name or []:
-            publishername = ET.Element('publisher-name')
-            publishername.text = item
+        publisher = ET.Element('publisher')
 
-            publisher = ET.Element('publisher')
-            publisher.append(publishername)
+        publishername = ET.Element('publisher-name')
+        publishername.text = u'; '.join(raw.journal.publisher_name or [])
+        publisher.append(publishername)
 
-            xml.find('./front/journal-meta').append(publisher)
+        if raw.journal.publisher_country:
+            countrycode, countryname = raw.journal.publisher_country
+            publishercountry = countryname or countrcode
+
+        publisherloc = [
+            raw.journal.publisher_city or u'',
+            raw.journal.publisher_state or u'',
+            publishercountry
+        ]
+
+        if raw.journal.publisher_country:
+            publishercountry = ET.Element('publisher-loc')
+            publishercountry.text = ', '.join(publisherloc)
+            publisher.append(publishercountry)
+
+        xml.find('./front/journal-meta').append(publisher)
 
         return data
 
