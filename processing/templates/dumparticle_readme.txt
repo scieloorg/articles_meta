@@ -1,11 +1,6 @@
 SciELO Network Dump Data
 ========================
 
-Use Lincense
-------------
-
-All content of this zipfile are under the license (CCBY - http://creativecommons.org/licenses/by/4.0/).
-
 Collections acronym
 -------------------
 
