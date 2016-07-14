@@ -60,6 +60,7 @@ setup(
     [paste.app_factory]
     main = articlemeta:main
     [console_scripts]
+    articlemeta_loadmixedcitations=processing.load_mixedcitations:main
     articlemeta_loadbody=processing.load_body:main
     articlemeta_loadlanguages=processing.load_languages:main
     articlemeta_loadsections=processing.load_sections:main
