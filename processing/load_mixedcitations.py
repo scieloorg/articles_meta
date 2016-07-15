@@ -83,7 +83,7 @@ def _config_logging(logging_level='INFO', logging_file=None):
 def audity(mixed, document):
     logger.debug('Auditing mixed citation')
 
-    if mixed['order'] > len(document.citations):
+    if int(mixed['order']) > len(document.citations):
         return False
 
     check = mixed['mixed'].lower()
