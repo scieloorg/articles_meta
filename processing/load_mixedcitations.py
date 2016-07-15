@@ -83,8 +83,10 @@ def _config_logging(logging_level='INFO', logging_file=None):
 def audity(mixed, document):
     logger.debug('Auditing mixed citation')
 
-    check = mixed['mixed'].lower()
+    if mixed['order'] > len(document.citations):
+        return False
 
+    check = mixed['mixed'].lower()
     citation_index = int(mixed['order'])-1
     citation_titles = [i.lower() for i in [
         document.citations[citation_index].title() or '',
@@ -98,9 +100,6 @@ def audity(mixed, document):
     ] if i]
 
     citation_authors = document.citations[citation_index].authors or []
-
-    if mixed['order'] <= len(document.citations):
-        return False
 
     for title in citation_titles:
         if title in check:
