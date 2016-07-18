@@ -297,7 +297,7 @@ class XMLCitation(object):
         def precond(data):
             raw, xml = data
 
-            if not raw.authors and not raw.monographic_authors:
+            if not raw.authors:
                 raise plumber.UnmetPrecondition()
 
         @plumber.precondition(precond)
@@ -318,72 +318,7 @@ class XMLCitation(object):
                     if "given_names" in author:
                         givennames = ET.Element('given-names')
                         givennames.text = author['given_names']
-                        name.append(givennames)                    
-
-                    persongroup.append(name)
-
-            if raw.monographic_authors:
-                for author in raw.monographic_authors:
-                    name = ET.Element('name')
-
-                    if "surname" in author:
-                        surname = ET.Element('surname')
-                        surname.text = author['surname']
-                        name.append(surname)
-
-                    if "given_names" in author:
-                        givennames = ET.Element('given-names')
-                        givennames.text = author['given_names']
-                        name.append(givennames)
-
-                    persongroup.append(name)
-
-            xml.find('./element-citation').append(persongroup)
-
-            return data
-
-    class PersonGroupPipe(plumber.Pipe):
-        def precond(data):
-            raw, xml = data
-
-            if not raw.authors and not raw.monographic_authors:
-                raise plumber.UnmetPrecondition()
-
-        @plumber.precondition(precond)
-        def transform(self, data):
-            raw, xml = data
-
-            persongroup = ET.Element('person-group')
-            persongroup.set('person-group-type', 'author')
-            if raw.authors:
-                for author in raw.authors:
-                    name = ET.Element('name')
-
-                    if "surname" in author:
-                        surname = ET.Element('surname')
-                        surname.text = author['surname']
-                        name.append(surname)
-
-                    if "given_names" in author:
-                        givennames = ET.Element('given-names')
-                        givennames.text = author['given_names']
-                        name.append(givennames)                    
-
-                    persongroup.append(name)
-
-            if raw.monographic_authors:
-                for author in raw.monographic_authors:
-                    name = ET.Element('name')
-
-                    if "surname" in author:
-                        surname = ET.Element('surname')
-                        surname.text = author['surname']
-                        name.append(surname)
-
-                    if "given_names" in author:
-                        givennames = ET.Element('given-names')
-                        givennames.text = author['given_names']
-                        name.append(givennames)
+                        name.append(givennames)                
 
                     persongroup.append(name)
 
