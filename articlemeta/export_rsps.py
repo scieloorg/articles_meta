@@ -3,6 +3,7 @@ import re
 
 from lxml import etree as ET
 from lxml.etree import CDATA
+from StringIO import StringIO
 
 import plumber
 
@@ -62,9 +63,12 @@ class XMLCitation(object):
         def transform(self, data):
             raw, xml = data
 
-            mixed_citation = ET.Element('mixed-citation')
+            parser = ET.HTMLParser()
 
-            mixed_citation.text = raw.mixed_citation
+            mc = ET.parse(StringIO(raw.mixed_citation), parser)
+
+            mixed_citation = mc.find('body/p/.')
+            mixed_citation.tag = 'mixed-citation'
 
             xml.append(mixed_citation)
 
@@ -343,7 +347,7 @@ class SetupArticlePipe(plumber.Pipe):
         }
 
         xml = ET.Element('article', nsmap=nsmap)
-        xml.set('specific-use', 'sps-1.1')
+        xml.set('specific-use', 'sps-1.4')
         xml.set('dtd-version', '1.0')
 
         return data, xml
@@ -379,6 +383,7 @@ class XMLFrontPipe(plumber.Pipe):
 
         return data
 
+
 class XMLBodyPipe(plumber.Pipe):
 
     def precond(data):
@@ -400,6 +405,7 @@ class XMLBodyPipe(plumber.Pipe):
         xml.append(body)
 
         return data
+
 
 class XMLSubArticlePipe(plumber.Pipe):
 
@@ -457,7 +463,7 @@ class XMLSubArticlePipe(plumber.Pipe):
                     abstract.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
                     abstract.append(p)
                 frontstub.append(abstract)
-            
+
             # KEYWORDS
             if raw.keywords():
                 for lang, keywords in raw.keywords().items():
@@ -1061,6 +1067,7 @@ class XMLArticleMetaCountsPipe(plumber.Pipe):
 
         return data
 
+
 class XMLArticleMetaPermissionPipe(plumber.Pipe):
 
     def precond(data):
@@ -1080,6 +1087,7 @@ class XMLArticleMetaPermissionPipe(plumber.Pipe):
         dlicense = ET.Element('license')
         dlicense.set('license-type', 'open-access')
         dlicense.set('{http://www.w3.org/1999/xlink}href', raw.permissions['url'])
+        dlicense.set('{http://www.w3.org/XML/1998/namespace}lang', 'en')
 
         licensep = ET.Element('license-p')
         licensep.text = raw.permissions['text']
@@ -1089,6 +1097,7 @@ class XMLArticleMetaPermissionPipe(plumber.Pipe):
         articlemeta.append(permissions)
 
         return data
+
 
 class XMLArticleMetaCitationsPipe(plumber.Pipe):
 
