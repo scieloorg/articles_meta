@@ -7,6 +7,8 @@ from StringIO import StringIO
 
 import plumber
 
+import utils
+
 AFF_REGEX_JUST_NUMBERS = re.compile(r'\d+')
 XLINK_REGEX = re.compile(r'ns\d:href')
 LANG_REGEX = re.compile(r'ns\d:lang')
@@ -70,7 +72,7 @@ class XMLCitation(object):
             mixed_citation = mc.find('body/p/.')
             mixed_citation.tag = 'mixed-citation'
 
-            xml.append(mixed_citation)
+            xml.append(utils.convert_ahref_to_extlink(mixed_citation))
 
             return data
 
