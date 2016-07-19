@@ -72,7 +72,7 @@ class XMLCitation(object):
             mixed_citation = mc.find('body/p/.')
             mixed_citation.tag = 'mixed-citation'
 
-            xml.append(utils.convert_ahref_to_extlink(mixed_citation))
+            xml.append(utils.convert_all_html_tags_to_jats(mixed_citation))
 
             return data
 
