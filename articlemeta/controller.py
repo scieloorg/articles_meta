@@ -157,7 +157,7 @@ class DataBroker(object):
 
         issns = set([
             journal.any_issn(priority=u'electronic'),
-            journal.any_issn(priority=u'print')],
+            journal.any_issn(priority=u'print'),
             journal.scielo_issn
         ])
 
