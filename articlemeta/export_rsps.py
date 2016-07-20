@@ -84,7 +84,7 @@ class XMLCitation(object):
                 'article': 'journal',
                 'link': 'webpage',
                 'conference': 'confproc',
-                'undefined': 'other'
+                'undefined': 'other',
             }
 
             elementcitation = ET.Element('element-citation')
@@ -361,9 +361,11 @@ class XMLArticlePipe(plumber.Pipe):
         raw, xml = data
 
         translate_document_type = {
-            u'news': 'announcement',
+            u'news': 'rapid-communication',
             u'addendum': 'other',
-            u'press-release': 'in-brief'
+            u'press-release': 'in-brief',
+            u'undefined': 'other',
+            u'abstract': 'other'
         }
 
         xml.set('{http://www.w3.org/XML/1998/namespace}lang', raw.original_language())
