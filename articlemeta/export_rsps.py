@@ -68,8 +68,8 @@ class XMLCitation(object):
             parser = ET.HTMLParser()
 
             mc = ET.parse(StringIO(raw.mixed_citation), parser)
+            mixed_citation = mc.find('body/p/.') or mc.find('body/.')
 
-            mixed_citation = mc.find('body/p/.')
             mixed_citation.tag = 'mixed-citation'
 
             xml.append(utils.convert_all_html_tags_to_jats(mixed_citation))
