@@ -155,10 +155,14 @@ class DataBroker(object):
         """
         journal = Journal(metadata)
 
-        issns = set([journal.any_issn(priority=u'electronic'),
-                     journal.any_issn(priority=u'print')])
+        issns = set([
+            journal.any_issn(priority=u'electronic'),
+            journal.any_issn(priority=u'print')],
+            journal.scielo_issn
+        ])
 
-        metadata['code'] = list(issns)
+        metadata['code'] = journal.scielo_issn
+        metadata['issns'] = list(issns)
         metadata['collection'] = journal.collection_acronym
 
         return metadata
