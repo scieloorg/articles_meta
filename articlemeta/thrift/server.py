@@ -245,9 +245,9 @@ class Dispatcher(object):
                 'Server error: DataBroker.identifiers_journal')
 
         objs = [
-            articlemeta_thrift.journal_identifiers(code=i['code'],
+            articlemeta_thrift.journal_identifiers(code=[i['code']],
                                                    collection=i['collection'])
-            for i in data['objects'] if i['code'][0] != None
+            for i in data['objects'] if i['code']
         ]
 
         return objs
