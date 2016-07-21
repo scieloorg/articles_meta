@@ -46,7 +46,7 @@ class ControllerTest(unittest.TestCase):
 
         expected = db._check_journal_meta(self._raw_json['title'])
 
-        self.assertEqual(expected['code'], [u'0034-8910'])
+        self.assertEqual(expected['code'], u'0034-8910')
         self.assertEqual(expected['collection'], u'scl')
 
     def test_log_changes_with_valid_params(self):

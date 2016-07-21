@@ -313,7 +313,12 @@ class SetupArticlePipe(plumber.Pipe):
 
     def transform(self, data):
 
-        xml = ET.Element('articles')
+        nsmap = {
+            'xml': 'http://www.w3.org/XML/1998/namespace',
+            'xlink': 'http://www.w3.org/1999/xlink'
+        }
+
+        xml = ET.Element('articles', nsmap=nsmap)
         xml.set('{http://www.w3.org/2001/XMLSchema-instance}schemaLocation', 'https://raw.githubusercontent.com/scieloorg/articles_meta/master/tests/xsd/scielo_sci/ThomsonReuters_publishing.xsd')
         xml.set('dtd-version', '1.10')
 
@@ -802,6 +807,36 @@ class XMLArticleMetaKeywordsPipe(plumber.Pipe):
                 kwd.text = keyword
                 kwdgroup.append(kwd)
             articlemeta.append(kwdgroup)
+
+        return data
+
+
+class XMLArticleMetaPermissionPipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.permissions:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        articlemeta = xml.find('./article/front/article-meta')
+
+        permissions = ET.Element('permissions')
+        dlicense = ET.Element('license')
+        dlicense.set('license-type', 'open-access')
+        dlicense.set('{http://www.w3.org/1999/xlink}href', raw.permissions['url'])
+
+        licensep = ET.Element('license-p')
+        licensep.text = raw.permissions['text']
+
+        dlicense.append(licensep)
+        permissions.append(dlicense)
+        articlemeta.append(permissions)
 
         return data
 
