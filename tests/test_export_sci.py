@@ -1358,7 +1358,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaURLsPipe()
         raw, xml = xmlarticle.transform(data)
 
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="full_text_page"]').get('href')
@@ -1378,7 +1378,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaURLsPipe()
         raw, xml = xmlarticle.transform(data)
 
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="issue_page"]').get('href')
@@ -1398,7 +1398,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaURLsPipe()
         raw, xml = xmlarticle.transform(data)
 
         uri = xml.find('./article/front/article-meta/self-uri[@content-type="journal_page"]').get('href')

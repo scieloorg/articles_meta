@@ -314,8 +314,7 @@ class SetupArticlePipe(plumber.Pipe):
     def transform(self, data):
 
         nsmap = {
-            'xml': 'http://www.w3.org/XML/1998/namespace',
-            'xlink': 'http://www.w3.org/1999/xlink'
+            'xml': 'http://www.w3.org/XML/1998/namespace'
         }
 
         xml = ET.Element('articles', nsmap=nsmap)
@@ -679,24 +678,9 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         label_issue = SUPPLBEG_REGEX.sub('', label_issue)
         label_issue = SUPPLEND_REGEX.sub('', label_issue)
 
-        if raw.issue.url(language='en'):
-            issue_uri = ET.Element('self-uri')
-            issue_uri.set('href', raw.issue.url(language='en'))
-            issue_uri.set('content-type', 'issue_page')
-
-        if raw.journal.url(language='en'):
-            journal_uri = ET.Element('self-uri')
-            journal_uri.set('href', raw.journal.url(language='en'))
-            journal_uri.set('content-type', 'journal_page')
-
-        if raw.html_url(language='en'):
-            article_uri = ET.Element('self-uri')
-            article_uri.set('href', raw.html_url(language='en'))
-            article_uri.set('content-type', 'full_text_page')
-
         articlemeta = xml.find('./article/front/article-meta')
         articlemeta.append(pubdate)
-        
+
         if label_volume:
             vol = ET.Element('volume')
             vol.text = label_volume.strip()
@@ -716,6 +700,32 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
             articlemeta.append(fpage)
         if raw.end_page:
             articlemeta.append(lpage)
+
+        return data
+
+
+class XMLArticleMetaURLsPipe(plumber.Pipe):
+
+    def transform(self, data):
+        raw, xml = data
+
+        articlemeta = xml.find('./article/front/article-meta')
+
+        if raw.issue.url(language='en'):
+            issue_uri = ET.Element('self-uri')
+            issue_uri.set('href', raw.issue.url(language='en'))
+            issue_uri.set('content-type', 'issue_page')
+
+        if raw.journal.url(language='en'):
+            journal_uri = ET.Element('self-uri')
+            journal_uri.set('href', raw.journal.url(language='en'))
+            journal_uri.set('content-type', 'journal_page')
+
+        if raw.html_url(language='en'):
+            article_uri = ET.Element('self-uri')
+            article_uri.set('href', raw.html_url(language='en'))
+            article_uri.set('content-type', 'full_text_page')
+
         if raw.html_url():
             articlemeta.append(article_uri)
         if raw.issue.url():
@@ -735,7 +745,7 @@ class XMLArticleMetaAbstractsPipe(plumber.Pipe):
         p.text = raw.original_abstract()
 
         lang_id = raw.original_language() if raw.original_language() in ALLOWED_LANGUAGES else 'zz'
-        
+
         abstract = ET.Element('abstract')
         abstract.set('lang_id', lang_id)
         abstract.append(p)
@@ -829,7 +839,7 @@ class XMLArticleMetaPermissionPipe(plumber.Pipe):
         permissions = ET.Element('permissions')
         dlicense = ET.Element('license')
         dlicense.set('license-type', 'open-access')
-        dlicense.set('{http://www.w3.org/1999/xlink}href', raw.permissions['url'])
+        dlicense.set('href', raw.permissions['url'])
 
         licensep = ET.Element('license-p')
         licensep.text = raw.permissions['text']

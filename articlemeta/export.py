@@ -36,6 +36,7 @@ class Export(object):
                                export_sci.XMLArticleMetaAffiliationPipe(),
                                export_sci.XMLArticleMetaGeneralInfoPipe(),
                                export_sci.XMLArticleMetaPermissionPipe(),
+                               export_sci.XMLArticleMetaURLsPipe(),
                                export_sci.XMLArticleMetaAbstractsPipe(),
                                export_sci.XMLArticleMetaKeywordsPipe(),
                                export_sci.XMLArticleMetaCitationsPipe(),

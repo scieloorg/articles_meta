@@ -29,7 +29,7 @@ test_requires = ['mocker']
 
 setup(
     name="articlemeta",
-    version='0.9.1',
+    version='0.10.1',
     description="A SciELO API to load SciELO Articles metadata",
     author="SciELO",
     author_email="scielo-dev@googlegroups.com",
