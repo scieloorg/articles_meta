@@ -222,7 +222,6 @@ class Dispatcher(object):
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.historychanges')
 
-        import pdb; pdb.set_trace()
         objs = [articlemeta_thrift.event_journal(code=i['code'],
                                                  collection=i['collection'],
                                                  event=i['event'],
@@ -263,7 +262,7 @@ class Dispatcher(object):
                 'Server error: DataBroker.get_journal')
 
         if isinstance(data, list):
-            return json.dumps(data[0])
+            return json.dumps(data[0]) if data else ''
 
         return json.dumps(data)
 
