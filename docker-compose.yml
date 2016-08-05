@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+
+    articlemeta_mongo:
+        image: mongo
+        restart: always
+        volumes:
+            - ~/articlemeta_mongo/data:/data/db
+        ports:
+            - "27017:27017"
+        hostname: articlemeta-mongo
+
+    articlemeta_server:
+        build: .
+        restart: always
+        ports:
+            - "11620:11620"
+            - "8000:8000"
+        links:
+            - articlemeta_mongo:articlemeta-mongo

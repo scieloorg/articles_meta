@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 import os
 import weakref
 import re
@@ -85,7 +85,7 @@ class Configuration(SingletonMixin):
     @classmethod
     def from_env(cls):
         try:
-            filepath =  os.environ['ARTICLEMETA_SETTINGS_FILE']
+            filepath = os.environ['ARTICLEMETA_SETTINGS_FILE']
         except KeyError:
             raise ValueError('missing env variable ARTICLEMETA_SETTINGS_FILE')
 
