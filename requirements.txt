@@ -7,6 +7,6 @@ lxml==3.4.2
 cython==0.22
 thriftpy==0.2.0
 picles.plumber==0.10
--e git+https://github.com/scieloorg/xylose@1.14.5#egg=xylose
+-e git+https://github.com/scieloorg/xylose@1.15.5#egg=xylose
 -e git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap
 -e git+https://github.com/scieloorg/articles_meta@0.10.1#egg=articles_meta
