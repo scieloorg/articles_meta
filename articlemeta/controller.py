@@ -95,8 +95,13 @@ class DataBroker(object):
 
         article = Article(metadata)
 
-        issns = set([article.journal.any_issn(priority=u'electronic'),
-                    article.journal.any_issn(priority=u'print')])
+        issns = set(
+            [
+                article.journal.any_issn(priority=u'electronic'),
+                article.journal.any_issn(priority=u'print'),
+                article.journal.scielo_issn
+            ]
+        )
 
         metadata['code'] = article.publisher_id
         metadata['code_issue'] = article.publisher_id[1:18]
@@ -130,8 +135,13 @@ class DataBroker(object):
 
         issue = Issue(metadata)
 
-        issns = set([issue.journal.any_issn(priority=u'electronic'),
-                    issue.journal.any_issn(priority=u'print')])
+        issns = set(
+            [
+                issue.journal.any_issn(priority=u'electronic'),
+                issue.journal.any_issn(priority=u'print'),
+                issue.journal.scielo_issn
+            ]
+        )
 
         metadata['code'] = issue.publisher_id
         metadata['code_title'] = list(issns)
