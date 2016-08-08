@@ -202,8 +202,8 @@ class Dispatcher(object):
 
         return json.dumps(data)
 
-    def journal_history_changes(self, collection, event, code, from_date,
-                                until_date, limit, offset):
+    def journal_history_changes(self, collection, event=None, code=None, from_date=None,
+                                until_date=None, limit=None, offset=None):
 
         from_date = from_date or '1500-01-01'
         limit = limit or 1000
@@ -230,13 +230,14 @@ class Dispatcher(object):
 
         return objs
 
-    def get_journal_identifiers(self, collection, limit, offset, extra_filter):
+    def get_journal_identifiers(self, collection, issn=None, limit=None, offset=None, extra_filter=None):
 
         limit = limit or 0
         offset = offset or 0
 
         try:
             data = self._databroker.identifiers_journal(collection=collection,
+                                                        issn=issn,
                                                         limit=limit,
                                                         offset=offset,
                                                         extra_filter=extra_filter)

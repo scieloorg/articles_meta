@@ -286,7 +286,7 @@ class DataBroker(object):
 
         self.get_collection(collection=collection)
 
-    def identifiers_journal(self, collection=None, limit=LIMIT, offset=0, extra_filter=None):
+    def identifiers_journal(self, collection=None, issn=None, limit=LIMIT, offset=0, extra_filter=None):
 
         if offset < 0:
             offset = 0
@@ -297,6 +297,9 @@ class DataBroker(object):
         fltr = {}
         if collection:
             fltr['collection'] = collection
+
+        if issn:
+            fltr['code'] = issn
 
         if extra_filter:
             fltr.update(json.loads(extra_filter))
