@@ -68,6 +68,6 @@ setup(
     articlemeta_importaffiliation=processing.importaffiliation:main
     articlemeta_fixpages=processing.fixpages:main
     articlemeta_dumparticles=processing.dumparticles:main
-    articlemeta_thrift_server=articlemeta.thrift.server:main
+    articlemeta_thriftserver=articlemeta.thrift.server:main
     """,
 )
