@@ -1,6 +1,5 @@
 # conding: utf-8
 import os
-import urlparse
 import json
 from datetime import datetime
 
@@ -12,11 +11,11 @@ from pyramid.response import Response
 from pyramid.settings import asbool
 
 import pymongo
-import utils
-import controller
-from export import Export
+from articlemeta import utils
+from articlemeta import controller
+from articlemeta.export import Export
 
-from decorators import authenticate
+from articlemeta.decorators import authenticate
 
 
 def _get_request_limit_param(request, default_limit=1000,

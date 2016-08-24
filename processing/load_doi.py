@@ -10,7 +10,7 @@ import argparse
 from datetime import datetime, timedelta
 import requests
 from lxml import etree
-from StringIO import StringIO
+from io import StringIO
 from pymongo import MongoClient
 from xylose.scielodocument import Article
 from articlemeta import utils

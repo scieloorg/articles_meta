@@ -4,10 +4,10 @@ import plumber
 
 from xylose.scielodocument import Article
 
-import export_sci
-import export_rsps
-import export_doaj
-import export_pubmed
+from articlemeta import export_sci
+from articlemeta import export_rsps
+from articlemeta import export_doaj
+from articlemeta import export_pubmed
 
 
 class Export(object):

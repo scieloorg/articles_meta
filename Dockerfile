@@ -1,19 +1,27 @@
-FROM python:2.7
+FROM python:3.5.2
 
-COPY . /app
+MAINTAINER tecnologia@scielo.org
+
+RUN apt-get update && apt-get install -y supervisor
+RUN mkdir -p /var/log/supervisor
+
+COPY requirements.txt /app/requirements.txt
+COPY production.ini-TEMPLATE /app/production.ini-TEMPLATE
+COPY docker/generate_production_ini.py /app/docker/generate_production_ini.py
+COPY docker/entrypoint.sh /app/docker/entrypoint.sh
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 WORKDIR /app
 
-RUN pip install -r requirements.txt && \
-    python setup.py install && \
-    python /app/docker/generate_production_ini.py
+RUN pip install -r requirements.txt
+RUN pip install gunicorn
 
 ENV ARTICLEMETA_SETTINGS_FILE=/app/production.ini
-ENV PYTHONPATH=$PYTHONPATH:"/usr/local/lib/python2.7/site-packages/articles_meta":"/usr/local/lib/python2.7/site-packages/articles_meta/articlemeta/thrift"
 
 EXPOSE 11620
 EXPOSE 8000
 
-ADD docker/docker-entrypoint.sh /app/docker-entrypoint.sh
-RUN chmod +x /app/docker-entrypoint.sh
-ENTRYPOINT [ "/app/docker-entrypoint.sh" ]
+ADD docker/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+ENTRYPOINT [ "/app/entrypoint.sh" ]

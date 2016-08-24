@@ -10,8 +10,8 @@ import argparse
 from datetime import datetime, timedelta
 import requests
 from lxml import etree
-from StringIO import StringIO
-import HTMLParser
+from io import StringIO
+from html.parser import HTMLParser
 
 from pymongo import MongoClient
 from xylose.scielodocument import Article

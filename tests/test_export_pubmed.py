@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 import unittest
 import json
 import os
@@ -27,7 +27,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_pubmed.XMLClosePipe()
         xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article/></ArticleSet>', xml)
+        self.assertEqual('<ArticleSet><Article/></ArticleSet>'.encode('utf-8'), xml)
 
     def test_setuppipe_element_name(self):
 
@@ -47,7 +47,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_pubmed.XMLArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article/></ArticleSet>', ET.tostring(xml))
+        self.assertEqual('<ArticleSet><Article/></ArticleSet>'.encode('utf-8'), ET.tostring(xml))
 
     def test_xmljournal_pipe(self):
 
@@ -59,7 +59,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_pubmed.XMLJournalPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article><Journal/></Article></ArticleSet>', ET.tostring(xml))
+        self.assertEqual('<ArticleSet><Article><Journal/></Article></ArticleSet>'.encode('utf-8'), ET.tostring(xml))
 
     def test_xmlpublishername_pipe(self):
 
@@ -159,7 +159,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_pubmed.XMLPubDatePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article><Journal><PubDate PubStatus="ppublish"><Year>2010</Year><Month>08</Month></PubDate></Journal></Article></ArticleSet>', ET.tostring(xml))
+        self.assertEqual('<ArticleSet><Article><Journal><PubDate PubStatus="ppublish"><Year>2010</Year><Month>08</Month></PubDate></Journal></Article></ArticleSet>'.encode('utf-8'), ET.tostring(xml))
 
     def test_xmlreplaces_pipe(self):
 
@@ -227,7 +227,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_pubmed.XMLElocationIDPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article><ELocationID EIdType="pii">S0034-89102010000400007</ELocationID></Article></ArticleSet>', ET.tostring(xml))
+        self.assertEqual('<ArticleSet><Article><ELocationID EIdType="pii">S0034-89102010000400007</ELocationID></Article></ArticleSet>'.encode('utf-8'), ET.tostring(xml))
 
     def test_xmllanguage_pipe(self):
 
@@ -288,7 +288,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_pubmed.XMLPublicationTypePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article><PublicationType>research-article</PublicationType></Article></ArticleSet>', ET.tostring(xml))
+        self.assertEqual('<ArticleSet><Article><PublicationType>research-article</PublicationType></Article></ArticleSet>'.encode('utf-8'), ET.tostring(xml))
 
     def test_xmlarticleidlist_pipe(self):
 
@@ -300,7 +300,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_pubmed.XMLArticleIDListPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article><ArticleIdList><ArticleId IdType="pii">S0034-89102010000400007</ArticleId><ArticleId IdType="doi">10.1590/S0034-89102010000400007</ArticleId></ArticleIdList></Article></ArticleSet>', ET.tostring(xml))
+        self.assertEqual('<ArticleSet><Article><ArticleIdList><ArticleId IdType="pii">S0034-89102010000400007</ArticleId><ArticleId IdType="doi">10.1590/S0034-89102010000400007</ArticleId></ArticleIdList></Article></ArticleSet>'.encode('utf-8'), ET.tostring(xml))
 
     def test_xmlhistory_pipe(self):
 
@@ -312,7 +312,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_pubmed.XMLHistoryPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<ArticleSet><Article><History><PubDate PubStatus="received"><Year>2009</Year><Month>08</Month><Day>14</Day></PubDate><PubDate PubStatus="accepted"><Year>2010</Year><Month>02</Month><Day>05</Day></PubDate></History></Article></ArticleSet>', ET.tostring(xml))
+        self.assertEqual('<ArticleSet><Article><History><PubDate PubStatus="received"><Year>2009</Year><Month>08</Month><Day>14</Day></PubDate><PubDate PubStatus="accepted"><Year>2010</Year><Month>02</Month><Day>05</Day></PubDate></History></Article></ArticleSet>'.encode('utf-8'), ET.tostring(xml))
 
     def test_xmlabstract_pipe(self):
 

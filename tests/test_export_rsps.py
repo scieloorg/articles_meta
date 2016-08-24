@@ -40,7 +40,7 @@ class XMLCitationTests(unittest.TestCase):
 
         strid = xml.find('.').get('id')
 
-        self.assertTrue(isinstance(strid, basestring))
+        self.assertTrue(isinstance(strid, str))
 
     def test_xml_citation_element_citation_pipe(self):
 
@@ -380,7 +380,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLClosePipe()
         xml = xmlarticle.transform(data)
 
-        self.assertEqual('<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.0 20120330//EN" "JATS-journalpublishing1.dtd">\n<article/>', xml)
+        self.assertEqual('<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.0 20120330//EN" "JATS-journalpublishing1.dtd">\n<article/>'.encode('utf-8'), xml)
 
     def test_setuppipe_element_name(self):
 
@@ -418,7 +418,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<article xml:lang="pt" article-type="research-article"/>', ET.tostring(xml))
+        self.assertEqual('<article xml:lang="pt" article-type="research-article"/>'.encode('utf-8'), ET.tostring(xml))
 
     def test_xmlfront_pipe(self):
 
@@ -429,7 +429,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLFrontPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<article><front><journal-meta/><article-meta/></front></article>', ET.tostring(xml))
+        self.assertEqual('<article><front><journal-meta/><article-meta/></front></article>'.encode('utf-8'), ET.tostring(xml))
 
     def test_xmljournal_id_pipe(self):
 
@@ -445,7 +445,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLJournalMetaJournalIdPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<article><front><journal-meta><journal-id journal-id-type="publisher-id">rsp</journal-id></journal-meta></front></article>', ET.tostring(xml))
+        self.assertEqual('<article><front><journal-meta><journal-id journal-id-type="publisher-id">rsp</journal-id></journal-meta></front></article>'.encode('utf-8'), ET.tostring(xml))
 
     def test_xmljournal_meta_journal_title_group_pipe(self):
 
@@ -1412,16 +1412,17 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticleMetaKeywordsPipe()
         raw, xml = xmlarticle.transform(data)
 
-        keywords = [i.text for i in xml.findall('.//kwd')]
+        keywords = sorted([i.text.encode('utf-8') for i in xml.findall('.//kwd')])
 
-        self.assertEqual([u'Insuficiencia Renal Crónica',
-                          u'Terapia de Reemplazo Renal',
-                          u'Sistemas de Información en Hospital',
-                          u'Registros de Mortalidad',
-                          u'Insuficiência Renal Crônica',
-                          u'Terapia de Substituição Renal',
-                          u'Sistemas de Informação Hospitalar',
-                          u'Registros de Mortalidade'], keywords)
+        self.assertEqual(sorted([i.encode('utf-8') for i in [
+            u'Insuficiencia Renal Crónica',
+            u'Terapia de Reemplazo Renal',
+            u'Sistemas de Información en Hospital',
+            u'Registros de Mortalidad',
+            u'Insuficiência Renal Crônica',
+            u'Terapia de Substituição Renal',
+            u'Sistemas de Informação Hospitalar',
+            u'Registros de Mortalidade']]), keywords)
 
     def test_xml_article_meta_counts_citations_pipe(self):
         pxml = ET.Element('article')

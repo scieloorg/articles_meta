@@ -3,6 +3,7 @@ import unittest
 
 from processing import load_licenses
 
+
 class LoadLicensesTest(unittest.TestCase):
 
     def test_scrapt_license_by(self):
