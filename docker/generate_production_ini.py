@@ -17,6 +17,7 @@ config = ConfigParser()
 config.read(production_template_ini_filepath)
 config.set('app:main', 'mongo_uri', 'mongodb://{mongodb_host}/articlemeta' % os.env.get('MONGODB_HOST', '127.0.0.1:27017'))
 config.set('app:main', 'admintoken', os.environ.get('ADMIN_TOKEN', uuid.uuid4().hex))
+
 config.set('server:main', 'port', 8000)
 
 with open(new_production_ini_filepath, 'w') as configfile:    # save
