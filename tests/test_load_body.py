@@ -5,6 +5,7 @@ import codecs
 
 from processing import load_body
 
+
 class LoadLicensesTest(unittest.TestCase):
 
     def test_scrapt_body(self):

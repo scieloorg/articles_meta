@@ -9,26 +9,11 @@ import os
 import codecs
 import json
 import unicodedata
-
-try:  # Keep compatibility with python 2.7
-    from html import unescape
-except ImportError:
-    from HTMLParser import HTMLParser
+from HTMLParser import HTMLParser
 
 from pymongo import MongoClient
 from articlemeta import utils
 from xylose.scielodocument import Article
-
-# --------------
-# Py2 compat
-# --------------
-PY2 = sys.version_info[0] == 2
-
-if PY2:
-    html_parser = HTMLParser().unescape
-else:
-    html_parser = unescape
-# --------------
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +32,7 @@ def remove_control_characters(data):
 
 def html_decode(string):
 
-    string = html_parser(string)
+    string = unescape(string)
     string = remove_control_characters(string)
 
     return string

@@ -1,6 +1,5 @@
 requests==2.6.0
 pymongo==2.5.2
-uuid==1.30
 pyramid==1.5.4
 chaussette==1.2
 lxml==3.4.2
@@ -9,4 +8,4 @@ thriftpy==0.2.0
 picles.plumber==0.10
 -e git+https://github.com/scieloorg/xylose@1.15.5#egg=xylose
 -e git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap
--e git+https://github.com/scieloorg/articles_meta@0.11.2#egg=articles_meta
+-e git+https://github.com/scieloorg/articles_meta@portingtopython3#egg=articles_meta

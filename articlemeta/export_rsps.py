@@ -1,13 +1,13 @@
-#coding: utf-8
+# coding: utf-8
 import re
 
 from lxml import etree as ET
 from lxml.etree import CDATA
-from StringIO import StringIO
+from io import StringIO
 
 import plumber
 
-import utils
+from articlemeta import utils
 
 AFF_REGEX_JUST_NUMBERS = re.compile(r'\d+')
 XLINK_REGEX = re.compile(r'ns\d:href')

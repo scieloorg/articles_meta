@@ -10,7 +10,6 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
     CHANGES = f.read()
 
 requires = [
-    'uuid>=1.30',
     'pymongo>=2.5.2',
     'lxml>=3.4.2',
     'requests>=2.6.0',
@@ -69,6 +68,6 @@ setup(
     articlemeta_importaffiliation=processing.importaffiliation:main
     articlemeta_fixpages=processing.fixpages:main
     articlemeta_dumparticles=processing.dumparticles:main
-    articlemeta_thrift_server=articlemeta.thrift.server:main
+    articlemeta_thriftserver=articlemeta.thrift.server:main
     """,
 )

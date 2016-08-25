@@ -5,7 +5,6 @@ from pyramid import testing
 from articlemeta.decorators import LogHistoryChange
 
 
-
 class LogHistoryChangeDecoratorTest(unittest.TestCase):
 
     def setUp(self):

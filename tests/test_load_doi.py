@@ -5,6 +5,7 @@ import codecs
 
 from processing import load_doi
 
+
 class LoadDOITest(unittest.TestCase):
 
     def test_scrapt_doi(self):

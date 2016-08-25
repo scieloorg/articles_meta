@@ -20,8 +20,6 @@ import argparse
 import csv
 import sys
 
-from ConfigParser import SafeConfigParser
-
 from pymongo import MongoClient
 from articlemeta import utils
 

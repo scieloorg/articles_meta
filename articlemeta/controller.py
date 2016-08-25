@@ -1,14 +1,14 @@
 # coding: utf-8
 import unicodedata
 from datetime import datetime, timedelta
-import urlparse
+from urllib.parse import urlparse
 import warnings
 import uuid
 import json
 
 import pymongo
 from xylose.scielodocument import Article, Journal, Issue
-from decorators import LogHistoryChange
+from articlemeta.decorators import LogHistoryChange
 
 LIMIT = 1000
 
@@ -50,10 +50,10 @@ def get_dbconn(db_dsn):
             ],
         }
 
-        for collection, indexes in index_by_collection.iteritems():
+        for collection, indexes in index_by_collection.items():
             db[collection].ensure_index(indexes)
 
-    db_url = urlparse.urlparse(db_dsn)
+    db_url = urlparse(db_dsn)
     conn = pymongo.MongoClient(host=db_url.hostname, port=db_url.port)
     db = conn[db_url.path[1:]]
     if db_url.username and db_url.password:
@@ -115,7 +115,6 @@ class DataBroker(object):
         metadata['sent_wos'] = 'False'
         metadata['applicable'] = 'False'
         metadata['version'] = article.data_model_version
-        metadata['_shard_id'] = uuid.uuid4().hex
 
         if article.doi:
             metadata['doi'] = article.doi
@@ -149,7 +148,6 @@ class DataBroker(object):
         metadata['issue_type'] = issue.type
         metadata['publication_year'] = issue.publication_date[0:4]
         metadata['publication_date'] = issue.publication_date
-        metadata['_shard_id'] = uuid.uuid4().hex
 
         try:
             metadata['processing_date'] = issue.processing_date

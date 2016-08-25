@@ -27,7 +27,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_doaj.XMLClosePipe()
         xml = xmlarticle.transform(data)
 
-        self.assertEqual('<records><record/></records>', xml)
+        self.assertEqual('<records><record/></records>'.encode('utf-8'), xml)
 
     def test_setuppipe_element_name(self):
 
@@ -47,7 +47,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_doaj.XMLArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<records><record/></records>', ET.tostring(xml))
+        self.assertEqual('<records><record/></records>'.encode('utf-8'), ET.tostring(xml))
 
     def test_xmljournal_meta_journalTitlepipe(self):
 
@@ -564,9 +564,9 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_doaj.XMLArticleMetaKeywordsPipe()
         raw, xml = xmlarticle.transform(data)
 
-        keywords_language = [i.get('language') for i in xml.findall('./record/keywords')]
+        keywords_language = sorted([i.get('language').encode('utf-8') for i in xml.findall('./record/keywords')])
 
-        self.assertEqual([u'en', u'es', u'pt'], keywords_language)
+        self.assertEqual(sorted(['en'.encode('utf-8'), 'es'.encode('utf-8'), 'pt'.encode('utf-8')]), keywords_language)
 
     def test_xmlarticle_meta_keywords_pipe(self):
 
@@ -578,20 +578,21 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_doaj.XMLArticleMetaKeywordsPipe()
         raw, xml = xmlarticle.transform(data)
 
-        keywords = [i.text for i in xml.findall('./record/keywords/keyword')]
+        keywords = sorted([i.text.encode('utf-8') for i in xml.findall('./record/keywords/keyword')])
 
-        self.assertEqual([u'Renal Insufficiency, Chronic',
-                          u'Renal Replacement Therapy',
-                          u'Hospital Information Systems',
-                          u'Mortality Registries',
-                          u'Insuficiencia Renal Crónica',
-                          u'Terapia de Reemplazo Renal',
-                          u'Sistemas de Información en Hospital',
-                          u'Registros de Mortalidad',
-                          u'Insuficiência Renal Crônica',
-                          u'Terapia de Substituição Renal',
-                          u'Sistemas de Informação Hospitalar',
-                          u'Registros de Mortalidade'], keywords)
+        self.assertEqual(sorted([i.encode('utf-8') for i in [
+            'Renal Insufficiency, Chronic',
+            'Renal Replacement Therapy',
+            'Hospital Information Systems',
+            'Mortality Registries',
+            'Insuficiencia Renal Crónica',
+            'Terapia de Reemplazo Renal',
+            'Sistemas de Información en Hospital',
+            'Registros de Mortalidad',
+            'Insuficiência Renal Crônica',
+            'Terapia de Substituição Renal',
+            'Sistemas de Informação Hospitalar',
+            'Registros de Mortalidade']]), keywords)
 
     def test_xmlarticle_meta_keywords_without_data_pipe(self):
 
@@ -616,7 +617,7 @@ class ExportTests(unittest.TestCase):
 
         xml = export.Export(self._raw_json).pipeline_doaj()
 
-        xsd = open('tests/xsd/scielo_doaj/doajArticles.xsd', 'r').read()
+        xsd = open('tests/xsd/scielo_doaj/doajArticles.xsd', 'rb').read()
         schema_root = etree.XML(xsd)
 
         schema = etree.XMLSchema(schema_root)

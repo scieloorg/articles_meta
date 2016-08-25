@@ -40,7 +40,7 @@ class XMLCitationTests(unittest.TestCase):
 
         strid = xml.find('.').get('id')
 
-        self.assertTrue(isinstance(strid, basestring))
+        self.assertTrue(isinstance(strid, str))
 
     def test_xml_citation_element_citation_pipe(self):
 
@@ -398,7 +398,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_sci.XMLClosePipe()
         xml = xmlarticle.transform(data)
 
-        self.assertEqual('<articles><article/></articles>', xml)
+        self.assertEqual('<articles><article/></articles>'.encode('utf-8'), xml)
 
     def test_setuppipe_element_name(self):
 
@@ -429,7 +429,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_sci.XMLArticlePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<articles><article lang_id="pt" article-type="research-article"/></articles>', ET.tostring(xml))
+        self.assertEqual('<articles><article lang_id="pt" article-type="research-article"/></articles>'.encode('utf-8'), ET.tostring(xml))
 
     def test_xmlfront_pipe(self):
 
@@ -441,7 +441,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_sci.XMLFrontPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<articles><article><front><journal-meta/><article-meta/></front></article></articles>', ET.tostring(xml))
+        self.assertEqual('<articles><article><front><journal-meta/><article-meta/></front></article></articles>'.encode('utf-8'), ET.tostring(xml))
 
     def test_xmljournal_id_pipe(self):
 
@@ -459,7 +459,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_sci.XMLJournalMetaJournalIdPipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual('<articles><article><front><journal-meta><journal-id journal-id-type="publisher">rsp</journal-id></journal-meta></front></article></articles>', ET.tostring(xml))
+        self.assertEqual('<articles><article><front><journal-meta><journal-id journal-id-type="publisher">rsp</journal-id></journal-meta></front></article></articles>'.encode('utf-8'), ET.tostring(xml))
 
     def test_xmljournal_meta_journal_title_group_pipe(self):
 
@@ -711,10 +711,12 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_sci.XMLArticleMetaTranslatedTitleGroupPipe()
         raw, xml = xmlarticle.transform(data)
 
-        titles = [i.find('trans-title').text for i in xml.findall('./article/front/article-meta/title-group/trans-title-group')]
+        titles = sorted([i.find('trans-title').text.encode('utf-8') for i in xml.findall('./article/front/article-meta/title-group/trans-title-group')])
 
-        self.assertEqual([u'Epidemiological profile of patients on renal replacement therapy in Brazil, 2000-2004',
-                          u'Perfil epidemiológico de los pacientes en terapia renal substitutiva en Brasil, 2000-2004'], titles)
+        self.assertEqual(sorted([
+            'Epidemiological profile of patients on renal replacement therapy in Brazil, 2000-2004'.encode('utf-8'),
+            'Perfil epidemiológico de los pacientes en terapia renal substitutiva en Brasil, 2000-2004'.encode('utf-8')
+        ]), titles)
 
     def test_xmlarticle_meta_translated_title_group_without_data_pipe(self):
 
@@ -1507,9 +1509,10 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_sci.XMLArticleMetaKeywordsPipe()
         raw, xml = xmlarticle.transform(data)
 
-        keywords_language = [i.get('lang_id') for i in xml.findall('./article/front/article-meta/kwd-group')]
+        keywords_language = sorted([i.get('lang_id').encode('utf-8') for i in xml.findall('./article/front/article-meta/kwd-group')])
 
-        self.assertEqual([u'en', u'es', u'pt'], keywords_language)
+        self.assertEqual(
+            sorted(['en'.encode('utf-8'), 'es'.encode('utf-8'), 'pt'.encode('utf-8')]), keywords_language)
 
     def test_xmlarticle_meta_keywords_pipe(self):
 
@@ -1527,20 +1530,21 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_sci.XMLArticleMetaKeywordsPipe()
         raw, xml = xmlarticle.transform(data)
 
-        keywords = [i.text for i in xml.findall('.//kwd')]
+        keywords = sorted([i.text.encode('utf-8') for i in xml.findall('.//kwd')])
 
-        self.assertEqual([u'Renal Insufficiency, Chronic',
-                          u'Renal Replacement Therapy',
-                          u'Hospital Information Systems',
-                          u'Mortality Registries',
-                          u'Insuficiencia Renal Crónica',
-                          u'Terapia de Reemplazo Renal',
-                          u'Sistemas de Información en Hospital',
-                          u'Registros de Mortalidad',
-                          u'Insuficiência Renal Crônica',
-                          u'Terapia de Substituição Renal',
-                          u'Sistemas de Informação Hospitalar',
-                          u'Registros de Mortalidade'], keywords)
+        self.assertEqual(sorted([
+            'Renal Insufficiency, Chronic'.encode('utf-8'),
+            'Renal Replacement Therapy'.encode('utf-8'),
+            'Hospital Information Systems'.encode('utf-8'),
+            'Mortality Registries'.encode('utf-8'),
+            'Insuficiencia Renal Crónica'.encode('utf-8'),
+            'Terapia de Reemplazo Renal'.encode('utf-8'),
+            'Sistemas de Información en Hospital'.encode('utf-8'),
+            'Registros de Mortalidad'.encode('utf-8'),
+            'Insuficiência Renal Crônica'.encode('utf-8'),
+            'Terapia de Substituição Renal'.encode('utf-8'),
+            'Sistemas de Informação Hospitalar'.encode('utf-8'),
+            'Registros de Mortalidade'.encode('utf-8')]), keywords)
 
     def test_xml_citations_without_data_pipe(self):
 
@@ -1588,7 +1592,7 @@ class ExportTests(unittest.TestCase):
 
         xml = export.Export(self._raw_json).pipeline_sci()
 
-        xsd = open('tests/xsd/scielo_sci/ThomsonReuters_publishing.xsd', 'r').read()
+        xsd = open('tests/xsd/scielo_sci/ThomsonReuters_publishing.xsd', 'rb').read()
         schema_root = etree.XML(xsd)
 
         schema = etree.XMLSchema(schema_root)
