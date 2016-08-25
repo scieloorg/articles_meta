@@ -5,8 +5,17 @@ Webservices para recuperar metadados de artigos SciELO armazenados no MongoDB.
 
     Para histórico de desenvolvimento anterior ao registrado neste repositório, verificar: https://bitbucket.org/scieloorg/xmlwos
 
+Build Status
+============
+
 .. image:: https://travis-ci.org/scieloorg/articles_meta.svg
     :target: https://travis-ci.org/scieloorg/articles_meta
+
+Docker Status
+=============
+
+.. image:: https://images.microbadger.com/badges/image/scieloorg/access_stats.svg
+    :target: https://hub.docker.com/r/scieloorg/articles_meta
 
 Instalação
 ==========
