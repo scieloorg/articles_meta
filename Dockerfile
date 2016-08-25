@@ -21,7 +21,7 @@ ENV ARTICLEMETA_SETTINGS_FILE=/app/production.ini
 EXPOSE 11620
 EXPOSE 8000
 
-ADD docker/entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+ADD docker/entrypoint.sh /app/docker/entrypoint.sh
+RUN chmod +x /app/docker/entrypoint.sh
 
-ENTRYPOINT [ "/app/entrypoint.sh" ]
+ENTRYPOINT [ "/app/docker/entrypoint.sh" ]
