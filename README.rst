@@ -14,7 +14,10 @@ Build Status
 Docker Status
 =============
 
-.. image:: https://images.microbadger.com/badges/image/scieloorg/access_stats.svg
+.. image:: https://images.microbadger.com/badges/image/scieloorg/articles_meta.svg
+    :target: https://hub.docker.com/r/scieloorg/articles_meta
+    
+.. image:: https://images.microbadger.com/badges/version/scieloorg/articles_meta.svg
     :target: https://hub.docker.com/r/scieloorg/articles_meta
 
 Instalação
