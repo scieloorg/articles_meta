@@ -20,108 +20,27 @@ Docker Status
 .. image:: https://images.microbadger.com/badges/version/scieloorg/articles_meta.svg
     :target: https://hub.docker.com/r/scieloorg/articles_meta
 
-Instalação
-==========
 
-Requisitos
-----------
+Como utilizar esta imagem
+=========================
 
- * Python 2.7
- * MongoDB
- * virtualenvwrapper
- * pip
+$ docker run --name my-articlemeta -d my-articlemeta
 
-Passos para Instalação
-----------------------
+Como configurar o MONGODB_HOST
 
-#. Criar ambiente virtual
+$ docker run --name my-articlemeta -e MONGODB_HOST=my_eshost:27017 -d my-articlemeta my-articlemeta
 
-.. code-block::
+Os serviços ativos nesta imagem são:
 
-    #> mkvirtualenv articles_meta
-    #> workon articles_meta
+Web API: 127.0.0.1:8000
+Thrift Server: 127.0.0.1:11620
 
-#. Baixar última versão
-#. Descompactar
-#. Acessar diretório articles_meta<version>
-#. Instalar dependências
+É possível mapear essas portas para o hosting dos containers da seguinte forma:
 
-.. code-block::
+$ docker run --name my-articlemeta -e MONGODB_HOST=my_eshost:27017 -p 8000:8000 -p 11620:11620 -d my-articlemeta my-articlemeta
 
-    #> pip install -r requirements.txt
+Para executar os processamentos disponíveis em console scripts, executar:
 
-#. Configurar aplicação
+Carga de Licenças de uso:
 
-.. code-block::
-
-    #> cp development.ini-TEMPLATE development.ini
-    #> vi development.ini
-
-#. Editar parâmetros
-
-.. code-block::
-
-    mongo_uri = mongodb://node1-mongodb.scielo.org:27000/articlemeta
-    admintoken = anyhashcode
-
-#. Iniciar aplicação
-
-.. code-block::
-
-    #> pserve development.ini
-
-#. Iniciar RPC server
-
-.. code-block::
-
-    #> articlemeta_thrift_server --port 11620 --host 0.0.0.0
-
-
-
-Docker
-======
-
-Instalação do docker-compose
-----------------------------
-
-.. code-block::
-
-    $> pip install -U docker-compose
-
-
-Build & Run com docker-compose
-------------------------------
-
-.. code-block::
-
-    $> cd <repositório>
-    $> docker-compose up --build
-
-
-Restaurando dados ao mongodb
-----------------------------
-
-- é preciso identificar o local e porta do container mongo.
-- é preciso ter instalado o cliente mongo (mongorestore)
-- o volume com os dados do container mongo, estão linkados a: /opt/articlemeta_mongo/data (veja docker-compose.yml)
-
-.. code-block::
-
-    $ cd <repositório>
-    $ docker-compose up
-    $ cd <pasta com os dados a restaurar>
-    $ mongorestore --host localhost:27017 --gzip --archive articlemeta
-
-
-Acessando
----------
-
-- O servidor web esta escutando em localhost:8000
-- O mongodb esta escutando em localhost:27017
-- O servidor Thrift esta escutando em localhost:11620
-
-Para ajustar estas portas, deve editar e ser consistente, nos arquivos:
-
-- Dockerfile
-- docker/generate_production_ini.py
-- docker-entrypoint.sh
+$ docker exec -i -t my-articlemeta articlemeta_loadlicenses --help
