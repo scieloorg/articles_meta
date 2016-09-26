@@ -210,8 +210,17 @@ class XMLArticleMetaPublicationDatePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
+        pdate = raw.publication_date.split('-')
+
+        if len(pdate) == 1:
+            pdate = '-'.join(pdate + ['00', '00'])
+        elif len(pdate) == 2:
+            pdate = '-'.join(pdate + ['00'])
+        else:
+            pdate = '-'.join(pdate)
+
         pubdate = ET.Element('publicationDate')
-        pubdate.text = raw.publication_date
+        pubdate.text = pdate
 
         xml.find('./record').append(pubdate)
 
