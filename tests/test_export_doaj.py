@@ -329,7 +329,7 @@ class ExportTests(unittest.TestCase):
 
         pub_year = xml.find('./record/publicationDate').text
 
-        self.assertEqual(u'2010-08', pub_year)
+        self.assertEqual(u'2010-08-00', pub_year)
 
     def test_xmlarticle_meta_general_info_start_page_pipe(self):
 
