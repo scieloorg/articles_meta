@@ -22,6 +22,7 @@ def main(global_config, **settings):
     # journals - GET method:
     config.add_route('journal', '/api/v1/journal/')
     config.add_route('identifiers_journal', '/api/v1/journal/identifiers/')
+    config.add_route('exists_journal', '/api/v1/journal/exists/')
     # journals - non GET method:
     config.add_route('add_journal', '/api/v1/journal/add')
     config.add_route('add_journal_slash', '/api/v1/journal/add/')

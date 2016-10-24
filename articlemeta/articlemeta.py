@@ -136,9 +136,9 @@ def delete_journal(request):
             'The attribute code and admintoken must be given'
         )
 
-    request.databroker.delete_journal(issn, collection=collection)
+    result = request.databroker.delete_journal(issn, collection=collection)
 
-    return Response()
+    return Response(json.dumps(result), content_type="application/json")
 
 
 @view_config(route_name='identifiers_issue',
@@ -171,6 +171,18 @@ def identifiers_issue(request):
 
     return Response(json.dumps(ids), content_type="application/json")
 
+
+@view_config(route_name='exists_journal',
+             request_method='GET',
+             request_param=['code'])
+def exists_journal(request):
+
+    code = request.GET.get('code', None)
+    collection = request.GET.get('collection', None)
+
+    result = request.databroker.exists_journal(code, collection=collection)
+
+    return Response(json.dumps(result), content_type="application/json")
 
 @view_config(route_name='exists_issue',
              request_method='GET',
@@ -240,9 +252,9 @@ def delete_issue(request):
             'The attribute code and admintoken must be given'
         )
 
-    request.databroker.delete_issue(code, collection=collection)
+    result = request.databroker.delete_issue(code, collection=collection)
 
-    return Response()
+    return Response(json.dumps(result), content_type="application/json")
 
 
 @view_config(route_name='identifiers_article',
@@ -423,9 +435,9 @@ def delete_article(request):
 
     token = request.registry.settings.get('app', {}).get('admintoken', None)
 
-    request.databroker.delete_article(code, collection=collection)
+    result = request.databroker.delete_article(code, collection=collection)
 
-    return Response()
+    return Response(json.dumps(result), content_type="application/json")
 
 
 @view_config(route_name='list_historychanges_article', request_method='GET')

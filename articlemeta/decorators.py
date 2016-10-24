@@ -2,6 +2,7 @@
 import pyramid.httpexceptions as exc
 from functools import wraps
 
+
 def authenticate(func):
     @wraps(func)
     def wrapper(request):
@@ -35,8 +36,12 @@ class LogHistoryChange(object):
         def decorated(*args, **kwargs):
             # decorated function call
             result = fn(*args, **kwargs)
+
             # decorated function post-processing
             if self.event_type in ['update', 'delete', 'add'] and result:
+                if self.event_type == 'delete' and result.get('deleted_count', None) == 0:
+                    return result
+
                 code = result.get('code', None)
                 collection = result.get('collection', None)
                 log_data = {

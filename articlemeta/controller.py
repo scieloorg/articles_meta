@@ -244,14 +244,16 @@ class DataBroker(object):
         return [i for i in data]
 
     @LogHistoryChange(document_type="journal", event_type="delete")
-    def delete_journal(self, issn, collection=None):
+    def delete_journal(self, code, collection=None):
 
         fltr = {
-            'code': issn,
+            'code': code,
             'collection': collection
         }
 
-        self.db['journals'].delete_one(fltr)
+        deleted = self.db['journals'].delete_one(fltr)
+
+        fltr['deleted_count'] = deleted.deleted_count
 
         return fltr
 
@@ -416,6 +418,17 @@ class DataBroker(object):
 
             yield issue
 
+    def exists_journal(self, code, collection=None):
+        fltr = {'code': code}
+
+        if collection:
+            fltr['collection'] = collection
+
+        if self.db['journals'].find(fltr).count() >= 1:
+            return True
+
+        return False
+
     def exists_issue(self, code, collection=None):
         fltr = {'code': code}
 
@@ -435,7 +448,9 @@ class DataBroker(object):
         if collection:
             fltr['collection'] = collection
 
-        self.db['issues'].delete_one(fltr)
+        deleted = self.db['issues'].delete_one(fltr)
+
+        fltr['deleted_count'] = deleted.deleted_count
 
         return fltr
 
@@ -678,9 +693,13 @@ class DataBroker(object):
         if collection:
             fltr['collection'] = collection
 
-        self.db['articles'].delete_one(fltr)
+        deleted = self.db['articles'].delete_one(fltr)
+
+        fltr['code'] = code
+        fltr['deleted_count'] = deleted.deleted_count
 
         return fltr
+
 
     @LogHistoryChange(document_type="article", event_type="add")
     def add_article(self, metadata):

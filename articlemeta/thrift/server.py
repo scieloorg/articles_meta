@@ -160,6 +160,114 @@ class Dispatcher(object):
 
         return objs
 
+    def delete_journal(self, code, collection):
+
+        try:
+            result = self._databroker.delete_journal(code, collection=collection)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.delete_journal')
+
+        try:
+            return json.dumps(result)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.delete_journal')
+
+    def delete_issue(self, code, collection):
+
+        try:
+            result = self._databroker.delete_issue(code, collection=collection)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.delete_issue')
+
+        try:
+            return json.dumps(result)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.delete_journal')
+
+    def delete_article(self, code, collection):
+
+        try:
+            result = self._databroker.delete_article(code, collection=collection)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.delete_article')
+
+        try:
+            return json.dumps(result)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.delete_journal')
+
+    def add_journal(self, metadata):
+
+        jdata = None
+        try:
+            jdata = json.loads(metadata)
+        except:
+            raise articlemeta_thrift.ValueError(
+                'Value error: DataBroker.add_journal, Invalid JSON')
+
+        data = None
+        try:
+            data = self._databroker.add_journal(jdata)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.add_journal')
+
+        if data:
+            return json.dumps(data)
+
+        raise articlemeta_thrift.ServerError(
+            'Server error: DataBroker.add_journal, Nondata inserted')
+
+    def add_article(self, metadata):
+
+        jdata = None
+        try:
+            jdata = json.loads(metadata)
+        except:
+            raise articlemeta_thrift.ValueError(
+                'Value error: DataBroker.add_article, Invalid JSON')
+
+        data = None
+        try:
+            data = self._databroker.add_article(jdata)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.add_article')
+
+        if data:
+            return json.dumps(data)
+
+        raise articlemeta_thrift.ServerError(
+            'Server error: DataBroker.add_article, Nondata inserted')
+
+    def add_issue(self, metadata):
+
+        jdata = None
+        try:
+            jdata = json.loads(metadata)
+        except:
+            raise articlemeta_thrift.ValueError(
+                'Value error: DataBroker.add_issue, Invalid JSON')
+
+        data = None
+        try:
+            data = self._databroker.add_issue(jdata)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.add_issue')
+
+        if data:
+            return json.dumps(data)
+
+        raise articlemeta_thrift.ServerError(
+            'Server error: DataBroker.add_issue, Nondata inserted')
+
     def get_article(self, code, collection, replace_journal_metadata, fmt, body=False):
 
         try:
@@ -246,7 +354,7 @@ class Dispatcher(object):
                 'Server error: DataBroker.identifiers_journal')
 
         objs = [
-            articlemeta_thrift.journal_identifiers(code=[i['code']],
+            articlemeta_thrift.journal_identifiers(code=i['code'],
                                                    collection=i['collection'])
             for i in data['objects'] if i['code']
         ]
@@ -302,6 +410,15 @@ class Dispatcher(object):
         except:
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.exists_issue')
+
+        return False
+
+    def exists_journal(self, code, collection):
+        try:
+            return self._databroker.exists_journal(code, collection)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.exists_journal')
 
         return False
 
