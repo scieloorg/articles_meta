@@ -162,9 +162,7 @@ class StaticCatalog(object):
             logger.warning(u'Section catalog not found: %s' % url)
             return None
 
-        content = content.iter_lines()
-
-        items = set([i.decode('iso-8859-1') for i in content])
+        items = set([i for i in content.iter_lines(decode_unicode='utf-8')])
 
         sections = {}
         for line in sorted(items):
@@ -180,7 +178,7 @@ class StaticCatalog(object):
             sections.setdefault(issue, {})
             sections[issue].setdefault(code, {})
             sections[issue][code].update({language: label})
-        
+
         return sections
 
     def get_section_available(self, pid, issue, section_code):

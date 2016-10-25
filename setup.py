@@ -28,7 +28,7 @@ test_requires = ['mocker']
 
 setup(
     name="articlemeta",
-    version='1.15.3',
+    version='1.16.3',
     description="A SciELO API to load SciELO Articles metadata",
     author="SciELO",
     author_email="scielo-dev@googlegroups.com",
@@ -47,7 +47,7 @@ setup(
     ],
     dependency_links=[
         "git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap",
-        "git+https://github.com/scieloorg/xylose@1.15.5#egg=xylose"
+        "git+https://github.com/scieloorg/xylose@1.16.5#egg=xylose"
     ],
     include_package_data=True,
     zip_safe=False,

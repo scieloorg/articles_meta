@@ -5,6 +5,7 @@ import os
 
 import thriftpywrap
 import thriftpy
+from functools import wraps
 
 from articlemeta.controller import DataBroker
 from articlemeta import utils
@@ -22,6 +23,7 @@ class Dispatcher(object):
         config = utils.Configuration.from_env()
         settings = dict(config.items())
 
+        self._admintoken = settings['app:main'].get('admintoken', None)
         self._databroker = DataBroker.from_dsn(
             settings['app:main']['mongo_uri'],
             reuse_dbconn=True)
@@ -160,7 +162,11 @@ class Dispatcher(object):
 
         return objs
 
-    def delete_journal(self, code, collection):
+    def delete_journal(self, code, collection, admintoken):
+
+        if admintoken != self._admintoken:
+            raise articlemeta_thrift.Unauthorized(
+                'Unautorized Access: Invalid admin token')
 
         try:
             result = self._databroker.delete_journal(code, collection=collection)
@@ -174,7 +180,11 @@ class Dispatcher(object):
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.delete_journal')
 
-    def delete_issue(self, code, collection):
+    def delete_issue(self, code, collection, admintoken):
+
+        if admintoken != self._admintoken:
+            raise articlemeta_thrift.Unauthorized(
+                'Unautorized Access: Invalid admin token')
 
         try:
             result = self._databroker.delete_issue(code, collection=collection)
@@ -188,7 +198,11 @@ class Dispatcher(object):
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.delete_journal')
 
-    def delete_article(self, code, collection):
+    def delete_article(self, code, collection, admintoken):
+
+        if admintoken != self._admintoken:
+            raise articlemeta_thrift.Unauthorized(
+                'Unautorized Access: Invalid admin token')
 
         try:
             result = self._databroker.delete_article(code, collection=collection)
@@ -202,7 +216,10 @@ class Dispatcher(object):
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.delete_journal')
 
-    def add_journal(self, metadata):
+    def add_journal(self, metadata, admintoken):
+        if admintoken != self._admintoken:
+            raise articlemeta_thrift.Unauthorized(
+                'Unautorized Access: Invalid admin token')
 
         jdata = None
         try:
@@ -224,7 +241,10 @@ class Dispatcher(object):
         raise articlemeta_thrift.ServerError(
             'Server error: DataBroker.add_journal, Nondata inserted')
 
-    def add_article(self, metadata):
+    def add_article(self, metadata, admintoken):
+        if admintoken != self._admintoken:
+            raise articlemeta_thrift.Unauthorized(
+                'Unautorized Access: Invalid admin token')
 
         jdata = None
         try:
@@ -246,7 +266,10 @@ class Dispatcher(object):
         raise articlemeta_thrift.ServerError(
             'Server error: DataBroker.add_article, Nondata inserted')
 
-    def add_issue(self, metadata):
+    def add_issue(self, metadata, admintoken):
+        if admintoken != self._admintoken:
+            raise articlemeta_thrift.Unauthorized(
+                'Unautorized Access: Invalid admin token')
 
         jdata = None
         try:
@@ -375,7 +398,11 @@ class Dispatcher(object):
 
         return json.dumps(data)
 
-    def set_doaj_id(self, code, collection, doaj_id):
+    def set_doaj_id(self, code, collection, doaj_id, admintoken):
+        if admintoken != self._admintoken:
+            raise articlemeta_thrift.Unauthorized(
+                'Unautorized Access: Invalid admin token')
+
         try:
             self._databroker.set_doaj_id(code, collection, doaj_id)
             return True
@@ -385,7 +412,11 @@ class Dispatcher(object):
 
         return False
 
-    def set_aid(self, code, collection, aid):
+    def set_aid(self, code, collection, aid, admintoken):
+        if admintoken != self._admintoken:
+            raise articlemeta_thrift.Unauthorized(
+                'Unautorized Access: Invalid admin token')
+
         try:
             self._databroker.set_aid(code, collection, aid)
             return True

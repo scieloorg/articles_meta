@@ -38,6 +38,7 @@ try:
 except:
     logging.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
 
+
 def _config_logging(logging_level='INFO', logging_file=None):
 
     allowed_levels = {
@@ -174,7 +175,7 @@ class StaticCatalog(object):
 
         url = '/'.join(['http:/', source, filename])
 
-        content = do_request(url, json=False).iter_lines()
+        content = do_request(url, json=False).iter_lines(decode_unicode='utf-8')
 
         for line in sorted([i for i in content]):
             splitedline = line.lower().split('/')[1:]
