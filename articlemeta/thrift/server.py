@@ -353,7 +353,7 @@ class Dispatcher(object):
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.historychanges')
 
-        objs = [articlemeta_thrift.event_journal(code=[i['code']],
+        objs = [articlemeta_thrift.event_journal(code=i['code'],
                                                  collection=i['collection'],
                                                  event=i['event'],
                                                  date=i['date'])
@@ -377,10 +377,10 @@ class Dispatcher(object):
                 'Server error: DataBroker.identifiers_journal')
 
         objs = [
-            articlemeta_thrift.journal_identifiers(code=i['code'],
-                                                   collection=i['collection'])
-            for i in data['objects'] if i['code']
-        ]
+            articlemeta_thrift.journal_identifiers(
+                code=i['code'],
+                collection=i['collection']) for i in data['objects'] if i['code']
+            ]
 
         return objs
 
