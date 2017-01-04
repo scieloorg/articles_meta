@@ -34,7 +34,7 @@ def load_documents(xml_format='xmlwos'):
             code = identifier['code']
             collection = identifier['collection']
             url_document = '%sarticle?code=%s&format=%s' % (ARTICLEMETA, code, xml_format)
-            logger.debug('Loading url: %s' % url_document)
+            logger.debug('Loading url: %s', url_document)
             document = requests.get(url_document)
             yield ('%s_%s' % (collection, code), document.text)
 

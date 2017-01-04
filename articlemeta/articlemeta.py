@@ -103,38 +103,6 @@ def identifiers_journal(request):
     return Response(json.dumps(ids), content_type="application/json")
 
 
-@view_config(route_name='add_journal', request_method='POST')
-@view_config(route_name='add_journal_slash', request_method='POST')
-@authenticate
-def add_journal(request):
-
-    try:
-        request.databroker.add_journal(request.json_body)
-    except ValueError:
-        raise exc.HTTPBadRequest('The posted JSON data is not valid')
-
-    return Response()
-
-
-@view_config(route_name='delete_journal', request_method='DELETE')
-@view_config(route_name='delete_journal_slash', request_method='DELETE')
-@authenticate
-def delete_journal(request):
-
-    issn = request.GET.get('issn', None)
-    collection = request.GET.get('collection', None)
-    admintoken = request.GET.get('admintoken', None)
-
-    if not admintoken or not issn:
-        raise exc.HTTPBadRequest(
-            'The attribute code and admintoken must be given'
-        )
-
-    result = request.databroker.delete_journal(issn, collection=collection)
-
-    return Response(json.dumps(result), content_type="application/json")
-
-
 @view_config(route_name='identifiers_issue',
              request_method='GET')
 def identifiers_issue(request):
@@ -203,51 +171,6 @@ def get_issue(request):
         replace_journal_metadata=True)
 
     return Response(json.dumps(issue), content_type="application/json")
-
-
-@view_config(route_name='add_issue', request_method='POST')
-@view_config(route_name='add_issue_slash', request_method='POST')
-@authenticate
-def add_issue(request):
-
-    try:
-        request.databroker.add_issue(request.json_body)
-    except ValueError:
-        raise exc.HTTPBadRequest('The posted JSON data is not valid')
-
-    return Response()
-
-
-@view_config(route_name='update_issue', request_method='POST')
-@view_config(route_name='update_issue_slash', request_method='POST')
-@authenticate
-def update_issue(request):
-
-    try:
-        request.databroker.update_issue(request.json_body)
-    except ValueError:
-        raise exc.HTTPBadRequest('The posted JSON data is not valid')
-
-    return Response()
-
-
-@view_config(route_name='delete_issue', request_method='DELETE')
-@view_config(route_name='delete_issue_slash', request_method='DELETE')
-@authenticate
-def delete_issue(request):
-
-    code = request.GET.get('code', None)
-    collection = request.GET.get('collection', None)
-    admintoken = request.GET.get('admintoken', None)
-
-    if not admintoken or not code:
-        raise exc.HTTPBadRequest(
-            'The attribute code and admintoken must be given'
-        )
-
-    result = request.databroker.delete_issue(code, collection=collection)
-
-    return Response(json.dumps(result), content_type="application/json")
 
 
 @view_config(route_name='identifiers_article',
@@ -355,82 +278,6 @@ def get_article(request):
                 Export(article).pipeline_pubmed(), content_type="application/xml")
 
     return Response(json.dumps(article), content_type="application/json")
-
-
-@view_config(route_name='add_article', request_method='POST')
-@view_config(route_name='add_article_slash', request_method='POST')
-@authenticate
-def add_article(request):
-
-    try:
-        request.databroker.add_article(request.json_body)
-    except ValueError:
-        raise exc.HTTPBadRequest('The posted JSON data is not valid')
-
-    return Response()
-
-
-@view_config(route_name='update_article', request_method='POST')
-@view_config(route_name='update_article_slash', request_method='POST')
-@authenticate
-def update_article(request):
-
-    try:
-        request.databroker.update_article(request.json_body)
-    except ValueError:
-        raise exc.HTTPBadRequest('The posted JSON data is not valid')
-
-    return Response()
-
-
-@view_config(route_name='set_doaj_status_true', request_method='POST')
-@view_config(route_name='set_doaj_status_true_slash', request_method='POST')
-@authenticate
-def set_doaj_status_true(request):
-
-    code = request.GET.get('code', None)
-
-    try:
-        request.databroker.set_doaj_status(code, True)
-    except ValueError:
-        raise exc.HTTPBadRequest('The posted JSON data is not valid')
-
-    return Response()
-
-
-@view_config(route_name='set_doaj_status_false', request_method='POST')
-@view_config(route_name='set_doaj_status_false_slash', request_method='POST')
-@authenticate
-def set_doaj_status_false(request):
-
-    code = request.GET.get('code', None)
-
-    try:
-        request.databroker.set_doaj_status(code, False)
-    except ValueError:
-        raise exc.HTTPBadRequest('The posted JSON data is not valid')
-
-    return Response()
-
-
-@view_config(route_name='delete_article', request_method='DELETE')
-@view_config(route_name='delete_article_slash', request_method='DELETE')
-@authenticate
-def delete_article(request):
-
-    code = request.GET.get('code', None)
-    collection = request.GET.get('collection', None)
-
-    if not code:
-        raise exc.HTTPBadRequest(
-            'The attribute code must be given'
-        )
-
-    token = request.registry.settings.get('app', {}).get('admintoken', None)
-
-    result = request.databroker.delete_article(code, collection=collection)
-
-    return Response(json.dumps(result), content_type="application/json")
 
 
 @view_config(route_name='list_historychanges_article', request_method='GET')

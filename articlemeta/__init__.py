@@ -23,38 +23,14 @@ def main(global_config, **settings):
     config.add_route('journal', '/api/v1/journal/')
     config.add_route('identifiers_journal', '/api/v1/journal/identifiers/')
     config.add_route('exists_journal', '/api/v1/journal/exists/')
-    # journals - non GET method:
-    config.add_route('add_journal', '/api/v1/journal/add')
-    config.add_route('add_journal_slash', '/api/v1/journal/add/')
-    config.add_route('delete_journal', '/api/v1/journal/delete')
-    config.add_route('delete_journal_slash', '/api/v1/journal/delete/')
     # issues - GET method:
     config.add_route('get_issue', '/api/v1/issue/')
     config.add_route('identifiers_issue', '/api/v1/issue/identifiers/')
     config.add_route('exists_issue', '/api/v1/issue/exists/')
-    # issues - non GET method:
-    config.add_route('add_issue', '/api/v1/issue/add')
-    config.add_route('add_issue_slash', '/api/v1/issue/add/')
-    config.add_route('update_issue', '/api/v1/issue/update')
-    config.add_route('update_issue_slash', '/api/v1/issue/update/')
-    config.add_route('delete_issue', '/api/v1/issue/delete')
-    config.add_route('delete_issue_slash', '/api/v1/issue/delete/')
     # articles - GET method:
     config.add_route('get_article', '/api/v1/article/')
     config.add_route('identifiers_article', '/api/v1/article/identifiers/')
     config.add_route('exists_article', '/api/v1/article/exists/')
-    # articles - non GET method:
-    config.add_route('add_article', '/api/v1/article/add')
-    config.add_route('add_article_slash', '/api/v1/article/add/')
-    config.add_route('update_article', '/api/v1/article/update')
-    config.add_route('update_article_slash', '/api/v1/article/update/')
-    config.add_route('delete_article', '/api/v1/article/delete')
-    config.add_route('delete_article_slash', '/api/v1/article/delete/')
-    # doaj - non GET method:
-    config.add_route('set_doaj_status_true', '/api/v1/article/doaj_status_true')
-    config.add_route('set_doaj_status_true_slash', '/api/v1/article/doaj_status_true/')
-    config.add_route('set_doaj_status_false', '/api/v1/article/doaj_status_false')
-    config.add_route('set_doaj_status_false_slash', '/api/v1/article/doaj_status_false/')
     # press releases - GET method:
     config.add_route('identifiers_press_release', '/api/v1/press_release/identifiers/')
     # logs historychanges - GET method:
