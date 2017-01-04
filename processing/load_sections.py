@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 import argparse
 import logging
 import re
-import os
 import requests
 
 from pymongo import MongoClient
@@ -18,7 +17,7 @@ from xylose.scielodocument import Article
 logger = logging.getLogger(__name__)
 
 FROM = datetime.now() - timedelta(days=15)
-FROM.isoformat()[:10]
+FROM = FROM.isoformat()[:10]
 
 file_regex = re.compile(r'serial.*.htm|.*.xml')
 data_struct_regex = re.compile(r'^fulltexts\.(pdf|html)\.[a-z][a-z]$')
@@ -29,7 +28,7 @@ settings = dict(config.items())
 try:
     articlemeta_db = MongoClient(settings['app:main']['mongo_uri'])['articlemeta']
 except:
-    logging.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
+    logging.error('Fail to connect to (%s)', settings['app:main']['mongo_uri'])
 
 
 def _config_logging(logging_level='INFO', logging_file=None):
@@ -84,10 +83,10 @@ def do_request(url, json=True):
     try:
         document = requests.get(url, headers=headers)
     except:
-        logger.error(u'HTTP request error for: %s' % url)
+        logger.error(u'HTTP request error for: %s', url)
 
     if document.status_code == 404:
-        logger.error(u'Data not found for: %s' % url)
+        logger.error(u'Data not found for: %s', url)
         return None
 
     if json:
@@ -153,13 +152,13 @@ class StaticCatalog(object):
         }
         """
 
-        logger.info(u'Loading static_section_catalog.txt from server %s' % (source['domain']))
+        logger.info(u'Loading static_section_catalog.txt from server %s', source['domain'])
 
         url = '/'.join(['http:/', source['domain'], 'static_section_catalog.txt'])
         content = do_request(url, json=False)
 
         if not content:
-            logger.warning(u'Section catalog not found: %s' % url)
+            logger.warning(u'Section catalog not found: %s', url)
             return None
 
         items = set([i for i in content.iter_lines(decode_unicode='utf-8')])
@@ -169,7 +168,6 @@ class StaticCatalog(object):
             splited_line = [i.strip() for i in line.split('|')]
             if len(splited_line) != 4:
                 continue
-            collection = source['code']
             issue = splited_line[0]
             language = splited_line[1]
             code = splited_line[2]
@@ -188,19 +186,21 @@ class StaticCatalog(object):
         issue: 1690-751520090003 <PID SciELO for issues>
         code: ENL010 <section legacy code>
         """
-        logger.debug(u'Checking sessions in {0}, {1} for {2}'.format(
+        logger.debug(
+            u'Checking sessions in %s, %s for %s',
             issue,
             section_code,
-            pid)
+            pid
         )
 
         try:
             section = self.catalog[issue][section_code]
         except:
-            logger.warning(u'Session not found int catalog for {0}, {1} for {2}'.format(
+            logger.warning(
+                u'Session not found int catalog for %s, %s for %s',
                 issue,
                 section_code,
-                pid)
+                pid
             )
             return None
 
@@ -232,6 +232,7 @@ class StaticCatalog(object):
 
         return section
 
+
 def run(collections, all_records=False):
 
     if not isinstance(collections, list):
@@ -242,39 +243,42 @@ def run(collections, all_records=False):
 
         coll_info = collection_info(collection)
 
-        logger.info(u'Loading sections for %s' % coll_info['domain'])
-        logger.info(u'Using mode all_records %s' % str(all_records))
+        logger.info(u'Loading sections for %s', coll_info['domain'])
+        logger.info(u'Using mode all_records %s', str(all_records))
 
         static_catalogs = StaticCatalog(coll_info)
 
         if not static_catalogs.catalog:
-            logger.info(u'Section Catalog not found for: %s Processing Interrupited' % coll_info['domain'])
+            logger.info(u'Section Catalog not found for: %s Processing Interrupited', coll_info['domain'])
             exit()
 
         for document in load_documents(collection, all_records=all_records):
-            logger.debug(u'Checking section for %s_%s' % (
+            logger.debug(
+                u'Checking section for %s_%s',
                 collection,
                 document.publisher_id
-            ))
+            )
 
             section = static_catalogs.section(document)
 
             if not isinstance(section, dict):
-                logger.warning(u'Section not loaded for %s_%s' % (
+                logger.warning(
+                    u'Section not loaded for %s_%s',
                     collection,
                     document.publisher_id
-                ))
+                )
                 continue
 
             articlemeta_db['articles'].update(
-                {'code': document.publisher_id, 'collection': document.collection_acronym}, 
+                {'code': document.publisher_id, 'collection': document.collection_acronym},
                 {'$set': {'section': section}}
             )
 
-            logger.debug(u'Update made for %s_%s' % (
+            logger.debug(
+                u'Update made for %s_%s',
                 collection,
                 document.publisher_id
-            ))
+            )
 
 
 def main():

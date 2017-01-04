@@ -25,7 +25,7 @@ from xylose.scielodocument import Article
 logger = logging.getLogger(__name__)
 
 FROM = datetime.now() - timedelta(days=15)
-FROM.isoformat()[:10]
+FROM = FROM.isoformat()[:10]
 
 file_regex = re.compile(r'serial.*.htm|.*.xml')
 data_struct_regex = re.compile(r'^fulltexts\.(pdf|html)\.[a-z][a-z]$')
@@ -36,7 +36,7 @@ settings = dict(config.items())
 try:
     articlemeta_db = MongoClient(settings['app:main']['mongo_uri'])['articlemeta']
 except:
-    logging.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
+    logging.error('Fail to connect to (%s)', settings['app:main']['mongo_uri'])
 
 
 def _config_logging(logging_level='INFO', logging_file=None):
@@ -89,7 +89,7 @@ def do_request(url, json=True):
     try:
         document = requests.get(url, headers=headers)
     except:
-        logger.error(u'HTTP request error for: %s' % url)
+        logger.error(u'HTTP request error for: %s', url)
     else:
         if json:
             return document.json()
@@ -137,7 +137,7 @@ class StaticCatalog(object):
         self._load_static_catalog(collection, 'html')
         self._load_static_catalog(collection, 'xml')
 
-    def _load_static_catalog(self, source, type):
+    def _load_static_catalog(self, source, tipe):
         """
         source: www.scielo.br
         type: in ['pdf', 'html', 'xml']
@@ -169,9 +169,9 @@ class StaticCatalog(object):
         }
         """
 
-        logger.info(u'Loading static_%s_files.txt from server %s' % (type, source))
+        logger.info(u'Loading static_%s_files.txt from server %s', tipe, source)
 
-        filename = 'static_%s_files.txt' % type
+        filename = 'static_%s_files.txt' % tipe
 
         url = '/'.join(['http:/', source, filename])
 
@@ -183,7 +183,7 @@ class StaticCatalog(object):
                 continue
             self.catalog.setdefault(splitedline[0], {})
             self.catalog[splitedline[0]].setdefault(splitedline[1], {'pdf': [], 'html': [], 'xml': []})
-            self.catalog[splitedline[0]][splitedline[1]][type].append(splitedline[2].replace('.html', '.htm')[:-4])
+            self.catalog[splitedline[0]][splitedline[1]][tipe].append(splitedline[2].replace('.html', '.htm')[:-4])
 
     def _file_id(self, file_code):
         file_code = file_code.lower().replace('/', '___').replace('\\', '___')
@@ -194,7 +194,7 @@ class StaticCatalog(object):
             ).group().replace(
                 'serial___', '').replace('markup___', '').split('___')
         except:
-            logger.error(u'Fail to parse the file_id for %s' % file_code)
+            logger.error(u'Fail to parse the file_id for %s', file_code)
             return None
 
         file_code[2] = file_code[2].replace('.html', '.htm')[:-4]
@@ -207,7 +207,7 @@ class StaticCatalog(object):
 
         return file_code.split('___')[-1][:-4]
 
-    def is_file_available(self, file_id, type, language, original_language):
+    def is_file_available(self, file_id, tipe, language, original_language):
         """
         This method checks the existence of the file_id agains the catalog.
         file_id:
@@ -216,34 +216,35 @@ class StaticCatalog(object):
                 ['rsp', 'v48n6', '0034-8910-rsp-48-6-0873']
         language:
             ISO 2 letters.
-        type:
+        tipe:
             'html' or 'pdf'
         """
-        logger.debug(u'Checking fulltexts in {0} {1} for {2}, {3}, {4}'.format(
-            type,
+        logger.debug(
+            u'Checking fulltexts in %s %s for %s, %s, %s',
+            tipe,
             language,
             file_id[0],
             file_id[1],
             file_id[2]
-        ))
+        )
 
         if language == original_language:
             file_name = file_id[2]
         else:
             file_name = '_'.join([language, file_id[2]])
 
-
         files = []
         try:
-            files = self.catalog[file_id[0]][file_id[1]][type]
+            files = self.catalog[file_id[0]][file_id[1]][tipe]
         except:
-            logger.warning(u'Issue not found int catalog for {0} {1} for {2}, {3}, {4}'.format(
-                type,
+            logger.warning(
+                u'Issue not found int catalog for %s %s for %s, %s, %s',
+                tipe,
                 language,
                 file_id[0],
                 file_id[1],
                 file_id[2]
-            ))
+            )
 
         if file_name.lower() in files:
             return True
@@ -275,11 +276,11 @@ class StaticCatalog(object):
         file_id = self._file_id(document.file_code(fullpath=True))
 
         if not file_id:
-            logger.error(u'Fail to parse file_id for %s_%s' % (document.collection_acronym, document.publisher_id))
+            logger.error(u'Fail to parse file_id for %s_%s', document.collection_acronym, document.publisher_id)
             return None
 
         if not document.journal.languages:
-            logger.info(u'Journal without publication languages defined %s' %file_id[0])
+            logger.info(u'Journal without publication languages defined %s', file_id[0])
             return None
 
         data = {'fulltexts.pdf': set(), 'fulltexts.html': set()}
@@ -294,21 +295,23 @@ class StaticCatalog(object):
         for language in set(languages):
             if self.is_file_available(file_id, 'pdf', language, document.original_language()):
                 data['fulltexts.pdf'].add(language)
-                logger.info(u'Fulltext available in pdf %s for %s, %s, %s' % (
+                logger.info(
+                    u'Fulltext available in pdf %s for %s, %s, %s',
                     language,
                     file_id[0],
                     file_id[1],
                     file_id[2]
-                ))
+                )
 
             if self.is_file_available(file_id, 'html', language, document.original_language()):
                 data['fulltexts.html'].add(language)
-                logger.info(u'Fulltext available in html %s for %s, %s, %s' % (
+                logger.info(
+                    u'Fulltext available in html %s for %s, %s, %s',
                     language,
                     file_id[0],
                     file_id[1],
                     file_id[2]
-                ))
+                )
 
         ldata = {}
 
@@ -352,32 +355,35 @@ def run(collections, all_records=False):
 
         coll_info = collection_info(collection)
 
-        logger.info(u'Loading languages for %s' % coll_info['domain'])
-        logger.info(u'Using mode all_records %s' % str(all_records))
+        logger.info(u'Loading languages for %s', coll_info['domain'])
+        logger.info(u'Using mode all_records %s', str(all_records))
 
         static_catalogs = StaticCatalog(coll_info['domain'])
 
         for document in load_documents(collection, all_records=all_records):
-            logger.debug(u'Checking fulltexts for %s_%s' % (
+            logger.debug(
+                u'Checking fulltexts for %s_%s',
                 collection,
                 document.publisher_id
-            ))
+            )
 
             fulltexts = static_catalogs.fulltexts(document)
 
             if not isinstance(fulltexts, dict):
-                logger.warning(u'Document not loaded for %s_%s' % (
+                logger.warning(
+                    u'Document not loaded for %s_%s',
                     collection,
                     document.publisher_id
-                ))
+                )
                 continue
 
             for key in fulltexts.keys():
                 if not data_struct_regex.match(key):
-                    logger.warning(u'Document not loaded for %s_%s' % (
+                    logger.warning(
+                        u'Document not loaded for %s_%s',
                         collection,
                         document.publisher_id
-                    ))
+                    )
                     continue
 
             articlemeta_db['articles'].update(
@@ -385,10 +391,11 @@ def run(collections, all_records=False):
                 {'$set': static_catalogs.fulltexts(document)}
             )
 
-            logger.debug(u'Update made for %s_%s' % (
+            logger.debug(
+                u'Update made for %s_%s',
                 collection,
                 document.publisher_id
-            ))
+            )
 
 
 def main():

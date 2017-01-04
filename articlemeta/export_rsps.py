@@ -2,7 +2,6 @@
 import re
 
 from lxml import etree as ET
-from lxml.etree import CDATA
 from io import StringIO
 
 import plumber
@@ -564,7 +563,7 @@ class XMLJournalMetaPublisherPipe(plumber.Pipe):
 
         if raw.journal.publisher_country:
             countrycode, countryname = raw.journal.publisher_country
-            publishercountry = countryname or countrcode
+            publishercountry = countryname or countrycode
 
         publisherloc = [
             raw.journal.publisher_city or u'',
@@ -1034,17 +1033,16 @@ class XMLArticleMetaCountsPipe(plumber.Pipe):
 
         try:
             startpage = int(raw.start_page)
-        except:
+        except ValueError:
             startpage = None
-
 
         try:
             endpage = int(raw.end_page)
-        except:
+        except ValueError:
             endpage = None
 
-        pages = 0;
-        if startpage != None and endpage !=None:
+        pages = 0
+        if startpage != None and endpage != None:
             pages = (endpage - startpage) + 1
             if pages < 0:
                 pages = 0

@@ -1,9 +1,6 @@
 # coding: utf-8
 import os
 import weakref
-import re
-import unicodedata
-from lxml import etree as ET
 
 from configparser import ConfigParser
 

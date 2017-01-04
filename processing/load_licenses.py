@@ -17,7 +17,7 @@ from articlemeta import utils
 logger = logging.getLogger(__name__)
 
 FROM = datetime.now() - timedelta(days=15)
-FROM.isoformat()[:10]
+FROM = FROM.isoformat()[:10]
 
 LICENSE_A_REGEX = re.compile(r'<a.*?creativecommons.org/licenses/(?P<license>.*?/\d+\.\d+).*?>')
 LICENSE_IMG_REGEX = re.compile(r'<img.*?creativecommons.org/l/(?P<license>.*?/\d+\.\d+).*?>')
@@ -30,7 +30,7 @@ settings = dict(config.items())
 try:
     articlemeta_db = MongoClient(settings['app:main']['mongo_uri'])['articlemeta']
 except:
-    logging.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
+    logging.error('Fail to connect to (%s)', settings['app:main']['mongo_uri'])
 
 
 def collections_acronym():
@@ -116,7 +116,7 @@ def do_request(url, json=True):
     try:
         document = requests.get(url, headers=headers)
     except:
-        logger.error(u'HTTP request error for: %s' % url)
+        logger.error(u'HTTP request error for: %s', url)
     else:
         if json:
             return document.json()
@@ -145,32 +145,32 @@ def run(collections, all_records=False):
     for collection in collections:
         coll_info = collection_info(collection)
 
-        logger.info(u'Loading licenses for %s' % coll_info['domain'])
-        logger.info(u'Using mode all_records %s' % str(all_records))
+        logger.info(u'Loading licenses for %s', coll_info['domain'])
+        logger.info(u'Using mode all_records %s', str(all_records))
 
         for document in load_documents(collection, all_records=all_records):
 
-            license = None
+            lic = None
             try:
-                license = scrap_license(
+                lic = scrap_license(
                     do_request(
                         document.html_url(), json=False
                     )
                 )
             except:
-                logger.error('Fail to scrap: %s' % document.publisher_id)
+                logger.error('Fail to scrap: %s', document.publisher_id)
                 continue
 
-            if not license:
-                logger.debug('No license defined for: %s' % document.publisher_id)
+            if not lic:
+                logger.debug('No license defined for: %s', document.publisher_id)
                 continue
 
             articlemeta_db['articles'].update(
                 {'code': document.publisher_id, 'collection': document.collection_acronym},
-                {'$set': {'license': license}}
+                {'$set': {'license': lic}}
             )
 
-            logger.debug('%s: %s' % (document.publisher_id, license))
+            logger.debug('%s: %s', document.publisher_id, lic)
 
 
 def main():

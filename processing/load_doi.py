@@ -18,7 +18,7 @@ from articlemeta import utils
 logger = logging.getLogger(__name__)
 
 FROM = datetime.now() - timedelta(days=15)
-FROM.isoformat()[:10]
+FROM = FROM.isoformat()[:10]
 
 DOI_REGEX = re.compile(r'<a.*?creativecommons.org/licenses/(?P<license>.*?/\d+\.\d+).*?>')
 
@@ -28,7 +28,7 @@ settings = dict(config.items())
 try:
     articlemeta_db = MongoClient(settings['app:main']['mongo_uri'])['articlemeta']
 except:
-    logging.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
+    logging.error('Fail to connect to (%s)', settings['app:main']['mongo_uri'])
 
 
 def collections_acronym():
@@ -102,7 +102,7 @@ def do_request(url, json=True):
     try:
         document = requests.get(url, headers=headers)
     except:
-        logger.error(u'HTTP request error for: %s' % url)
+        logger.error(u'HTTP request error for: %s', url)
     else:
         if json:
             return document.json()
@@ -140,8 +140,8 @@ def run(collections, all_records=False):
     for collection in collections:
         coll_info = collection_info(collection)
 
-        logger.info(u'Loading DOI for %s' % coll_info['domain'])
-        logger.info(u'Using mode all_records %s' % str(all_records))
+        logger.info(u'Loading DOI for %s', coll_info['domain'])
+        logger.info(u'Using mode all_records %s', str(all_records))
 
         for document in load_documents(collection, all_records=all_records):
 
@@ -149,17 +149,17 @@ def run(collections, all_records=False):
             try:
                 data = do_request(document.html_url(), json=False)
             except:
-                logger.error('Fail to load url: %s' % document.html_url())
+                logger.error('Fail to load url: %s', document.html_url())
                 continue
 
             try:
                 doi = scrap_doi(data)
             except:
-                logger.error('Fail to scrap: %s' % document.publisher_id)
+                logger.error('Fail to scrap: %s', document.publisher_id)
                 continue
 
             if not doi:
-                logger.debug('No DOI defined for: %s' % document.publisher_id)
+                logger.debug('No DOI defined for: %s', document.publisher_id)
                 continue
 
             articlemeta_db['articles'].update(
@@ -167,7 +167,7 @@ def run(collections, all_records=False):
                 {'$set': {'doi': doi}}
             )
 
-            logger.debug('DOI Found %s: %s' % (document.publisher_id, doi))
+            logger.debug('DOI Found %s: %s', document.publisher_id, doi)
 
 
 def main():

@@ -1,9 +1,6 @@
 # coding: utf-8
-import unicodedata
-from datetime import datetime, timedelta
 from urllib.parse import urlparse
 import warnings
-import uuid
 import json
 
 import pymongo
@@ -384,8 +381,6 @@ class DataBroker(object):
 
         if collection:
             fltr['collection'] = collection
-
-        fields = None
 
         data = self.db['issues'].find_one(fltr)
 

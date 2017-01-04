@@ -19,11 +19,12 @@ ARTICLEMETA = 'http://articlemeta.scielo.org/api/v1/'
 
 trans_acronym = {'scl': 'bra'}
 
+
 def load_documents(xml_format='xmlwos'):
-    offset=0
+    offset = 0
     while True:
         url = '%sarticle/identifiers?offset=%s' % (ARTICLEMETA, str(offset))
-        logger.debug('Loading url: %s' % url)
+        logger.debug('Loading url: %s', url)
         identifiers = requests.get(url).json()
 
         if len(identifiers['objects']) == 0:
@@ -37,7 +38,8 @@ def load_documents(xml_format='xmlwos'):
             document = requests.get(url_document)
             yield ('%s_%s' % (collection, code), document.text)
 
-        offset+=1000
+        offset += 1000
+
 
 def getschema():
 
@@ -47,14 +49,14 @@ def getschema():
         return xsd
     except:
         logger.error('Schema download fail')
-    
+
 
 def dumpdata(*args, **xargs):
     zip_name = xargs['file_name']
     xml_format = xargs['xml_format']
 
-    logger.info('Creating zip file: %s' % zip_name)
-    logger.info('XML Format: %s' % xml_format)
+    logger.info('Creating zip file: %s', zip_name)
+    logger.info('XML Format: %s', xml_format)
     with zipfile.ZipFile(zip_name, 'w', compression=zipfile.ZIP_DEFLATED, allowZip64=True) as thezip:
         for document in load_documents(xml_format=xml_format):
             collection = trans_acronym[document[0][0:3]] if document[0][0:3] in trans_acronym else document[0][0:3]
@@ -73,7 +75,7 @@ def dumpdata(*args, **xargs):
             if xsd:
                 thezip.writestr("schema/ThomsonReuters_publishing.xsd", bytes(xsd))
 
-    logging.info('Zip created: %s' % zip_name)
+    logging.info('Zip created: %s', zip_name)
 
 def _config_logging(logging_level='INFO', logging_file=None):
 

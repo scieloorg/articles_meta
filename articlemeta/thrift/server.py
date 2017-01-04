@@ -5,12 +5,10 @@ import os
 
 import thriftpywrap
 import thriftpy
-from functools import wraps
 
 from articlemeta.controller import DataBroker
 from articlemeta import utils
 from articlemeta.export import Export
-from xylose.scielodocument import Article
 
 logger = logging.getLogger(__name__)
 

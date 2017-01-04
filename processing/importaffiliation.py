@@ -12,13 +12,11 @@ input example:
 
 CSV Total parameters size: 13
 """
-import os
 import logging
 import codecs
 import re
 import argparse
 import csv
-import sys
 
 from pymongo import MongoClient
 from articlemeta import utils
@@ -35,7 +33,7 @@ REGEX_ARTICLE = re.compile("^S[0-9]{4}-[0-9]{3}[0-9xX][0-2][0-9]{3}[0-9]{4}[0-9]
 try:
     scielo_network_articles = MongoClient(settings['app:main']['mongo_uri'])['articlemeta']['articles']
 except:
-    logger.error(u'Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
+    logger.error(u'Fail to connect to (%s)', settings['app:main']['mongo_uri'])
 
 
 trans_collections_code = {
@@ -96,14 +94,12 @@ def _config_logging(logging_level='INFO', logging_file=None):
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    
     logger.setLevel(allowed_levels.get(logging_level, 'INFO'))
 
     if logging_file:
         hl = logging.FileHandler(logging_file, mode='a')
     else:
         hl = logging.StreamHandler()
-
 
     hl.setFormatter(formatter)
     hl.setLevel(allowed_levels.get(logging_level, 'INFO'))
@@ -127,18 +123,18 @@ def parse_csv_line(data):
     line = '|'.join(data)
 
     if len(data) != 14:
-        logger.error(u'line has an invalid number of fields (%s)' % line)
+        logger.error(u'line has an invalid number of fields (%s)', line)
         return False
 
     pid = data[2].strip()
 
     if not is_valid_pid(pid):
-        logger.error(u'line has an invalid PID (%s)' % line)
+        logger.error(u'line has an invalid PID (%s)', line)
         return False
 
     data[1] = data[1].strip().lower()
     if not data[1] in trans_collections_code:
-        logger.error(u'line has an invalid collection code (%s)' % line)
+        logger.error(u'line has an invalid collection code (%s)', line)
         return False
 
     parsed_data['mfn'] = data[0].strip()
@@ -169,20 +165,20 @@ def is_clean_checked(parsed_line, original_article):
     """
 
     if parsed_line['pid'] != original_article.publisher_id:
-        logger.error(u'Invalid metadata (PID) reading line (%s)' % parsed_line['mfn'])
+        logger.error(u'Invalid metadata (PID) reading line (%s)', parsed_line['mfn'])
         return False
 
     afftitle = parsed_line['journal_title'].strip().lower()
     afftitleorig = original_article.journal.title.strip().lower()
     if afftitle != afftitleorig:
-        logger.error(u'Invalid metadata for document (%s) (Journal Title) reading line (%s). Journal title do not match, given (%s), original (%s)' % (parsed_line['pid'], parsed_line['mfn'], afftitle, afftitleorig))
+        logger.error(u'Invalid metadata for document (%s) (Journal Title) reading line (%s). Journal title do not match, given (%s), original (%s)', parsed_line['pid'], parsed_line['mfn'], afftitle, afftitleorig)
 
     if not original_article.affiliations:
-        logger.error(u'Invalid metadata for document (%s) (Affiliation Index) reading line (%s). Record does not have affiliations' % (parsed_line['pid'], parsed_line['mfn']))
+        logger.error(u'Invalid metadata for document (%s) (Affiliation Index) reading line (%s). Record does not have affiliations', parsed_line['pid'], parsed_line['mfn'])
         return False
 
     if not parsed_line['normalized_affiliation_iso_3661_country'] in iso3661codes:
-        logger.error(u'Invalid metadata for document (%s) (Country ISO-3661 code: %s) reading line (%s).' % (parsed_line['pid'], parsed_line['normalized_affiliation_iso_3661_country'], parsed_line['mfn']))
+        logger.error(u'Invalid metadata for document (%s) (Country ISO-3661 code: %s) reading line (%s).', parsed_line['pid'], parsed_line['normalized_affiliation_iso_3661_country'], parsed_line['mfn'])
 
     aff = False
     affindex = parsed_line['affiliation_index'].strip().lower()
@@ -193,20 +189,20 @@ def is_clean_checked(parsed_line, original_article):
         affnameorig = affiliation.get('institution', '').strip().lower()
         affcountryorig = affiliation.get('country', '').strip().lower()
         if affindex == affstrorig:
-            logger.debug(u'Affiliation match index input (%s) original (%s)' % (affindex, affstrorig))
+            logger.debug(u'Affiliation match index input (%s) original (%s)', affindex, affstrorig)
             if affname != affnameorig:
-                logger.error(u'Affiliation match index (%s) for document (%s), but original institution do not match, given (%s) original (%s)' % (affindex, parsed_line['pid'], affname, affnameorig))
+                logger.error(u'Affiliation match index (%s) for document (%s), but original institution do not match, given (%s) original (%s)', affindex, parsed_line['pid'], affname, affnameorig)
                 aff = False
                 break
             if affcountry != affcountryorig:
-                logger.error(u'Affiliation match index (%s) for document (%s), but original country do not match, given (%s) original (%s)' % (affindex, parsed_line['pid'], affcountry, affcountryorig))
+                logger.error(u'Affiliation match index (%s) for document (%s), but original country do not match, given (%s) original (%s)', affindex, parsed_line['pid'], affcountry, affcountryorig)
                 aff = False
                 break
             aff = True
             break
 
     if not aff:
-        logger.error(u'Invalid metadata for document (%s) (Affiliation Index) reading line (%s). Record does not have a matching affiliation' % (parsed_line['pid'], parsed_line['mfn']))
+        logger.error(u'Invalid metadata for document (%s) (Affiliation Index) reading line (%s). Record does not have a matching affiliation', parsed_line['pid'], parsed_line['mfn'])
         return False
 
     logger.debug(u'line was validated agains original metadata (PID, Affiliation Index, Country ISO-3661 code)')
@@ -226,7 +222,7 @@ def get_original_article(pid, collection):
         logger.debug(u'original metadata retrieved from Article Meta')
         return article
     except:
-        logger.error(u'Fail to retrieve (%s)' % str(query))
+        logger.error(u'Fail to retrieve (%s)', str(query))
 
 
 def isis_like_json(data):
@@ -262,7 +258,7 @@ def import_doc_affiliations(data, normalized_affiliations):
     for item in normalized_affiliations or []:
         if item['index'].lower() in [i['i'].lower() for i in ilj]:
             continue
-        from_normalized =   {
+        from_normalized = {
             'i': item['index'],
             '_': item['institution'],
             'p': item['country_iso_3166']
@@ -284,14 +280,14 @@ def import_doc_affiliations(data, normalized_affiliations):
                 }
             }
         )
-        logger.debug(u'reacording at(%s): ' % code)
+        logger.debug(u'reacording at(%s): ', code)
     except:
-        logger.error(u'Error recording metadata at (%s): ' % code)
+        logger.error(u'Error recording metadata at (%s): ', code)
 
 
 def check_affiliations(file_name='processing/normalized_affiliations.csv', import_data=False, encoding='utf-8'):
 
-    logger.info('reading file (%s)' % file_name)
+    logger.info('reading file (%s)', file_name)
 
     original_article = None
 
@@ -306,7 +302,7 @@ def check_affiliations(file_name='processing/normalized_affiliations.csv', impor
     for line in sorted(lines):
         line_count += 1
 
-        logger.debug('reading line (%s)' % line_count)
+        logger.debug('reading line (%s)', line_count)
         parsed_line = parse_csv_line([str(line_count)] + line)
 
         if not parsed_line:
@@ -338,6 +334,7 @@ def check_affiliations(file_name='processing/normalized_affiliations.csv', impor
     if doc_affiliations and original_article.normalized_affiliations:
         # import the last document
         import_doc_affiliations(doc_affiliations, original_article.normalized_affiliations)
+
 
 def main():
 

@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 import requests
 from lxml import etree
 from io import StringIO
-from html.parser import HTMLParser
 
 from pymongo import MongoClient
 from xylose.scielodocument import Article
@@ -20,7 +19,7 @@ from articlemeta import utils
 logger = logging.getLogger(__name__)
 
 FROM = datetime.now() - timedelta(days=15)
-FROM.isoformat()[:10]
+FROM = FROM.isoformat()[:10]
 
 BODY_REGEX = re.compile(r'<div class="index,(?P<language>.*?)">(?P<body>.*)</div>')
 REMOVE_LINKS_REGEX = re.compile(r'\[.<a href="javascript\:void\(0\);".*?>Links</a>.\]', re.IGNORECASE)
@@ -31,7 +30,8 @@ settings = dict(config.items())
 try:
     articlemeta_db = MongoClient(settings['app:main']['mongo_uri'])['articlemeta']
 except:
-    logging.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
+    logging.error('Fail to connect to (%s)', settings['app:main']['mongo_uri'])
+
 
 def collections_acronym():
 
@@ -39,11 +39,13 @@ def collections_acronym():
 
     return [i['code'] for i in collections]
 
+
 def collection_info(collection):
 
     info = articlemeta_db['collections'].find_one({'acron': collection}, {'_id': 0})
 
     return info
+
 
 def load_documents(collection, all_records=False):
 
@@ -76,6 +78,7 @@ def load_documents(collection, all_records=False):
 
     documents.close()
 
+
 def _config_logging(logging_level='INFO', logging_file=None):
 
     allowed_levels = {
@@ -88,7 +91,6 @@ def _config_logging(logging_level='INFO', logging_file=None):
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    
     logger.setLevel(allowed_levels.get(logging_level, 'INFO'))
 
     if logging_file:
@@ -120,6 +122,7 @@ def do_request(url, json=True):
         else:
             return document.text
 
+
 def scrap_body(data, language):
 
     # html_parser = HTMLParser.HTMLParser()
@@ -137,7 +140,7 @@ def scrap_body(data, language):
         return None
 
     lic = etree_body.find('./div[@class="article-license"]')
-    if lic != None:
+    if lic is not None:
         etree_body.remove(lic)
 
     parsed_body = etree.tostring(etree_body, encoding='unicode', pretty_print=False).rstrip('\r\n')
@@ -152,11 +155,9 @@ def scrap_body(data, language):
         logger.debug('Body not found')
         return None
 
-    body_language = result.groupdict().get('language', None)
-
     body = result.groupdict().get('body', None).strip()
 
-    ## Removing Reference links
+    # Removing Reference links
 
     body = REMOVE_LINKS_REGEX.sub(' ', body)
 
@@ -173,51 +174,51 @@ def run(collections, all_records=False):
 
         coll_info = collection_info(collection)
 
-        logger.info(u'Loading body for %s' % coll_info['domain'])
-        logger.info(u'Using mode all_records %s' % str(all_records))
+        logger.info(u'Loading body for %s', coll_info['domain'])
+        logger.info(u'Using mode all_records %s', str(all_records))
 
         for document in load_documents(collection, all_records=all_records):
 
             fulltexts = document.fulltexts()
             if not fulltexts:
-                logger.debug('Fulltexts not availiable for %s, %s' % (collection, document.publisher_id))
+                logger.debug('Fulltexts not availiable for %s, %s', collection, document.publisher_id)
                 continue
 
             html_fulltexts = fulltexts.get('html', None)
 
             if not html_fulltexts:
-                logger.debug('HTML Fulltexts not availiable for %s, %s' % (collection, document.publisher_id))
+                logger.debug('HTML Fulltexts not availiable for %s, %s', collection, document.publisher_id)
                 continue
 
             bodies = {}
-            for language, url in html_fulltexts.items():        
-        
+            for language, url in html_fulltexts.items():
+
                 try:
                     body = scrap_body(do_request(url, json=False), language)
                 except:
-                    logger.error('Fail to scrap: %s, %s, %s' % (collection, document.publisher_id, language))
+                    logger.error('Fail to scrap: %s, %s, %s', collection, document.publisher_id, language)
                     continue
 
                 if not body:
-                    logger.error('No body defined for: %s, %s, %s' % (collection, document.publisher_id, language))
+                    logger.error('No body defined for: %s, %s, %s', collection, document.publisher_id, language)
                     continue
 
                 bodies[language] = body
 
             if len(bodies) < len(html_fulltexts):
-                logger.error('Fail to scrap some of the documents for: %s, %s' % (collection, document.publisher_id))
+                logger.error('Fail to scrap some of the documents for: %s, %s', collection, document.publisher_id)
                 continue
 
             if len(bodies) == 0:
-                logger.error('No bodies found for: %s, %s' % (collection, document.publisher_id))
+                logger.error('No bodies found for: %s, %s', collection, document.publisher_id)
                 continue
 
             articlemeta_db['articles'].update(
-                {'code': document.publisher_id,'collection': document.collection_acronym},
+                {'code': document.publisher_id, 'collection': document.collection_acronym},
                 {'$set': {'body': bodies}}
             )
 
-            logger.debug('Bodies collected for: %s, %s' % (collection, document.publisher_id))
+            logger.debug('Bodies collected for: %s, %s', collection, document.publisher_id)
 
 
 def main():

@@ -1,18 +1,12 @@
 # conding: utf-8
-import os
 import json
 from datetime import datetime
 
-from wsgiref.simple_server import make_server
 import pyramid.httpexceptions as exc
-from pyramid.config import Configurator
 from pyramid.view import view_config, notfound_view_config
 from pyramid.response import Response
 from pyramid.settings import asbool
 
-import pymongo
-from articlemeta import utils
-from articlemeta import controller
 from articlemeta.export import Export
 
 from articlemeta.decorators import authenticate
@@ -115,7 +109,7 @@ def identifiers_journal(request):
 def add_journal(request):
 
     try:
-        journal = request.databroker.add_journal(request.json_body)
+        request.databroker.add_journal(request.json_body)
     except ValueError:
         raise exc.HTTPBadRequest('The posted JSON data is not valid')
 
@@ -204,7 +198,6 @@ def get_issue(request):
 
     code = request.GET.get('code', None)
     collection = request.GET.get('collection', None)
-    fmt = request.GET.get('format', 'json')
 
     issue = request.databroker.get_issue(code, collection=collection,
         replace_journal_metadata=True)
@@ -218,7 +211,7 @@ def get_issue(request):
 def add_issue(request):
 
     try:
-        issue = request.databroker.add_issue(request.json_body)
+        request.databroker.add_issue(request.json_body)
     except ValueError:
         raise exc.HTTPBadRequest('The posted JSON data is not valid')
 
@@ -231,7 +224,7 @@ def add_issue(request):
 def update_issue(request):
 
     try:
-        issue = request.databroker.update_issue(request.json_body)
+        request.databroker.update_issue(request.json_body)
     except ValueError:
         raise exc.HTTPBadRequest('The posted JSON data is not valid')
 
@@ -336,7 +329,7 @@ def get_article(request):
     body = request.GET.get('body', 'false')
 
     if not body in ['true', 'false']:
-        raise HTTPBadRequest("parameter 'metaonly' must be 'true' or 'false'")
+        raise exc.HTTPBadRequest("parameter 'metaonly' must be 'true' or 'false'")
 
     body = asbool(body)
 
@@ -370,7 +363,7 @@ def get_article(request):
 def add_article(request):
 
     try:
-        article = request.databroker.add_article(request.json_body)
+        request.databroker.add_article(request.json_body)
     except ValueError:
         raise exc.HTTPBadRequest('The posted JSON data is not valid')
 
@@ -383,7 +376,7 @@ def add_article(request):
 def update_article(request):
 
     try:
-        article = request.databroker.update_article(request.json_body)
+        request.databroker.update_article(request.json_body)
     except ValueError:
         raise exc.HTTPBadRequest('The posted JSON data is not valid')
 
@@ -398,7 +391,7 @@ def set_doaj_status_true(request):
     code = request.GET.get('code', None)
 
     try:
-        article = request.databroker.set_doaj_status(code, True)
+        request.databroker.set_doaj_status(code, True)
     except ValueError:
         raise exc.HTTPBadRequest('The posted JSON data is not valid')
 
@@ -413,7 +406,7 @@ def set_doaj_status_false(request):
     code = request.GET.get('code', None)
 
     try:
-        article = request.databroker.set_doaj_status(code, False)
+        request.databroker.set_doaj_status(code, False)
     except ValueError:
         raise exc.HTTPBadRequest('The posted JSON data is not valid')
 

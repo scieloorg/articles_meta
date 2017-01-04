@@ -2,14 +2,11 @@
 """
 This scripts loads the mixed citations of a given article.
 """
-import sys
 import argparse
 import logging
-import os
 import codecs
 import json
 import unicodedata
-from HTMLParser import HTMLParser
 
 from pymongo import MongoClient
 from articlemeta import utils
@@ -23,7 +20,7 @@ settings = dict(config.items())
 try:
     articlemeta_db = MongoClient(settings['app:main']['mongo_uri'])['articlemeta']
 except:
-    logging.error('Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
+    logging.error('Fail to connect to (%s)', settings['app:main']['mongo_uri'])
 
 
 def remove_control_characters(data):
@@ -32,7 +29,6 @@ def remove_control_characters(data):
 
 def html_decode(string):
 
-    string = unescape(string)
     string = remove_control_characters(string)
 
     return string
@@ -136,19 +132,19 @@ def run(mixed_citations_file, import_data):
             mixed['mixed'] = html_decode(mixed['mixed'])
             document = get_document(mixed['collection'], mixed['pid'])
 
-            logger.info('Trying to import %s %s %s' % (mixed['collection'], mixed['pid'], mixed['order']))
+            logger.info('Trying to import %s %s %s', mixed['collection'], mixed['pid'], mixed['order'])
             if not document:
-                logger.error('Document not found in Article Meta %s %s %s' % (mixed['collection'], mixed['pid'], mixed['order']))
+                logger.error('Document not found in Article Meta %s %s %s', mixed['collection'], mixed['pid'], mixed['order'])
                 continue
 
             if not audity(mixed, document):
-                logger.error('Document did not pass in auditory %s %s %s' % (mixed['collection'], mixed['pid'], mixed['order']))
+                logger.error('Document did not pass in auditory %s %s %s', mixed['collection'], mixed['pid'], mixed['order'])
                 continue
 
-            logger.debug('Document pass in auditory %s %s %s' % (mixed['collection'], mixed['pid'], mixed['order']))
+            logger.debug('Document pass in auditory %s %s %s', mixed['collection'], mixed['pid'], mixed['order'])
 
             if import_data:
-                logger.debug('Importing data for %s %s %s' % (mixed['collection'], mixed['pid'], mixed['order']))
+                logger.debug('Importing data for %s %s %s', mixed['collection'], mixed['pid'], mixed['order'])
                 update_document(mixed, document)
 
 

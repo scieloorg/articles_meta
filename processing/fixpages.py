@@ -9,15 +9,11 @@ input: CSV file formated as below
 input example:
     scl|S0001-37652013000100001|first page|first page seq|last page|e-location|ahead id
 """
-import os
 import logging
 import codecs
 import re
 import argparse
 import csv
-import sys
-
-from ConfigParser import SafeConfigParser
 
 from pymongo import MongoClient
 from articlemeta import utils
@@ -34,7 +30,7 @@ REGEX_ARTICLE = re.compile("^S[0-9]{4}-[0-9]{3}[0-9xX][0-2][0-9]{3}[0-9]{4}[0-9]
 try:
     scielo_network_articles = MongoClient(settings['app:main']['mongo_uri'])['articlemeta']['articles']
 except:
-    logger.error(u'Fail to connect to (%s)' % settings['app:main']['mongo_uri'])
+    logger.error(u'Fail to connect to (%s)', settings['app:main']['mongo_uri'])
 
 
 trans_collections_code = {
@@ -73,7 +69,6 @@ def _config_logging(logging_level='INFO', logging_file=None):
     else:
         hl = logging.StreamHandler()
 
-
     hl.setFormatter(formatter)
     hl.setLevel(allowed_levels.get(logging_level, 'INFO'))
 
@@ -96,18 +91,18 @@ def parse_csv_line(data):
     line = ','.join(data)
 
     if len(data) != 8:
-        logger.error(u'line has an invalid number of fields (%s)' % line)
+        logger.error(u'line has an invalid number of fields (%s)', line)
         return False
 
     pid = data[2].strip()
 
     if not is_valid_pid(pid):
-        logger.error(u'line has an invalid PID (%s)' % line)
+        logger.error(u'line has an invalid PID (%s)', line)
         return False
 
     data[1] = data[1].strip().lower()
     if not data[1] in trans_collections_code:
-        logger.error(u'line has an invalid collection code (%s)' % line)
+        logger.error(u'line has an invalid collection code (%s)', line)
         return False
 
     parsed_data['mfn'] = data[0].strip()
@@ -135,7 +130,7 @@ def get_original_article(pid, collection):
         logger.debug(u'original metadata retrieved from Article Meta')
         return article
     except:
-        logger.error(u'Fail to retrieve (%s)' % str(query))
+        logger.error(u'Fail to retrieve (%s)', str(query))
 
 
 def fix_pages(data):
@@ -167,19 +162,16 @@ def fix_pages(data):
                 }
             }
         )
-        logger.debug(u'reacording at (%s-%s): %s' % (data['collection'], data['pid'], unicode(pages)))
+        logger.debug(u'reacording at (%s-%s): %s', data['collection'], data['pid'], unicode(pages))
     except:
-        logger.error(u'Error recording metadata at (%s-%s): %s' % (data['collection'], data['pid'], unicode(pages)))
+        logger.error(u'Error recording metadata at (%s-%s): %s', data['collection'], data['pid'], unicode(pages))
 
 
 def check_affiliations(file_name, import_data=False, encoding='utf-8'):
 
-    logger.info('reading file (%s)' % file_name)
-
-    original_article = None
+    logger.info('reading file (%s)', file_name)
 
     line_count = 0
-    doc_affiliations = {}
     with codecs.open(file_name, 'r') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',')
         lines = []
@@ -189,7 +181,7 @@ def check_affiliations(file_name, import_data=False, encoding='utf-8'):
     for line in sorted(lines):
         line_count += 1
 
-        logger.debug('reading line (%s)' % line_count)
+        logger.debug('reading line (%s)', line_count)
         parsed_line = parse_csv_line([str(line_count)] + line)
 
         if not parsed_line:

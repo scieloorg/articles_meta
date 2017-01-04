@@ -436,6 +436,7 @@ class XMLJournalMetaPublisherPipe(plumber.Pipe):
 
         return data
 
+
 class XMLArticleMetaUniqueArticleIdPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
@@ -549,7 +550,7 @@ class XMLArticleMetaTranslatedTitleGroupPipe(plumber.Pipe):
             transtitle.text = title
             lang_id = lang if lang in ALLOWED_LANGUAGES else 'zz'
             transtitlegrp = ET.Element('trans-title-group')
-            transtitlegrp.set('lang_id', lang)
+            transtitlegrp.set('lang_id', lang_id)
             transtitlegrp.append(transtitle)
 
             xml.find('./article/front/article-meta/title-group').append(transtitlegrp)
@@ -771,29 +772,6 @@ class XMLArticleMetaAbstractsPipe(plumber.Pipe):
 
 class XMLArticleMetaKeywordsPipe(plumber.Pipe):
 
-    def transform(self, data):
-        raw, xml = data
-
-        if raw.keywords():
-
-            articlemeta = xml.find('./article/front/article-meta')
-
-            for lang, keywords in raw.keywords().items():
-                kwdgroup = ET.Element('kwd-group')
-                lang_id = lang if lang in ALLOWED_LANGUAGES else 'zz'
-                kwdgroup.set('lang_id', lang)
-                kwdgroup.set('kwd-group-type', 'author-generated')
-                for keyword in keywords:
-                    kwd = ET.Element('kwd')
-                    kwd.text = keyword
-                    kwdgroup.append(kwd)
-                articlemeta.append(kwdgroup)
-
-        return data
-
-
-class XMLArticleMetaKeywordsPipe(plumber.Pipe):
-
     def precond(data):
 
         raw, xml = data
@@ -810,7 +788,7 @@ class XMLArticleMetaKeywordsPipe(plumber.Pipe):
         for lang, keywords in raw.keywords().items():
             kwdgroup = ET.Element('kwd-group')
             lang_id = lang if lang in ALLOWED_LANGUAGES else 'zz'
-            kwdgroup.set('lang_id', lang)
+            kwdgroup.set('lang_id', lang_id)
             kwdgroup.set('kwd-group-type', 'author-generated')
             for keyword in keywords:
                 kwd = ET.Element('kwd')
