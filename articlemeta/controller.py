@@ -6,6 +6,7 @@ import json
 import pymongo
 from xylose.scielodocument import Article, Journal, Issue
 from articlemeta.decorators import LogHistoryChange
+from datetime import datetime
 
 LIMIT = 1000
 
