@@ -115,7 +115,7 @@ def do_request(url, json=True):
     try:
         document = requests.get(url, headers=headers)
     except:
-        logger.error(u'HTTP request error for: %s' % url)
+        logger.error(u'HTTP request error for: %s', url)
     else:
         if json:
             return document.json()

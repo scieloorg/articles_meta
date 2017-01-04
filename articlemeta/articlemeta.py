@@ -9,8 +9,6 @@ from pyramid.settings import asbool
 
 from articlemeta.export import Export
 
-from articlemeta.decorators import authenticate
-
 
 def _get_request_limit_param(request, default_limit=1000,
                              only_positive_limit=True, force_max_limit_to_default=True):

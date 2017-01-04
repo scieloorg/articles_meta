@@ -3,18 +3,6 @@ import pyramid.httpexceptions as exc
 from functools import wraps
 
 
-def authenticate(func):
-    @wraps(func)
-    def wrapper(request):
-        token = request.registry.settings.get('admintoken', None)
-        giventoken = request.GET.get('admintoken', None)
-        if giventoken != token:
-            raise exc.HTTPUnauthorized('Invalid admin token')
-        result = func(request)
-        return result
-    return wrapper
-
-
 class LogHistoryChange(object):
     """
     This decorator operate after decorated functions been invoked,

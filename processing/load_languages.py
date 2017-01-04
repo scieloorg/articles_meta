@@ -15,7 +15,6 @@ from datetime import datetime, timedelta
 import argparse
 import logging
 import re
-import os
 import requests
 
 from pymongo import MongoClient
