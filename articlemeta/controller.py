@@ -115,7 +115,7 @@ class DataBroker(object):
         metadata['version'] = article.data_model_version
 
         if article.doi:
-            metadata['doi'] = article.doi
+            metadata['doi'] = article.doi.upper()
 
         try:
             metadata['processing_date'] = article.processing_date
