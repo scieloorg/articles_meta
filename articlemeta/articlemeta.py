@@ -275,6 +275,10 @@ def get_article(request):
             return Response(
                 Export(article).pipeline_pubmed(), content_type="application/xml")
 
+        if fmt == 'xmlcrossref':
+            return Response(
+                Export(article).pipeline_crossref(), content_type="application/xml")
+
     return Response(json.dumps(article), content_type="application/json")
 
 

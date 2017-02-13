@@ -278,7 +278,7 @@ class XMLCitation(object):
                     if "given_names" in author:
                         givennames = ET.Element('given-names')
                         givennames.text = author['given_names']
-                        name.append(givennames)                    
+                        name.append(givennames)
 
                     persongroup.append(name)
 

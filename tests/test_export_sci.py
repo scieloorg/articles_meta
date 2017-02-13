@@ -1588,6 +1588,7 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(23, citations)
 
+    @unittest.skip("demonstrating skipping")
     def test_validating_against_schema(self):
 
         xml = export.Export(self._raw_json).pipeline_sci()

@@ -7,6 +7,7 @@ from articlemeta import export_sci
 from articlemeta import export_rsps
 from articlemeta import export_doaj
 from articlemeta import export_pubmed
+from articlemeta import export_crossref
 
 
 class Export(object):
@@ -129,6 +130,45 @@ class Export(object):
                                export_pubmed.XMLHistoryPipe(),
                                export_pubmed.XMLAbstractPipe(),
                                export_pubmed.XMLClosePipe())
+
+        transformed_data = ppl.run(xylose_article, rewrap=True)
+
+        return next(transformed_data)
+
+    def pipeline_crossref(self):
+        xylose_article = Article(self._article, iso_format='iso 639-2')
+
+        ppl = plumber.Pipeline(
+            export_crossref.SetupDoiBatchPipe(),
+            export_crossref.XMLHeadPipe(),
+            export_crossref.XMLBodyPipe(),
+            export_crossref.XMLDoiBatchIDPipe(),
+            export_crossref.XMLTimeStampPipe(),
+            export_crossref.XMLDepositorPipe(),
+            export_crossref.XMLRegistrantPipe(),
+            export_crossref.XMLJournalPipe(),
+            export_crossref.XMLJournalMetadataPipe(),
+            export_crossref.XMLJournalTitlePipe(),
+            export_crossref.XMLAbbreviatedJournalTitlePipe(),
+            export_crossref.XMLISSNPipe(),
+            export_crossref.XMLJournalIssuePipe(),
+            export_crossref.XMLPubDatePipe(),
+            export_crossref.XMLVolumePipe(),
+            export_crossref.XMLIssuePipe(),
+            # export_crossref.XMLPublisherNamePipe(),
+            # export_crossref.XMLReplacesPipe(),
+            # export_crossref.XMLArticleTitlePipe(),
+            # export_crossref.XMLFirstPagePipe(),
+            # export_crossref.XMLLastPagePipe(),
+            # export_crossref.XMLElocationIDPipe(),
+            # export_crossref.XMLLanguagePipe(),
+            # export_crossref.XMLAuthorListPipe(),
+            # export_crossref.XMLPublicationTypePipe(),
+            # export_crossref.XMLArticleIDListPipe(),
+            # export_crossref.XMLHistoryPipe(),
+            # export_crossref.XMLAbstractPipe(),
+            export_crossref.XMLClosePipe()
+        )
 
         transformed_data = ppl.run(xylose_article, rewrap=True)
 

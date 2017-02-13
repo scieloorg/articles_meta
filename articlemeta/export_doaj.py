@@ -127,6 +127,8 @@ class XMLArticleMetaTitlePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
+        raw.original_language()
+
         if raw.original_title():
             title = ET.Element('title')
             title.text = raw.original_title()
