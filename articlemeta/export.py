@@ -136,7 +136,7 @@ class Export(object):
         return next(transformed_data)
 
     def pipeline_crossref(self):
-        xylose_article = Article(self._article, iso_format='iso 639-2')
+        xylose_article = Article(self._article)
 
         ppl = plumber.Pipeline(
             export_crossref.SetupDoiBatchPipe(),
@@ -155,18 +155,15 @@ class Export(object):
             export_crossref.XMLPubDatePipe(),
             export_crossref.XMLVolumePipe(),
             export_crossref.XMLIssuePipe(),
-            # export_crossref.XMLPublisherNamePipe(),
-            # export_crossref.XMLReplacesPipe(),
-            # export_crossref.XMLArticleTitlePipe(),
-            # export_crossref.XMLFirstPagePipe(),
-            # export_crossref.XMLLastPagePipe(),
-            # export_crossref.XMLElocationIDPipe(),
-            # export_crossref.XMLLanguagePipe(),
-            # export_crossref.XMLAuthorListPipe(),
-            # export_crossref.XMLPublicationTypePipe(),
-            # export_crossref.XMLArticleIDListPipe(),
-            # export_crossref.XMLHistoryPipe(),
-            # export_crossref.XMLAbstractPipe(),
+            export_crossref.XMLJournalArticlePipe(),
+            export_crossref.XMLArticleTitlesPipe(),
+            export_crossref.XMLArticleTitlePipe(),
+            export_crossref.XMLArticleContributorsPipe(),
+            export_crossref.XMLArticleAbstractPipe(),
+            export_crossref.XMLArticlePubDatePipe(),
+            export_crossref.XMLPagesPipe(),
+            export_crossref.XMLPIDPipe(),
+            export_crossref.XMLDOIDataPipe(),
             export_crossref.XMLClosePipe()
         )
 
