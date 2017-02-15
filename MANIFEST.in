@@ -1,2 +1,2 @@
-recursive-include publication *.ico *.png *.css *.gif *.jpg *.pt *.txt *.mak *.mako *.js *.html *.xml *.txt *.ini *.cfg *.rst *.json *.thrift
+recursive-include articlemeta *.ico *.png *.css *.gif *.jpg *.pt *.txt *.mak *.mako *.js *.html *.xml *.txt *.ini *.cfg *.rst *.json *.thrift
 recursive-include processing *.txt
