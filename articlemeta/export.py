@@ -7,6 +7,7 @@ from articlemeta import export_sci
 from articlemeta import export_rsps
 from articlemeta import export_doaj
 from articlemeta import export_pubmed
+from articlemeta import export_crossref
 
 
 class Export(object):
@@ -129,6 +130,42 @@ class Export(object):
                                export_pubmed.XMLHistoryPipe(),
                                export_pubmed.XMLAbstractPipe(),
                                export_pubmed.XMLClosePipe())
+
+        transformed_data = ppl.run(xylose_article, rewrap=True)
+
+        return next(transformed_data)
+
+    def pipeline_crossref(self):
+        xylose_article = Article(self._article)
+
+        ppl = plumber.Pipeline(
+            export_crossref.SetupDoiBatchPipe(),
+            export_crossref.XMLHeadPipe(),
+            export_crossref.XMLBodyPipe(),
+            export_crossref.XMLDoiBatchIDPipe(),
+            export_crossref.XMLTimeStampPipe(),
+            export_crossref.XMLDepositorPipe(),
+            export_crossref.XMLRegistrantPipe(),
+            export_crossref.XMLJournalPipe(),
+            export_crossref.XMLJournalMetadataPipe(),
+            export_crossref.XMLJournalTitlePipe(),
+            export_crossref.XMLAbbreviatedJournalTitlePipe(),
+            export_crossref.XMLISSNPipe(),
+            export_crossref.XMLJournalIssuePipe(),
+            export_crossref.XMLPubDatePipe(),
+            export_crossref.XMLVolumePipe(),
+            export_crossref.XMLIssuePipe(),
+            export_crossref.XMLJournalArticlePipe(),
+            export_crossref.XMLArticleTitlesPipe(),
+            export_crossref.XMLArticleTitlePipe(),
+            export_crossref.XMLArticleContributorsPipe(),
+            export_crossref.XMLArticleAbstractPipe(),
+            export_crossref.XMLArticlePubDatePipe(),
+            export_crossref.XMLPagesPipe(),
+            export_crossref.XMLPIDPipe(),
+            export_crossref.XMLDOIDataPipe(),
+            export_crossref.XMLClosePipe()
+        )
 
         transformed_data = ppl.run(xylose_article, rewrap=True)
 
