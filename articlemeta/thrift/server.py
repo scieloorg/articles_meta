@@ -2,6 +2,7 @@
 import json
 import logging
 import os
+import uuid
 
 import thriftpywrap
 import thriftpy
@@ -12,6 +13,46 @@ from articlemeta.export import Export
 
 logger = logging.getLogger(__name__)
 
+SENTRY_HANDLER = os.environ.get('SENTRY_HANDLER', None)
+LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+
+    'formatters': {
+        'console': {
+            'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            'datefmt': '%H:%M:%S',
+            },
+        },
+    'handlers': {
+        'console': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.StreamHandler',
+            'formatter': 'console'
+            }
+        },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+            },
+        'publication.thrift.server': {
+            'level': LOGGING_LEVEL,
+            'propagate': True,
+        },
+    }
+}
+
+if SENTRY_HANDLER:
+    LOGGING['handlers']['sentry'] = {
+        'level': 'ERROR',
+        'class': 'raven.handlers.logging.SentryHandler',
+        'dsn': SENTRY_HANDLER,
+    }
+    LOGGING['loggers']['']['handlers'].append('sentry')
+
 articlemeta_thrift = thriftpy.load(
     os.path.join(os.path.dirname(__file__), 'articlemeta.thrift'))
 
@@ -21,7 +62,7 @@ class Dispatcher(object):
         config = utils.Configuration.from_env()
         settings = dict(config.items())
 
-        self._admintoken = settings['app:main'].get('admintoken', None)
+        self._admintoken = os.environ.get('ADMIN_TOKEN', None) or settings['app:main'].get('admintoken', uuid.uuid4().hex)
         self._databroker = DataBroker.from_dsn(
             settings['app:main']['mongo_uri'],
             reuse_dbconn=True)

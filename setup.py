@@ -10,25 +10,24 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
     CHANGES = f.read()
 
 requires = [
-    'pymongo>=2.5.2',
-    'lxml>=3.4.2',
-    'requests>=2.6.0',
-    'picles.plumber>=0.10',
-    'pyramid',
+    'pymongo==3.3.0',
+    'lxml==3.4.2',
+    'requests==2.11.1',
+    'picles.plumber==0.10',
+    'pyramid==1.5.4',
     'pyramid_chameleon',
     'pyramid_debugtoolbar',
     'waitress',
-    'gunicorn',
-    'thriftpy',
+    'thriftpy==0.3.1',
     'thriftpywrap',
-    'xylose'
+    'xylose==1.16.5'
     ]
 
 test_requires = ['mocker']
 
 setup(
     name="articlemeta",
-    version='1.18.7',
+    version='1.19.7',
     description="A SciELO API to load SciELO Articles metadata",
     author="SciELO",
     author_email="scielo-dev@googlegroups.com",
