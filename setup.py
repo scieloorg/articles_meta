@@ -27,20 +27,20 @@ test_requires = ['mocker']
 
 setup(
     name="articlemeta",
-    version='1.19.7',
+    version='1.19.8',
     description="A SciELO API to load SciELO Articles metadata",
     author="SciELO",
     author_email="scielo-dev@googlegroups.com",
     license="BSD 2-clause",
     url="http://docs.scielo.org",
     keywords='scielo articlemeta',
-    packages=['articlemeta'],
+    packages=find_packages(),
     classifiers=[
         "Development Status :: 1 - Planning",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python",
-        "Operating System :: POSIX :: Linux",
+        "Operating System :: POSIX :: Linux",x
         "Topic :: System",
         "Topic :: Utilities",
     ],
