@@ -8,8 +8,8 @@ services:
             - .:/app
         environment:
             - MONGODB_HOST=node1-mongodb.scielo.org:27000
-            - ADMIN_TOKEN=admin
-            - SENTRY_HANDLER=https://d9a023577d684a31b8158e70c8251cc3:b5574ab5a53b4a8096b34199c4a175ee@sentry.scielo.org/17
+            - ADMIN_TOKEN=
+            - SENTRY_HANDLER=
             - LOGGING_LEVEL=DEBUG
         command: gunicorn --paste config.ini -w 4 -b 0.0.0.0
 
@@ -20,7 +20,7 @@ services:
             - .:/app
         environment:
             - MONGODB_HOST=node1-mongodb.scielo.org:27000
-            - ADMIN_TOKEN=admin
-            - SENTRY_HANDLER=https://c34e2bf3134147038c0118ab80ae991c:d5c4955372fe4abd9cfe563e8a4de2f5@sentry.scielo.org/16
+            - ADMIN_TOKEN=
+            - SENTRY_HANDLER=
             - LOGGING_LEVEL=DEBUG
         command: articlemeta_thriftserver --port 11620 --host 0.0.0.0
