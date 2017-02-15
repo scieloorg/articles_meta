@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 SENTRY_HANDLER = os.environ.get('SENTRY_HANDLER', None)
 LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
+MONGODB_HOST = os.environ.get('MONGODB_HOST', 'DEBUG')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -64,7 +65,7 @@ class Dispatcher(object):
 
         self._admintoken = os.environ.get('ADMIN_TOKEN', None) or settings['app:main'].get('admintoken', uuid.uuid4().hex)
         self._databroker = DataBroker.from_dsn(
-            settings['app:main']['mongo_uri'],
+            os.environ.get('MONGODB_HOST', None) or settings['app:main'].get('mongo_uri', '127.0.0.1:27017'),
             reuse_dbconn=True)
 
     def get_collection_identifiers(self):
