@@ -40,7 +40,7 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python",
-        "Operating System :: POSIX :: Linux",x
+        "Operating System :: POSIX :: Linux",
         "Topic :: System",
         "Topic :: Utilities",
     ],
