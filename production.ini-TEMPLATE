@@ -52,6 +52,7 @@ formatter = generic
 [handler_sentry]
 class = raven.handlers.logging.SentryHandler
 level = ERROR
+args = ()
 formatter = generic
 
 [formatter_generic]
