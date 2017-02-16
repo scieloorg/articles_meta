@@ -1,12 +1,12 @@
 version: '2'
 services:
   articlemeta-restfulapi:
-    image: scieloorg/articles_meta:release-1.19.11
+    image: scieloorg/articles_meta:release-1.19.12
     environment:
-      ADMIN_TOKEN: 099028dbc5ab4530bc4ee063fa550845
+      ADMIN_TOKEN:
       LOGGING_LEVEL: DEBUG
-      MONGODB_HOST: node1-mongodb.scielo.org:27000/articlemeta
-      SENTRY_HANDLER: https://d9a023577d684a31b8158e70c8251cc3:b5574ab5a53b4a8096b34199c4a175ee@sentry.scielo.org/17
+      MONGODB_HOST: 
+      SENTRY_DSN: 
     command:
         - gunicorn
         - --paste
@@ -18,12 +18,12 @@ services:
     labels:
       io.rancher.container.pull_image: always
   articlemeta-thriftserver:
-    image: scieloorg/articles_meta:release-1.19.11
+    image: scieloorg/articles_meta:release-1.19.12
     environment:
-      ADMIN_TOKEN: 099028dbc5ab4530bc4ee063fa550845
+      ADMIN_TOKEN:
       LOGGING_LEVEL: DEBUG
-      MONGODB_HOST: mongodb://node1-mongodb.scielo.org:27000/articlemeta
-      SENTRY_HANDLER: https://c34e2bf3134147038c0118ab80ae991c:d5c4955372fe4abd9cfe563e8a4de2f5@sentry.scielo.org/16
+      MONGODB_HOST: 
+      SENTRY_DSN: 
     command:
         - articlemeta_thriftserver
         - --port
