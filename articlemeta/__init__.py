@@ -1,5 +1,11 @@
+import os
+
+from pyramid.renderers import JSONP
 from pyramid.config import Configurator
-from . import controller
+
+from articlemeta import controller
+
+MONGODB_HOST = os.environ.get('MONGODB_HOST', None)
 
 
 def main(global_config, **settings):
@@ -11,9 +17,14 @@ def main(global_config, **settings):
     """
 
     config = Configurator(settings=settings)
+    config.add_renderer('jsonp', JSONP(param_name='callback', indent=4))
 
     def add_databroker(request):
-        return controller.DataBroker.from_dsn(settings['mongo_uri'], reuse_dbconn=True)
+
+        return controller.DataBroker.from_dsn(
+            MONGODB_HOST or settings.get('mongo_uri', 'mongodb://127.0.0.1:27017/articlemeta'),
+            reuse_dbconn=True
+        )
 
     config.add_route('index', '/')
     # collections - GET method:

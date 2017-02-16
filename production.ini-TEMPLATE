@@ -20,27 +20,38 @@ host = 0.0.0.0
 port = 8000
 
 [loggers]
-keys = root, articlemeta
+keys = root, articlemeta, sentry
 
 [handlers]
-keys = console
+keys = console, sentry
 
 [formatters]
 keys = generic
 
 [logger_root]
-level = WARN
+level = INFO
 handlers = console
 
 [logger_articlemeta]
-level = WARN
-handlers =
+level = INFO
+handlers = console
 qualname = articlemeta
+
+[logger_sentry]
+level = ERROR
+handlers = console
+qualname = sentry
+propagate = 0
 
 [handler_console]
 class = StreamHandler
 args = (sys.stderr,)
 level = NOTSET
+formatter = generic
+
+[handler_sentry]
+class = raven.handlers.logging.SentryHandler
+level = ERROR
 formatter = generic
 
 [formatter_generic]

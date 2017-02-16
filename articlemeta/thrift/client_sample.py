@@ -13,8 +13,8 @@ from thriftpy.rpc import make_client
 if __name__ == '__main__':
     client = make_client(
         articlemeta_thrift.ArticleMeta,
-        '127.0.0.1',
-        11720
+        'articlemeta.scielo.org',
+        11621
     )
 
     print("Carregando 1 artigo")

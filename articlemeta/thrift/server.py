@@ -13,9 +13,10 @@ from articlemeta.export import Export
 
 logger = logging.getLogger(__name__)
 
-SENTRY_HANDLER = os.environ.get('SENTRY_HANDLER', None)
+SENTRY_DSN = os.environ.get('SENTRY_DSN', None)
 LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
-MONGODB_HOST = os.environ.get('MONGODB_HOST', 'DEBUG')
+MONGODB_HOST = os.environ.get('MONGODB_HOST', None)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -46,11 +47,11 @@ LOGGING = {
     }
 }
 
-if SENTRY_HANDLER:
+if SENTRY_DSN:
     LOGGING['handlers']['sentry'] = {
         'level': 'ERROR',
         'class': 'raven.handlers.logging.SentryHandler',
-        'dsn': SENTRY_HANDLER,
+        'dsn': SENTRY_DSN,
     }
     LOGGING['loggers']['']['handlers'].append('sentry')
 
@@ -65,8 +66,9 @@ class Dispatcher(object):
 
         self._admintoken = os.environ.get('ADMIN_TOKEN', None) or settings['app:main'].get('admintoken', uuid.uuid4().hex)
         self._databroker = DataBroker.from_dsn(
-            os.environ.get('MONGODB_HOST', None) or settings['app:main'].get('mongo_uri', '127.0.0.1:27017'),
-            reuse_dbconn=True)
+            MONGODB_HOST or settings['app:main'].get('mongo_uri', 'mongodb://127.0.0.1:27017/articlemeta'),
+            reuse_dbconn=True
+        )
 
     def get_collection_identifiers(self):
         try:
