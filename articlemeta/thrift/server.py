@@ -359,6 +359,9 @@ class Dispatcher(object):
             if fmt == 'xmlpubmed':
                 return Export(data).pipeline_pubmed()
 
+            if fmt == 'xmlcrossref':
+                return Export(data).pipeline_crossref()
+
         return json.dumps(data)
 
     def get_issue(self, code, collection, replace_journal_metadata):
