@@ -21,6 +21,14 @@ if __name__ == '__main__':
     article = client.get_article('S0034-71672014000600891', collection='scl', replace_journal_metadata=True)
     print(json.loads(article)['code'])
 
+    print("Carregando 1 artigo em XML DOAJ")
+    article = client.get_article('S0034-71672014000600891', collection='scl', replace_journal_metadata=True, fmt='xmldoaj')
+    print(article)
+
+    print("Carregando 1 artigo em XML CROSSREF")
+    article = client.get_article('S0034-71672014000600891', collection='scl', replace_journal_metadata=True, fmt='xmlcrossref')
+    print(article)
+
     print("Listando ID's de periódicos")
     identifiers = client.get_journal_identifiers(collection='scl', limit=10, offset=0)
     for i in identifiers:
