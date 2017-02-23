@@ -70,6 +70,9 @@ class Dispatcher(object):
             reuse_dbconn=True
         )
 
+    def getInterfaceVersion(self):
+        return articlemeta_thrift.VERSION
+
     def get_collection_identifiers(self):
         try:
             data = self._databroker.identifiers_collection()

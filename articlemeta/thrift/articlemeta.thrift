@@ -1,3 +1,5 @@
+const string VERSION = "2.1.0"
+
 exception ValueError {
     1: string message,
 }
