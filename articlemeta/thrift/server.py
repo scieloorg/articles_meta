@@ -424,7 +424,8 @@ class Dispatcher(object):
         objs = [
             articlemeta_thrift.journal_identifiers(
                 code=i['code'],
-                collection=i['collection']) for i in data['objects'] if i['code']
+                collection=i['collection'],
+                processing_date=i['processing_date']) for i in data['objects'] if i['code']
             ]
 
         return objs

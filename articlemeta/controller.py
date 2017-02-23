@@ -171,6 +171,11 @@ class DataBroker(object):
         metadata['issns'] = list(issns)
         metadata['collection'] = journal.collection_acronym
 
+        try:
+            metadata['processing_date'] = journal.processing_date
+        except:
+            metadata['processing_date'] = datetime.now().date().isoformat()
+
         return metadata
 
     def _log_changes(self, document_type, code, event, collection=None, date=None):
@@ -263,6 +268,27 @@ class DataBroker(object):
         if not journal:
             return None
 
+        if self.exists_journal(journal['code'], journal['collection']):
+            return self.update_journal(journal)
+
+        self.db['journals'].update_one(
+            {'code': journal['code'], 'collection': journal['collection']},
+            {'$set': journal},
+            upsert=True
+        )
+
+        return journal
+
+    @LogHistoryChange(document_type="journal", event_type="update")
+    def update_journal(self, metadata):
+
+        journal = self._check_issue_meta(metadata)
+
+        if not journal:
+            return None
+
+        journal['updated_at'] = datetime.now().date().isoformat()
+
         self.db['journals'].update_one(
             {'code': journal['code'], 'collection': journal['collection']},
             {'$set': journal},
@@ -313,14 +339,14 @@ class DataBroker(object):
             fltr.update(json.loads(extra_filter))
 
         total = self.db['journals'].find(fltr).count()
-        data = self.db['journals'].find(fltr, {'code': 1, 'collection': 1}).skip(offset).limit(limit)
+        data = self.db['journals'].find(fltr, {'code': 1, 'collection': 1, 'processing_date': 1}).skip(offset).limit(limit)
 
         meta = {'limit': limit,
                 'offset': offset,
                 'filter': fltr,
                 'total': total}
 
-        result = {'meta': meta, 'objects': [{'code': i['code'], 'collection': i['collection']} for i in data]}
+        result = {'meta': meta, 'objects': [{'code': i['code'], 'collection': i['collection'], 'processing_date': i['processing_date']} for i in data]}
 
         return result
 

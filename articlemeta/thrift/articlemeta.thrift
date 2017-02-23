@@ -36,7 +36,8 @@ struct issue_identifiers {
 
 struct journal_identifiers {
     1: string code,
-    2: string collection
+    2: string collection,
+    3: string processing_date
 }
 
 struct event_document {

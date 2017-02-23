@@ -32,40 +32,40 @@ if __name__ == '__main__':
     print("Listando ID's de periódicos")
     identifiers = client.get_journal_identifiers(collection='scl', limit=10, offset=0)
     for i in identifiers:
-        print(i.collection, i.code)
+        print(i.collection, i.code, i.processing_date)
 
     print("Listando ID's de artigos")
     identifiers = client.get_article_identifiers(collection='scl', issn='2317-4889', limit=10, offset=0)
 
     for i in identifiers:
-        print(i.collection, i.code, i.doi, i.aid)
+        print(i.collection, i.code, i.doi, i.aid, i.processing_date)
 
     print("Listando ID's de artigos com filtro extra")
     extra_filter = {'doi': '10.1590/23174889201500020002'}
     identifiers = client.get_article_identifiers(collection='scl', issn='2317-4889', extra_filter=json.dumps(extra_filter))
 
     for i in identifiers:
-        print(i.collection, i.code, i.doi, i.aid)
+        print(i.collection, i.code, i.doi, i.aid, i.processing_date)
 
     print("Listando ID's de artigos com filtro extra")
     extra_filter = {'aid': {'$exists': 1}}
     identifiers = client.get_article_identifiers(collection='scl', issn='0103-4979', extra_filter=json.dumps(extra_filter))
 
     for i in identifiers:
-        print(i.collection, i.code, i.doi, i.aid)
+        print(i.collection, i.code, i.doi, i.aid, i.processing_date)
 
     print("Listando ID's de issues")
     identifiers = client.get_issue_identifiers(collection='scl', issn='0103-4979', limit=10, offset=0)
 
     for i in identifiers:
-        print(i.collection, i.code)
+        print(i.collection, i.code, i.processing_date)
 
     print("Listando ID's de issues com filtro extra")
     extra_filter = {'issue_type': 'special'}
     identifiers = client.get_issue_identifiers(collection='scl', issn='0103-4979', extra_filter=json.dumps(extra_filter))
 
     for i in identifiers:
-        print(i.collection, i.code)
+        print(i.collection, i.code, i.processing_date)
 
     print("Recuperando um issues")
     issue = client.get_issue(code='0103-733120080004', collection='scl')
