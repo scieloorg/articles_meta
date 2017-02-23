@@ -18,7 +18,7 @@ if __name__ == '__main__':
     )
 
     print("Version")
-    print client.getInterfaceVersion()
+    print(client.getInterfaceVersion())
 
     article = client.get_article('S0034-71672014000600891', collection='scl', replace_journal_metadata=True)
     print(json.loads(article)['code'])

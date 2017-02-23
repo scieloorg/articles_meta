@@ -1,4 +1,4 @@
-const string VERSION = "2.1.0"
+const string VERSION = "1.0.0"
 
 exception ValueError {
     1: string message,
@@ -64,6 +64,7 @@ struct event_journal {
 }
 
 service ArticleMeta {
+    string getInterfaceVersion(),
     list<event_document> article_history_changes(1: string collection, 2: string event, 3: string code, 4: string from_date, 5: string until_date, 6: i32 limit, 7: i32 offset) throws (1: ValueError value_err, 2:ServerError server_err),
     list<event_issue> issue_history_changes(1: string collection, 2: string event, 3: string code, 4: string from_date, 5: string until_date, 6: i32 limit, 7: i32 offset) throws (1: ValueError value_err, 2:ServerError server_err),
     list<event_journal> journal_history_changes(1: string collection, 2: string event, 3: string code, 4: string from_date, 5: string until_date, 6:i32 limit, 7: i32 offset) throws (1: ValueError value_err, 2:ServerError server_err),
