@@ -282,7 +282,7 @@ class DataBroker(object):
     @LogHistoryChange(document_type="journal", event_type="update")
     def update_journal(self, metadata):
 
-        journal = self._check_issue_meta(metadata)
+        journal = self._check_journal_meta(metadata)
 
         if not journal:
             return None
