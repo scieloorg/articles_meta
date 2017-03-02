@@ -12,7 +12,7 @@ import argparse
 from datetime import datetime, timedelta
 import requests
 from lxml import etree
-from io import StringIO
+from io import BytesIO
 from pymongo import MongoClient
 from xylose.scielodocument import Article
 from articlemeta import utils
@@ -21,6 +21,8 @@ logger = logging.getLogger(__name__)
 SENTRY_DSN = os.environ.get('SENTRY_DSN', None)
 LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
 MONGODB_HOST = os.environ.get('MONGODB_HOST', None)
+
+DOI_REGEX = re.compile(r'[0-9][0-9]\.[0-9].*/.*\S')
 
 LOGGING = {
     'version': 1,
@@ -126,18 +128,19 @@ def scrap_doi(data):
 
     data = ' '.join([i.strip() for i in data.split('\n')])
 
-    parser = etree.HTMLParser(remove_blank_text=True)
-    tree = etree.parse(StringIO(data), parser)
+    parser = etree.HTMLParser(remove_blank_text=True, encoding='utf-8')
+    tree = etree.parse(BytesIO(data.encode('utf-8')), parser)
 
-    etree_doi = tree.find('.//h4[@id="doi"]')
+    etree_doi = tree.find('.//meta[@name="citation_doi"]')
 
     if etree_doi is None:
         logger.debug('DOI not found')
         return None
 
-    result = etree_doi.text.strip().replace('http://dx.doi.org/', '')
+    result = DOI_REGEX.findall(etree_doi.get('content'))
 
     if not result:
+        logger.debug('DOI not found')
         return None
 
     return result
