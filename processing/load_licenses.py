@@ -211,7 +211,7 @@ def main():
     parser.add_argument(
         '--logging_level',
         '-l',
-        default='DEBUG',
+        default=LOGGING_LEVEL,
         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
         help='Logggin level'
     )
