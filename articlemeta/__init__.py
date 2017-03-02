@@ -5,8 +5,6 @@ from pyramid.config import Configurator
 
 from articlemeta import controller
 
-MONGODB_HOST = os.environ.get('MONGODB_HOST', None)
-
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -21,8 +19,10 @@ def main(global_config, **settings):
 
     def add_databroker(request):
 
+        mongo = os.environ.get('MONGODB_HOST', settings.get('mongo_uri', '127.0.0.1:27017'))
+
         return controller.DataBroker.from_dsn(
-            MONGODB_HOST or settings.get('mongo_uri', 'mongodb://127.0.0.1:27017/articlemeta'),
+            'mongodb://%s/articlemeta' % mongo,
             reuse_dbconn=True
         )
 

@@ -5,7 +5,9 @@ and load them into the Articlemeta, this process is necessary because the
 legacy databases does not have the doi persisted for each document.
 """
 import logging
+import logging.config
 import re
+import os
 import argparse
 from datetime import datetime, timedelta
 import requests
@@ -16,17 +18,54 @@ from xylose.scielodocument import Article
 from articlemeta import utils
 
 logger = logging.getLogger(__name__)
+SENTRY_DSN = os.environ.get('SENTRY_DSN', None)
+LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
+MONGODB_HOST = os.environ.get('MONGODB_HOST', None)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+
+    'formatters': {
+        'console': {
+            'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            'datefmt': '%H:%M:%S',
+            },
+        },
+    'handlers': {
+        'console': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.StreamHandler',
+            'formatter': 'console'
+            }
+        },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+            },
+        'processing.load_doi': {
+            'level': LOGGING_LEVEL,
+            'propagate': True,
+        },
+    }
+}
+
+if SENTRY_DSN:
+    LOGGING['handlers']['sentry'] = {
+        'level': 'ERROR',
+        'class': 'raven.handlers.logging.SentryHandler',
+        'dsn': SENTRY_DSN,
+    }
+    LOGGING['loggers']['']['handlers'].append('sentry')
+
 
 FROM = datetime.now() - timedelta(days=15)
 FROM = FROM.isoformat()[:10]
 
-DOI_REGEX = re.compile(r'<a.*?creativecommons.org/licenses/(?P<license>.*?/\d+\.\d+).*?>')
-
-config = utils.Configuration.from_env()
-settings = dict(config.items())
-
 try:
-    articlemeta_db = MongoClient(settings['app:main']['mongo_uri'])['articlemeta']
+    articlemeta_db = MongoClient(MONGODB_HOST)['articlemeta']
 except:
     logging.error('Fail to connect to (%s)', settings['app:main']['mongo_uri'])
 
@@ -64,33 +103,6 @@ def load_documents(collection, all_records=False):
         yield Article(document)
 
     documents.close()
-
-
-def _config_logging(logging_level='INFO', logging_file=None):
-
-    allowed_levels = {
-        'DEBUG': logging.DEBUG,
-        'INFO': logging.INFO,
-        'WARNING': logging.WARNING,
-        'ERROR': logging.ERROR,
-        'CRITICAL': logging.CRITICAL
-    }
-
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-    logger.setLevel(allowed_levels.get(logging_level, 'INFO'))
-
-    if logging_file:
-        hl = logging.FileHandler(logging_file, mode='a')
-    else:
-        hl = logging.StreamHandler()
-
-    hl.setFormatter(formatter)
-    hl.setLevel(allowed_levels.get(logging_level, 'INFO'))
-
-    logger.addHandler(hl)
-
-    return logger
 
 
 def do_request(url, json=True):
@@ -190,22 +202,19 @@ def main():
     )
 
     parser.add_argument(
-        '--logging_file',
-        '-o',
-        help='Full path to the log file'
-    )
-
-    parser.add_argument(
         '--logging_level',
         '-l',
-        default='DEBUG',
+        default=LOGGING_LEVEL,
         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
         help='Logggin level'
     )
 
     args = parser.parse_args()
+    LOGGING['handlers']['console']['level'] = args.logging_level
+    for lg, content in LOGGING['loggers'].items():
+        content['level'] = args.logging_level
 
-    _config_logging(args.logging_level, args.logging_file)
+    logging.config.dictConfig(LOGGING)
 
     collections = [args.collection] if args.collection else collections_acronym()
 
