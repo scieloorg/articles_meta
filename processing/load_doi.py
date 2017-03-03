@@ -137,7 +137,7 @@ def scrap_doi(data):
         logger.debug('DOI not found')
         return None
 
-    result = DOI_REGEX.findall(etree_doi.get('content'))
+    result = DOI_REGEX.match(etree_doi.get('content')).group()
 
     if not result:
         logger.debug('DOI not found')

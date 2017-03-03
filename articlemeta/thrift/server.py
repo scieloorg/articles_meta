@@ -64,9 +64,11 @@ class Dispatcher(object):
         config = utils.Configuration.from_env()
         settings = dict(config.items())
 
+        mongo = os.environ.get('MONGODB_HOST', settings.get('mongo_uri', '127.0.0.1:27017'))
+
         self._admintoken = os.environ.get('ADMIN_TOKEN', None) or settings['app:main'].get('admintoken', uuid.uuid4().hex)
         self._databroker = DataBroker.from_dsn(
-            MONGODB_HOST or settings['app:main'].get('mongo_uri', 'mongodb://127.0.0.1:27017/articlemeta'),
+            'mongodb://%s/articlemeta' % mongo,
             reuse_dbconn=True
         )
 
