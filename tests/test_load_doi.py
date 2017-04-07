@@ -8,15 +8,6 @@ from processing import load_doi
 
 class LoadDOITest(unittest.TestCase):
 
-    def test_scrapt_doi(self):
-
-        data = u"""<h4 id="doi"> http://dx.doi.org/10.1590/S0103-21002012000200002&nbsp; </h4>"""
-
-        result = load_doi.scrap_doi(data)
-
-        self.assertEqual(result, '10.1590/S0103-21002012000200002')
-
-
     def test_scrapt_test1(self):
 
         data = u"""

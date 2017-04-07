@@ -20,7 +20,7 @@ requires = [
     'waitress',
     'thriftpy==0.3.1',
     'thriftpywrap',
-    'xylose==1.17.5',
+    'xylose==1.18.6',
     'raven'
     ]
 
@@ -28,7 +28,7 @@ test_requires = ['mocker']
 
 setup(
     name="articlemeta",
-    version='1.22.18',
+    version='1.23.18',
     description="A SciELO API to load SciELO Articles metadata",
     author="SciELO",
     author_email="scielo-dev@googlegroups.com",

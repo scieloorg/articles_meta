@@ -15,7 +15,10 @@ from articlemeta import export
 class ExportTests(unittest.TestCase):
 
     def setUp(self):
-        self._raw_json = json.loads(open(os.path.dirname(__file__)+'/fixtures/article_meta.json').read())
+        self._raw_json = json.loads(
+            open(
+                os.path.dirname(__file__)+'/fixtures/article_meta.json').read()
+            )
         self._article_meta = Article(self._raw_json)
 
     def test_doi_batch_element(self):
