@@ -790,7 +790,7 @@ class XMLCitation(object):
         def transform(self, data):
             raw, xml = data
 
-            source = ET.Element('source')
+            source = ET.Element('series_title')
 
             source.text = raw.thesis_title
 
