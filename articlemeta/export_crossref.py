@@ -645,7 +645,7 @@ class XMLCitation(object):
         def transform(self, data):
             raw, xml = data
 
-            edition = ET.Element('edition')
+            edition = ET.Element('edition_number')
 
             edition.text = raw.edition
 
