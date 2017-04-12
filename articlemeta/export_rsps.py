@@ -1033,12 +1033,12 @@ class XMLArticleMetaCountsPipe(plumber.Pipe):
 
         try:
             startpage = int(raw.start_page)
-        except ValueError:
+        except TypeError:
             startpage = None
 
         try:
             endpage = int(raw.end_page)
-        except ValueError:
+        except TypeError:
             endpage = None
 
         pages = 0

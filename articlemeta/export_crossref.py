@@ -330,6 +330,14 @@ class XMLArticleTitlePipe(plumber.Pipe):
 
 class XMLArticleContributorsPipe(plumber.Pipe):
 
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.authors:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
