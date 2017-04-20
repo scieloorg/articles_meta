@@ -373,7 +373,12 @@ class XMLArticleContributorsPipe(plumber.Pipe):
                 if 'country' in aff:
                     aff_list.append(aff['country'])
 
-                affiliation.text = ',  '.join(aff_list)
+                aff_info = ',  '.join(aff_list)
+
+                if len(aff_info.strip()) == 0:
+                    continue
+
+                affiliation.text = aff_info
                 el.append(affiliation)
 
         xml.find('./body/journal/journal_article').append(el)
