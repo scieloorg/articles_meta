@@ -527,6 +527,49 @@ class XMLDOIDataPipe(plumber.Pipe):
         return data
 
 
+class XMLCollectionPipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.fulltexts().get('pdf', None):
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        languages = raw.fulltexts().get('pdf', {}).keys()
+
+        if len(languages) == 0:
+            return data
+
+        res = None
+        if raw.original_language() in languages:
+            res = raw.fulltexts()['pdf'][raw.original_language()]
+        else:
+            res = raw.fulltexts()['pdf'][languages[0]]
+
+        if not res:
+            return data
+
+        resource = ET.Element('resource')
+        resource.text = res
+
+        item = ET.Element('item')
+        item.set('crawler', 'iParadigms')
+        item.append(resource)
+
+        collection = ET.Element('collection')
+        collection.set('property', 'crawler-based')
+        collection.append(item)
+
+        xml.find('./body/journal/journal_article/doi_data').append(collection)
+
+        return data
+
+
 class XMLArticleCitationsPipe(plumber.Pipe):
 
     def precond(data):
