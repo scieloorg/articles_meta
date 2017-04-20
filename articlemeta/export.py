@@ -164,6 +164,7 @@ class Export(object):
             export_crossref.XMLPagesPipe(),
             export_crossref.XMLPIDPipe(),
             export_crossref.XMLDOIDataPipe(),
+            export_crossref.XMLCollectionPipe(),
             export_crossref.XMLArticleCitationsPipe(),
             export_crossref.XMLClosePipe()
         )
