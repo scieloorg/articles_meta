@@ -551,6 +551,7 @@ class XMLCollectionPipe(plumber.Pipe):
         else:
             res = raw.fulltexts()['pdf'][languages[0]]
 
+
         if not res:
             return data
 
