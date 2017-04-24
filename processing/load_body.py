@@ -47,7 +47,7 @@ LOGGING = {
             'level': LOGGING_LEVEL,
             'propagate': False,
             },
-        'processing.load_doi': {
+        'processing.load_body': {
             'level': LOGGING_LEVEL,
             'propagate': True,
         },
