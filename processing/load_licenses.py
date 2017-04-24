@@ -4,14 +4,14 @@ This scripts scrapy the use licenses of the scielo documents from the website
 and load them into the Articlemeta, this process is necessary because the
 legacy databases does not have the licenses persisted for each document.
 """
+import re
 import os
+import argparse
 import logging
 import logging.config
-import re
-import argparse
 from datetime import datetime, timedelta
-import requests
 
+import requests
 from pymongo import MongoClient
 from xylose.scielodocument import Article
 from articlemeta import utils
