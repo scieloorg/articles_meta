@@ -4,12 +4,13 @@ This scripts scrapy the DOI of the scielo documents from the website
 and load them into the Articlemeta, this process is necessary because the
 legacy databases does not have the doi persisted for each document.
 """
-import logging
-import logging.config
 import re
 import os
 import argparse
+import logging
+import logging.config
 from datetime import datetime, timedelta
+
 import requests
 from lxml import etree
 from io import BytesIO
