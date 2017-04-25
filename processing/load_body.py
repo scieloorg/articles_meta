@@ -66,7 +66,7 @@ if SENTRY_DSN:
 FROM = datetime.now() - timedelta(days=15)
 FROM = FROM.isoformat()[:10]
 
-BODY_REGEX = re.compile(r'<div class="index,(?P<language>.*?)">(?P<body>.*)</div>')
+BODY_REGEX = re.compile(r'<div .*class="index,(?P<language>.*?)">(?P<body>.*)</div>')
 REMOVE_LINKS_REGEX = re.compile(r'\[.<a href="javascript\:void\(0\);".*?>Links</a>.\]', re.IGNORECASE)
 
 try:
@@ -210,8 +210,9 @@ def run(collections, all_records=False):
 
                 try:
                     body = scrap_body(do_request(url, json=False), language)
-                except:
+                except Exception as exc:
                     logger.error('Fail to scrap: %s, %s, %s', collection, document.publisher_id, language)
+                    logger.exception(exc)
                     continue
 
                 if not body:
