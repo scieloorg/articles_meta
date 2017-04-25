@@ -158,6 +158,10 @@ def scrap_body(data, language):
     if lic is not None:
         etree_body.remove(lic)
 
+    lic = etree_body.find('./div[@class="license"]')
+    if lic is not None:
+        etree_body.remove(lic)
+
     parsed_body = etree.tostring(etree_body, encoding='unicode', pretty_print=False).rstrip('\r\n')
 
     if not parsed_body:
