@@ -135,7 +135,7 @@ class XMLArticleMetaTitlePipe(plumber.Pipe):
             title.set('language', ISO6392T_TO_ISO6392B.get(raw.original_language(), raw.original_language()))
             xml.find('./record').append(title)
         elif raw.translated_titles() and len(raw.translated_titles()) != 0:
-            item = [(k,v) for k, v in raw.translated_titles().items()][0]
+            item = [(k, v) for k, v in raw.translated_titles().items()][0]
             title = ET.Element('title')
             title.text = item[1]
             title.set('language', ISO6392T_TO_ISO6392B.get(item[0], item[0]))

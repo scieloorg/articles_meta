@@ -179,17 +179,10 @@ class XMLISSNPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        if raw.journal.print_issn:
-            el = ET.Element('issn')
-            el.text = raw.journal.print_issn
-            el.set('media_type', 'print')
-            xml.find('./body/journal/journal_metadata').append(el)
-
-        if raw.journal.electronic_issn:
-            el = ET.Element('issn')
-            el.text = raw.journal.electronic_issn
-            el.set('media_type', 'electronic')
-            xml.find('./body/journal/journal_metadata').append(el)
+        el = ET.Element('issn')
+        el.text = raw.journal.scielo_issn
+        el.set('media_type', 'electronic')
+        xml.find('./body/journal/journal_metadata').append(el)
 
         return data
 
