@@ -533,7 +533,7 @@ class XMLCollectionPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        languages = raw.fulltexts().get('pdf', {}).keys()
+        languages = [i for i in raw.fulltexts().get('pdf', {}).keys()]
 
         if len(languages) == 0:
             return data
