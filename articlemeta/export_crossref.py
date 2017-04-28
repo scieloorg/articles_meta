@@ -344,13 +344,15 @@ class XMLArticleContributorsPipe(plumber.Pipe):
             author.set('sequence', seq)
             el.append(author)
 
-            firstname = ET.Element('given_name')
-            firstname.text = authors['given_names']
-            author.append(firstname)
+            if authors['given_names']:
+                firstname = ET.Element('given_name')
+                firstname.text = authors['given_names']
+                author.append(firstname)
 
-            lastname = ET.Element('surname')
-            lastname.text = authors['surname']
-            author.append(lastname)
+            if authors['surname']:
+                lastname = ET.Element('surname')
+                lastname.text = authors['surname']
+                author.append(lastname)
 
         if raw.affiliations:
             for ndx, aff in enumerate(raw.affiliations):
