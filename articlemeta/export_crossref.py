@@ -290,7 +290,7 @@ class XMLJournalArticlePipe(plumber.Pipe):
 
         el = ET.Element('journal_article')
         el.set('publication_type', 'full_text')
-
+        el.set('reference_distribution_opts', 'any')
         xml.find('./body/journal').append(el)
 
         return data
@@ -354,27 +354,31 @@ class XMLArticleContributorsPipe(plumber.Pipe):
                 lastname.text = authors['surname']
                 author.append(lastname)
 
-        if raw.affiliations:
-            for ndx, aff in enumerate(raw.affiliations):
-                affiliation = ET.Element('organization')
-                seq = 'first' if ndx == 0 else 'additional'
-                affiliation.set('contributor_role', 'author')
-                affiliation.set('sequence', seq)
-                aff_list = []
-                if 'institution' in aff:
-                    aff_list.append(aff['institution'])
-                if 'addr_line' in aff:
-                    aff_list.append(aff['addr_line'])
-                if 'country' in aff:
-                    aff_list.append(aff['country'])
+            author_index = [i.upper() for i in authors.get('xref', []) or []]
 
-                aff_info = ',  '.join(aff_list)
-
-                if len(aff_info.strip()) == 0:
+            affs_list = []
+            for aff in raw.affiliations:
+                affiliation = ET.Element('affiliation')
+                if 'index' not in aff:
                     continue
+                if aff['index'].upper() in author_index:
+                    aff_list = []
+                    if 'institution' in aff:
+                        aff_list.append(aff['institution'])
+                    if 'addr_line' in aff:
+                        aff_list.append(aff['addr_line'])
+                    if 'country' in aff:
+                        aff_list.append(aff['country'])
 
-                affiliation.text = aff_info
-                el.append(affiliation)
+                    aff_info = ',  '.join(aff_list)
+                    if len(aff_info.strip()) == 0:
+                        continue
+                    affs_list.append(aff_info)
+
+            affs = '; '.join(affs_list)
+            if len(affs) > 0:
+                affiliation.text = affs
+                author.append(affiliation)
 
         xml.find('./body/journal/journal_article').append(el)
 
