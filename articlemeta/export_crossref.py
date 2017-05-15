@@ -209,16 +209,16 @@ class XMLPubDatePipe(plumber.Pipe):
         else:
             el = ET.Element('publication_date', media_type='print')
 
-        # Day
-        if raw.publication_date[8:10]:
-            day = ET.Element('day')
-            day.text = raw.publication_date[8:10]
-            el.append(day)
         # Month
         if raw.publication_date[5:7]:
             month = ET.Element('month')
             month.text = raw.publication_date[5:7]
             el.append(month)
+        # Day
+        if raw.publication_date[8:10]:
+            day = ET.Element('day')
+            day.text = raw.publication_date[8:10]
+            el.append(day)
         # Year
         if raw.publication_date[0:4]:
             year = ET.Element('year')
