@@ -500,28 +500,38 @@ class XMLPIDPipe(plumber.Pipe):
 
 class XMLDOIDataPipe(plumber.Pipe):
 
-    def precond(data):
-
+    def transform(self, data):
         raw, xml = data
 
-        if not raw.doi:
-            raise plumber.UnmetPrecondition()
+        el = ET.Element('doi_data')
 
-    @plumber.precondition(precond)
+        xml.find('./body/journal/journal_article').append(el)
+
+        return data
+
+
+class XMLDOIPipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
         doi = ET.Element('doi')
         doi.text = raw.doi
 
+        xml.find('./body/journal/journal_article/doi_data').append(doi)
+
+        return data
+
+
+class XMLResourcePipe(plumber.Pipe):
+
+    def transform(self, data):
+        raw, xml = data
+
         resource = ET.Element('resource')
         resource.text = raw.html_url(language=raw.original_language())
 
-        el = ET.Element('doi_data')
-        el.append(doi)
-        el.append(resource)
-
-        xml.find('./body/journal/journal_article').append(el)
+        xml.find('./body/journal/journal_article/doi_data').append(resource)
 
         return data
 
