@@ -209,16 +209,16 @@ class XMLPubDatePipe(plumber.Pipe):
         else:
             el = ET.Element('publication_date', media_type='print')
 
-        # Day
-        if raw.publication_date[8:10]:
-            day = ET.Element('day')
-            day.text = raw.publication_date[8:10]
-            el.append(day)
         # Month
         if raw.publication_date[5:7]:
             month = ET.Element('month')
             month.text = raw.publication_date[5:7]
             el.append(month)
+        # Day
+        if raw.publication_date[8:10]:
+            day = ET.Element('day')
+            day.text = raw.publication_date[8:10]
+            el.append(day)
         # Year
         if raw.publication_date[0:4]:
             year = ET.Element('year')
@@ -356,29 +356,30 @@ class XMLArticleContributorsPipe(plumber.Pipe):
 
             author_index = [i.upper() for i in authors.get('xref', []) or []]
 
-            affs_list = []
-            for aff in raw.affiliations:
-                affiliation = ET.Element('affiliation')
-                if 'index' not in aff:
-                    continue
-                if aff['index'].upper() in author_index:
-                    aff_list = []
-                    if 'institution' in aff:
-                        aff_list.append(aff['institution'])
-                    if 'addr_line' in aff:
-                        aff_list.append(aff['addr_line'])
-                    if 'country' in aff:
-                        aff_list.append(aff['country'])
-
-                    aff_info = ',  '.join(aff_list)
-                    if len(aff_info.strip()) == 0:
+            if raw.affiliations:
+                affs_list = []
+                for aff in raw.affiliations:
+                    affiliation = ET.Element('affiliation')
+                    if 'index' not in aff:
                         continue
-                    affs_list.append(aff_info)
+                    if aff['index'].upper() in author_index:
+                        aff_list = []
+                        if 'institution' in aff:
+                            aff_list.append(aff['institution'])
+                        if 'addr_line' in aff:
+                            aff_list.append(aff['addr_line'])
+                        if 'country' in aff:
+                            aff_list.append(aff['country'])
 
-            affs = '; '.join(affs_list)
-            if len(affs) > 0:
-                affiliation.text = affs
-                author.append(affiliation)
+                        aff_info = ',  '.join(aff_list)
+                        if len(aff_info.strip()) == 0:
+                            continue
+                        affs_list.append(aff_info)
+
+                affs = '; '.join(affs_list)
+                if len(affs) > 0:
+                    affiliation.text = affs
+                    author.append(affiliation)
 
         xml.find('./body/journal/journal_article').append(el)
 
@@ -425,16 +426,16 @@ class XMLArticlePubDatePipe(plumber.Pipe):
         el = ET.Element('publication_date')
         el.set('media_type', "print")
 
-        # Day
-        if raw.publication_date[8:10]:
-            day = ET.Element('day')
-            day.text = raw.publication_date[8:10]
-            el.append(day)
         # Month
         if raw.publication_date[5:7]:
             month = ET.Element('month')
             month.text = raw.publication_date[5:7]
             el.append(month)
+        # Day
+        if raw.publication_date[8:10]:
+            day = ET.Element('day')
+            day.text = raw.publication_date[8:10]
+            el.append(day)
         # Year
         if raw.publication_date[0:4]:
             year = ET.Element('year')
