@@ -21,7 +21,8 @@ requires = [
     'thriftpy==0.3.1',
     'thriftpywrap',
     'xylose==1.18.6',
-    'raven'
+    'raven',
+    'chardet'
     ]
 
 test_requires = ['mocker']
