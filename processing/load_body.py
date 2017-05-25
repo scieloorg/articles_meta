@@ -11,13 +11,13 @@ import logging
 import logging.config
 from datetime import datetime, timedelta
 
+import chardet
 import requests
 from lxml import etree
 from io import StringIO
 
 from pymongo import MongoClient
 from xylose.scielodocument import Article
-from articlemeta import utils
 
 logger = logging.getLogger(__name__)
 SENTRY_DSN = os.environ.get('SENTRY_DSN', None)
@@ -72,7 +72,7 @@ REMOVE_LINKS_REGEX = re.compile(r'\[.<a href="javascript\:void\(0\);".*?>Links</
 try:
     articlemeta_db = MongoClient(MONGODB_HOST)['articlemeta']
 except:
-    logging.error('Fail to connect to (%s)', settings['app:main']['mongo_uri'])
+    logging.error('Fail to connect to (%s)', MONGODB_HOST)
 
 
 def collections_acronym():
@@ -95,7 +95,7 @@ def load_documents(collection, all_records=False):
         'collection': collection
     }
 
-    if all_records == False:
+    if not all_records:
         fltr['body'] = {'$exists': 0}
 
     documents = articlemeta_db['articles'].find(
@@ -135,13 +135,26 @@ def do_request(url, json=True):
         if json:
             return document.json()
         else:
-            return document.text
+            return document.content
 
 
 def scrap_body(data, language):
+    '''
+    Function to scrap article by URL and slice the important content.
 
-    # html_parser = HTMLParser.HTMLParser()
-    # unescaped = html_parser.unescape(data)
+    Params:
+    :param data: bytes, encoded by source
+    :param language: str [en, es, pt, ...]
+
+    Return the unicode of the body encoded by etree.tostring line 178
+    '''
+
+    encoding = chardet.detect(data)['encoding']
+
+    #  IMPORTANTE: Nesse trecho estamos decodificando para o encoding descoberto
+    #  pelo chardet e substituindo os caracteres que não foram encotrados no
+    #  encoding por código unicode.
+    data = data.decode(encoding, 'replace')
 
     data = ' '.join([i.strip() for i in data.split('\n')])
 
