@@ -139,9 +139,15 @@ def do_request(url, json=True):
 
 
 def scrap_body(data, language):
+    '''
+    Function to scrap article by URL and slice the important content.
 
-    # html_parser = HTMLParser.HTMLParser()
-    # unescaped = html_parser.unescape(data)
+    Params:
+    :param data: bytes, encoded by source
+    :param language: str [en, es, pt, ...]
+
+    Return the unicode of the body encoded by etree.tostring line 178
+    '''
 
     encoding = chardet.detect(data)['encoding']
 

@@ -414,28 +414,6 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(b'<doi_batch><body><journal><journal_article publication_type="full_text"><publisher_item><identifier id_type="pii">S0034-89102010000400007</identifier></publisher_item></journal_article></journal></body></doi_batch>', ET.tostring(xml))
 
-    def test_article_pid_element(self):
-
-        xmlcrossref = ET.Element('doi_batch')
-
-        journal_article = ET.Element('journal_article')
-        journal_article.set('publication_type', 'full_text')
-
-        journal = ET.Element('journal')
-        journal.append(journal_article)
-
-        body = ET.Element('body')
-        body.append(journal)
-
-        xmlcrossref.append(body)
-
-        data = [self._article_meta, xmlcrossref]
-
-        xmlcrossref = export_crossref.XMLDOIDataPipe()
-        raw, xml = xmlcrossref.transform(data)
-
-        self.assertEqual(b'<doi_batch><body><journal><journal_article publication_type="full_text"><doi_data><doi>10.1590/S0034-89102010000400007</doi><resource>http://www.scielo.br/scielo.php?script=sci_arttext&amp;pid=S0034-89102010000400007&amp;lng=pt&amp;tlng=pt</resource></doi_data></journal_article></journal></body></doi_batch>', ET.tostring(xml))
-
     def test_xmlclose_pipe(self):
 
         pxml = ET.Element('doi_batch')

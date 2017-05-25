@@ -12,10 +12,9 @@ class LoadLicensesTest(unittest.TestCase):
 
         data = u"""<html><header></header><body><div class="content"><div class="index,en"><div class="title">Crazy <i>Title</i></div><p>Crazy Body</p><p>Really Crazy Body</p></div></div></body></html>"""
 
-        result = load_body.scrap_body(data, 'en')
+        result = load_body.scrap_body(data.encode('utf-8'), 'en')
 
         self.assertEqual(result, '<div class="title">Crazy <i>Title</i></div><p>Crazy Body</p><p>Really Crazy Body</p>')
-
 
     def test_regex_remove_links1(self):
         import re
@@ -79,7 +78,7 @@ class LoadLicensesTest(unittest.TestCase):
           </html>
           """
 
-        result = load_body.scrap_body(data, 'en')
+        result = load_body.scrap_body(data.encode('utf-8'), 'en')
 
         self.assertEqual(result, '<div class="title">Crazy <i>Title</i></div> <p>Crazy Body</p> <p>Really Crazy Body</p>')
 
@@ -87,7 +86,7 @@ class LoadLicensesTest(unittest.TestCase):
 
         data = u"""<html><header></header><body><div class="content"><div class="index,en"><div class="title">Crazy <i>Title</i></div><p>Crazy Body</p><p>Really Crazy Body</p></div></div></body></html>"""
 
-        result = load_body.scrap_body(data, 'pt')
+        result = load_body.scrap_body(data.encode('utf-8'), 'pt')
 
         self.assertEqual(result, None)
 
@@ -95,14 +94,14 @@ class LoadLicensesTest(unittest.TestCase):
 
         data = u"""<html><header></header><body><div class="content"></div></body></html>"""
 
-        result = load_body.scrap_body(data, 'pt')
+        result = load_body.scrap_body(data.encode('utf-8'), 'pt')
 
         self.assertEqual(result, None)
 
     def test_body_sample_1(self):
-        data = ' '.join([i.strip() for i in codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_1.html', 'r', encoding='utf-8').readlines()])
+        data = codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_1.html', 'r', encoding='utf-8').read()
 
-        result = load_body.scrap_body(data, 'pt')
+        result = load_body.scrap_body(data.encode('utf-8'), 'pt')
 
         # Text on the begining of the document
         self.assertTrue(u'On the one pot syntheses' in result)
@@ -110,9 +109,9 @@ class LoadLicensesTest(unittest.TestCase):
         self.assertTrue(u'Web Release Date: November 26, 2009' in result)
 
     def test_body_sample_2(self):
-        data = ' '.join([i.strip() for i in codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_2.html', 'r', encoding='utf-8').readlines()])
-      
-        result = load_body.scrap_body(data, 'pt')
+        data = codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_2.html', 'r', encoding='utf-8').read()
+
+        result = load_body.scrap_body(data.encode('utf-8'), 'pt')
 
         # Text on the begining of the document
         self.assertTrue(u'meio para isolamento de' in result)
@@ -120,9 +119,9 @@ class LoadLicensesTest(unittest.TestCase):
         self.assertTrue(u'Recebido    para publicação em 31-7-1967' in result)
 
     def test_body_sample_3(self):
-        data = ' '.join([i.strip() for i in codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_3.html', 'r', encoding='utf-8').readlines()])
-      
-        result = load_body.scrap_body(data, 'pt')
+        data = codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_3.html', 'r', encoding='utf-8').read()
+
+        result = load_body.scrap_body(data.encode('utf-8'), 'pt')
 
         # Text on the begining of the document
         self.assertTrue(u'A TRIBUTAÇÃO NA PRODUÇÃO DE CARVÃO VEGETAL' in result)
@@ -130,9 +129,9 @@ class LoadLicensesTest(unittest.TestCase):
         self.assertTrue(u'Recebido: 03 de Fevereiro de 2012; Aceito: 14 de Abril de 2014' in result)
 
     def test_body_sample_4(self):
-        data = ' '.join([i.strip() for i in codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_4.html', 'r', encoding='utf-8').readlines()])
-          
-        result = load_body.scrap_body(data, 'pt')
+        data = codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_4.html', 'r', encoding='utf-8').read()
+
+        result = load_body.scrap_body(data.encode('utf-8'), 'pt')
 
         # Text on the begining of the document
         self.assertTrue(u'Aquarelas de um Brasil' in result)
@@ -140,9 +139,9 @@ class LoadLicensesTest(unittest.TestCase):
         self.assertTrue(u'São Paulo, Companhia das Letras.' in result)
 
     def test_body_sample_5(self):
-        data = ' '.join([i.strip() for i in codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_5.html', 'r', encoding='utf-8').readlines()])
-      
-        result = load_body.scrap_body(data, 'pt')
+        data = codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_5.html', 'r', encoding='utf-8').read()
+
+        result = load_body.scrap_body(data.encode('utf-8'), 'pt')
 
         # Text on the begining of the document
         self.assertTrue(u'Molestia de Carlos Chagas' in result)
@@ -150,20 +149,19 @@ class LoadLicensesTest(unittest.TestCase):
         self.assertTrue(u'Full text available only in PDF format' in result)
 
     def test_body_sample_6(self):
-        data = ' '.join([i.strip() for i in codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_6.html', 'r', encoding='utf-8').readlines()])
-      
-        result = load_body.scrap_body(data, 'pt')
+        data = codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_6.html', 'r', encoding='utf-8').read()
+
+        result = load_body.scrap_body(data.encode('utf-8'), 'pt')
 
         # Text on the begining of the document
         self.assertTrue(u'Editorial' in result)
         # Text on the end of the document
         self.assertTrue(u'Boa leitura!' in result)
 
-
     def test_body_sample_7(self):
-        data = ' '.join([i.strip() for i in codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_7.html', 'r', encoding='utf-8').readlines()])
+        data = codecs.open(os.path.dirname(__file__)+'/fixtures/body_sample_7.html', 'r', encoding='utf-8').read()
 
-        result = load_body.scrap_body(data, 'en')
+        result = load_body.scrap_body(data.encode('utf-8'), 'en')
 
         # Text on the begining of the document
         self.assertTrue(u'caso da bacia    do Amazonas' in result)
