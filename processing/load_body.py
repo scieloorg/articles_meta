@@ -135,7 +135,7 @@ def do_request(url, json=True):
         if json:
             return document.json()
         else:
-            return document.text
+            return document.content
 
 
 def scrap_body(data, language):
