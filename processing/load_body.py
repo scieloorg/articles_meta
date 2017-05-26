@@ -152,7 +152,7 @@ def scrap_body(data, language):
     encoding = chardet.detect(data)['encoding']
 
     #  IMPORTANTE: Nesse trecho estamos decodificando para o encoding descoberto
-    #  pelo chardet e substituindo os caracteres que não foram encotrados no
+    #  pelo chardet e substituindo os caracteres que não foram encontrados no
     #  encoding por código unicode.
     data = data.decode(encoding, 'replace')
 
