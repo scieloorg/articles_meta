@@ -341,8 +341,7 @@ class DataBroker(object):
         meta = {
             'limit': limit,
             'offset': offset,
-            'filter': fltr,
-            'total': total
+            'filter': fltr
         }
 
         result = {'meta': meta, 'objects': [{'code': i['code'], 'collection': i['collection'], 'processing_date': i['processing_date']} for i in data]}
