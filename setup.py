@@ -21,7 +21,7 @@ requires = [
     'thriftpy>=0.3.1',
     'thriftpywrap',
     'xylose>=1.18.6',
-    'crossrefapi>=1.0.0'
+    'crossrefapi>=1.0.0',
     'raven',
     'chardet'
     ]
