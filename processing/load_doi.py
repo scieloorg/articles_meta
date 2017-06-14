@@ -18,6 +18,8 @@ from pymongo import MongoClient
 from xylose.scielodocument import Article
 from articlemeta import utils
 
+from crossref.restful import Journals
+
 logger = logging.getLogger(__name__)
 SENTRY_DSN = os.environ.get('SENTRY_DSN', None)
 LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
@@ -93,7 +95,7 @@ def load_documents(collection, all_records=False):
         'collection': collection
     }
 
-    if all_records == False:
+    if all_records is False:
         fltr['doi'] = {'$exists': 0}
 
     documents = articlemeta_db['articles'].find(
@@ -147,7 +149,23 @@ def scrap_doi(data):
     return result
 
 
-def run(collections, all_records=False):
+def query_to_crossref(document):
+    title = document.original_title()
+    author = ' '.join([document.first_author.get('surname', ''), document.first_author.get('given_names', '')]).strip()
+    pub_date = document.publication_date
+
+    if title is None:
+        return None
+
+    result = [i for i in Journals().works(document.journal.scielo_issn).query(title=title, author=author).filter(from_pub_date=pub_date, until_pub_date=pub_date)]
+
+    if len(result) != 1:
+        return None
+
+    return result.get('DOI', None)
+
+
+def run(collections, all_records=False, scrap_scielo=False, query_crossref=False):
 
     if not isinstance(collections, list):
         logger.error('Collections must be a list o collection acronym')
@@ -162,19 +180,22 @@ def run(collections, all_records=False):
         for document in load_documents(collection, all_records=all_records):
 
             doi = None
-            try:
-                data = do_request(document.html_url(), json=False)
-            except:
-                logger.error('Fail to load url: %s', document.html_url())
-                continue
 
-            try:
-                doi = scrap_doi(data)
-            except:
-                logger.error('Fail to scrap: %s', document.publisher_id)
-                continue
+            if scrap_scielo is True:
+                try:
+                    data = do_request(document.html_url(), json=False)
+                except:
+                    logger.error('Fail to load url: %s', document.html_url())
 
-            if not doi:
+                try:
+                    doi = scrap_doi(data)
+                except:
+                    logger.error('Fail to scrap: %s', document.publisher_id)
+
+            if query_crossref is True and doi is None:
+                doi = query_to_crossref(document)
+
+            if doi is None:
                 logger.debug('No DOI defined for: %s', document.publisher_id)
                 continue
 
@@ -206,6 +227,20 @@ def main():
     )
 
     parser.add_argument(
+        '--scrap_scielo',
+        '-s',
+        action='store_true',
+        help='Try to Scrapy SciELO Website, articles page to get the DOI number'
+    )
+
+    parser.add_argument(
+        '--query_crossref',
+        '-d',
+        action='store_true',
+        help='Try to query to crossref API for the DOI number'
+    )
+
+    parser.add_argument(
         '--logging_level',
         '-l',
         default=LOGGING_LEVEL,
@@ -222,4 +257,4 @@ def main():
 
     collections = [args.collection] if args.collection else collections_acronym()
 
-    run(collections, args.all_records)
+    run(collections, args.all_records, args.scrap_scielo, args.query_crossref)
