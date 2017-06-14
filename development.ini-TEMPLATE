@@ -12,7 +12,7 @@ pyramid.includes = pyramid_debugtoolbar
 # '127.0.0.1' and '::1'.
 # debugtoolbar.hosts = 127.0.0.1 ::1
 
-mongo_uri = mongodb://127.0.0.1:27017/articlemeta
+mongo_uri = 127.0.0.1:27017
 admintoken = admin
 
 [server:main]
@@ -21,10 +21,10 @@ host = 0.0.0.0
 port = 8000
 
 [loggers]
-keys = root, articlemeta, sentry
+keys = root, articlemeta
 
 [handlers]
-keys = console, sentry
+keys = console
 
 [formatters]
 keys = generic
@@ -38,22 +38,10 @@ level = DEBUG
 handlers = console
 qualname = articlemeta
 
-[logger_sentry]
-level = ERROR
-handlers = console
-qualname = sentry
-propagate = 0
-
 [handler_console]
 class = StreamHandler
 args = (sys.stderr,)
 level = NOTSET
-formatter = generic
-
-[handler_sentry]
-class = raven.handlers.logging.SentryHandler
-level = ERROR
-args = ()
 formatter = generic
 
 [formatter_generic]
