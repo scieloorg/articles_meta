@@ -344,12 +344,12 @@ class XMLArticleContributorsPipe(plumber.Pipe):
             author.set('sequence', seq)
             el.append(author)
 
-            if authors['given_names']:
+            if 'given_names' in authors and authors['given_names']:
                 firstname = ET.Element('given_name')
                 firstname.text = authors['given_names']
                 author.append(firstname)
 
-            if authors['surname']:
+            if 'surname' in authors and authors['surname']:
                 lastname = ET.Element('surname')
                 lastname.text = authors['surname']
                 author.append(lastname)
@@ -380,6 +380,11 @@ class XMLArticleContributorsPipe(plumber.Pipe):
                 if len(affs) > 0:
                     affiliation.text = affs
                     author.append(affiliation)
+
+            if 'orcid' in authors and authors['orcid']:
+                orcid = ET.Element('ORCID')
+                orcid.text = authors['orcid']
+                author.append(orcid)
 
         xml.find('./body/journal/journal_article').append(el)
 
