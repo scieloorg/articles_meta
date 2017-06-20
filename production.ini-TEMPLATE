@@ -11,7 +11,7 @@ pyramid.default_locale_name = en
 # '127.0.0.1' and '::1'.
 # debugtoolbar.hosts = 127.0.0.1 ::1
 
-mongo_uri = mongodb://127.0.0.1:27017/articlemeta
+mongo_uri = 127.0.0.1:27017
 admintoken = admin
 
 [server:main]
