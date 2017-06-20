@@ -383,7 +383,7 @@ class XMLArticleContributorsPipe(plumber.Pipe):
 
             if 'orcid' in authors and authors['orcid']:
                 orcid = ET.Element('ORCID')
-                orcid.text = authors['orcid']
+                orcid.text = 'http://orcid.org/%s' % authors['orcid']
                 author.append(orcid)
 
         xml.find('./body/journal/journal_article').append(el)
