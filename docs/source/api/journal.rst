@@ -1,6 +1,6 @@
-============
+=========
 /journal/
-============
+=========
 
 Retorna os metadados de um periódico.
 
@@ -9,14 +9,17 @@ Parâmetros:
     +------------+-----------------------------------------------------+-------------+
     | Paremetros | Descrição                                           | Obrigatório |
     +============+=====================================================+=============+
-    | **issn**   | ISSN do periódico no SciELO                         | yes         |
+    | **issn**   | ISSN do periódico no SciELO                         | sim         |
     +------------+-----------------------------------------------------+-------------+
-    | callback   | JSONP callback method                               | No          |
+    | collection | Acrônimo de três letras de coleções SciELO          | não         |
     +------------+-----------------------------------------------------+-------------+
+    | callback   | JSONP callback method                               | não         |
+    +------------+-----------------------------------------------------+-------------+
+
 
 Parâmetros obrigatórios:
 
-    *issn* ISSN do periódico no SciELO, ex: 
+    *issn* ISSN do periódico no SciELO, ex: 2359-0769
 
 --------
 Exemplos

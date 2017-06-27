@@ -9,9 +9,9 @@ Parâmetros:
     +------------+-----------------------------------------------------+-------------+
     | Paremetros | Descrição                                           | Obrigatório |
     +============+=====================================================+=============+
-    | **code**   | Acrônimo de três letras de coleções SciELO          | No          |
+    | **code**   | Acrônimo de três letras de coleções SciELO          | não         |
     +------------+-----------------------------------------------------+-------------+
-    | callback   | JSONP callback method                               | No          |
+    | callback   | JSONP callback method                               | não         |
     +------------+-----------------------------------------------------+-------------+
 
 Parâmetros obrigatórios:
