@@ -2,7 +2,7 @@
 /collection/
 ============
 
-Retrieve “cited by” documents of a given PID (SciELO ID)
+Retorna os metadados de uma coleção
 
 Parameters:
 
@@ -14,7 +14,9 @@ Parameters:
 | callback   | JSONP callback method                               | No          |
 +------------+-----------------------------------------------------+-------------+
 
-Mandatory Parameters: *q* PID (SciELO) or any article unique code
+Mandatory Parameters:
+
+    *code* Acrônimo de três letras de coleções SciELO, ex: scl, arg, cub, esp.
 
 
 ``GET /api/v1/collection/?code=scl``
