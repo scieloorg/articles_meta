@@ -4,25 +4,27 @@
 
 Retorna os metadados de uma coleção
 
-Parameters:
+Parâmetros:
 
-+------------+-----------------------------------------------------+-------------+
-| Paremeter  | Description                                         | Mandatory   |
-+============+=====================================================+=============+
-| **code**   | Acrônimo de três letras de coleções SciELO          | yes         |
-+------------+-----------------------------------------------------+-------------+
-| callback   | JSONP callback method                               | No          |
-+------------+-----------------------------------------------------+-------------+
+    +------------+-----------------------------------------------------+-------------+
+    | Paremetros | Descrição                                           | Obrigatório |
+    +============+=====================================================+=============+
+    | **code**   | Acrônimo de três letras de coleções SciELO          | yes         |
+    +------------+-----------------------------------------------------+-------------+
+    | callback   | JSONP callback method                               | No          |
+    +------------+-----------------------------------------------------+-------------+
 
-Mandatory Parameters:
+Parâmetros obrigatórios:
 
     *code* Acrônimo de três letras de coleções SciELO, ex: scl, arg, cub, esp.
 
+--------
+Exemplos
+--------
 
 ``GET /api/v1/collection/?code=scl``
 
-
-Response
+Resposta:
 
 .. code-block:: json
 
