@@ -71,10 +71,7 @@ Resposta:
             "domain": "www.scielo.org.co",
             "status": "certified",
             "has_analytics": true
-        }
-        ...
-
-        ...
+        },
        {
             "name": {
                 "pt": "Revista de Enfermagem",
