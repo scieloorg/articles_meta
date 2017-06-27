@@ -20,7 +20,9 @@ Mandatory Parameters: *q* PID (SciELO) or any article unique code
 ``GET /api/v1/collection/?code=scl``
 
 
-Response::
+Response
+
+.. code-block:: json
 
     {
 
