@@ -1,6 +1,6 @@
-=====================
-/journal/identifiers/
-=====================
+===================
+/issue/identifiers/
+===================
 
 Retorna uma lista de fascículos com seus metadados.
 
