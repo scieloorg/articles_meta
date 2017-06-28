@@ -36,6 +36,20 @@ articlemetaapi, utiliza a biblioteca Xylose para abstração dos registros retor
 
 Para informações sobre uso, acesse o repositório em: https://github.com/scieloorg/xylose
 
+----------------
+Arquivos em lote
+----------------
+
+Para carga inicial de metadados recomendamos o download e processamento dos arquivos em lote, os arquivos em lote possuem todos os resultados de todos os registros da API ArticleMeta e são atualizados mensalmente.
+
+Gere sua base de dados a partir dos arquivos em lote, e posteriormente utilize os endpoints de histórico de mudanças para atualizar sua base de dados.
+
+O download de todos os registros da API através do protocolo HTTP podem levar em média 3,5 dias. Esse tempo pode varia dependendo de sua conectividade, da capacidade throughput da API entre outras variáveis.
+
+Ao utilizar os arquivos em lote esse tempo pode ser reduzido para poucas horas de download.
+
+Baixar o arquivo em lote em: http://static.scielo.org/articlemeta/articles.json.zip
+
 -------
 Métodos
 -------
