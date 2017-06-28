@@ -120,7 +120,7 @@ Resposta:
     }
 
 Próximos 10 registros
-======================
+=====================
 
 ``GET /api/v1/article/identifiers/limit=10&offset=100``
 
