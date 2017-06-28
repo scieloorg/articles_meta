@@ -18,7 +18,6 @@ Parâmetros:
     | callback   | JSONP callback method                               | não         |
     +------------+-----------------------------------------------------+-------------+
 
-
 Parâmetros obrigatórios:
 
     Não existem parâmetros obrigatórios
@@ -26,7 +25,6 @@ Parâmetros obrigatórios:
 --------
 Exemplos
 --------
-
 
 Primeiros 10 registros
 ======================
