@@ -2,11 +2,16 @@
 /article/history/
 =================
 
-Retorna os identificadores de documentos que sofreram modificações em um período especificado. As mudanças possíveis são: alteração, inclusão e exclusão.
+Retorna os identificadores de documentos que sofreram modificações em um período
+especificado. As mudanças possíveis são: alteração, inclusão e exclusão.
 
-As ações de mudanças são representadas pelo atributo **event**. presente em todos os registros de histórico de mudanças.
+As ações de mudanças são representadas pelo atributo **event**. presente em todos
+os registros de histórico de mudanças.
 
-Recomenda-se que após feita uma coleta completa dos metadados desejados através dos endpoints journal, issue e article, as coletas periódicas passem a utilizar o endpoint history para atualização dos metadados de registros já copiados, para identificar novos registros inseridos e registros excluídos do SciELO.
+Recomenda-se que após feita uma coleta completa dos metadados desejados através
+dos endpoints journal, issue e article, as coletas periódicas passem a utilizar
+o endpoint history para atualização dos metadados de registros já copiados, para
+identificar novos registros inseridos e registros excluídos do SciELO.
 
 Parâmetros:
 
