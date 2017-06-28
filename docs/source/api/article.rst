@@ -3710,7 +3710,6 @@ Resposta:
 
 .. code-block:: xml
 
-    ...
     <records>
         <record>
             <publisher>Associação Brasileira de Divulgação Científica</publisher>
@@ -3735,7 +3734,7 @@ Resposta:
                 <affiliationName affiliationId="A01">Universidade Estadual de Londrina</affiliationName>
             </affiliationsList>
             <abstract language="eng">This study evaluates the influence of different concentrations of calcium on blood pressure of normotensive rats. Four groups of Wistar rats (A, B, C and D) had free access to modified isocaloric and isoproteic diets containing 0.2, 0.5, 2 and 4 g% calcium as calcium carbonate for a period of 30 days. Systolic and diastolic arterial blood pressures were monitored in awake rats by the indirect tail cuff method using a Physiograph equipped with transducers and preamplifiers. Body weight and length and food intake were monitored. Under the conditions of the present experiment, the systolic and diastolic arterial blood pressures of group D rats fed a diet containing 4 g% calcium were significantly (P<0.05) lower compared to rats of the other groups.</abstract>
-            <fullTextUrl format="html">http://www.scielo.br/scielo.php?script=sci_arttext&pid=S0100-879X1998000800011&lng=en&tlng=en</fullTextUrl>
+            <fullTextUrl format="html">http://www.scielo.br/scielo.php?script=sci_arttext&amp;pid=S0100-879X1998000800011&amp;lng=en&amp;tlng=en</fullTextUrl>
             <keywords language="eng">
                 <keyword>calcium carbonate</keyword>
                 <keyword>arterial blood pressure</keyword>
@@ -3743,4 +3742,4 @@ Resposta:
             </keywords>
         </record>
     </records>
-    ...
+
