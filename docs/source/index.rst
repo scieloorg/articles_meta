@@ -11,13 +11,13 @@ API Restful que fornece um conjunto de endpoints para recuperação de
 registros de artigo, periódico, fascículos e coleção da Rede SciELO. Os registros
 retornados representam a estrutura de dados legada do SciELO no formato JSON.
 
-Current version: 1.32.25
+Versão corrente: 1.32.25
 
 API URL: http://articlemeta.scielo.org
 
----------
-Libraries
----------
+-----------
+Bibliotecas
+-----------
 
 articlemetaapi
 ==============
@@ -30,11 +30,6 @@ pela API.
 
 Para informações sobre uso, acesse o repositório em: https://github.com/scieloorg/articlemetaapi
 
-Como Instalar
--------------
-
-pip install articlemetaapi
-
 xylose
 ======
 
@@ -46,13 +41,8 @@ articlemetaapi, utiliza a biblioteca Xylose para abstração dos registros retor
 
 Para informações sobre uso, acesse o repositório em: https://github.com/scieloorg/xylose
 
-Como Instalar
--------------
-
-pip install xylose
-
 -------
-Methods
+Métodos
 -------
 
 .. toctree::
@@ -69,15 +59,6 @@ Methods
    api/article
    api/article_identifiers
    api/article_history_change
-
--------
-Structs
--------
-
-.. toctree::
-   :maxdepth: 2
-
-   dev/rpc_spec/structs
 
 
 Indices and tables
