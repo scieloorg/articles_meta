@@ -44,7 +44,7 @@ Para carga inicial de metadados recomendamos o download e processamento dos arqu
 
 Gere sua base de dados a partir dos arquivos em lote, e posteriormente utilize os endpoints de histórico de mudanças para atualizar sua base de dados.
 
-O download de todos os registros da API através do protocolo HTTP podem levar em média 3,5 dias. Esse tempo pode varia dependendo de sua conectividade, da capacidade throughput da API entre outras variáveis.
+O download de todos os registros da API através do protocolo HTTP podem levar em média 3,5 dias. Esse tempo pode varia dependendo de sua conectividade, da capacidade de throughput da API entre outras variáveis.
 
 Ao utilizar os arquivos em lote esse tempo pode ser reduzido para poucas horas de download.
 
