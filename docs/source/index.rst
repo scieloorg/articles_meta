@@ -57,13 +57,13 @@ Methods
    api/collection_identifiers
    api/journal
    api/journal_identifiers
-   api/journal_history_changes
+   api/journal_history_change
    api/issue
    api/issue_identifiers
-   api/issue_history_changes
+   api/issue_history_change
    api/article
    api/article_identifiers
-   api/article_history_changes
+   api/article_history_change
 
 -------
 Structs
