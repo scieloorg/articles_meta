@@ -2,15 +2,13 @@
 /issue/identifiers/
 ===================
 
-Retorna uma lista de fascículos com seus metadados.
+Retorna uma lista de identificadores de fascículos.
 
 Parâmetros:
 
     +------------+-----------------------------------------------------+-------------+
     | Paremetros | Descrição                                           | Obrigatório |
     +============+=====================================================+=============+
-    | **code**   | ID de fascículo do SciELO                           | não         |
-    +------------+-----------------------------------------------------+-------------+
     | issn       | ISSN do periódico no SciELO                         | não         |
     +------------+-----------------------------------------------------+-------------+
     | collection | Acrônimo de três letras de coleções SciELO          | não         |
@@ -33,7 +31,7 @@ Exemplos
 
 
 Primeiros 10 registros
-----------------------
+======================
 
 ``GET /api/v1/issue/identifiers/?collection=mex&issn=0036-3634&limit=10``
 
@@ -111,7 +109,7 @@ Resposta:
     }
 
 Próximos 10 registros
----------------------
+=====================
 
 ``GET /api/v1/issue/identifiers/?collection=mex&issn=0036-3634&limit=10&offset=11``
 

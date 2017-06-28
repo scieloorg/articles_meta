@@ -2,15 +2,13 @@
 /journal/identifiers/
 =====================
 
-Retorna uma lista de periódicos  com seus metadados.
+Retorna uma lista de identificadores de periódicos.
 
 Parâmetros:
 
     +------------+-----------------------------------------------------+-------------+
     | Paremetros | Descrição                                           | Obrigatório |
     +============+=====================================================+=============+
-    | **issn**   | ISSN do periódico no SciELO                         | não         |
-    +------------+-----------------------------------------------------+-------------+
     | collection | Acrônimo de três letras de coleções SciELO          | não         |
     +------------+-----------------------------------------------------+-------------+
     | limit      | Total de registros por requisição, máximo 1000.     | não         |
@@ -31,7 +29,7 @@ Exemplos
 
 
 Primeiros 10 registros
-----------------------
+======================
 
 ``GET /api/v1/journal/identifiers/?collection=scl&limit=10``
 
@@ -102,7 +100,7 @@ Resposta:
     }
 
 Próximos 10 registros
----------------------
+=====================
 
 ``GET /api/v1/journal/identifiers/?collection=scl&limit=10&offset=11``
 
