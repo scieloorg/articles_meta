@@ -29,7 +29,6 @@ Parâmetros obrigatórios:
 Exemplos
 --------
 
-
 Primeiros 10 registros
 ======================
 
