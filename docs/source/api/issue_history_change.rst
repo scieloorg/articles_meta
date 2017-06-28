@@ -38,7 +38,6 @@ Resposta:
 .. code-block:: json
 
     {
-
         "meta": {
             "offset": 0,
             "filter": {
@@ -112,7 +111,6 @@ Resposta:
                 "code": "1807-257720170050"
             }
         ]
-
     }
 
 Próximos 10 registros
