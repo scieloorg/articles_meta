@@ -1,6 +1,8 @@
 .. toctree::
    :maxdepth: 2
 
+   index
+
 =======================
 ARTICLEMETA Restful API
 =======================
