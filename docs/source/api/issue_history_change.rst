@@ -31,7 +31,7 @@ Exemplos
 Primeiros 10 registros
 ======================
 
-``GET /api/v1/article/history/?collection=scl&limit=10``
+``GET /api/v1/journal/issue/?collection=scl&from=2017-06-01&limit=10``
 
 Resposta:
 
@@ -116,7 +116,7 @@ Resposta:
 Próximos 10 registros
 =====================
 
-``GET /api/v1/article/history/?collection=scl&limit=10&offset=11``
+``GET /api/v1/issue/history/?collection=scl&from=2017-06-01&limit=10&offset=11``
 
 Resposta:
 
