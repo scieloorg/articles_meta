@@ -13,9 +13,9 @@ Parâmetros:
     +------------+-----------------------------------------------------+-------------+
     | collection | Acrônimo de três letras de coleções SciELO          | não         |
     +------------+-----------------------------------------------------+-------------+
-    | format     | Formato de entrega dos metadados                    | não         |
+    | format     | Formato de entrega dos metadados, padrão JSON       | não         |
     +------------+-----------------------------------------------------+-------------+
-    | body       | Boolean (true, false)                               | não         |
+    | body       | Boolean (true, false), padrão false                 | não         |
     +------------+-----------------------------------------------------+-------------+
     | callback   | JSONP callback method                               | não         |
     +------------+-----------------------------------------------------+-------------+
@@ -24,6 +24,20 @@ Parâmetros:
 Parâmetros obrigatórios:
 
     *code* PID de documento do SciELO, ex: S0100-879X1998000800011
+
+Detalhes de parâmetros:
+
+* **format**: A API possui alguns formatos de saída disponíveis, quando nenhum format é especificado, o formato padrão de saída será o formato JSON. Os outros formatos disponíveis são: xmldoaj, xmlpubmed, xmlcrossref, xmlrsps, xmlwos.
+
+* **body**: A API entrega o texto completo dos artigos no formato HTML. O valor padrão para este atributo é **false**. O texto completo sera entregue somente se o atributo body estiver definido como **true**.
+
+.. WARNING::
+
+    Defina o parâmetro **body** como **true** apenas se você for utilizar o conteúdo do texto completo. Evite desperdicio de trafego de dados e aumente a velocidade de entrega dos metadados coletando somente o necessário.
+
+
+body
+====
 
 --------
 Exemplos
