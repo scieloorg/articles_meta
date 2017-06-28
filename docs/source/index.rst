@@ -1,8 +1,3 @@
-.. toctree::
-   :maxdepth: 3
-
-   index
-
 =======================
 ARTICLEMETA Restful API
 =======================
@@ -46,6 +41,7 @@ Métodos
 -------
 
 .. toctree::
+   :maxdepth: 2
 
    api/collection
    api/collection_identifiers
@@ -58,11 +54,3 @@ Métodos
    api/article
    api/article_identifiers
    api/article_history_change
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
