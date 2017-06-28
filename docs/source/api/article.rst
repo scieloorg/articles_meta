@@ -34,10 +34,6 @@ Detalhes de parâmetros:
 
         Defina o parâmetro **body** como **true** apenas se você for utilizar o conteúdo do texto completo. Evite desperdicio de trafego de dados e aumente a velocidade de entrega dos metadados coletando somente o necessário.
 
-
-body
-====
-
 --------
 Exemplos
 --------
