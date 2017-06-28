@@ -1,5 +1,5 @@
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    index
 
@@ -46,7 +46,6 @@ Métodos
 -------
 
 .. toctree::
-   :maxdepth: 2
 
    api/collection
    api/collection_identifiers
