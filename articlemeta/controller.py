@@ -212,12 +212,14 @@ class DataBroker(object):
         if code:
             fltr['code'] = code
 
+        total = self.db['historychanges_%s' % document_type].find(fltr).count()
         data = self.db['historychanges_%s' % document_type].find(fltr).skip(offset).limit(limit).sort("date")
 
         meta = {
             'limit': limit,
             'offset': offset,
-            'filter': fltr
+            'filter': fltr,
+            'total': total
         }
 
         objects = [{'date': i['date'], 'code': i['code'], 'collection': i['collection'], 'event': i['event']} for i in data]
@@ -336,12 +338,14 @@ class DataBroker(object):
         if extra_filter:
             fltr.update(json.loads(extra_filter))
 
+        total = self.db['journals'].find(fltr).count()
         data = self.db['journals'].find(fltr, {'code': 1, 'collection': 1, 'processing_date': 1}).skip(offset).limit(limit)
 
         meta = {
             'limit': limit,
             'offset': offset,
-            'filter': fltr
+            'filter': fltr,
+            'total': total
         }
 
         result = {'meta': meta, 'objects': [{'code': i['code'], 'collection': i['collection'], 'processing_date': i['processing_date']} for i in data]}
@@ -376,6 +380,7 @@ class DataBroker(object):
         if extra_filter:
             fltr.update(json.loads(extra_filter))
 
+        total = self.db['issues'].find(fltr).count()
         data = self.db['issues'].find(fltr, {
             'code': 1,
             'collection': 1,
@@ -385,7 +390,8 @@ class DataBroker(object):
         meta = {
             'limit': limit,
             'offset': offset,
-            'filter': fltr
+            'filter': fltr,
+            'total': total
         }
 
         result = {'meta': meta, 'objects': []}
@@ -540,6 +546,7 @@ class DataBroker(object):
         if extra_filter:
             fltr.update(json.loads(extra_filter))
 
+        total = self.db['articles'].find(fltr).count()
         data = self.db['articles'].find(fltr, {
             'code': 1,
             'collection': 1,
@@ -551,7 +558,8 @@ class DataBroker(object):
         meta = {
             'limit': limit,
             'offset': offset,
-            'filter': fltr
+            'filter': fltr,
+            'total': total
         }
 
         result = {'meta': meta, 'objects': []}
@@ -596,6 +604,7 @@ class DataBroker(object):
         if issn:
             fltr['code_title'] = issn
 
+        total = self.db['articles'].find(fltr).count()
         data = self.db['articles'].find(fltr, {
             'code': 1,
             'collection': 1,
@@ -607,7 +616,8 @@ class DataBroker(object):
         meta = {
             'limit': limit,
             'offset': offset,
-            'filter': fltr
+            'filter': fltr,
+            'total': total
         }
 
         result = {'meta': meta, 'objects': []}
