@@ -67,10 +67,7 @@ class Dispatcher(object):
         mongo = os.environ.get('MONGODB_HOST', settings.get('mongo_uri', '127.0.0.1:27017'))
 
         self._admintoken = os.environ.get('ADMIN_TOKEN', None) or settings['app:main'].get('admintoken', uuid.uuid4().hex)
-        self._databroker = DataBroker.from_dsn(
-            'mongodb://%s/articlemeta' % mongo,
-            reuse_dbconn=True
-        )
+        self._databroker = DataBroker.from_dsn(mongo, reuse_dbconn=True)
 
     def getInterfaceVersion(self):
         return articlemeta_thrift.VERSION
