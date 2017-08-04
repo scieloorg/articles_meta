@@ -14,7 +14,7 @@ LIMIT = 1000
 def get_dbconn(db_dsn):
     """Connects to the MongoDB server and returns a database handler."""
 
-    def _ensure_indexes(db):
+    def _create_indexes(db):
         """
         Ensures that an index exists on specified collections.
 
@@ -37,26 +37,57 @@ def get_dbconn(db_dsn):
         """
         index_by_collection = {
             'historychanges_article': [
-                ('date', pymongo.ASCENDING),
-                ('collection', pymongo.ASCENDING),
-                ('code', pymongo.ASCENDING),
+                [[('date', pymongo.ASCENDING)], {'background': True}],
+                [[('collection', pymongo.ASCENDING)], {'background': True}],
+                [[('code', pymongo.ASCENDING)], {'background': True}]
             ],
             'historychanges_journal': [
-                ('date', pymongo.ASCENDING),
-                ('collection', pymongo.ASCENDING),
-                ('code', pymongo.ASCENDING),
+                [[('date', pymongo.ASCENDING)], {'background': True}],
+                [[('collection', pymongo.ASCENDING)], {'background': True}],
+                [[('code', pymongo.ASCENDING)], {'background': True}]
             ],
+            'historychanges_issue': [
+                [[('date', pymongo.ASCENDING)], {'background': True}],
+                [[('collection', pymongo.ASCENDING)], {'background': True}],
+                [[('code', pymongo.ASCENDING)], {'background': True}]
+            ],
+            'issues': [
+                [[('code', pymongo.ASCENDING)], {'background': True}],
+                [[('collection', pymongo.ASCENDING)], {'background': True}],
+                [[('processing_date', pymongo.ASCENDING)], {'background': True}],
+                [[('publication_year', pymongo.ASCENDING)], {'background': True}]
+            ],
+            'journals': [
+                [[('code', pymongo.ASCENDING)], {'background': True}]
+            ],
+            'articles': [
+                [[('document_type', pymongo.ASCENDING)], {'background': True}],
+                [[('collection', pymongo.ASCENDING)], {'background': True}],
+                [[('code_title', pymongo.ASCENDING)], {'background': True}],
+                [[('applicable', pymongo.ASCENDING)], {'background': True}],
+                [[('code', pymongo.ASCENDING)], {'background': True}],
+                [[('sent_wos', pymongo.ASCENDING)], {'background': True}],
+                [[('publication_year', pymongo.ASCENDING)], {'background': True}],
+                [[('processing_date', pymongo.ASCENDING)], {'background': True}],
+                [[('license', pymongo.ASCENDING)], {'background': True}],
+                [[('section', pymongo.ASCENDING)], {'background': True}],
+                [[('aid', pymongo.ASCENDING)], {'background': True}],
+                [[('version', pymongo.ASCENDING)], {'background': True}],
+                [[('collection', pymongo.ASCENDING), ('code',  pymongo.ASCENDING)], {'unique': True, 'background': True}]
+            ]
         }
 
         for collection, indexes in index_by_collection.items():
-            db[collection].ensure_index(indexes)
+            for index in indexes:
+                if len(index) == 1:
+                    db[collection].create_index(index[0])
+                else:
+                    db[collection].create_index(index[0], **index[1])
 
     db_url = urlparse(db_dsn)
-    conn = pymongo.MongoClient(host=db_url.hostname, port=db_url.port)
+    conn = pymongo.MongoClient('mongodb://%s' % db_url.netloc)
     db = conn[db_url.path[1:]]
-    if db_url.username and db_url.password:
-        db.authenticate(db_url.username, db_url.password)
-    _ensure_indexes(db)
+    _create_indexes(db)
     return db
 
 
