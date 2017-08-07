@@ -55,10 +55,12 @@ def get_dbconn(db_dsn):
                 [[('code', pymongo.ASCENDING)], {'background': True}],
                 [[('collection', pymongo.ASCENDING)], {'background': True}],
                 [[('processing_date', pymongo.ASCENDING)], {'background': True}],
-                [[('publication_year', pymongo.ASCENDING)], {'background': True}]
+                [[('publication_year', pymongo.ASCENDING)], {'background': True}],
+                [[('code', pymongo.ASCENDING), ('collection',  pymongo.ASCENDING)], {'unique': True, 'background': True}]
             ],
             'journals': [
-                [[('code', pymongo.ASCENDING)], {'background': True}]
+                [[('code', pymongo.ASCENDING)], {'background': True}],
+                [[('code', pymongo.ASCENDING), ('collection',  pymongo.ASCENDING)], {'unique': True, 'background': True}]
             ],
             'articles': [
                 [[('document_type', pymongo.ASCENDING)], {'background': True}],
@@ -73,17 +75,19 @@ def get_dbconn(db_dsn):
                 [[('section', pymongo.ASCENDING)], {'background': True}],
                 [[('aid', pymongo.ASCENDING)], {'background': True}],
                 [[('version', pymongo.ASCENDING)], {'background': True}],
-                [[('collection', pymongo.ASCENDING), ('code',  pymongo.ASCENDING)], {'unique': True, 'background': True}]
+                [[('code', pymongo.ASCENDING), ('collection',  pymongo.ASCENDING)], {'unique': True, 'background': True}]
             ]
         }
 
         for collection, indexes in index_by_collection.items():
             for index in indexes:
+                print('create index %s (%s)' % (index, collection))
                 if len(index) == 1:
                     db[collection].create_index(index[0])
                 else:
                     db[collection].create_index(index[0], **index[1])
 
+    print('End Creation index')
     db_url = urlparse(db_dsn)
     conn = pymongo.MongoClient('mongodb://%s' % db_url.netloc)
     db = conn[db_url.path[1:]]
@@ -264,11 +268,11 @@ class DataBroker(object):
 
         fltr = {}
 
-        if collection:
-            fltr['collection'] = collection
-
         if issn:
             fltr['code'] = issn
+
+        if collection:
+            fltr['collection'] = collection
 
         data = self.db['journals'].find(fltr, {'_id': 0})
 
