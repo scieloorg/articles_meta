@@ -248,7 +248,7 @@ class DataBroker(object):
             fltr['code'] = code
 
         total = self.db['historychanges_%s' % document_type].find(fltr).count()
-        data = self.db['historychanges_%s' % document_type].find(fltr).skip(offset).limit(limit).sort("date")
+        data = self.db['historychanges_%s' % document_type].find(fltr).sort("date").skip(offset).limit(limit)
 
         meta = {
             'limit': limit,
@@ -374,7 +374,10 @@ class DataBroker(object):
             fltr.update(json.loads(extra_filter))
 
         total = self.db['journals'].find(fltr).count()
-        data = self.db['journals'].find(fltr, {'code': 1, 'collection': 1, 'processing_date': 1}).skip(offset).limit(limit)
+        data = self.db['journals'].find(
+            fltr,
+            {'code': 1, 'collection': 1, 'processing_date': 1}
+        ).sort('processing_date').skip(offset).limit(limit)
 
         meta = {
             'limit': limit,
@@ -420,7 +423,7 @@ class DataBroker(object):
             'code': 1,
             'collection': 1,
             'processing_date': 1}
-        ).skip(offset).limit(limit)
+        ).sort('processing_date').skip(offset).limit(limit)
 
         meta = {
             'limit': limit,
@@ -588,7 +591,7 @@ class DataBroker(object):
             'processing_date': 1,
             'aid': 1,
             'doi': 1}
-        ).skip(offset).limit(limit)
+        ).sort('processing_date').skip(offset).limit(limit)
 
         meta = {
             'limit': limit,
@@ -646,7 +649,7 @@ class DataBroker(object):
             'processing_date': 1,
             'aid': 1,
             'doi': 1}
-        ).skip(offset).limit(limit)
+        ).sort('processing_date').skip(offset).limit(limit)
 
         meta = {
             'limit': limit,
