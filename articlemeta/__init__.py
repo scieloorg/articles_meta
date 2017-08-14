@@ -21,10 +21,7 @@ def main(global_config, **settings):
 
         mongo = os.environ.get('MONGODB_HOST', settings.get('mongo_uri', '127.0.0.1:27017'))
 
-        return controller.DataBroker.from_dsn(
-            'mongodb://%s/articlemeta' % mongo,
-            reuse_dbconn=True
-        )
+        return controller.DataBroker.from_dsn(mongo, reuse_dbconn=True)
 
     config.add_route('index', '/')
     # collections - GET method:

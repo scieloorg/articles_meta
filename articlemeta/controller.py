@@ -14,7 +14,7 @@ LIMIT = 1000
 def get_dbconn(db_dsn):
     """Connects to the MongoDB server and returns a database handler."""
 
-    def _ensure_indexes(db):
+    def _create_indexes(db):
         """
         Ensures that an index exists on specified collections.
 
@@ -37,26 +37,61 @@ def get_dbconn(db_dsn):
         """
         index_by_collection = {
             'historychanges_article': [
-                ('date', pymongo.ASCENDING),
-                ('collection', pymongo.ASCENDING),
-                ('code', pymongo.ASCENDING),
+                [[('date', pymongo.ASCENDING)], {'background': True}],
+                [[('collection', pymongo.ASCENDING)], {'background': True}],
+                [[('code', pymongo.ASCENDING)], {'background': True}]
             ],
             'historychanges_journal': [
-                ('date', pymongo.ASCENDING),
-                ('collection', pymongo.ASCENDING),
-                ('code', pymongo.ASCENDING),
+                [[('date', pymongo.ASCENDING)], {'background': True}],
+                [[('collection', pymongo.ASCENDING)], {'background': True}],
+                [[('code', pymongo.ASCENDING)], {'background': True}]
             ],
+            'historychanges_issue': [
+                [[('date', pymongo.ASCENDING)], {'background': True}],
+                [[('collection', pymongo.ASCENDING)], {'background': True}],
+                [[('code', pymongo.ASCENDING)], {'background': True}]
+            ],
+            'issues': [
+                [[('code', pymongo.ASCENDING)], {'background': True}],
+                [[('collection', pymongo.ASCENDING)], {'background': True}],
+                [[('processing_date', pymongo.ASCENDING)], {'background': True}],
+                [[('publication_year', pymongo.ASCENDING)], {'background': True}],
+                [[('code', pymongo.ASCENDING), ('collection',  pymongo.ASCENDING)], {'unique': True, 'background': True}]
+            ],
+            'journals': [
+                [[('code', pymongo.ASCENDING)], {'background': True}],
+                [[('code', pymongo.ASCENDING), ('collection',  pymongo.ASCENDING)], {'unique': True, 'background': True}]
+            ],
+            'articles': [
+                [[('document_type', pymongo.ASCENDING)], {'background': True}],
+                [[('collection', pymongo.ASCENDING)], {'background': True}],
+                [[('code_title', pymongo.ASCENDING)], {'background': True}],
+                [[('applicable', pymongo.ASCENDING)], {'background': True}],
+                [[('code', pymongo.ASCENDING)], {'background': True}],
+                [[('sent_wos', pymongo.ASCENDING)], {'background': True}],
+                [[('publication_year', pymongo.ASCENDING)], {'background': True}],
+                [[('processing_date', pymongo.ASCENDING)], {'background': True}],
+                [[('license', pymongo.ASCENDING)], {'background': True}],
+                [[('section', pymongo.ASCENDING)], {'background': True}],
+                [[('aid', pymongo.ASCENDING)], {'background': True}],
+                [[('version', pymongo.ASCENDING)], {'background': True}],
+                [[('code', pymongo.ASCENDING), ('collection',  pymongo.ASCENDING)], {'unique': True, 'background': True}]
+            ]
         }
 
         for collection, indexes in index_by_collection.items():
-            db[collection].ensure_index(indexes)
+            for index in indexes:
+                print('create index %s (%s)' % (index, collection))
+                if len(index) == 1:
+                    db[collection].create_index(index[0])
+                else:
+                    db[collection].create_index(index[0], **index[1])
 
+    print('End Creation index')
     db_url = urlparse(db_dsn)
-    conn = pymongo.MongoClient(host=db_url.hostname, port=db_url.port)
+    conn = pymongo.MongoClient('mongodb://%s' % db_url.netloc)
     db = conn[db_url.path[1:]]
-    if db_url.username and db_url.password:
-        db.authenticate(db_url.username, db_url.password)
-    _ensure_indexes(db)
+    _create_indexes(db)
     return db
 
 
@@ -213,7 +248,7 @@ class DataBroker(object):
             fltr['code'] = code
 
         total = self.db['historychanges_%s' % document_type].find(fltr).count()
-        data = self.db['historychanges_%s' % document_type].find(fltr).skip(offset).limit(limit).sort("date")
+        data = self.db['historychanges_%s' % document_type].find(fltr).sort("date").skip(offset).limit(limit)
 
         meta = {
             'limit': limit,
@@ -233,11 +268,11 @@ class DataBroker(object):
 
         fltr = {}
 
-        if collection:
-            fltr['collection'] = collection
-
         if issn:
             fltr['code'] = issn
+
+        if collection:
+            fltr['collection'] = collection
 
         data = self.db['journals'].find(fltr, {'_id': 0})
 
@@ -339,7 +374,10 @@ class DataBroker(object):
             fltr.update(json.loads(extra_filter))
 
         total = self.db['journals'].find(fltr).count()
-        data = self.db['journals'].find(fltr, {'code': 1, 'collection': 1, 'processing_date': 1}).skip(offset).limit(limit)
+        data = self.db['journals'].find(
+            fltr,
+            {'code': 1, 'collection': 1, 'processing_date': 1}
+        ).sort('processing_date').skip(offset).limit(limit)
 
         meta = {
             'limit': limit,
@@ -385,7 +423,7 @@ class DataBroker(object):
             'code': 1,
             'collection': 1,
             'processing_date': 1}
-        ).skip(offset).limit(limit)
+        ).sort('processing_date').skip(offset).limit(limit)
 
         meta = {
             'limit': limit,
@@ -553,7 +591,7 @@ class DataBroker(object):
             'processing_date': 1,
             'aid': 1,
             'doi': 1}
-        ).skip(offset).limit(limit)
+        ).sort('processing_date').skip(offset).limit(limit)
 
         meta = {
             'limit': limit,
@@ -611,7 +649,7 @@ class DataBroker(object):
             'processing_date': 1,
             'aid': 1,
             'doi': 1}
-        ).skip(offset).limit(limit)
+        ).sort('processing_date').skip(offset).limit(limit)
 
         meta = {
             'limit': limit,
