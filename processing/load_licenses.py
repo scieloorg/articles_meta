@@ -67,13 +67,10 @@ LICENSE_IMG_REGEX = re.compile(r'<img.*?creativecommons.org/l/(?P<license>.*?/\d
 
 allowed_licenses = ['by', 'by-nc', 'by-nd', 'by-sa', 'by-nc-sa', 'by-nc-nd']
 
-config = utils.Configuration.from_env()
-settings = dict(config.items())
-
 try:
-    articlemeta_db = MongoClient(MONGODB_HOST)['articlemeta']
+    articlemeta_db = MongoClient(MONGODB_HOST)
 except:
-    logging.error('Fail to connect to (%s)', settings['app:main']['mongo_uri'])
+    raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
 
 
 def collections_acronym():

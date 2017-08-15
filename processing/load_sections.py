@@ -22,13 +22,56 @@ FROM = FROM.isoformat()[:10]
 file_regex = re.compile(r'serial.*.htm|.*.xml')
 data_struct_regex = re.compile(r'^fulltexts\.(pdf|html)\.[a-z][a-z]$')
 
-config = utils.Configuration.from_env()
-settings = dict(config.items())
+
+SENTRY_DSN = os.environ.get('SENTRY_DSN', None)
+LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
+MONGODB_HOST = os.environ.get('MONGODB_HOST', None)
+
+DOI_REGEX = re.compile(r'[0-9][0-9]\.[0-9].*/.*\S')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+
+    'formatters': {
+        'console': {
+            'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            'datefmt': '%H:%M:%S',
+            },
+        },
+    'handlers': {
+        'console': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.StreamHandler',
+            'formatter': 'console'
+            }
+        },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+            },
+        'processing.load_doi': {
+            'level': LOGGING_LEVEL,
+            'propagate': True,
+        },
+    }
+}
+
+if SENTRY_DSN:
+    LOGGING['handlers']['sentry'] = {
+        'level': 'ERROR',
+        'class': 'raven.handlers.logging.SentryHandler',
+        'dsn': SENTRY_DSN,
+    }
+    LOGGING['loggers']['']['handlers'].append('sentry')
+
 
 try:
-    articlemeta_db = MongoClient(settings['app:main']['mongo_uri'])['articlemeta']
+    articlemeta_db = MongoClient(MONGODB_HOST)
 except:
-    logging.error('Fail to connect to (%s)', settings['app:main']['mongo_uri'])
+    raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
 
 
 def _config_logging(logging_level='INFO', logging_file=None):

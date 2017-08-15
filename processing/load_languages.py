@@ -72,10 +72,11 @@ FROM = FROM.isoformat()[:10]
 file_regex = re.compile(r'serial.*.htm|.*.xml')
 data_struct_regex = re.compile(r'^fulltexts\.(pdf|html)\.[a-z][a-z]$')
 
+
 try:
-    articlemeta_db = MongoClient(MONGODB_HOST)['articlemeta']
+    articlemeta_db = MongoClient(MONGODB_HOST)
 except:
-    logging.error('Fail to connect to (%s)', settings['app:main']['mongo_uri'])
+    raise ValueError('Fail to connect to (%s)', settings['app:main']['mongo_uri'])
 
 
 def collections_acronym():

@@ -70,9 +70,9 @@ FROM = datetime.now() - timedelta(days=15)
 FROM = FROM.isoformat()[:10]
 
 try:
-    articlemeta_db = MongoClient(MONGODB_HOST)['articlemeta']
+    articlemeta_db = MongoClient(MONGODB_HOST)
 except:
-    logging.error('Fail to connect to (%s)', settings['app:main']['mongo_uri'])
+    raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
 
 
 def collections_acronym():

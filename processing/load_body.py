@@ -70,9 +70,9 @@ BODY_REGEX = re.compile(r'<div .*class="index,(?P<language>.*?)">(?P<body>.*)</d
 REMOVE_LINKS_REGEX = re.compile(r'\[.<a href="javascript\:void\(0\);".*?>Links</a>.\]', re.IGNORECASE)
 
 try:
-    articlemeta_db = MongoClient(MONGODB_HOST)['articlemeta']
+    articlemeta_db = MongoClient(MONGODB_HOST)
 except:
-    logging.error('Fail to connect to (%s)', MONGODB_HOST)
+    raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
 
 
 def collections_acronym():

@@ -22,15 +22,13 @@ from xylose.scielodocument import Article
 
 logger = logging.getLogger(__name__)
 
-config = utils.Configuration.from_env()
-settings = dict(config.items())
 
 REGEX_ARTICLE = re.compile("^S[0-9]{4}-[0-9]{3}[0-9xX][0-2][0-9]{3}[0-9]{4}[0-9]{5}$")
 
 try:
-    scielo_network_articles = MongoClient(settings['app:main']['mongo_uri'])['articlemeta']['articles']
+    articlemeta_db = MongoClient(MONGODB_HOST)['articles']
 except:
-    logger.error(u'Fail to connect to (%s)', settings['app:main']['mongo_uri'])
+    raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
 
 
 trans_collections_code = {
