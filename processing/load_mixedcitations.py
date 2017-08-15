@@ -8,8 +8,8 @@ import codecs
 import json
 import unicodedata
 
-from pymongo import MongoClient
 from articlemeta import utils
+from articlemeta import controller
 from xylose.scielodocument import Article
 
 logger = logging.getLogger(__name__)
@@ -59,7 +59,7 @@ if SENTRY_DSN:
 
 
 try:
-    articlemeta_db = MongoClient(MONGODB_HOST)
+    articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
 except:
     raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
 

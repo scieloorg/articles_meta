@@ -19,8 +19,8 @@ import logging.config
 from datetime import datetime, timedelta
 
 import requests
-from pymongo import MongoClient
 from articlemeta import utils
+from articlemeta import controller
 from xylose.scielodocument import Article
 
 logger = logging.getLogger(__name__)
@@ -72,11 +72,10 @@ FROM = FROM.isoformat()[:10]
 file_regex = re.compile(r'serial.*.htm|.*.xml')
 data_struct_regex = re.compile(r'^fulltexts\.(pdf|html)\.[a-z][a-z]$')
 
-
 try:
-    articlemeta_db = MongoClient(MONGODB_HOST)
+    articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
 except:
-    raise ValueError('Fail to connect to (%s)', settings['app:main']['mongo_uri'])
+    raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
 
 
 def collections_acronym():

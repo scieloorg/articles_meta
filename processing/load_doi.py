@@ -10,15 +10,15 @@ import argparse
 import logging
 import logging.config
 from datetime import datetime, timedelta
-
-import requests
 from lxml import etree
 from io import BytesIO
-from pymongo import MongoClient
-from xylose.scielodocument import Article
-from articlemeta import utils
 
+import requests
+from xylose.scielodocument import Article
 from crossref.restful import Journals
+
+from articlemeta import utils
+from articlemeta import controller
 
 logger = logging.getLogger(__name__)
 SENTRY_DSN = os.environ.get('SENTRY_DSN', None)
@@ -70,7 +70,7 @@ FROM = datetime.now() - timedelta(days=15)
 FROM = FROM.isoformat()[:10]
 
 try:
-    articlemeta_db = MongoClient(MONGODB_HOST)
+    articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
 except:
     raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
 

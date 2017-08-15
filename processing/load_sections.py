@@ -8,11 +8,13 @@ from datetime import datetime, timedelta
 import argparse
 import logging
 import re
-import requests
 
-from pymongo import MongoClient
-from articlemeta import utils
+import requests
 from xylose.scielodocument import Article
+
+from articlemeta import utils
+from articlemeta import controller
+
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +71,7 @@ if SENTRY_DSN:
 
 
 try:
-    articlemeta_db = MongoClient(MONGODB_HOST)
+    articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
 except:
     raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
 

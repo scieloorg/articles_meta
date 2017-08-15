@@ -15,10 +15,11 @@ import re
 import argparse
 import csv
 
-from pymongo import MongoClient
-from articlemeta import utils
-
 from xylose.scielodocument import Article
+
+from articlemeta import utils
+from articlemeta import controller
+
 
 logger = logging.getLogger(__name__)
 
@@ -26,10 +27,9 @@ logger = logging.getLogger(__name__)
 REGEX_ARTICLE = re.compile("^S[0-9]{4}-[0-9]{3}[0-9xX][0-2][0-9]{3}[0-9]{4}[0-9]{5}$")
 
 try:
-    articlemeta_db = MongoClient(MONGODB_HOST)['articles']
+    articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
 except:
     raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
-
 
 trans_collections_code = {
     'bra': 'scl',

@@ -12,9 +12,11 @@ import logging.config
 from datetime import datetime, timedelta
 
 import requests
-from pymongo import MongoClient
 from xylose.scielodocument import Article
+
 from articlemeta import utils
+from articlemeta import controller
+
 
 logger = logging.getLogger(__name__)
 SENTRY_DSN = os.environ.get('SENTRY_DSN', None)
@@ -68,7 +70,7 @@ LICENSE_IMG_REGEX = re.compile(r'<img.*?creativecommons.org/l/(?P<license>.*?/\d
 allowed_licenses = ['by', 'by-nc', 'by-nd', 'by-sa', 'by-nc-sa', 'by-nc-nd']
 
 try:
-    articlemeta_db = MongoClient(MONGODB_HOST)
+    articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
 except:
     raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
 

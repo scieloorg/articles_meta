@@ -15,9 +15,10 @@ import chardet
 import requests
 from lxml import etree
 from io import StringIO
-
-from pymongo import MongoClient
 from xylose.scielodocument import Article
+
+from articlemeta import controller
+
 
 logger = logging.getLogger(__name__)
 SENTRY_DSN = os.environ.get('SENTRY_DSN', None)
@@ -70,7 +71,7 @@ BODY_REGEX = re.compile(r'<div .*class="index,(?P<language>.*?)">(?P<body>.*)</d
 REMOVE_LINKS_REGEX = re.compile(r'\[.<a href="javascript\:void\(0\);".*?>Links</a>.\]', re.IGNORECASE)
 
 try:
-    articlemeta_db = MongoClient(MONGODB_HOST)
+    articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
 except:
     raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
 
