@@ -756,7 +756,7 @@ class DataBroker(object):
     @LogHistoryChange(document_type="article", event_type="delete")
     def delete_article(self, code, collection=None):
 
-        fltr = {'$or': [{'code': code}, {'doi': code}, {'aid': code}]}
+        fltr = {'code': code}
 
         if collection:
             fltr['collection'] = collection
@@ -810,7 +810,7 @@ class DataBroker(object):
 
     def set_doaj_id(self, code, collection, doaj_id):
 
-        fltr = {'$or': [{'code': code}, {'doi': code}, {'aid': code}]}
+        fltr = {'code': code}
 
         if collection:
             fltr['collection'] = collection
@@ -819,7 +819,7 @@ class DataBroker(object):
 
     def set_aid(self, code, collection, aid):
 
-        fltr = {'$or': [{'code': code}, {'doi': code}, {'aid': code}]}
+        fltr = {'code': code}
 
         if collection:
             fltr['collection'] = collection

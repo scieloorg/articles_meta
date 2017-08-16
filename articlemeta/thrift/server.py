@@ -250,9 +250,9 @@ class Dispatcher(object):
 
         try:
             result = self._databroker.delete_article(code, collection=collection)
-        except:
+        except Exception as e:
             raise articlemeta_thrift.ServerError(
-                'Server error: DataBroker.delete_article')
+                'Server error: DataBroker.delete_article %s' % str(e))
 
         try:
             return json.dumps(result)
