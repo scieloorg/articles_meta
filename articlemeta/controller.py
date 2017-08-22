@@ -465,6 +465,56 @@ class DataBroker(object):
 
         return data
 
+    def get_issues_full(
+            self,
+            collection=None,
+            issn=None,
+            from_date='1500-01-01',
+            until_date=None,
+            limit=LIMIT,
+            offset=0,
+            extra_filter=None):
+
+        if offset < 0:
+            offset = 0
+
+        if limit < 0:
+            limit = LIMIT
+
+        fltr = {}
+        fltr['processing_date'] = {'$gte': from_date, '$lte': until_date or datetime.now().date().isoformat()}
+
+        if collection:
+            fltr['collection'] = collection
+
+        if issn:
+            fltr['code_title'] = issn
+
+        if extra_filter:
+            fltr.update(json.loads(extra_filter))
+
+        content = {
+         '_id': 0
+        }
+
+        total = self.db['issues'].find(fltr).count()
+        data = self.db['issues'].find(
+            fltr, content
+        ).sort('processing_date').skip(offset).limit(limit)
+
+        meta = {
+            'limit': limit,
+            'offset': offset,
+            'filter': fltr,
+            'total': total
+        }
+
+        result = {'meta': meta, 'objects': []}
+        for issue in data:
+            result['objects'].append(issue)
+
+        return result
+
     def get_issues(self, code, collection=None, replace_journal_metadata=False):
 
         fltr = {'code': code}
@@ -719,6 +769,75 @@ class DataBroker(object):
         del(data['_id'])
 
         return data
+
+    def get_articles_full(
+        self,
+        collection=None,
+        issn=None,
+        from_date='1500-01-01',
+        until_date=None,
+        limit=100,
+        offset=0,
+        extra_filter=None,
+        replace_journal_metadata=False,
+        body=False
+    ):
+
+        if offset < 0:
+            offset = 0
+
+        if limit < 0:
+            limit = 100
+
+        fltr = {}
+        fltr['processing_date'] = {
+            '$gte': from_date,
+            '$lte': until_date or datetime.now().date().isoformat()
+        }
+
+        if collection:
+            fltr['collection'] = collection
+
+        if issn:
+            fltr['code_title'] = issn
+
+        if extra_filter:
+            fltr.update(json.loads(extra_filter))
+
+        content = {
+            '_id': 0
+        }
+
+        if body is False:
+            content['body'] = 0
+
+        total = self.db['articles'].find(fltr).count()
+        data = self.db['articles'].find(fltr, content
+        ).sort('processing_date').skip(offset).limit(limit)
+
+        meta = {
+            'limit': limit,
+            'offset': offset,
+            'filter': fltr,
+            'total': total
+        }
+
+        result = {'meta': meta, 'objects': []}
+        for article in data:
+            if replace_journal_metadata:
+                journal = self.get_journal(collection=collection, issn=article['title']['v400'][0]['_'])
+
+                if journal and len(journal) == 1:
+                    article['title'] = journal[0]
+
+            issue = self.get_issue(collection=collection, code=article['code_issue'])
+
+            if issue:
+                article['issue'] = issue
+
+            result['objects'].append(article)
+
+        return result
 
     def get_articles(self, code, collection=None, replace_journal_metadata=False):
 

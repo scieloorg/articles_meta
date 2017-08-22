@@ -165,11 +165,43 @@ def get_issue(request):
     code = request.GET.get('code', None)
     collection = request.GET.get('collection', None)
 
-    issue = request.databroker.get_issue(code, collection=collection,
-        replace_journal_metadata=True)
+    issue = request.databroker.get_issue(
+        code,
+        collection=collection,
+        replace_journal_metadata=True
+    )
 
     return issue
 
+@view_config(route_name='get_issues',
+             request_method='GET', renderer='jsonp')
+def get_issues(request):
+
+    collection = request.GET.get('collection', None)
+    issn = request.GET.get('issn', None)
+    from_date = request.GET.get('from', '1500-01-01')
+    until_date = request.GET.get('until', datetime.now().date().isoformat())
+    limit = _get_request_limit_param(request, default_limit=100)
+    offset = request.GET.get('offset', 0)
+
+    try:
+        offset = int(offset)
+    except ValueError:
+        raise exc.HTTPBadRequest('offset must be integer')
+
+    if offset < 0:
+        raise exc.HTTPBadRequest('offset must be integer >= 0')
+
+    issue = request.databroker.get_issues_full(
+        collection=collection,
+        issn=issn,
+        limit=limit,
+        offset=offset,
+        from_date=from_date,
+        until_date=until_date
+    )
+
+    return issue
 
 @view_config(route_name='identifiers_article',
              request_method='GET', renderer='jsonp')
@@ -281,6 +313,44 @@ def get_article(request):
 
     return article
 
+@view_config(route_name='get_articles',
+             request_method='GET',
+             renderer='jsonp')
+def get_articles(request):
+
+    collection = request.GET.get('collection', None)
+    issn = request.GET.get('issn', None)
+    from_date = request.GET.get('from', '1500-01-01')
+    until_date = request.GET.get('until', datetime.now().date().isoformat())
+    limit = _get_request_limit_param(request, default_limit=100)
+    offset = request.GET.get('offset', 0)
+    body = request.GET.get('body', 'false')
+
+    try:
+        offset = int(offset)
+    except ValueError:
+        raise exc.HTTPBadRequest('offset must be integer')
+
+    if offset < 0:
+        raise exc.HTTPBadRequest('offset must be integer >= 0')
+
+    if body not in ['true', 'false']:
+        raise exc.HTTPBadRequest("parameter 'metaonly' must be 'true' or 'false', default is 'false'")
+
+    body = asbool(body)
+
+    articles = request.databroker.get_articles_full(
+        collection=collection,
+        issn=issn,
+        limit=limit,
+        offset=offset,
+        from_date=from_date,
+        until_date=until_date,
+        replace_journal_metadata=True,
+        body=body
+    )
+
+    return articles
 
 @view_config(route_name='list_historychanges_article', request_method='GET', renderer='jsonp')
 @view_config(route_name='list_historychanges_journal', request_method='GET', renderer='jsonp')

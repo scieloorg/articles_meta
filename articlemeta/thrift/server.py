@@ -132,25 +132,56 @@ class Dispatcher(object):
         offset = offset or 0
 
         try:
-            data = self._databroker.historychanges(document_type='issue',
-                                                   collection=collection,
-                                                   event=event,
-                                                   code=code,
-                                                   from_date=from_date,
-                                                   until_date=until_date,
-                                                   limit=limit,
-                                                   offset=offset)
+            data = self._databroker.historychanges(
+                document_type='issue',
+                collection=collection,
+                event=event,
+                code=code,
+                from_date=from_date,
+                until_date=until_date,
+                limit=limit,
+                offset=offset
+            )
         except:
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.historychanges')
 
-        objs = [articlemeta_thrift.event_issue(code=i['code'],
-                                                  collection=i['collection'],
-                                                  event=i['event'],
-                                                  date=i['date'])
-                for i in data['objects']]
+        objs = [articlemeta_thrift.event_issue(
+            code=i['code'],
+            collection=i['collection'],
+            event=i['event'],
+            date=i['date']
+        ) for i in data['objects']]
 
         return objs
+
+    def get_articles(
+        self, collection, issn, from_date, until_date,
+        limit, offset, extra_filter=None, replace_journal_metadata=False,
+        body=False
+    ):
+
+        from_date = from_date or '1500-01-01'
+        limit = limit or 100
+        offset = offset or 0
+
+        try:
+            data = self._databroker.get_articles_full(
+                collection=collection,
+                issn=issn,
+                from_date=from_date,
+                until_date=until_date,
+                limit=limit,
+                offset=offset,
+                extra_filter=extra_filter,
+                replace_journal_metadata=False,
+                body=False
+            )
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.get_articles')
+
+        return json.dumps(data)
 
     def get_article_identifiers(self, collection, issn, from_date, until_date,
                                 limit, offset, extra_filter=None):
@@ -160,13 +191,15 @@ class Dispatcher(object):
         offset = offset or 0
 
         try:
-            data = self._databroker.identifiers_article(collection=collection,
-                                                        issn=issn,
-                                                        from_date=from_date,
-                                                        until_date=until_date,
-                                                        limit=limit,
-                                                        offset=offset,
-                                                        extra_filter=extra_filter)
+            data = self._databroker.identifiers_article(
+                collection=collection,
+                issn=issn,
+                from_date=from_date,
+                until_date=until_date,
+                limit=limit,
+                offset=offset,
+                extra_filter=extra_filter
+            )
         except:
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.identifiers_article')
@@ -180,6 +213,31 @@ class Dispatcher(object):
 
         return objs
 
+    def get_issues(
+        self, collection, issn, from_date, until_date,
+        limit, offset, extra_filter=None
+    ):
+
+        from_date = from_date or '1500-01-01'
+        limit = limit or 100
+        offset = offset or 0
+
+        try:
+            data = self._databroker.get_issues_full(
+                collection=collection,
+                issn=issn,
+                from_date=from_date,
+                until_date=until_date,
+                limit=limit,
+                offset=offset,
+                extra_filter=extra_filter
+            )
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.get_issues')
+
+        return json.dumps(data)
+
     def get_issue_identifiers(self, collection, issn, from_date, until_date,
                                 limit, offset, extra_filter=None):
 
@@ -188,13 +246,15 @@ class Dispatcher(object):
         offset = offset or 0
 
         try:
-            data = self._databroker.identifiers_issue(collection=collection,
-                                                        issn=issn,
-                                                        from_date=from_date,
-                                                        until_date=until_date,
-                                                        limit=limit,
-                                                        offset=offset,
-                                                        extra_filter=extra_filter)
+            data = self._databroker.identifiers_issue(
+                collection=collection,
+                issn=issn,
+                from_date=from_date,
+                until_date=until_date,
+                limit=limit,
+                offset=offset,
+                extra_filter=extra_filter
+            )
         except:
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.identifiers_issue')

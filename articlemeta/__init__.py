@@ -33,10 +33,12 @@ def main(global_config, **settings):
     config.add_route('exists_journal', '/api/v1/journal/exists/')
     # issues - GET method:
     config.add_route('get_issue', '/api/v1/issue/')
+    config.add_route('get_issues', '/api/v1/issues/')
     config.add_route('identifiers_issue', '/api/v1/issue/identifiers/')
     config.add_route('exists_issue', '/api/v1/issue/exists/')
     # articles - GET method:
     config.add_route('get_article', '/api/v1/article/')
+    config.add_route('get_articles', '/api/v1/articles/')
     config.add_route('identifiers_article', '/api/v1/article/identifiers/')
     config.add_route('exists_article', '/api/v1/article/exists/')
     # press releases - GET method:
