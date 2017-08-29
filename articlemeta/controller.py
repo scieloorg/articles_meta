@@ -11,6 +11,48 @@ from datetime import datetime
 LIMIT = 1000
 
 
+def dates_to_string(data):
+
+    if 'processing_date' in data and isinstance(data['processing_date'], datetime):
+        data['processing_date'] = data['processing_date'].isoformat()[:10]
+
+    if 'processing_date' in data and isinstance(data['processing_date'], dict):
+        data['processing_date']['$lte'] = data['processing_date']['$lte'].isoformat()[:10]
+        data['processing_date']['$gte'] = data['processing_date']['$gte'].isoformat()[:10]
+
+    if 'date' in data and isinstance(data['date'], datetime):
+        data['date'] = data['date'].isoformat()[:10]
+
+    if 'date' in data and isinstance(data['date'], dict):
+        data['date']['$lte'] = data['date']['$lte'].isoformat()[:10]
+        data['date']['$gte'] = data['date']['$gte'].isoformat()[:10]
+
+    if 'created_at' in data:
+        data['created_at'] = data['created_at'].isoformat()[:10]
+
+    if 'updated_at' in data:
+        data['updated_at'] = data['updated_at'].isoformat()[:10]
+
+    return data
+
+
+def get_date_range_filter(from_date=None, until_date=None):
+
+    import datetime
+
+    if until_date is None:
+        until_date = datetime.datetime.combine(datetime.datetime.now(), datetime.time.max)
+    else:
+        until_date = datetime.datetime.strptime(until_date, "%Y-%m-%d")
+
+    filter_range = {
+            '$gte': datetime.datetime.strptime(from_date, "%Y-%m-%d"),
+            '$lte': until_date
+        }
+
+    return filter_range
+
+
 def get_dbconn(db_dsn):
     """Connects to the MongoDB server and returns a database handler."""
 
@@ -153,9 +195,9 @@ class DataBroker(object):
             metadata['doi'] = article.doi.upper()
 
         try:
-            metadata['processing_date'] = article.processing_date
+            metadata['processing_date'] = datetime.strptime(article.processing_date, '%Y-%m-%d')
         except:
-            metadata['processing_date'] = datetime.now().date().isoformat()
+            metadata['processing_date'] = datetime.now()
 
         return metadata
 
@@ -183,9 +225,9 @@ class DataBroker(object):
         metadata['publication_date'] = issue.publication_date
 
         try:
-            metadata['processing_date'] = issue.processing_date
+            metadata['processing_date'] = datetime.strptime(issue.processing_date, '%Y-%m-%d')
         except:
-            metadata['processing_date'] = datetime.now().date().isoformat()
+            metadata['processing_date'] = datetime.now()
 
         return metadata
 
@@ -207,9 +249,9 @@ class DataBroker(object):
         metadata['collection'] = journal.collection_acronym
 
         try:
-            metadata['processing_date'] = journal.processing_date
+            metadata['processing_date'] = datetime.strptime(journal.processing_date, '%Y-%m-%d')
         except:
-            metadata['processing_date'] = datetime.now().date().isoformat()
+            metadata['processing_date'] = datetime.now()
 
         return metadata
 
@@ -220,13 +262,13 @@ class DataBroker(object):
                 'code': code,
                 'collection': collection,
                 'event': event,
-                'date': date or datetime.now().isoformat(),
+                'date': date or datetime.now(),
             }
             log_id = self.db['historychanges_%s' % document_type].insert(log_data)
             return log_id
 
     def historychanges(self, document_type, collection=None, event=None,
-                       code=None, from_date='1500-01-01T00:00:00',
+                       code=None, from_date='1997-01-01',
                        until_date=None, limit=LIMIT, offset=0):
 
         if offset < 0:
@@ -236,7 +278,8 @@ class DataBroker(object):
             limit = LIMIT
 
         fltr = {}
-        fltr['date'] = {'$gt': from_date, '$lte': until_date or datetime.now().isoformat()}
+
+        fltr['date'] = get_date_range_filter(from_date, until_date)
 
         if collection:
             fltr['collection'] = collection
@@ -257,11 +300,14 @@ class DataBroker(object):
             'total': total
         }
 
-        objects = [{'date': i['date'], 'code': i['code'], 'collection': i['collection'], 'event': i['event']} for i in data]
+        objects = [dates_to_string({'date': i['date'], 'code': i['code'], 'collection': i['collection'], 'event': i['event']}) for i in data]
         result = {
             'meta': meta,
             'objects': objects
         }
+
+        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
+
         return result
 
     def get_journal(self, collection=None, issn=None):
@@ -279,7 +325,7 @@ class DataBroker(object):
         if not data:
             return None
 
-        return [i for i in data]
+        return [dates_to_string(i) for i in data]
 
     @LogHistoryChange(document_type="journal", event_type="delete")
     def delete_journal(self, code, collection=None):
@@ -306,13 +352,15 @@ class DataBroker(object):
         if self.exists_journal(journal['code'], journal['collection']):
             return self.update_journal(journal)
 
+        journal['created_at'] = journal['processing_date']
+
         self.db['journals'].update_one(
             {'code': journal['code'], 'collection': journal['collection']},
             {'$set': journal},
             upsert=True
         )
 
-        return journal
+        return dates_to_string(journal)
 
     @LogHistoryChange(document_type="journal", event_type="update")
     def update_journal(self, metadata):
@@ -322,7 +370,7 @@ class DataBroker(object):
         if not journal:
             return None
 
-        journal['updated_at'] = datetime.now().date().isoformat()
+        journal['updated_at'] = datetime.now()
 
         self.db['journals'].update_one(
             {'code': journal['code'], 'collection': journal['collection']},
@@ -330,7 +378,7 @@ class DataBroker(object):
             upsert=True
         )
 
-        return journal
+        return dates_to_string(journal)
 
     def identifiers_collection(self):
 
@@ -386,7 +434,10 @@ class DataBroker(object):
             'total': total
         }
 
-        result = {'meta': meta, 'objects': [{'code': i['code'], 'collection': i['collection'], 'processing_date': i['processing_date']} for i in data]}
+        result = {'meta': meta, 'objects': [
+            dates_to_string({'code': i['code'], 'collection': i['collection'], 'processing_date': i['processing_date']}) for i in data]}
+
+        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
 
         return result
 
@@ -407,7 +458,7 @@ class DataBroker(object):
             limit = LIMIT
 
         fltr = {}
-        fltr['processing_date'] = {'$gte': from_date, '$lte': until_date or datetime.now().date().isoformat()}
+        fltr['processing_date'] = get_date_range_filter(from_date, until_date)
 
         if collection:
             fltr['collection'] = collection
@@ -440,7 +491,9 @@ class DataBroker(object):
                 'processing_date': i['processing_date']
             }
 
-            result['objects'].append(rec)
+            result['objects'].append(dates_to_string(rec))
+
+        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
 
         return result
 
@@ -463,7 +516,7 @@ class DataBroker(object):
 
         del(data['_id'])
 
-        return data
+        return dates_to_string(data)
 
     def get_issues_full(
             self,
@@ -482,7 +535,7 @@ class DataBroker(object):
             limit = LIMIT
 
         fltr = {}
-        fltr['processing_date'] = {'$gte': from_date, '$lte': until_date or datetime.now().date().isoformat()}
+        fltr['processing_date'] = get_date_range_filter(from_date, until_date)
 
         if collection:
             fltr['collection'] = collection
@@ -513,6 +566,8 @@ class DataBroker(object):
         for issue in data:
             result['objects'].append(issue)
 
+        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
+
         return result
 
     def get_issues(self, code, collection=None, replace_journal_metadata=False):
@@ -530,7 +585,7 @@ class DataBroker(object):
                 if journal and len(journal) != 0:
                     data['title'] = journal[0]
 
-            yield issue
+            yield dates_to_string(issue)
 
     def exists_journal(self, code, collection=None):
         fltr = {'code': code}
@@ -587,7 +642,7 @@ class DataBroker(object):
             upsert=True
         )
 
-        return issue
+        return dates_to_string(issue)
 
     @LogHistoryChange(document_type="issue", event_type="update")
     def update_issue(self, metadata):
@@ -597,7 +652,7 @@ class DataBroker(object):
         if not issue:
             return None
 
-        issue['updated_at'] = datetime.now().date().isoformat()
+        issue['updated_at'] = datetime.now()
 
         self.db['issues'].update_one(
             {'code': issue['code'], 'collection': issue['collection']},
@@ -605,7 +660,7 @@ class DataBroker(object):
             upsert=True
         )
 
-        return issue
+        return dates_to_string(issue)
 
     def identifiers_article(self,
                             collection=None,
@@ -623,7 +678,7 @@ class DataBroker(object):
             limit = LIMIT
 
         fltr = {}
-        fltr['processing_date'] = {'$gte': from_date, '$lte': until_date or datetime.now().date().isoformat()}
+        fltr['processing_date'] = get_date_range_filter(from_date, until_date)
 
         if collection:
             fltr['collection'] = collection
@@ -663,7 +718,9 @@ class DataBroker(object):
             if 'doi' in i:
                 rec['doi'] = i['doi']
 
-            result['objects'].append(rec)
+            result['objects'].append(dates_to_string(rec))
+
+        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
 
         return result
 
@@ -682,7 +739,7 @@ class DataBroker(object):
             limit = LIMIT
 
         fltr = {}
-        fltr['processing_date'] = {'$gte': from_date, '$lte': until_date or datetime.now().date().isoformat()}
+        fltr['processing_date'] = get_date_range_filter(from_date, until_date)
 
         fltr['document_type'] = u'press-release'
 
@@ -721,7 +778,9 @@ class DataBroker(object):
             if 'doi' in i:
                 rec['doi'] = i['doi']
 
-            result['objects'].append(rec)
+            result['objects'].append(dates_to_string(rec))
+
+        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
 
         return result
 
@@ -768,7 +827,7 @@ class DataBroker(object):
 
         del(data['_id'])
 
-        return data
+        return dates_to_string(data)
 
     def get_articles_full(
         self,
@@ -790,10 +849,7 @@ class DataBroker(object):
             limit = 100
 
         fltr = {}
-        fltr['processing_date'] = {
-            '$gte': from_date,
-            '$lte': until_date or datetime.now().date().isoformat()
-        }
+        fltr['processing_date'] = get_date_range_filter(from_date, until_date)
 
         if collection:
             fltr['collection'] = collection
@@ -835,7 +891,9 @@ class DataBroker(object):
             if issue:
                 article['issue'] = issue
 
-            result['objects'].append(article)
+            result['objects'].append(dates_to_string(article))
+
+        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
 
         return result
 
@@ -859,7 +917,7 @@ class DataBroker(object):
             if issue:
                 article['issue'] = issue
 
-            yield article
+            yield dates_to_string(article)
 
     def exists_article(self, code, collection=None):
         fltr = {'code': code}
@@ -907,7 +965,7 @@ class DataBroker(object):
             upsert=True
         )
 
-        return article
+        return dates_to_string(article)
 
     @LogHistoryChange(document_type="article", event_type="update")
     def update_article(self, metadata):
@@ -917,7 +975,7 @@ class DataBroker(object):
         if not article:
             return None
 
-        article['updated_at'] = datetime.now().date().isoformat()
+        article['updated_at'] = datetime.now()
 
         self.db['articles'].update_one(
             {'code': article['code'], 'collection': article['collection']},
@@ -925,7 +983,7 @@ class DataBroker(object):
             upsert=True
         )
 
-        return article
+        return dates_to_string(article)
 
     def set_doaj_id(self, code, collection, doaj_id):
 

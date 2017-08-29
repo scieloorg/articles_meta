@@ -9,6 +9,8 @@ from pyramid.settings import asbool
 
 from articlemeta.export import Export
 
+DEFAULT_FROM_DATE = '1900-01-01'
+
 
 def _get_request_limit_param(request, default_limit=1000,
                              only_positive_limit=True, force_max_limit_to_default=True):
@@ -107,7 +109,7 @@ def identifiers_issue(request):
 
     collection = request.GET.get('collection', None)
     issn = request.GET.get('issn', None)
-    from_date = request.GET.get('from', '1500-01-01')
+    from_date = request.GET.get('from', DEFAULT_FROM_DATE)
     until_date = request.GET.get('until', datetime.now().date().isoformat())
     limit = _get_request_limit_param(request)
     offset = request.GET.get('offset', 0)
@@ -179,7 +181,7 @@ def get_issues(request):
 
     collection = request.GET.get('collection', None)
     issn = request.GET.get('issn', None)
-    from_date = request.GET.get('from', '1500-01-01')
+    from_date = request.GET.get('from', DEFAULT_FROM_DATE)
     until_date = request.GET.get('until', datetime.now().date().isoformat())
     limit = _get_request_limit_param(request, default_limit=100)
     offset = request.GET.get('offset', 0)
@@ -209,7 +211,7 @@ def identifiers_article(request):
 
     collection = request.GET.get('collection', None)
     issn = request.GET.get('issn', None)
-    from_date = request.GET.get('from', '1500-01-01')
+    from_date = request.GET.get('from', DEFAULT_FROM_DATE)
     until_date = request.GET.get('until', datetime.now().date().isoformat())
     limit = _get_request_limit_param(request)
     offset = request.GET.get('offset', 0)
@@ -238,7 +240,7 @@ def identifiers_press_release(request):
 
     collection = request.GET.get('collection', None)
     issn = request.GET.get('issn', None)
-    from_date = request.GET.get('from', '1500-01-01')
+    from_date = request.GET.get('from', DEFAULT_FROM_DATE)
     until_date = request.GET.get('until', datetime.now().date().isoformat())
     limit = _get_request_limit_param(request)
     offset = request.GET.get('offset', 0)
@@ -320,7 +322,7 @@ def get_articles(request):
 
     collection = request.GET.get('collection', None)
     issn = request.GET.get('issn', None)
-    from_date = request.GET.get('from', '1500-01-01')
+    from_date = request.GET.get('from', DEFAULT_FROM_DATE)
     until_date = request.GET.get('until', datetime.now().date().isoformat())
     limit = _get_request_limit_param(request, default_limit=100)
     offset = request.GET.get('offset', 0)
@@ -381,8 +383,8 @@ def list_historychanges(request):
     collection = request.GET.get('collection', None)
     event = request.GET.get('event', None)
     code = request.GET.get('code', None)
-    from_date = request.GET.get('from', '1500-01-01T00:00:00')
-    until_date = request.GET.get('until', datetime.now().isoformat())
+    from_date = request.GET.get('from', DEFAULT_FROM_DATE)
+    until_date = request.GET.get('until', None)
     offset = request.GET.get('offset', 0)
     limit = _get_request_limit_param(request, force_max_limit_to_default=True)
 
