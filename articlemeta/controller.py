@@ -81,28 +81,33 @@ def get_dbconn(db_dsn):
             'historychanges_article': [
                 [[('date', pymongo.ASCENDING)], {'background': True}],
                 [[('collection', pymongo.ASCENDING)], {'background': True}],
-                [[('code', pymongo.ASCENDING)], {'background': True}]
+                [[('code', pymongo.ASCENDING)], {'background': True}],
+                [[('collection', pymongo.ASCENDING), ('date',  pymongo.ASCENDING)], {'background': True}]
             ],
             'historychanges_journal': [
                 [[('date', pymongo.ASCENDING)], {'background': True}],
                 [[('collection', pymongo.ASCENDING)], {'background': True}],
-                [[('code', pymongo.ASCENDING)], {'background': True}]
+                [[('code', pymongo.ASCENDING)], {'background': True}],
+                [[('collection', pymongo.ASCENDING), ('date',  pymongo.ASCENDING)], {'background': True}]
             ],
             'historychanges_issue': [
                 [[('date', pymongo.ASCENDING)], {'background': True}],
                 [[('collection', pymongo.ASCENDING)], {'background': True}],
-                [[('code', pymongo.ASCENDING)], {'background': True}]
+                [[('code', pymongo.ASCENDING)], {'background': True}],
+                [[('collection', pymongo.ASCENDING), ('date',  pymongo.ASCENDING)], {'background': True}]
             ],
             'issues': [
                 [[('code', pymongo.ASCENDING)], {'background': True}],
                 [[('collection', pymongo.ASCENDING)], {'background': True}],
                 [[('processing_date', pymongo.ASCENDING)], {'background': True}],
                 [[('publication_year', pymongo.ASCENDING)], {'background': True}],
-                [[('code', pymongo.ASCENDING), ('collection',  pymongo.ASCENDING)], {'unique': True, 'background': True}]
+                [[('code', pymongo.ASCENDING), ('collection',  pymongo.ASCENDING)], {'unique': True, 'background': True}],
+                [[('collection', pymongo.ASCENDING), ('processing_date',  pymongo.ASCENDING)], {'background': True}]
             ],
             'journals': [
                 [[('code', pymongo.ASCENDING)], {'background': True}],
-                [[('code', pymongo.ASCENDING), ('collection',  pymongo.ASCENDING)], {'unique': True, 'background': True}]
+                [[('code', pymongo.ASCENDING), ('collection',  pymongo.ASCENDING)], {'unique': True, 'background': True}],
+                [[('collection', pymongo.ASCENDING), ('processing_date',  pymongo.ASCENDING)], {'background': True}]
             ],
             'articles': [
                 [[('document_type', pymongo.ASCENDING)], {'background': True}],
@@ -117,7 +122,8 @@ def get_dbconn(db_dsn):
                 [[('section', pymongo.ASCENDING)], {'background': True}],
                 [[('aid', pymongo.ASCENDING)], {'background': True}],
                 [[('version', pymongo.ASCENDING)], {'background': True}],
-                [[('code', pymongo.ASCENDING), ('collection',  pymongo.ASCENDING)], {'unique': True, 'background': True}]
+                [[('code', pymongo.ASCENDING), ('collection',  pymongo.ASCENDING)], {'unique': True, 'background': True}],
+                [[('collection', pymongo.ASCENDING), ('processing_date',  pymongo.ASCENDING)], {'background': True}]
             ]
         }
 
