@@ -73,7 +73,7 @@ REMOVE_LINKS_REGEX = re.compile(r'\[.<a href="javascript\:void\(0\);".*?>Links</
 try:
     articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
 except:
-    raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
+    logger.error('Fail to connect to (%s)', MONGODB_HOST)
 
 
 def collections_acronym():

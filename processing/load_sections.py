@@ -73,7 +73,7 @@ if SENTRY_DSN:
 try:
     articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
 except:
-    raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
+    logger.error('Fail to connect to (%s)', MONGODB_HOST)
 
 
 def _config_logging(logging_level='INFO', logging_file=None):

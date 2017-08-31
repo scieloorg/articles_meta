@@ -72,7 +72,7 @@ FROM = FROM.isoformat()[:10]
 try:
     articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
 except:
-    raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
+    logger.error('Fail to connect to (%s)', MONGODB_HOST)
 
 
 def collections_acronym():

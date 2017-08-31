@@ -75,7 +75,7 @@ data_struct_regex = re.compile(r'^fulltexts\.(pdf|html)\.[a-z][a-z]$')
 try:
     articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
 except:
-    raise ValueError('Fail to connect to (%s)', MONGODB_HOST)
+    logger.error('Fail to connect to (%s)', MONGODB_HOST)
 
 
 def collections_acronym():
