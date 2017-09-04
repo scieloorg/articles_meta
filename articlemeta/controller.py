@@ -200,9 +200,9 @@ class DataBroker(object):
         if article.doi:
             metadata['doi'] = article.doi.upper()
 
-        if not isinstance(article.processing_date, datetime):
+        if not isinstance(article.data['article']['processing_date'], datetime):
             try:
-                metadata['processing_date'] = datetime.strptime(article.processing_date, '%Y-%m-%d')
+                metadata['processing_date'] = datetime.strptime(article.data['article']['processing_date'], '%Y-%m-%d')
             except:
                 metadata['processing_date'] = datetime.now()
 
@@ -231,9 +231,9 @@ class DataBroker(object):
         metadata['publication_year'] = issue.publication_date[0:4]
         metadata['publication_date'] = issue.publication_date
 
-        if not isinstance(issue.processing_date, datetime):
+        if not isinstance(issue.data['issue']['processing_date'], datetime):
             try:
-                metadata['processing_date'] = datetime.strptime(issue.processing_date, '%Y-%m-%d')
+                metadata['processing_date'] = datetime.strptime(issue.data['issue']['processing_date'], '%Y-%m-%d')
             except:
                 metadata['processing_date'] = datetime.now()
 
@@ -256,9 +256,9 @@ class DataBroker(object):
         metadata['issns'] = list(issns)
         metadata['collection'] = journal.collection_acronym
 
-        if not isinstance(journal.processing_date, datetime):
+        if not isinstance(journal.data['title']['processing_date'], datetime):
             try:
-                metadata['processing_date'] = datetime.strptime(journal.processing_date, '%Y-%m-%d')
+                metadata['processing_date'] = datetime.strptime(journal.data['title']['processing_date'], '%Y-%m-%d')
             except:
                 metadata['processing_date'] = datetime.now()
 
