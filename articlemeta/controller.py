@@ -256,9 +256,9 @@ class DataBroker(object):
         metadata['issns'] = list(issns)
         metadata['collection'] = journal.collection_acronym
 
-        if not isinstance(journal.data['title']['processing_date'], datetime):
+        if not isinstance(journal.data['processing_date'], datetime):
             try:
-                metadata['processing_date'] = datetime.strptime(journal.data['title']['processing_date'], '%Y-%m-%d')
+                metadata['processing_date'] = datetime.strptime(journal.data['processing_date'], '%Y-%m-%d')
             except:
                 metadata['processing_date'] = datetime.now()
 
