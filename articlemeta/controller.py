@@ -12,28 +12,24 @@ LIMIT = 1000
 
 
 def dates_to_string(data):
+    """Convert instances of datetime to text in YYYY-MM-DD format,
+    up to ``sys.getrecursionlimit()`` levels of depth.
 
-    if 'processing_date' in data and isinstance(data['processing_date'], datetime):
-        data['processing_date'] = data['processing_date'].isoformat()[:10]
+    :param data: data dictionary
+    """
+    datacopy = data.copy()
+    newdata = {}
 
-    if 'processing_date' in data and isinstance(data['processing_date'], dict):
-        data['processing_date']['$lte'] = data['processing_date']['$lte'].isoformat()[:10]
-        data['processing_date']['$gte'] = data['processing_date']['$gte'].isoformat()[:10]
+    for key, value in datacopy.items():
+        if hasattr(value, 'isoformat'):
+            newdata[key] = value.isoformat()[:10]
+        elif hasattr(value, 'items'):
+            newdata[key] = dates_to_string(value)
+        else:
+            newdata[key] = value
 
-    if 'date' in data and isinstance(data['date'], datetime):
-        data['date'] = data['date'].isoformat()[:10]
-
-    if 'date' in data and isinstance(data['date'], dict):
-        data['date']['$lte'] = data['date']['$lte'].isoformat()[:10]
-        data['date']['$gte'] = data['date']['$gte'].isoformat()[:10]
-
-    if 'created_at' in data:
-        data['created_at'] = data['created_at'].isoformat()[:10]
-
-    if 'updated_at' in data:
-        data['updated_at'] = data['updated_at'].isoformat()[:10]
-
-    return data
+    datacopy.update(newdata)
+    return datacopy
 
 
 def get_date_range_filter(from_date=None, until_date=None):
