@@ -139,6 +139,115 @@ def get_dbconn(db_dsn):
     return db
 
 
+def check_article_meta(metadata):
+    """Enriquece e normaliza itens do dicionário ``metadata``, que representa
+    metadados de um artigo.
+
+    A estrutura de ``metadata`` é a mesma retornada pelo formato JSON, do
+    ``articlemeta.scielo.org``, conforme exemplo:
+    https://gist.github.com/gustavofonseca/2b970721e587fe639b7ccffd5ea9fc96
+    """
+    metadata_copy = metadata.copy()
+    article = Article(metadata_copy)
+
+    issns = set(
+        [
+            article.journal.any_issn(priority=u'electronic'),
+            article.journal.any_issn(priority=u'print'),
+            article.journal.scielo_issn
+        ]
+    )
+
+    metadata_copy['code'] = article.publisher_id
+    metadata_copy['code_issue'] = article.publisher_id[1:18]
+    metadata_copy['code_title'] = list(issns)
+    metadata_copy['collection'] = article.collection_acronym
+    metadata_copy['document_type'] = article.document_type
+    metadata_copy['publication_year'] = article.publication_date[0:4]
+    metadata_copy['publication_date'] = article.publication_date
+    metadata_copy['validated_scielo'] = 'False'
+    metadata_copy['validated_wos'] = 'False'
+    metadata_copy['sent_wos'] = 'False'
+    metadata_copy['applicable'] = 'False'
+    metadata_copy['version'] = article.data_model_version
+
+    if article.doi:
+        metadata_copy['doi'] = article.doi.upper()
+
+    if not isinstance(article.data['article']['processing_date'], datetime):
+        try:
+            metadata_copy['processing_date'] = datetime.strptime(article.data['article']['processing_date'], '%Y-%m-%d')
+        except:
+            metadata_copy['processing_date'] = datetime.now()
+
+    return metadata_copy
+
+
+def check_issue_meta(metadata):
+    """Enriquece e normaliza itens do dicionário ``metadata``, que representa
+    metadados de um fascículo.
+
+    A estrutura de ``metadata`` é a mesma retornada pelo formato JSON, do
+    ``articlemeta.scielo.org``, conforme exemplo:
+    https://gist.github.com/gustavofonseca/4a5919db8d0027f37522da7d06bfa876
+    """
+    metadata_copy = metadata.copy()
+    issue = Issue(metadata_copy)
+
+    issns = set(
+        [
+            issue.journal.any_issn(priority=u'electronic'),
+            issue.journal.any_issn(priority=u'print'),
+            issue.journal.scielo_issn
+        ]
+    )
+
+    metadata_copy['code'] = issue.publisher_id
+    metadata_copy['code_title'] = list(issns)
+    metadata_copy['collection'] = issue.collection_acronym
+    metadata_copy['issue_type'] = issue.type
+    metadata_copy['publication_year'] = issue.publication_date[0:4]
+    metadata_copy['publication_date'] = issue.publication_date
+
+    if not isinstance(issue.data['issue']['processing_date'], datetime):
+        try:
+            metadata_copy['processing_date'] = datetime.strptime(issue.data['issue']['processing_date'], '%Y-%m-%d')
+        except:
+            metadata_copy['processing_date'] = datetime.now()
+
+    return metadata_copy
+
+
+def check_journal_meta(metadata):
+    """Enriquece e normaliza itens do dicionário ``metadata``, que representa
+    metadados de um periódico.
+
+    A estrutura de ``metadata`` é a mesma retornada pelo formato JSON, do
+    ``articlemeta.scielo.org``, conforme exemplo:
+    https://gist.github.com/gustavofonseca/92638fe6e1f85dd84bcebce72e83b76e
+    """
+    metadata_copy = metadata.copy()
+    journal = Journal(metadata_copy)
+
+    issns = set([
+        journal.any_issn(priority=u'electronic'),
+        journal.any_issn(priority=u'print'),
+        journal.scielo_issn
+    ])
+
+    metadata_copy['code'] = journal.scielo_issn
+    metadata_copy['issns'] = list(issns)
+    metadata_copy['collection'] = journal.collection_acronym
+
+    if not isinstance(journal.data['processing_date'], datetime):
+        try:
+            metadata_copy['processing_date'] = datetime.strptime(journal.data['processing_date'], '%Y-%m-%d')
+        except:
+            metadata_copy['processing_date'] = datetime.now()
+
+    return metadata_copy
+
+
 class DataBroker(object):
     _dbconn_cache = {}
 
@@ -163,102 +272,6 @@ class DataBroker(object):
             db = get_dbconn(db_dsn)
 
         return cls(db)
-
-    def _check_article_meta(self, metadata):
-        """
-            This method will check the given metadata and retrieve
-            a new dictionary with some new fields.
-        """
-
-        article = Article(metadata)
-
-        issns = set(
-            [
-                article.journal.any_issn(priority=u'electronic'),
-                article.journal.any_issn(priority=u'print'),
-                article.journal.scielo_issn
-            ]
-        )
-
-        metadata['code'] = article.publisher_id
-        metadata['code_issue'] = article.publisher_id[1:18]
-        metadata['code_title'] = list(issns)
-        metadata['collection'] = article.collection_acronym
-        metadata['document_type'] = article.document_type
-        metadata['publication_year'] = article.publication_date[0:4]
-        metadata['publication_date'] = article.publication_date
-        metadata['validated_scielo'] = 'False'
-        metadata['validated_wos'] = 'False'
-        metadata['sent_wos'] = 'False'
-        metadata['applicable'] = 'False'
-        metadata['version'] = article.data_model_version
-
-        if article.doi:
-            metadata['doi'] = article.doi.upper()
-
-        if not isinstance(article.data['article']['processing_date'], datetime):
-            try:
-                metadata['processing_date'] = datetime.strptime(article.data['article']['processing_date'], '%Y-%m-%d')
-            except:
-                metadata['processing_date'] = datetime.now()
-
-        return metadata
-
-    def _check_issue_meta(self, metadata):
-        """
-            This method will check the given metadata and retrieve
-            a new dictionary with some new fields.
-        """
-
-        issue = Issue(metadata)
-
-        issns = set(
-            [
-                issue.journal.any_issn(priority=u'electronic'),
-                issue.journal.any_issn(priority=u'print'),
-                issue.journal.scielo_issn
-            ]
-        )
-
-        metadata['code'] = issue.publisher_id
-        metadata['code_title'] = list(issns)
-        metadata['collection'] = issue.collection_acronym
-        metadata['issue_type'] = issue.type
-        metadata['publication_year'] = issue.publication_date[0:4]
-        metadata['publication_date'] = issue.publication_date
-
-        if not isinstance(issue.data['issue']['processing_date'], datetime):
-            try:
-                metadata['processing_date'] = datetime.strptime(issue.data['issue']['processing_date'], '%Y-%m-%d')
-            except:
-                metadata['processing_date'] = datetime.now()
-
-        return metadata
-
-    def _check_journal_meta(self, metadata):
-        """
-            This method will check the given metadata and retrieve
-            a new dictionary with some new fields.
-        """
-        journal = Journal(metadata)
-
-        issns = set([
-            journal.any_issn(priority=u'electronic'),
-            journal.any_issn(priority=u'print'),
-            journal.scielo_issn
-        ])
-
-        metadata['code'] = journal.scielo_issn
-        metadata['issns'] = list(issns)
-        metadata['collection'] = journal.collection_acronym
-
-        if not isinstance(journal.data['processing_date'], datetime):
-            try:
-                metadata['processing_date'] = datetime.strptime(journal.data['processing_date'], '%Y-%m-%d')
-            except:
-                metadata['processing_date'] = datetime.now()
-
-        return metadata
 
     def _log_changes(self, document_type, code, event, collection=None, date=None):
 
@@ -349,7 +362,7 @@ class DataBroker(object):
     @LogHistoryChange(document_type="journal", event_type="add")
     def add_journal(self, metadata):
 
-        journal = self._check_journal_meta(metadata)
+        journal = check_journal_meta(metadata)
 
         if not journal:
             return None
@@ -370,7 +383,7 @@ class DataBroker(object):
     @LogHistoryChange(document_type="journal", event_type="update")
     def update_journal(self, metadata):
 
-        journal = self._check_journal_meta(metadata)
+        journal = check_journal_meta(metadata)
 
         if not journal:
             return None
@@ -631,13 +644,13 @@ class DataBroker(object):
     @LogHistoryChange(document_type="issue", event_type="add")
     def add_issue(self, metadata):
 
-        issue = self._check_issue_meta(metadata)
+        issue = check_issue_meta(metadata)
 
         if not issue:
             return None
 
         if self.exists_issue(issue['code'], issue['collection']):
-            return self.update_issue(metadata)
+            return self.update_issue(issue)
 
         issue['created_at'] = issue['processing_date']
 
@@ -652,7 +665,7 @@ class DataBroker(object):
     @LogHistoryChange(document_type="issue", event_type="update")
     def update_issue(self, metadata):
 
-        issue = self._check_issue_meta(metadata)
+        issue = check_issue_meta(metadata)
 
         if not issue:
             return None
@@ -954,13 +967,13 @@ class DataBroker(object):
     @LogHistoryChange(document_type="article", event_type="add")
     def add_article(self, metadata):
 
-        article = self._check_article_meta(metadata)
+        article = check_article_meta(metadata)
 
         if not article:
             return None
 
         if self.exists_article(article['code'], article['collection']):
-            return self.update_article(metadata)
+            return self.update_article(article)
 
         article['created_at'] = article['processing_date']
 
@@ -975,7 +988,7 @@ class DataBroker(object):
     @LogHistoryChange(document_type="article", event_type="update")
     def update_article(self, metadata):
 
-        article = self._check_article_meta(metadata)
+        article = check_article_meta(metadata)
 
         if not article:
             return None
