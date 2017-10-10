@@ -218,34 +218,183 @@ def check_issue_meta(metadata):
     return metadata_copy
 
 
-def check_journal_meta(metadata):
-    """Enriquece e normaliza itens do dicionário ``metadata``, que representa
-    metadados de um periódico.
+class JournalMeta:
+    def __init__(self, db):
+        self.db = db
 
-    A estrutura de ``metadata`` é a mesma retornada pelo formato JSON, do
-    ``articlemeta.scielo.org``, conforme exemplo:
-    https://gist.github.com/gustavofonseca/92638fe6e1f85dd84bcebce72e83b76e
-    """
-    metadata_copy = metadata.copy()
-    journal = Journal(metadata_copy)
+    def check(self, metadata):
+        """Enriquece e normaliza itens do dicionário ``metadata``, que representa
+        metadados de um periódico.
 
-    issns = set([
-        journal.any_issn(priority=u'electronic'),
-        journal.any_issn(priority=u'print'),
-        journal.scielo_issn
-    ])
+        A estrutura de ``metadata`` é a mesma retornada pelo formato JSON, do
+        ``articlemeta.scielo.org``, conforme exemplo:
+        https://gist.github.com/gustavofonseca/92638fe6e1f85dd84bcebce72e83b76e
+        """
+        metadata_copy = metadata.copy()
+        journal = Journal(metadata_copy)
 
-    metadata_copy['code'] = journal.scielo_issn
-    metadata_copy['issns'] = list(issns)
-    metadata_copy['collection'] = journal.collection_acronym
+        issns = set([
+            journal.any_issn(priority=u'electronic'),
+            journal.any_issn(priority=u'print'),
+            journal.scielo_issn
+        ])
 
-    if not isinstance(journal.data['processing_date'], datetime):
-        try:
-            metadata_copy['processing_date'] = datetime.strptime(journal.data['processing_date'], '%Y-%m-%d')
-        except:
-            metadata_copy['processing_date'] = datetime.now()
+        metadata_copy['code'] = journal.scielo_issn
+        metadata_copy['issns'] = list(issns)
+        metadata_copy['collection'] = journal.collection_acronym
 
-    return metadata_copy
+        if not isinstance(journal.data['processing_date'], datetime):
+            try:
+                metadata_copy['processing_date'] = datetime.strptime(journal.data['processing_date'], '%Y-%m-%d')
+            except:
+                metadata_copy['processing_date'] = datetime.now()
+
+        return metadata_copy
+
+    def get(self, collection=None, issn=None):
+        """Obtém uma lista de periódicos que pode ser filtrada por coleção e/ou
+        por ISSN.
+
+        Retorna uma lista de dicionários ou None.
+        """
+        fltr = {}
+        if issn:
+            fltr['code'] = issn
+
+        if collection:
+            fltr['collection'] = collection
+
+        data = self.db.find(fltr, {'_id': 0})
+
+        if not data:
+            return None
+
+        return [dates_to_string(i) for i in data]
+
+    def delete(self, code, collection):
+        """Remove o periódico de ISSN igual a ``code``, da coleção
+        ``collection``.
+
+        Retorna um dicionário na forma: 
+
+        .. code-block:: python
+
+            {'code': '0104-3269', 'collection': 'scl', 'deleted_count': 1}
+        """
+        fltr = {
+                'code': code,
+                'collection': collection,
+                }
+        deleted = self.db.delete_one(fltr)
+        fltr['deleted_count'] = deleted.deleted_count
+        return fltr
+
+    def add(self, metadata):
+        """Registra o periódico representado por ``metadata``.
+
+        Retorna uma cópia enriquecida do dicionário ``metadata``, com o
+        acréscimo da chave ``created_at``.
+        """
+        journal = self.check(metadata)
+
+        if not journal:
+            return None
+
+        # aqui tem um comportamento de upsert!
+        if self.exists(journal['code'], journal['collection']):
+            return self.update(journal)
+
+        journal['created_at'] = journal['processing_date']
+
+        self.db.update_one(
+                {'code': journal['code'], 'collection': journal['collection']},
+                {'$set': journal},
+                upsert=True
+        )
+
+        return dates_to_string(journal)
+
+    def update(self, metadata):
+        """Atualiza o registro do periódico representado por ``metadata``.
+
+        Retorna uma cópia enriquecida do dicionário ``metadata``, com o
+        acréscimo da chave ``updated_at``.
+        """
+        journal = self.check(metadata)
+
+        if not journal:
+            return None
+
+        journal['updated_at'] = datetime.now()
+
+        self.db.update_one(
+            {'code': journal['code'], 'collection': journal['collection']},
+            {'$set': journal},
+            upsert=True
+        )
+
+        return dates_to_string(journal)
+
+    def identifiers(self, collection=None, issn=None, limit=None,
+            offset=0, extra_filter=None):
+        """Lista os códigos identificadores dos periódicos. A listagem pode ser
+        completa, por coleção ou por ISSN (Fabio e eu pensamos que a listagem
+        por ISSN não faz sentido, e o arg ``issn`` deveria ser removido).
+        """
+        if offset < 0:
+            offset = 0
+
+        if limit is None or limit < 0:
+            limit = LIMIT
+
+        fltr = {}
+        if collection:
+            fltr['collection'] = collection
+
+        if issn:
+            fltr['code'] = issn
+
+        if extra_filter:
+            fltr.update(json.loads(extra_filter))
+
+        total = self.db.find(fltr).count()
+        data = self.db.find(
+                fltr,
+                {'code': 1, 'collection': 1, 'processing_date': 1}).sort(
+                        'processing_date').skip(offset).limit(limit)
+
+        meta = {
+                'limit': limit,
+                'offset': offset,
+                'filter': fltr,
+                'total': total,
+                }
+
+        result = {
+                'meta': meta,
+                'objects': [
+                    dates_to_string({
+                        'code': d['code'],
+                        'collection': d['collection'],
+                        'processing_date': d['processing_date']}) for d in data]}
+
+        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
+
+        return result
+
+    def exists(self, code, collection=None):
+        """Se o periódico de código ``code`` existe. A consulta pode ser
+        realizada no contexto global ou de coleção.
+        """
+        fltr = {'code': code}
+
+        if collection:
+            fltr['collection'] = collection
+
+        if self.db.find(fltr).count() >= 1:
+            return True
+
+        return False
 
 
 class DataBroker(object):
@@ -253,6 +402,7 @@ class DataBroker(object):
 
     def __init__(self, databroker):
         self.db = databroker
+        self.journalmeta = JournalMeta(self.db['journals'])
 
     @classmethod
     def from_dsn(cls, db_dsn, reuse_dbconn=False):
@@ -329,74 +479,19 @@ class DataBroker(object):
         return result
 
     def get_journal(self, collection=None, issn=None):
-
-        fltr = {}
-
-        if issn:
-            fltr['code'] = issn
-
-        if collection:
-            fltr['collection'] = collection
-
-        data = self.db['journals'].find(fltr, {'_id': 0})
-
-        if not data:
-            return None
-
-        return [dates_to_string(i) for i in data]
+        return self.journalmeta.get(collection=collection, issn=issn)
 
     @LogHistoryChange(document_type="journal", event_type="delete")
     def delete_journal(self, code, collection=None):
-
-        fltr = {
-            'code': code,
-            'collection': collection
-        }
-
-        deleted = self.db['journals'].delete_one(fltr)
-
-        fltr['deleted_count'] = deleted.deleted_count
-
-        return fltr
+        return self.journalmeta.delete(code=code, collection=collection)
 
     @LogHistoryChange(document_type="journal", event_type="add")
     def add_journal(self, metadata):
-
-        journal = check_journal_meta(metadata)
-
-        if not journal:
-            return None
-
-        if self.exists_journal(journal['code'], journal['collection']):
-            return self.update_journal(journal)
-
-        journal['created_at'] = journal['processing_date']
-
-        self.db['journals'].update_one(
-            {'code': journal['code'], 'collection': journal['collection']},
-            {'$set': journal},
-            upsert=True
-        )
-
-        return dates_to_string(journal)
+        return self.journalmeta.add(metadata)
 
     @LogHistoryChange(document_type="journal", event_type="update")
     def update_journal(self, metadata):
-
-        journal = check_journal_meta(metadata)
-
-        if not journal:
-            return None
-
-        journal['updated_at'] = datetime.now()
-
-        self.db['journals'].update_one(
-            {'code': journal['code'], 'collection': journal['collection']},
-            {'$set': journal},
-            upsert=True
-        )
-
-        return dates_to_string(journal)
+        return self.journalmeta.update(metadata)
 
     def identifiers_collection(self):
 
@@ -422,42 +517,8 @@ class DataBroker(object):
         self.get_collection(collection=collection)
 
     def identifiers_journal(self, collection=None, issn=None, limit=LIMIT, offset=0, extra_filter=None):
-
-        if offset < 0:
-            offset = 0
-
-        if limit < 0:
-            limit = LIMIT
-
-        fltr = {}
-        if collection:
-            fltr['collection'] = collection
-
-        if issn:
-            fltr['code'] = issn
-
-        if extra_filter:
-            fltr.update(json.loads(extra_filter))
-
-        total = self.db['journals'].find(fltr).count()
-        data = self.db['journals'].find(
-            fltr,
-            {'code': 1, 'collection': 1, 'processing_date': 1}
-        ).sort('processing_date').skip(offset).limit(limit)
-
-        meta = {
-            'limit': limit,
-            'offset': offset,
-            'filter': fltr,
-            'total': total
-        }
-
-        result = {'meta': meta, 'objects': [
-            dates_to_string({'code': i['code'], 'collection': i['collection'], 'processing_date': i['processing_date']}) for i in data]}
-
-        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
-
-        return result
+        return self.journalmeta.identifiers(collection=collection, issn=issn,
+                limit=limit, offset=offset, extra_filter=extra_filter)
 
     def identifiers_issue(
             self,
@@ -606,15 +667,7 @@ class DataBroker(object):
             yield dates_to_string(issue)
 
     def exists_journal(self, code, collection=None):
-        fltr = {'code': code}
-
-        if collection:
-            fltr['collection'] = collection
-
-        if self.db['journals'].find(fltr).count() >= 1:
-            return True
-
-        return False
+        return self.journalmeta.exists(code=code, collection=collection)
 
     def exists_issue(self, code, collection=None):
         fltr = {'code': code}
