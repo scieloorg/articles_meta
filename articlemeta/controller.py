@@ -183,39 +183,242 @@ def check_article_meta(metadata):
     return metadata_copy
 
 
-def check_issue_meta(metadata):
-    """Enriquece e normaliza itens do dicionário ``metadata``, que representa
-    metadados de um fascículo.
+class IssueMeta:
+    def __init__(self, db, journalmeta):
+        self.db = db
+        self.journalmeta = journalmeta
 
-    A estrutura de ``metadata`` é a mesma retornada pelo formato JSON, do
-    ``articlemeta.scielo.org``, conforme exemplo:
-    https://gist.github.com/gustavofonseca/4a5919db8d0027f37522da7d06bfa876
-    """
-    metadata_copy = metadata.copy()
-    issue = Issue(metadata_copy)
+    def check(self, metadata):
+        """Enriquece e normaliza itens do dicionário ``metadata``, que representa
+        metadados de um fascículo.
 
-    issns = set(
-        [
-            issue.journal.any_issn(priority=u'electronic'),
-            issue.journal.any_issn(priority=u'print'),
-            issue.journal.scielo_issn
-        ]
-    )
+        A estrutura de ``metadata`` é a mesma retornada pelo formato JSON, do
+        ``articlemeta.scielo.org``, conforme exemplo:
+        https://gist.github.com/gustavofonseca/4a5919db8d0027f37522da7d06bfa876
+        """
+        metadata_copy = metadata.copy()
+        issue = Issue(metadata_copy)
 
-    metadata_copy['code'] = issue.publisher_id
-    metadata_copy['code_title'] = list(issns)
-    metadata_copy['collection'] = issue.collection_acronym
-    metadata_copy['issue_type'] = issue.type
-    metadata_copy['publication_year'] = issue.publication_date[0:4]
-    metadata_copy['publication_date'] = issue.publication_date
+        issns = set(
+            [
+                issue.journal.any_issn(priority=u'electronic'),
+                issue.journal.any_issn(priority=u'print'),
+                issue.journal.scielo_issn
+            ]
+        )
 
-    if not isinstance(issue.data['issue']['processing_date'], datetime):
-        try:
-            metadata_copy['processing_date'] = datetime.strptime(issue.data['issue']['processing_date'], '%Y-%m-%d')
-        except:
-            metadata_copy['processing_date'] = datetime.now()
+        metadata_copy['code'] = issue.publisher_id
+        metadata_copy['code_title'] = list(issns)
+        metadata_copy['collection'] = issue.collection_acronym
+        metadata_copy['issue_type'] = issue.type
+        metadata_copy['publication_year'] = issue.publication_date[0:4]
+        metadata_copy['publication_date'] = issue.publication_date
 
-    return metadata_copy
+        if not isinstance(issue.data['issue']['processing_date'], datetime):
+            try:
+                metadata_copy['processing_date'] = datetime.strptime(issue.data['issue']['processing_date'], '%Y-%m-%d')
+            except:
+                metadata_copy['processing_date'] = datetime.now()
+
+        return metadata_copy
+
+    def identifiers(self, collection=None, issn=None,
+            from_date='1500-01-01', until_date=None, limit=None, offset=0,
+            extra_filter=None):
+        """Lista os códigos identificadores dos fascículos. A listagem pode ser
+        completa, por coleção, por ISSN ou por intervalo da data de processamento.
+        """
+        if offset < 0:
+            offset = 0
+
+        if limit is None or limit < 0:
+            limit = LIMIT
+
+        fltr = {}
+        fltr['processing_date'] = get_date_range_filter(from_date, until_date)
+
+        if collection:
+            fltr['collection'] = collection
+
+        if issn:
+            fltr['code_title'] = issn
+
+        if extra_filter:
+            fltr.update(json.loads(extra_filter))
+
+        total = self.db.find(fltr).count()
+        data = self.db.find(fltr, {
+            'code': 1, 'collection': 1, 'processing_date': 1}).sort(
+                    'processing_date').skip(offset).limit(limit)
+
+        meta = {
+            'limit': limit,
+            'offset': offset,
+            'filter': fltr,
+            'total': total
+        }
+
+        result = {'meta': meta, 'objects': []}
+        for i in data:
+            rec = {
+                'code': i['code'],
+                'collection': i['collection'],
+                'processing_date': i['processing_date']
+            }
+
+            result['objects'].append(dates_to_string(rec))
+
+        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
+
+        return result
+
+    def get(self, code, collection=None, replace_journal_metadata=False):
+        """Obtém um fascículo de código identificador ``code``. Opcionalmente,
+        um acrônimo de coleção pode ser passado por meio do arg ``collection``
+        para especializar a busca.
+
+        O arg ``replace_journal_metadata`` faz com que o resultado da
+        consulta contenha a versão mais atualizada dos metadados do periódico.
+
+        Retorna um dicionário ou None.
+        """
+        fltr = {'code': code}
+        if collection:
+            fltr['collection'] = collection
+
+        data = self.db.find_one(fltr)
+
+        if not data:
+            return None
+
+        if replace_journal_metadata:
+            journal = self.journalmeta.get(collection=collection, issn=code[0:9])
+            if journal and len(journal) != 0:
+                data['title'] = journal[0]
+
+        del(data['_id'])
+
+        return dates_to_string(data)
+
+    def get_issues_full(self, collection=None, issn=None, from_date='1500-01-01',
+            until_date=None, limit=LIMIT, offset=0, extra_filter=None):
+        """Obtém uma lista dos fascículos, que pode ser geral, por coleção,
+        por periódico ou intervalo de data de publicação. Há ainda a
+        possibilidade de usar filtros adhoc por meio de consultas diretas ao
+        MongoDB com o arg ``extra_filter`` (alto acoplamento; não recomendado).
+        """
+        if offset < 0:
+            offset = 0
+
+        if limit is None or limit < 0:
+            limit = LIMIT
+
+        fltr = {}
+        fltr['processing_date'] = get_date_range_filter(from_date, until_date)
+
+        if collection:
+            fltr['collection'] = collection
+
+        if issn:
+            fltr['code_title'] = issn
+
+        if extra_filter:
+            fltr.update(json.loads(extra_filter))
+
+        total = self.db.find(fltr).count()
+        data = self.db.find(fltr, {'_id': 0}).sort(
+                'processing_date').skip(offset).limit(limit)
+
+        meta = {
+                'limit': limit,
+                'offset': offset,
+                'filter': fltr,
+                'total': total,
+                }
+
+        result = {'meta': meta, 'objects': []}
+        for issue in data:
+            result['objects'].append(dates_to_string(issue))
+
+        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
+
+        return result
+
+    def exists(self, code, collection=None):
+        """Se o fascículo de código ``code`` existe. A consulta pode ser
+        realizada no contexto global ou de coleção.
+        """
+        fltr = {'code': code}
+        if collection:
+            fltr['collection'] = collection
+
+        if self.db.find(fltr).count() >= 1:
+            return True
+
+        return False
+
+    def delete(self, code, collection=None):
+        """Remove o fascículo de código igual a ``code``, da coleção
+        ``collection``.
+
+        Retorna um dicionário na forma: 
+
+        .. code-block:: python
+
+            {'code': '0104-326920150002', 'collection': 'scl', 'deleted_count': 1}
+        """
+        fltr = {'code': code}
+        if collection:
+            fltr['collection'] = collection
+
+        deleted = self.db.delete_one(fltr)
+
+        fltr['deleted_count'] = deleted.deleted_count
+
+        return fltr
+
+    def add(self, metadata):
+        """Registra o fascículo representado por ``metadata``.
+
+        Retorna uma cópia enriquecida do dicionário ``metadata``, com o
+        acréscimo da chave ``created_at``.
+        """
+        issue = self.check(metadata)
+
+        if not issue:
+            return None
+
+        if self.exists(issue['code'], issue['collection']):
+            return self.update(issue)
+
+        issue['created_at'] = issue['processing_date']
+
+        self.db.update_one(
+                {'code': issue['code'], 'collection': issue['collection']},
+                {'$set': issue},
+                upsert=True)
+
+        return dates_to_string(issue)
+
+    def update(self, metadata):
+        """Atualiza o registro do fascículo representado por ``metadata``.
+
+        Retorna uma cópia enriquecida do dicionário ``metadata``, com o
+        acréscimo da chave ``updated_at``.
+        """
+        issue = self.check(metadata)
+
+        if not issue:
+            return None
+
+        issue['updated_at'] = datetime.now()
+
+        self.db.update_one(
+                {'code': issue['code'], 'collection': issue['collection']},
+                {'$set': issue},
+                upsert=True)
+
+        return dates_to_string(issue)
 
 
 class JournalMeta:
@@ -403,6 +606,7 @@ class DataBroker(object):
     def __init__(self, databroker):
         self.db = databroker
         self.journalmeta = JournalMeta(self.db['journals'])
+        self.issuemeta = IssueMeta(self.db['issues'], self.journalmeta)
 
     @classmethod
     def from_dsn(cls, db_dsn, reuse_dbconn=False):
@@ -516,141 +720,32 @@ class DataBroker(object):
 
         self.get_collection(collection=collection)
 
-    def identifiers_journal(self, collection=None, issn=None, limit=LIMIT, offset=0, extra_filter=None):
+    def identifiers_journal(self, collection=None, issn=None, limit=LIMIT,
+            offset=0, extra_filter=None):
         return self.journalmeta.identifiers(collection=collection, issn=issn,
                 limit=limit, offset=offset, extra_filter=extra_filter)
 
-    def identifiers_issue(
-            self,
-            collection=None,
-            issn=None,
-            from_date='1500-01-01',
-            until_date=None,
-            limit=LIMIT,
-            offset=0,
+    def identifiers_issue(self, collection=None, issn=None,
+            from_date='1500-01-01', until_date=None, limit=LIMIT, offset=0,
             extra_filter=None):
-
-        if offset < 0:
-            offset = 0
-
-        if limit < 0:
-            limit = LIMIT
-
-        fltr = {}
-        fltr['processing_date'] = get_date_range_filter(from_date, until_date)
-
-        if collection:
-            fltr['collection'] = collection
-
-        if issn:
-            fltr['code_title'] = issn
-
-        if extra_filter:
-            fltr.update(json.loads(extra_filter))
-
-        total = self.db['issues'].find(fltr).count()
-        data = self.db['issues'].find(fltr, {
-            'code': 1,
-            'collection': 1,
-            'processing_date': 1}
-        ).sort('processing_date').skip(offset).limit(limit)
-
-        meta = {
-            'limit': limit,
-            'offset': offset,
-            'filter': fltr,
-            'total': total
-        }
-
-        result = {'meta': meta, 'objects': []}
-        for i in data:
-            rec = {
-                'code': i['code'],
-                'collection': i['collection'],
-                'processing_date': i['processing_date']
-            }
-
-            result['objects'].append(dates_to_string(rec))
-
-        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
-
-        return result
+        return self.issuemeta.identifiers(collection=collection, issn=issn,
+                from_date=from_date, until_date=until_date, limit=limit,
+                offset=offset, extra_filter=extra_filter)
 
     def get_issue(self, code, collection=None, replace_journal_metadata=False):
+        return self.issuemeta.get(code=code, collection=collection,
+                replace_journal_metadata=replace_journal_metadata)
 
-        fltr = {'code': code}
-
-        if collection:
-            fltr['collection'] = collection
-
-        data = self.db['issues'].find_one(fltr)
-
-        if not data:
-            return None
-
-        if replace_journal_metadata is True:
-            journal = self.get_journal(collection=collection, issn=code[0:9])
-            if journal and len(journal) != 0:
-                data['title'] = journal[0]
-
-        del(data['_id'])
-
-        return dates_to_string(data)
-
-    def get_issues_full(
-            self,
-            collection=None,
-            issn=None,
-            from_date='1500-01-01',
-            until_date=None,
-            limit=LIMIT,
-            offset=0,
-            extra_filter=None):
-
-        if offset < 0:
-            offset = 0
-
-        if limit < 0:
-            limit = LIMIT
-
-        fltr = {}
-        fltr['processing_date'] = get_date_range_filter(from_date, until_date)
-
-        if collection:
-            fltr['collection'] = collection
-
-        if issn:
-            fltr['code_title'] = issn
-
-        if extra_filter:
-            fltr.update(json.loads(extra_filter))
-
-        content = {
-         '_id': 0
-        }
-
-        total = self.db['issues'].find(fltr).count()
-        data = self.db['issues'].find(
-            fltr, content
-        ).sort('processing_date').skip(offset).limit(limit)
-
-        meta = {
-            'limit': limit,
-            'offset': offset,
-            'filter': fltr,
-            'total': total
-        }
-
-        result = {'meta': meta, 'objects': []}
-        for issue in data:
-            result['objects'].append(dates_to_string(issue))
-
-        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
-
-        return result
+    def get_issues_full(self, collection=None, issn=None, from_date='1500-01-01',
+            until_date=None, limit=LIMIT, offset=0, extra_filter=None):
+        return self.issuemeta.get_issues_full(collection=collection,
+                issn=issn, from_date=from_date, until_date=until_date,
+                limit=limit, offset=offset, extra_filter=extra_filter)
 
     def get_issues(self, code, collection=None, replace_journal_metadata=False):
-
+        """Esse método não é utilizado em nenhum local do projeto, e tampouco
+        responde por qualquer endpoint.
+        """
         fltr = {'code': code}
 
         if collection:
@@ -670,68 +765,19 @@ class DataBroker(object):
         return self.journalmeta.exists(code=code, collection=collection)
 
     def exists_issue(self, code, collection=None):
-        fltr = {'code': code}
-
-        if collection:
-            fltr['collection'] = collection
-
-        if self.db['issues'].find(fltr).count() >= 1:
-            return True
-
-        return False
+        return self.issuemeta.exists(code=code, collection=collection)
 
     @LogHistoryChange(document_type="issue", event_type="delete")
     def delete_issue(self, code, collection=None):
-
-        fltr = {'code': code}
-
-        if collection:
-            fltr['collection'] = collection
-
-        deleted = self.db['issues'].delete_one(fltr)
-
-        fltr['deleted_count'] = deleted.deleted_count
-
-        return fltr
+        return self.issuemeta.delete(code=code, collection=collection)
 
     @LogHistoryChange(document_type="issue", event_type="add")
     def add_issue(self, metadata):
-
-        issue = check_issue_meta(metadata)
-
-        if not issue:
-            return None
-
-        if self.exists_issue(issue['code'], issue['collection']):
-            return self.update_issue(issue)
-
-        issue['created_at'] = issue['processing_date']
-
-        self.db['issues'].update_one(
-            {'code': issue['code'], 'collection': issue['collection']},
-            {'$set': issue},
-            upsert=True
-        )
-
-        return dates_to_string(issue)
+        return self.issuemeta.add(metadata)
 
     @LogHistoryChange(document_type="issue", event_type="update")
     def update_issue(self, metadata):
-
-        issue = check_issue_meta(metadata)
-
-        if not issue:
-            return None
-
-        issue['updated_at'] = datetime.now()
-
-        self.db['issues'].update_one(
-            {'code': issue['code'], 'collection': issue['collection']},
-            {'$set': issue},
-            upsert=True
-        )
-
-        return dates_to_string(issue)
+        return self.issuemeta.update(metadata)
 
     def identifiers_article(self,
                             collection=None,
