@@ -573,7 +573,7 @@ class DataBroker(object):
 
         result = {'meta': meta, 'objects': []}
         for issue in data:
-            result['objects'].append(issue)
+            result['objects'].append(dates_to_string(issue))
 
         result['meta']['filter'] = dates_to_string(result['meta']['filter'])
 
