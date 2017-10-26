@@ -2,6 +2,7 @@
 from lxml import etree as ET
 import re
 
+from xylose.scielodocument import UnavailableMetadataException
 import plumber
 
 SUPPLBEG_REGEX = re.compile(r'^0 ')
@@ -274,7 +275,11 @@ class XMLArticleMetaVolumePipe(plumber.Pipe):
     def precond(data):
 
         raw, xml = data
-        if not raw.issue.volume:
+
+        try:
+            if not raw.issue:
+                raise plumber.UnmetPrecondition()
+        except UnavailableMetadataException as e:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
@@ -291,15 +296,22 @@ class XMLArticleMetaVolumePipe(plumber.Pipe):
 
 class XMLArticleMetaIssuePipe(plumber.Pipe):
 
+    def precond(data):
+
+        raw, xml = data
+
+        try:
+            if not raw.issue:
+                raise plumber.UnmetPrecondition()
+        except UnavailableMetadataException as e:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
         label_volume = raw.issue.volume.replace('ahead', '0') if raw.issue.volume else '0'
         label_issue = raw.issue.number.replace('ahead', '0') if raw.issue.number else '0'
-
-
-        vol = ET.Element('volume')
-        vol.text = label_volume.strip()
 
         label_suppl_issue = ' suppl %s' % raw.issue.supplement_number if raw.issue.supplement_number else ''
 

@@ -6,6 +6,7 @@ from io import StringIO
 
 import plumber
 
+from xylose.scielodocument import UnavailableMetadataException
 from articlemeta import utils
 
 AFF_REGEX_JUST_NUMBERS = re.compile(r'\d+')
@@ -621,17 +622,22 @@ class XMLArticleMetaHistoryPipe(plumber.Pipe):
 
         return data
 
+
 class XMLArticleMetaArticleIdPublisherPipe(plumber.Pipe):
+
     def transform(self, data):
         raw, xml = data
 
         article_meta = xml.find('./front/article-meta')
 
-        if raw.is_ahead_of_print:
-            otherid = ET.Element('article-id')
-            otherid.text = raw.order
-            otherid.set('pub-id-type', 'other')
-            article_meta.append(otherid)
+        try:
+            if raw.is_ahead_of_print:
+                otherid = ET.Element('article-id')
+                otherid.text = raw.order
+                otherid.set('pub-id-type', 'other')
+                article_meta.append(otherid)
+        except UnavailableMetadataException as e:
+            pass
 
         articleidpublisher = ET.Element('article-id')
         articleidpublisher.set('pub-id-type', 'publisher-id')
@@ -876,8 +882,16 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
         return data
 
 
-class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
+class XMLArticleMetaDatesInfoPipe(plumber.Pipe):
 
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.publication_date:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
@@ -894,11 +908,70 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
 
         pubdate.append(year)
 
+        articlemeta = xml.find('./front/article-meta')
+        articlemeta.append(pubdate)
+
+        return data
+
+
+class XMLArticleMetaPagesInfoPipe(plumber.Pipe):
+
+    def transform(self, data):
+        raw, xml = data
+
         fpage = ET.Element('fpage')
         fpage.text = raw.start_page
 
         lpage = ET.Element('lpage')
         lpage.text = raw.end_page
+
+        articlemeta = xml.find('./front/article-meta')
+
+        if raw.start_page:
+            articlemeta.append(fpage)
+        if raw.end_page:
+            articlemeta.append(lpage)
+
+        return data
+
+
+class XMLArticleMetaElocationInfoPipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.elocation:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        elocation = ET.Element('elocation-id')
+        elocation.text = raw.elocation
+
+        articlemeta = xml.find('./front/article-meta')
+        articlemeta.append(elocation)
+
+        return data
+
+
+class XMLArticleMetaIssueInfoPipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        try:
+            if not raw.issue:
+                raise plumber.UnmetPrecondition()
+        except UnavailableMetadataException as e:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
 
         label_volume = raw.issue.volume.replace('ahead', '0') if raw.issue.volume else '0'
         label_issue = raw.issue.number.replace('ahead', '0') if raw.issue.number else '0'
@@ -917,7 +990,6 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         label_issue = SUPPLEND_REGEX.sub('', label_issue)
 
         articlemeta = xml.find('./front/article-meta')
-        articlemeta.append(pubdate)
 
         if label_volume:
             vol = ET.Element('volume')
@@ -928,16 +1000,6 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
             issue = ET.Element('issue')
             issue.text = label_issue.strip()
             articlemeta.append(issue)
-
-        if raw.elocation:
-            elocation = ET.Element('elocation-id')
-            elocation.text = raw.elocation
-            articlemeta.append(elocation)
-
-        if raw.start_page:
-            articlemeta.append(fpage)
-        if raw.end_page:
-            articlemeta.append(lpage)
 
         return data
 

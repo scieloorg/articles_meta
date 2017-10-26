@@ -6,6 +6,7 @@ import uuid
 
 from datetime import datetime
 
+from xylose.scielodocument import UnavailableMetadataException
 import plumber
 
 SUPPLBEG_REGEX = re.compile(r'^0 ')
@@ -204,9 +205,12 @@ class XMLPubDatePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        if raw.issue == 'ahead':
-            el = ET.Element('publication_date', media_type='aheadofprint')
-        else:
+        try:
+            if raw.issue == 'ahead':
+                el = ET.Element('publication_date', media_type='aheadofprint')
+            else:
+                el = ET.Element('publication_date', media_type='print')
+        except UnavailableMetadataException as e:
             el = ET.Element('publication_date', media_type='print')
 
         # Month
@@ -236,7 +240,10 @@ class XMLVolumePipe(plumber.Pipe):
 
         raw, xml = data
 
-        if not raw.issue.volume:
+        try:
+            if not raw.issue.volume:
+                raise plumber.UnmetPrecondition()
+        except UnavailableMetadataException as e:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
@@ -256,6 +263,17 @@ class XMLVolumePipe(plumber.Pipe):
 
 class XMLIssuePipe(plumber.Pipe):
 
+    def precond(data):
+
+        raw, xml = data
+
+        try:
+            if not raw.issue:
+                raise plumber.UnmetPrecondition()
+        except UnavailableMetadataException as e:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 

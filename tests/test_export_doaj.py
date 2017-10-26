@@ -423,12 +423,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_doaj.XMLArticleMetaVolumePipe()
         raw, xml = xmlarticle.transform(data)
 
-        try:
-            xml.find('./record/volume').text
-        except AttributeError:
-            self.assertTrue(True)
-        else:
-            self.assertTrue(False)
+        self.assertEqual(None, xml.find('./record/volume').text)
 
     def test_xmlarticle_meta_general_info_issue_pipe(self):
 

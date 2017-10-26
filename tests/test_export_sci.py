@@ -961,7 +961,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaDatesInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         pub_year = xml.find('./article/front/article-meta/pub-date/year').text
@@ -981,7 +981,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaDatesInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         pub_month = xml.find('./article/front/article-meta/pub-date/month').text
@@ -1001,7 +1001,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaPagesInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         fpage = xml.find('./article/front/article-meta/fpage').text
@@ -1023,7 +1023,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaPagesInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         fpage = xml.find('./article/front/article-meta/fpage')
@@ -1043,7 +1043,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaPagesInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         lpage = xml.find('./article/front/article-meta/lpage').text
@@ -1065,7 +1065,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaPagesInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         lpage = xml.find('./article/front/article-meta/lpage')
@@ -1085,7 +1085,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaIssueInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         volume = xml.find('./article/front/article-meta/volume').text
@@ -1107,7 +1107,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaIssueInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         volume = xml.find('./article/front/article-meta/volume').text
@@ -1127,7 +1127,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaIssueInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         issue = xml.find('./article/front/article-meta/issue').text
@@ -1149,7 +1149,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaIssueInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         issue = xml.find('./article/front/article-meta/issue').text
@@ -1171,7 +1171,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaElocationInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         eloc = xml.find('./article/front/article-meta/elocation-id').text
@@ -1191,7 +1191,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaElocationInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         eloc = xml.find('./article/front/article-meta/elocation-id')
@@ -1215,7 +1215,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaIssueInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         issue = xml.find('./article/front/article-meta/issue').text
@@ -1240,7 +1240,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaIssueInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         issue = xml.find('./article/front/article-meta/issue').text
@@ -1265,7 +1265,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaIssueInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         issue = xml.find('./article/front/article-meta/issue').text
@@ -1290,7 +1290,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaIssueInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         issue = xml.find('./article/front/article-meta/issue').text
@@ -1315,7 +1315,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaIssueInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         issue = xml.find('./article/front/article-meta/issue').text
@@ -1340,7 +1340,7 @@ class ExportTests(unittest.TestCase):
 
         data = [self._article_meta, pxml]
 
-        xmlarticle = export_sci.XMLArticleMetaGeneralInfoPipe()
+        xmlarticle = export_sci.XMLArticleMetaIssueInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
         issue = xml.find('./article/front/article-meta/issue').text

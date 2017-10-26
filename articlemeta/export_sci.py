@@ -1,8 +1,9 @@
-#coding: utf-8
+# coding: utf-8
 import re
 
 from lxml import etree as ET
 
+from xylose.scielodocument import UnavailableMetadataException
 import plumber
 
 SUPPLBEG_REGEX = re.compile(r'^0 ')
@@ -640,8 +641,16 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
         return data
 
 
-class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
+class XMLArticleMetaDatesInfoPipe(plumber.Pipe):
 
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.publication_date:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
@@ -657,11 +666,70 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
 
         pubdate.append(year)
 
+        articlemeta = xml.find('./article/front/article-meta')
+        articlemeta.append(pubdate)
+
+        return data
+
+
+class XMLArticleMetaPagesInfoPipe(plumber.Pipe):
+
+    def transform(self, data):
+        raw, xml = data
+
         fpage = ET.Element('fpage')
         fpage.text = raw.start_page
 
         lpage = ET.Element('lpage')
         lpage.text = raw.end_page
+
+        articlemeta = xml.find('./article/front/article-meta')
+
+        if raw.start_page:
+            articlemeta.append(fpage)
+        if raw.end_page:
+            articlemeta.append(lpage)
+
+        return data
+
+
+class XMLArticleMetaElocationInfoPipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        if not raw.elocation:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        elocation = ET.Element('elocation-id')
+        elocation.text = raw.elocation
+
+        articlemeta = xml.find('./article/front/article-meta')
+        articlemeta.append(elocation)
+
+        return data
+
+
+class XMLArticleMetaIssueInfoPipe(plumber.Pipe):
+
+    def precond(data):
+
+        raw, xml = data
+
+        try:
+            if not raw.issue:
+                raise plumber.UnmetPrecondition()
+        except UnavailableMetadataException as e:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
 
         label_volume = raw.issue.volume.replace('ahead', '0') if raw.issue.volume else '0'
         label_issue = raw.issue.number.replace('ahead', '0') if raw.issue.number else '0'
@@ -680,7 +748,6 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
         label_issue = SUPPLEND_REGEX.sub('', label_issue)
 
         articlemeta = xml.find('./article/front/article-meta')
-        articlemeta.append(pubdate)
 
         if label_volume:
             vol = ET.Element('volume')
@@ -692,16 +759,6 @@ class XMLArticleMetaGeneralInfoPipe(plumber.Pipe):
             issue.text = label_issue.strip()        
             articlemeta.append(issue)
 
-        if raw.elocation:
-            elocation = ET.Element('elocation-id')
-            elocation.text = raw.elocation
-            articlemeta.append(elocation)
-
-        if raw.start_page:
-            articlemeta.append(fpage)
-        if raw.end_page:
-            articlemeta.append(lpage)
-
         return data
 
 
@@ -712,27 +769,26 @@ class XMLArticleMetaURLsPipe(plumber.Pipe):
 
         articlemeta = xml.find('./article/front/article-meta')
 
-        if raw.issue.url(language='en'):
-            issue_uri = ET.Element('self-uri')
-            issue_uri.set('href', raw.issue.url(language='en'))
-            issue_uri.set('content-type', 'issue_page')
+        try:
+            if raw.issue.url(language='en'):
+                issue_uri = ET.Element('self-uri')
+                issue_uri.set('href', raw.issue.url(language='en'))
+                issue_uri.set('content-type', 'issue_page')
+                articlemeta.append(issue_uri)
+        except UnavailableMetadataException:
+            pass
 
         if raw.journal.url(language='en'):
             journal_uri = ET.Element('self-uri')
             journal_uri.set('href', raw.journal.url(language='en'))
             journal_uri.set('content-type', 'journal_page')
+            articlemeta.append(journal_uri)
 
         if raw.html_url(language='en'):
             article_uri = ET.Element('self-uri')
             article_uri.set('href', raw.html_url(language='en'))
             article_uri.set('content-type', 'full_text_page')
-
-        if raw.html_url():
             articlemeta.append(article_uri)
-        if raw.issue.url():
-            articlemeta.append(issue_uri)
-        if raw.journal.url():
-            articlemeta.append(journal_uri)
 
         return data
 

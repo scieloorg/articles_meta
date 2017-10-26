@@ -10,7 +10,7 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
     CHANGES = f.read()
 
 requires = [
-    'pymongo>=3.3.0',
+    'pymongo>=3.5.1',
     'lxml>=3.4.2',
     'requests>=2.11.1',
     'picles.plumber>=0.10',
@@ -20,8 +20,8 @@ requires = [
     'waitress',
     'thriftpy>=0.3.1',
     'thriftpywrap',
-    'xylose>=1.25.0',
-    'crossrefapi>=1.0.0',
+    'xylose>=1.28.0',
+    'crossrefapi>=1.2.0',
     'raven',
     'chardet'
     ]
@@ -30,7 +30,7 @@ test_requires = ['mocker']
 
 setup(
     name="articlemeta",
-    version='1.39.5',
+    version='1.40.0',
     description="A SciELO API to load SciELO Articles metadata",
     author="SciELO",
     author_email="scielo-dev@googlegroups.com",
