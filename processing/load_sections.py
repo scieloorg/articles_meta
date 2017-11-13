@@ -5,6 +5,7 @@ The lists of Sections must be given and respect the following format.
 "collection acronym","language","code","text"
 """
 from datetime import datetime, timedelta
+import os
 import argparse
 import logging
 import re
