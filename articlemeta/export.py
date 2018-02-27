@@ -2,12 +2,22 @@
 import plumber
 
 from xylose.scielodocument import Article
+import xylose
 
 from articlemeta import export_sci
 from articlemeta import export_rsps
 from articlemeta import export_doaj
 from articlemeta import export_pubmed
 from articlemeta import export_crossref
+
+
+class CustomArticle(Article):
+    @property
+    def issue_publication_date(self):
+        if 'v65' in self.data['article']:
+            return xylose.tools.get_date(self.data['article']['v65'][0]['_'])
+        else:
+            return None
 
 
 class Export(object):
@@ -142,7 +152,7 @@ class Export(object):
         return next(transformed_data)
 
     def pipeline_crossref(self):
-        xylose_article = Article(self._article)
+        xylose_article = CustomArticle(self._article)
 
         ppl = plumber.Pipeline(
             export_crossref.SetupDoiBatchPipe(),

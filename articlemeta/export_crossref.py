@@ -196,44 +196,51 @@ class XMLISSNPipe(plumber.Pipe):
 
 
 class XMLJournalIssuePipe(plumber.Pipe):
+    def precond(data):
+        raw, xml = data
+        try:
+            if raw.issue.is_ahead_of_print:
+                raise plumber.UnmetPrecondition()
+        except UnavailableMetadataException as e:
+            raise plumber.UnmetPrecondition()
 
+    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
-
         el = ET.Element('journal_issue')
-
         xml.find('./body/journal').append(el)
 
         return data
 
 
-class XMLPubDatePipe(plumber.Pipe):
+def journal_issue_exists(data):
+    raw, xml = data
+    if xml.find('./body/journal/journal_issue') is None:
+        raise plumber.UnmetPrecondition()
 
+
+class XMLPubDatePipe(plumber.Pipe):
+    @plumber.precondition(journal_issue_exists)
     def transform(self, data):
         raw, xml = data
 
-        try:
-            if raw.issue == 'ahead':
-                el = ET.Element('publication_date', media_type='aheadofprint')
-            else:
-                el = ET.Element('publication_date', media_type='print')
-        except UnavailableMetadataException as e:
-            el = ET.Element('publication_date', media_type='print')
+        el = ET.Element('publication_date', media_type='online')
+        date = raw.issue_publication_date  # ver export.CustomArticle
 
         # Month
-        if raw.publication_date[5:7]:
+        if date[5:7]:
             month = ET.Element('month')
-            month.text = raw.publication_date[5:7]
+            month.text = date[5:7]
             el.append(month)
         # Day
-        if raw.publication_date[8:10]:
+        if date[8:10]:
             day = ET.Element('day')
-            day.text = raw.publication_date[8:10]
+            day.text = date[8:10]
             el.append(day)
         # Year
-        if raw.publication_date[0:4]:
+        if date[0:4]:
             year = ET.Element('year')
-            year.text = raw.publication_date[0:4]
+            year.text = date[0:4]
             el.append(year)
 
         xml.find('./body/journal/journal_issue').append(el)
@@ -244,9 +251,7 @@ class XMLPubDatePipe(plumber.Pipe):
 class XMLVolumePipe(plumber.Pipe):
 
     def precond(data):
-
         raw, xml = data
-
         try:
             if not raw.issue.volume:
                 raise plumber.UnmetPrecondition()
@@ -254,6 +259,7 @@ class XMLVolumePipe(plumber.Pipe):
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
+    @plumber.precondition(journal_issue_exists)
     def transform(self, data):
         raw, xml = data
 
@@ -271,9 +277,7 @@ class XMLVolumePipe(plumber.Pipe):
 class XMLIssuePipe(plumber.Pipe):
 
     def precond(data):
-
         raw, xml = data
-
         try:
             if not raw.issue:
                 raise plumber.UnmetPrecondition()
@@ -281,6 +285,7 @@ class XMLIssuePipe(plumber.Pipe):
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
+    @plumber.precondition(journal_issue_exists)
     def transform(self, data):
         raw, xml = data
 
@@ -453,26 +458,29 @@ class XMLArticlePubDatePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
+        journal_article = xml.find('./body/journal/journal_article')
+        date = raw.publication_date
+
         el = ET.Element('publication_date')
-        el.set('media_type', "print")
+        el.set('media_type', "online")
 
         # Month
-        if raw.publication_date[5:7]:
+        if date[5:7]:
             month = ET.Element('month')
-            month.text = raw.publication_date[5:7]
+            month.text = date[5:7]
             el.append(month)
         # Day
-        if raw.publication_date[8:10]:
+        if date[8:10]:
             day = ET.Element('day')
-            day.text = raw.publication_date[8:10]
+            day.text = date[8:10]
             el.append(day)
         # Year
-        if raw.publication_date[0:4]:
+        if date[0:4]:
             year = ET.Element('year')
-            year.text = raw.publication_date[0:4]
+            year.text = date[0:4]
             el.append(year)
 
-        xml.find('./body/journal/journal_article').append(el)
+        journal_article.append(el)
 
         return data
 

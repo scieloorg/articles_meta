@@ -6,10 +6,9 @@ import io
 
 from lxml import etree as ET
 
-from xylose.scielodocument import Article
-
 from articlemeta import export_crossref
 from articlemeta import export
+from articlemeta.export import CustomArticle as Article
 
 
 class ExportTests(unittest.TestCase):
@@ -188,7 +187,7 @@ class ExportTests(unittest.TestCase):
         xmlcrossref = export_crossref.XMLISSNPipe()
         raw, xml = xmlcrossref.transform(data)
 
-        self.assertEqual(b'<doi_batch><body><journal><journal_metadata><issn media_type="electronic">0034-8910</issn></journal_metadata></journal></body></doi_batch>', ET.tostring(xml))
+        self.assertEqual(b'<doi_batch><body><journal><journal_metadata><issn media_type="print">0034-8910</issn></journal_metadata></journal></body></doi_batch>', ET.tostring(xml))
 
     def test_journal_issue_element(self):
 
@@ -223,7 +222,7 @@ class ExportTests(unittest.TestCase):
         xmlcrossref = export_crossref.XMLPubDatePipe()
         raw, xml = xmlcrossref.transform(data)
 
-        self.assertEqual(b'<doi_batch><body><journal><journal_issue><publication_date media_type="print"><month>08</month><year>2010</year></publication_date></journal_issue></journal></body></doi_batch>', ET.tostring(xml))
+        self.assertEqual(b'<doi_batch><body><journal><journal_issue><publication_date media_type="online"><month>08</month><year>2010</year></publication_date></journal_issue></journal></body></doi_batch>', ET.tostring(xml))
 
     def test_volume_element(self):
 
@@ -368,7 +367,7 @@ class ExportTests(unittest.TestCase):
         xmlcrossref = export_crossref.XMLArticlePubDatePipe()
         raw, xml = xmlcrossref.transform(data)
 
-        self.assertEqual(b'<doi_batch><body><journal><journal_article publication_type="full_text"><publication_date media_type="print"><month>08</month><year>2010</year></publication_date></journal_article></journal></body></doi_batch>', ET.tostring(xml))
+        self.assertEqual(b'<doi_batch><body><journal><journal_article publication_type="full_text"><publication_date media_type="online"><month>08</month><year>2010</year></publication_date></journal_article></journal></body></doi_batch>', ET.tostring(xml))
 
     def test_article_pages_element(self):
 
