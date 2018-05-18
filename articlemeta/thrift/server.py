@@ -424,6 +424,9 @@ class Dispatcher(object):
             if fmt == 'xmlcrossref':
                 return Export(data).pipeline_crossref()
 
+            if fmt == 'opac':
+                return Export(data).pipeline_opac()
+
         return json.dumps(data)
 
     def get_issue(self, code, collection, replace_journal_metadata):

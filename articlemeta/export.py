@@ -190,3 +190,19 @@ class Export(object):
         transformed_data = ppl.run(xylose_article, rewrap=True)
 
         return next(transformed_data)
+
+    def pipeline_opac(self):
+        article = self._article.copy()
+        keys_to_remove = ['citations', '_shard_id', 'validated_scielo',
+                'doaj_id', 'normalized', 'sent_doaj', 'sent_wos',
+                'validated_wos', 'applicable', 'collection', 'fulltexts',
+                'code']
+
+        for k in keys_to_remove:
+            try:
+                del(article[k])
+            except KeyError:
+                pass
+
+        return article
+

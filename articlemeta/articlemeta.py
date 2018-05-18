@@ -313,6 +313,9 @@ def get_article(request):
             return Response(
                 Export(article).pipeline_crossref(), content_type="application/xml")
 
+        if fmt == 'opac':
+            return Export(article).pipeline_opac()
+
     return article
 
 @view_config(route_name='get_articles',
