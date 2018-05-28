@@ -425,7 +425,7 @@ class Dispatcher(object):
                 return Export(data).pipeline_crossref()
 
             if fmt == 'opac':
-                return Export(data).pipeline_opac()
+                return json.dumps(Export(data).pipeline_opac())
 
         return json.dumps(data)
 
