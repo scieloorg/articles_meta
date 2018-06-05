@@ -378,10 +378,34 @@ class IssueMeta:
         return dates_to_string(issue)
 
     def get_code_from_label(self, label, journal_code, collection):
+        """Retorna o `code` de um fasciculo a partir do seu `label`. 
+
+        Tenta encontrar o label em 2 estruturas de dados distintas: primeiro
+        em uma string e segundo em uma lista de dicts.
+        """
+        return self._get_code_from_label_str(label, journal_code,
+                collection) or self._get_code_from_label_list(label,
+                        journal_code, collection)
+
+    def _get_code_from_label_list(self, label, journal_code, collection):
         fltr = {
                 'collection': collection,
                 'code_title': journal_code,
                 'issue.v4': {'$elemMatch': {'_': label}},
+                }
+        projection = {'code': True, '_id': False}
+
+        data = self.db.find_one(fltr, projection)
+        try:
+            return data.get('code', '')
+        except AttributeError:
+            return ''
+
+    def _get_code_from_label_str(self, label, journal_code, collection):
+        fltr = {
+                'collection': collection,
+                'code_title': journal_code,
+                'issue.v4': label,
                 }
         projection = {'code': True, '_id': False}
 
