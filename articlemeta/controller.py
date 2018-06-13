@@ -98,6 +98,7 @@ def get_dbconn(db_dsn):
                 [[('processing_date', pymongo.ASCENDING)], {'background': True}],
                 [[('publication_year', pymongo.ASCENDING)], {'background': True}],
                 [[('code', pymongo.ASCENDING), ('collection',  pymongo.ASCENDING)], {'unique': True, 'background': True}],
+                [[('code_title', pymongo.ASCENDING)], {'background': True}],
                 [[('collection', pymongo.ASCENDING), ('processing_date',  pymongo.ASCENDING)], {'background': True}]
             ],
             'journals': [
@@ -375,6 +376,44 @@ class IssueMeta:
                 upsert=True)
 
         return dates_to_string(issue)
+
+    def get_code_from_label(self, label, journal_code, collection):
+        """Retorna o `code` de um fasciculo a partir do seu `label`. 
+
+        Tenta encontrar o label em 2 estruturas de dados distintas: primeiro
+        em uma string e segundo em uma lista de dicts.
+        """
+        return self._get_code_from_label_str(label, journal_code,
+                collection) or self._get_code_from_label_list(label,
+                        journal_code, collection)
+
+    def _get_code_from_label_list(self, label, journal_code, collection):
+        fltr = {
+                'collection': collection,
+                'code_title': journal_code,
+                'issue.v4': {'$elemMatch': {'_': label}},
+                }
+        projection = {'code': True, '_id': False}
+
+        data = self.db.find_one(fltr, projection)
+        try:
+            return data.get('code', '')
+        except AttributeError:
+            return ''
+
+    def _get_code_from_label_str(self, label, journal_code, collection):
+        fltr = {
+                'collection': collection,
+                'code_title': journal_code,
+                'issue.v4': label,
+                }
+        projection = {'code': True, '_id': False}
+
+        data = self.db.find_one(fltr, projection)
+        try:
+            return data.get('code', '')
+        except AttributeError:
+            return ''
 
 
 class JournalMeta:
@@ -1208,4 +1247,8 @@ class DataBroker(object):
     def set_aid(self, code, collection, aid):
         return self.articlemeta.set_aid(code=code, collection=collection,
                 aid=aid)
+
+    def get_issue_code_from_label(self, label, journal_code, collection):
+        return self.issuemeta.get_code_from_label(label=label,
+                journal_code=journal_code, collection=collection)
 

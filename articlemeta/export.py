@@ -195,8 +195,7 @@ class Export(object):
         article = self._article.copy()
         keys_to_remove = ['citations', '_shard_id', 'validated_scielo',
                 'doaj_id', 'normalized', 'sent_doaj', 'sent_wos',
-                'validated_wos', 'applicable', 'collection', 'fulltexts',
-                'code']
+                'validated_wos', 'applicable', 'fulltexts']
 
         for k in keys_to_remove:
             try:

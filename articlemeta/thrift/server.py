@@ -564,4 +564,13 @@ class Dispatcher(object):
 
         return False
 
+    def get_issue_code_from_label(self, label, journal_code, collection):
+        try:
+            return self._databroker.get_issue_code_from_label(label,
+                    journal_code, collection)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.get_issue_code_from_label')
+
+
 main = thriftpywrap.ConsoleApp(articlemeta_thrift.ArticleMeta, Dispatcher)
