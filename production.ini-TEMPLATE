@@ -15,9 +15,14 @@ mongo_uri = 127.0.0.1:27017
 admintoken = admin
 
 [server:main]
-use = egg:waitress#main
+use = egg:gunicorn#main
 host = 0.0.0.0
 port = 8000
+workers = 2
+threads = 2
+preload = true
+reload = true
+loglevel = info
 
 [loggers]
 keys = root, articlemeta, sentry

@@ -15,18 +15,13 @@ requires = [
     'requests>=2.11.1',
     'picles.plumber>=0.10',
     'pyramid>=1.5.4',
-    'pyramid_chameleon',
-    'pyramid_debugtoolbar',
-    'waitress',
     'thriftpy>=0.3.1',
     'thriftpywrap',
-    'xylose>=1.30.0',
-    'crossrefapi>=1.2.0',
-    'raven',
-    'chardet'
+    'xylose',
+    'crossrefapi>=1.3',
     ]
 
-test_requires = ['mocker']
+test_requires = ['mocker', 'nose>=1.0', 'coverage']
 
 setup(
     name="articlemeta",
@@ -52,7 +47,6 @@ setup(
     ],
     include_package_data=True,
     zip_safe=False,
-    setup_requires=["nose>=1.0", "coverage"],
     tests_require=test_requires,
     install_requires=requires,
     test_suite="nose.collector",
