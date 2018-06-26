@@ -19,9 +19,10 @@ def main(global_config, **settings):
 
     def add_databroker(request):
 
-        mongo = os.environ.get('MONGODB_HOST', settings.get('mongo_uri', '127.0.0.1:27017'))
+        db_dsn = os.environ.get('MONGODB_HOST', settings.get('mongo_uri', '127.0.0.1:27017'))
+        db_client = controller.get_dbconn(db_dsn)
 
-        return controller.DataBroker.from_dsn(mongo, reuse_dbconn=True)
+        return controller.DataBroker(db_client)
 
     config.add_route('index', '/')
     # collections - GET method:

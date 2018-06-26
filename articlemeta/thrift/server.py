@@ -7,7 +7,7 @@ import uuid
 import thriftpywrap
 import thriftpy
 
-from articlemeta.controller import DataBroker
+from articlemeta.controller import DataBroker, get_dbconn
 from articlemeta import utils
 from articlemeta.export import Export
 
@@ -64,10 +64,12 @@ class Dispatcher(object):
         config = utils.Configuration.from_env()
         settings = dict(config.items())
 
-        mongo = os.environ.get('MONGODB_HOST', settings.get('mongo_uri', '127.0.0.1:27017'))
+        db_dsn = os.environ.get('MONGODB_HOST', settings.get('mongo_uri', '127.0.0.1:27017'))
 
         self._admintoken = os.environ.get('ADMIN_TOKEN', None) or settings['app:main'].get('admintoken', uuid.uuid4().hex)
-        self._databroker = DataBroker.from_dsn(mongo, reuse_dbconn=True)
+
+        db_client = get_dbconn(db_dsn)
+        self._databroker = DataBroker(db_client)
 
     def getInterfaceVersion(self):
         return articlemeta_thrift.VERSION
