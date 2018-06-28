@@ -20,6 +20,7 @@ class XMLCitation(object):
                                      self.ElementCitationPipe(),
                                      self.ArticleTitlePipe(),
                                      self.ThesisTitlePipe(),
+                                     self.ConferencePipe(),
                                      self.LinkTitlePipe(),
                                      self.SourcePipe(),
                                      self.DatePipe(),
@@ -114,6 +115,29 @@ class XMLCitation(object):
             source.text = raw.thesis_title
 
             xml.find('./element-citation').append(source)
+
+            return data
+
+    class ConferencePipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if raw.publication_type != 'conference':
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            elem_cit = xml.find('./element-citation')
+            if raw.conference_name != '':
+                conf_name = ET.Element('conf-name')
+                conf_name.text = raw.conference_name
+                elem_cit.append(conf_name)
+            if raw.conference_location != '':
+                conf_location = ET.Element('conf-loc')
+                conf_location.text = raw.conference_location
+                elem_cit.append(conf_location)
 
             return data
 
