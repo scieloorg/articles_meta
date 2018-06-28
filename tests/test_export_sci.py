@@ -381,6 +381,33 @@ class XMLCitationTests(unittest.TestCase):
 
         self.assertEqual(None, expected)
 
+    def test_xml_citation_person_group_no_surname_pipe(self):
+        author1 = {'s': '', 'r': 'ND', '_': '', 'n': u'Platão'}
+        author2 = {'s': '', 'r': 'ND', '_': '', 'n': u'Aristóteles'}
+        citation = {}
+        citation['v10'] = [author1, author2]
+        fakexylosearticle = Article(
+                                {
+                                    'article': {},
+                                    'title': {},
+                                    'citations': [
+                                        citation
+                                    ]
+                                }
+                            ).citations[0]
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.PersonGroupPipe().transform(data)
+
+        gn = xml.findall('./element-citation/person-group/name/given-names')
+        surnames = xml.findall('./element-citation/person-group/name/surname')
+        surnames = [node.text for node in surnames]
+        self.assertEqual(len(gn), 0)
+        self.assertEqual([u'Platão', u'Aristóteles'], surnames)
+
 
 class ExportTests(unittest.TestCase):
 

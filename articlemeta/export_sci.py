@@ -263,40 +263,36 @@ class XMLCitation(object):
 
         @plumber.precondition(precond)
         def transform(self, data):
+            def get_name(author):
+                name = ET.Element('name')
+                _surname = author.get('surname')
+                _given_names = author.get('given_names')
+                if _surname == '' and _given_names:
+                    _surname = _given_names
+                    _given_names = ''
+
+                if _surname != '':
+                    surname = ET.Element('surname')
+                    surname.text = _surname
+                    name.append(surname)
+
+                if _given_names != '':
+                    givennames = ET.Element('given-names')
+                    givennames.text = _given_names
+                    name.append(givennames)
+                return name
             raw, xml = data
 
             persongroup = ET.Element('person-group')
 
             if raw.authors:
                 for author in raw.authors:
-                    name = ET.Element('name')
-
-                    if "surname" in author:
-                        surname = ET.Element('surname')
-                        surname.text = author['surname']
-                        name.append(surname)
-
-                    if "given_names" in author:
-                        givennames = ET.Element('given-names')
-                        givennames.text = author['given_names']
-                        name.append(givennames)
-
+                    name = get_name(author)
                     persongroup.append(name)
 
             if raw.monographic_authors:
                 for author in raw.monographic_authors:
-                    name = ET.Element('name')
-
-                    if "surname" in author:
-                        surname = ET.Element('surname')
-                        surname.text = author['surname']
-                        name.append(surname)
-
-                    if "given_names" in author:
-                        givennames = ET.Element('given-names')
-                        givennames.text = author['given_names']
-                        name.append(givennames)
-
+                    name = get_name(author)
                     persongroup.append(name)
 
             xml.find('./element-citation').append(persongroup)
