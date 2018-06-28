@@ -381,6 +381,35 @@ class XMLCitationTests(unittest.TestCase):
 
         self.assertEqual(None, expected)
 
+    def test_xml_citation_conference_pipe(self):
+        conf_name = {
+            '_': u'Workshop Internacional sobre Clima'
+                 u' e Recursos Naturais nos Países de Língua Portuguesa',
+            'n': 'II'
+        }
+        conf_location = {
+            '_': u'Bragança',
+        }
+        citation = {
+            'v53': [conf_name],
+            'v56': [conf_location],
+        }
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [citation]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.ConferencePipe().transform(data)
+
+        self.assertEqual(
+            conf_name['_'], xml.find('./element-citation/conf-name').text)
+        self.assertEqual(
+            conf_location['_'], xml.find('./element-citation/conf-loc').text)
+
 
 class ExportTests(unittest.TestCase):
 
