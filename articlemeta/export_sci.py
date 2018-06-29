@@ -12,6 +12,36 @@ SUPPLEND_REGEX = re.compile(r' 0$')
 ALLOWED_LANGUAGES = ['af', 'de', 'en', 'es', 'fr', 'it', 'la', 'pt', 'po']
 
 
+def create_children(root_node, tags, values):
+    for tag, value in zip(tags, values):
+        if value is not None or value != '':
+            e = ET.Element(tag)
+            e.text = value
+            root_node.append(e)
+    return root_node
+
+
+def date_iso_parts(date_iso):
+    if date_iso is not None:
+        date_iso = date_iso[0]['_']
+        if date_iso[:8].isdigit():
+            y = date_iso[:4]
+            m = date_iso[4:6]
+            d = date_iso[6:8]
+            return (y, m, d)
+
+
+def create_date_elem(element_date_name, date_iso_parts, date_type=None):
+    if date_iso_parts is not None:
+        y, m, d = date_iso_parts
+        elem_date = ET.Element(element_date_name)
+        if date_type is not None:
+            elem_date.set('date-type', date_type)
+        tags = ['day', 'month', 'year']
+        values = [d, m, y]
+        return create_children(elem_date, tags, values)
+
+
 class XMLCitation(object):
 
     def __init__(self):
@@ -52,12 +82,9 @@ class XMLCitation(object):
     class ElementCitationPipe(plumber.Pipe):
         def transform(self, data):
             raw, xml = data
-
             elementcitation = ET.Element('element-citation')
             elementcitation.set('publication-type', raw.publication_type)
-
             xml.find('.').append(elementcitation)
-
             return data
 
     class ArticleTitlePipe(plumber.Pipe):
@@ -147,11 +174,22 @@ class XMLCitation(object):
         def transform(self, data):
             raw, xml = data
 
-            uri = ET.Element('ext-link')
+            elem_citation = xml.find('./element-citation')
 
-            uri.text = raw.link
+            elem = ET.Element('ext-link')
+            elem.set('ext-link-type', 'uri')
+            elem.set('href', raw.link)
+            elem.text = raw.link
+            elem_citation.append(elem)
 
-            xml.find('./element-citation').append(uri)
+            access_date_iso = raw.data.get('v110')
+            date_in_citation_elem = create_date_elem(
+                    'date-in-citation',
+                    date_iso_parts(access_date_iso),
+                    'access-date'
+                )
+            if date_in_citation_elem is not None:
+                elem_citation.append(date_in_citation_elem)
 
             return data
 
