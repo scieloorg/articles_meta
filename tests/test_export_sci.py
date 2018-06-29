@@ -421,6 +421,62 @@ class XMLCitationTests(unittest.TestCase):
 
         self.assertEqual(None, expected)
 
+    def test_xml_citation_person_group_no_surname_pipe(self):
+        author1 = {'s': '', 'r': 'ND', '_': '', 'n': u'Platão'}
+        author2 = {'s': '', 'r': 'ND', '_': '', 'n': u'Aristóteles'}
+        citation = {}
+        citation['v10'] = [author1, author2]
+        fakexylosearticle = Article(
+                                {
+                                    'article': {},
+                                    'title': {},
+                                    'citations': [
+                                        citation
+                                    ]
+                                }
+                            ).citations[0]
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.PersonGroupPipe().transform(data)
+
+        gn = xml.findall('./element-citation/person-group/name/given-names')
+        surnames = xml.findall('./element-citation/person-group/name/surname')
+        surnames = [node.text for node in surnames]
+        self.assertEqual(len(gn), 0)
+        self.assertEqual([u'Platão', u'Aristóteles'], surnames)
+
+    def test_xml_citation_conference_pipe(self):
+        conf_name = {
+            '_': u'Workshop Internacional sobre Clima'
+                 u' e Recursos Naturais nos Países de Língua Portuguesa',
+            'n': 'II'
+        }
+        conf_location = {
+            '_': u'Bragança',
+        }
+        citation = {
+            'v53': [conf_name],
+            'v56': [conf_location],
+        }
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [citation]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.ConferencePipe().transform(data)
+
+        self.assertEqual(
+            conf_name['_'], xml.find('./element-citation/conf-name').text)
+        self.assertEqual(
+            conf_location['_'], xml.find('./element-citation/conf-loc').text)
+
     def test_xml_citation_webpage_pipes(self):
         link = {'_': 'www.vigna.com.br'}
         access_date_ext = {'_': '10 de junho de 2012'}

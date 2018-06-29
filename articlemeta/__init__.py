@@ -17,11 +17,11 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.add_renderer('jsonp', JSONP(param_name='callback', indent=4))
 
+    db_dsn = os.environ.get('MONGODB_HOST', settings.get('mongo_uri', '127.0.0.1:27017'))
+    db_client = controller.get_dbconn(db_dsn)
+
     def add_databroker(request):
-
-        db_dsn = os.environ.get('MONGODB_HOST', settings.get('mongo_uri', '127.0.0.1:27017'))
-        db_client = controller.get_dbconn(db_dsn)
-
+        """Add a databroker to all incoming request"""
         return controller.DataBroker(db_client)
 
     config.add_route('index', '/')
