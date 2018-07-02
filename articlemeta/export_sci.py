@@ -325,7 +325,7 @@ class XMLCitation(object):
 
         @plumber.precondition(precond)
         def transform(self, data):
-            def get_name(author):
+            def create_elem_name(author):
                 name = ET.Element('name')
                 _surname = author.get('surname')
                 _given_names = author.get('given_names')
@@ -345,19 +345,18 @@ class XMLCitation(object):
                 return name
             raw, xml = data
 
-            persongroup = ET.Element('person-group')
-
-            if raw.authors:
-                for author in raw.authors:
-                    name = get_name(author)
-                    persongroup.append(name)
-
+            author_groups = []
+            if raw.analytic_authors:
+                author_groups.append(raw.analytic_authors)
             if raw.monographic_authors:
-                for author in raw.monographic_authors:
-                    name = get_name(author)
-                    persongroup.append(name)
+                author_groups.append(raw.monographic_authors)
 
-            xml.find('./element-citation').append(persongroup)
+            elem_citation = xml.find('./element-citation')
+            for author_group in author_groups:
+                persongroup = ET.Element('person-group')
+                for author in author_group:
+                    persongroup.append(create_elem_name(author))
+                elem_citation.append(persongroup)
 
             return data
 
