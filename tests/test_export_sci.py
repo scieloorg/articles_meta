@@ -408,6 +408,48 @@ class XMLCitationTests(unittest.TestCase):
         self.assertEqual(len(gn), 0)
         self.assertEqual([u'Platão', u'Aristóteles'], surnames)
 
+    def test_xml_citation_person_groups_pipe(self):
+        analytic = [{'s': 'Fausto', 'r': 'ND', '_': '', 'n': u'N'},
+                    {'s': 'Laird', 'r': 'ND', '_': '', 'n': u'AD'},
+                    ]
+        monographic = [{'s': 'Mitchell', 'r': 'ND', '_': '', 'n': u'RH'},
+                       {'s': 'Ruff', 'r': 'ND', '_': '', 'n': u'S'},
+                       ]
+        citation = {}
+        citation['v10'] = analytic
+        citation['v16'] = monographic
+
+        fakexylosearticle = Article(
+                                {
+                                    'article': {},
+                                    'title': {},
+                                    'citations': [
+                                        citation
+                                    ]
+                                }
+                            ).citations[0]
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.PersonGroupPipe().transform(data)
+
+        person_groups = xml.findall('./element-citation/person-group')
+        self.assertEqual(len(person_groups), 2)
+
+        expected = [
+            [('Fausto', 'N'), ('Laird', 'AD')],
+            [('Mitchell', 'RH'), ('Ruff', 'S')],
+        ]
+        for expected_names, person_group in zip(expected, person_groups):
+            names = []
+            for name in person_group.findall('name'):
+                item = (
+                    name.find('surname').text, name.find('given-names').text)
+                names.append(item)
+            self.assertEqual(names, expected_names)
+
     def test_xml_citation_conference_pipe(self):
         conf_name = {
             '_': u'Workshop Internacional sobre Clima'
