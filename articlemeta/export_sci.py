@@ -21,19 +21,21 @@ def create_children(root_node, tags, values):
     return root_node
 
 
-def date_iso_parts(date_iso):
+def splited_yyyy_mm_dd(date_iso):
     if date_iso is not None:
-        date_iso = date_iso[0]['_']
-        if date_iso[:8].isdigit():
-            y = date_iso[:4]
-            m = date_iso[4:6]
-            d = date_iso[6:8]
-            return (y, m, d)
+        parts = date_iso.split('-')
+        if len(parts) == 2:
+            parts.append(None)
+        if len(parts) == 1:
+            parts.append(None)
+            parts.append(None)
+        if len(parts) == 3:
+            return parts
 
 
-def create_date_elem(element_date_name, date_iso_parts, date_type=None):
-    if date_iso_parts is not None:
-        y, m, d = date_iso_parts
+def create_date_elem(element_date_name, splited_yyyy_mm_dd, date_type=None):
+    if splited_yyyy_mm_dd is not None:
+        y, m, d = splited_yyyy_mm_dd
         elem_date = ET.Element(element_date_name)
         if date_type is not None:
             elem_date.set('date-type', date_type)
@@ -206,14 +208,18 @@ class XMLCitation(object):
             elem.text = raw.link
             elem_citation.append(elem)
 
-            access_date_iso = raw.data.get('v110')
-            date_in_citation_elem = create_date_elem(
+            try:
+                access_date = raw.access_date
+            except AttributeError:
+                access_date = raw.date
+            if access_date is not None:
+                date_in_citation_elem = create_date_elem(
                     'date-in-citation',
-                    date_iso_parts(access_date_iso),
+                    splited_yyyy_mm_dd(access_date),
                     'access-date'
                 )
-            if date_in_citation_elem is not None:
-                elem_citation.append(date_in_citation_elem)
+                if date_in_citation_elem is not None:
+                    elem_citation.append(date_in_citation_elem)
 
             return data
 
