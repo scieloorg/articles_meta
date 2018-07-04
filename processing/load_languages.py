@@ -71,7 +71,6 @@ FROM = FROM.isoformat()[:10]
 
 file_regex = re.compile(r'serial.*.htm|.*.xml')
 data_struct_regex = re.compile(r'^fulltexts\.(pdf|html)\.[a-z][a-z]$')
-articlemeta_db = None
 
 
 def collections_acronym(articlemeta_db):
