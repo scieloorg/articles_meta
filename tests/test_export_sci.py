@@ -730,6 +730,50 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'Faculdade de Saúde Pública da Universidade de São Paulo', publishername)
 
+    def test_xmljournal_meta_publishers_join_publisher_names_pipe(self):
+        titles = {}
+        titles['v480'] = [
+            {'_': 'Publicador 1'},
+            {'_': 'Publicador 2'},
+        ]
+        fakexylosearticle = Article({'article': {}, 'title': titles})
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+        front = article.find('front')
+        front.append(ET.Element('journal-meta'))
+        data = [fakexylosearticle, pxml]
+        xmlarticle = export_sci.XMLJournalMetaPublisherPipe()
+        raw, xml = xmlarticle.join_publisher_names(data, ' | ')
+        publishers = xml.findall('./article/front/journal-meta/publisher')
+        self.assertEqual(1, len(publishers))
+        self.assertEqual(
+            'Publicador 1 | Publicador 2',
+            publishers[0].find('publisher-name').text)
+
+    def test_xmljournal_meta_publishers_get_first_publisher_name_pipe(self):
+        titles = {}
+        titles['v480'] = [
+            {'_': 'Publicador 1'},
+            {'_': 'Publicador 2'},
+        ]
+        fakexylosearticle = Article({'article': {}, 'title': titles})
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+        front = article.find('front')
+        front.append(ET.Element('journal-meta'))
+        data = [fakexylosearticle, pxml]
+        xmlarticle = export_sci.XMLJournalMetaPublisherPipe()
+        raw, xml = xmlarticle.get_first_publisher_name(data)
+        publishers = xml.findall('./article/front/journal-meta/publisher')
+        self.assertEqual(1, len(publishers))
+        self.assertEqual(
+            'Publicador 1',
+            publishers[0].find('publisher-name').text)
+
     def test_xml_article_meta_unique_article_id_pipe(self):
 
         pxml = ET.Element('articles')
