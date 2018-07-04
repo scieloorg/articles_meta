@@ -486,6 +486,9 @@ class XMLJournalMetaCollectionPipe(plumber.Pipe):
 
 
 class XMLJournalMetaPublisherPipe(plumber.Pipe):
+    def transform(self, data):
+        return self.join_publisher_names(data, '; ')
+
     def join_publisher_names(self, data, separator='; '):
         raw, xml = data
         publisher_names = separator.join(raw.journal.publisher_name or [])
@@ -510,9 +513,6 @@ class XMLJournalMetaPublisherPipe(plumber.Pipe):
             publisher.append(publishername)
             xml.find('./article/front/journal-meta').append(publisher)
         return data
-
-    def transform(self, data):
-        return self.join_publisher_names(data, '; ')
 
 
 class XMLArticleMetaUniqueArticleIdPipe(plumber.Pipe):
