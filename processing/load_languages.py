@@ -411,7 +411,7 @@ def main():
     try:
         db_client = controller.get_dbconn(db_dsn)
     except:
-        logger.info('Fail to connect to (%s)', db_dsn)
+        print('Fail to connect to:', db_dsn)
         sys.exit(1)
     else:
         articlemeta_db = controller.DataBroker(db_client).db
@@ -460,3 +460,8 @@ def main():
     collections = [args.collection] if args.collection else _collections_acronyms
 
     run(collections, articlemeta_db, args.all_records)
+
+
+if __name__ == '__main__':
+    main()
+
