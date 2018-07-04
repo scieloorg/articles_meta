@@ -71,6 +71,7 @@ FROM = FROM.isoformat()[:10]
 
 file_regex = re.compile(r'serial.*.htm|.*.xml')
 data_struct_regex = re.compile(r'^fulltexts\.(pdf|html)\.[a-z][a-z]$')
+articlemeta_db = None
 
 
 def collections_acronym(articlemeta_db):
@@ -352,7 +353,7 @@ class StaticCatalog(object):
         return ldata
 
 
-def run(collections, articlemeta_db, all_records=False):
+def run(collections, articlemeta_db, all_records=False, forced_url=None):
 
     if not isinstance(collections, list):
         logger.error('Collections must be a list o collection acronym')
@@ -362,12 +363,13 @@ def run(collections, articlemeta_db, all_records=False):
 
         coll_info = collection_info(collection, articlemeta_db)
 
-        logger.info(u'Loading languages for %s', coll_info['domain'])
+        collection_domain = forced_url if forced_url else coll_info['domain']
+        logger.info(u'Loading languages for %s', collection_domain)
         logger.info(u'Using mode all_records %s', str(all_records))
 
-        static_catalogs = StaticCatalog(coll_info['domain'])
+        static_catalogs = StaticCatalog(collection_domain)
 
-        for document in load_documents(collection, articlemeta_db, 
+        for document in load_documents(collection, articlemeta_db,
                 all_records=all_records):
             logger.debug(
                 u'Checking fulltexts for %s_%s',
@@ -394,7 +396,7 @@ def run(collections, articlemeta_db, all_records=False):
                     )
                     continue
 
-            articlemeta_db['articles'].update(
+            articlemeta_db['articles'].update_one(
                 {'code': document.publisher_id, 'collection': document.collection_acronym},
                 {'$set': static_catalogs.fulltexts(document)}
             )
@@ -420,7 +422,7 @@ def main():
         description="Load Languages from SciELO static files available in the file system"
     )
 
-    _collections_acronyms = collections_acronym(articlemeta_db) 
+    _collections_acronyms = collections_acronym(articlemeta_db)
 
     parser.add_argument(
         '--collection',
@@ -450,6 +452,12 @@ def main():
         help='Logggin level'
     )
 
+    parser.add_argument(
+        '--domain',
+        '-d',
+        help='Collection domain to get Static catalog'
+    )
+
     args = parser.parse_args()
     LOGGING['handlers']['console']['level'] = args.logging_level
     for lg, content in LOGGING['loggers'].items():
@@ -464,4 +472,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

@@ -1,0 +1,5092 @@
+{
+    "sent_wos": "False",
+    "title": {
+        "v490": [
+            {
+                "_": "S\u00e3o Paulo"
+            }
+        ],
+        "v6": [
+            {
+                "_": "c"
+            }
+        ],
+        "v941": [
+            {
+                "_": "20170530"
+            }
+        ],
+        "scimago_id": "22596",
+        "v854": [
+            {
+                "_": "Health Policy & Services"
+            }
+        ],
+        "v151": [
+            {
+                "_": "Rev. sa\u00fade p\u00fablica"
+            }
+        ],
+        "v301": [
+            {
+                "_": "1967"
+            }
+        ],
+        "v951": [
+            {
+                "_": "sonia.reis"
+            }
+        ],
+        "v940": [
+            {
+                "_": "19980430"
+            }
+        ],
+        "v62": [
+            {
+                "_": "Faculdade de Sa\u00fade P\u00fablica da Universidade de S\u00e3o Paulo"
+            }
+        ],
+        "processing_date": "2017-05-30",
+        "v320": [
+            {
+                "_": "SP"
+            }
+        ],
+        "v692": [
+            {
+                "_": "http://mc04.manuscriptcentral.com/rsp-scielo"
+            }
+        ],
+        "v64": [
+            {
+                "_": "revsp@org.usp.br"
+            }
+        ],
+        "v330": [
+            {
+                "_": "CT"
+            }
+        ],
+        "v302": [
+            {
+                "_": "1"
+            }
+        ],
+        "v63": [
+            {
+                "_": "Avenida Dr. Arnaldo, 715, S\u00e3o Paulo, SP, BR, 01246-904, 55 11 3068-0539"
+            }
+        ],
+        "v67": [
+            {
+                "_": "na"
+            }
+        ],
+        "v421": [
+            {
+                "_": "Rev Saude Publica"
+            }
+        ],
+        "v5": [
+            {
+                "_": "S"
+            }
+        ],
+        "v450": [
+            {
+                "_": "CAB-HEALTH"
+            },
+            {
+                "_": "EMBASE"
+            },
+            {
+                "_": "POPLINE"
+            },
+            {
+                "_": "LILACS"
+            },
+            {
+                "_": "ADSA\u00daDE"
+            },
+            {
+                "_": "DOCPAL"
+            },
+            {
+                "_": "ABSTRACTS ON HYGIENE AND COMMUNICABLE DISEASES"
+            },
+            {
+                "_": "ABSTRACTS ON ZOOPARASITOLOGY"
+            },
+            {
+                "_": "BIOLOGICAL ABSTRACTS"
+            },
+            {
+                "_": "CURRENT CONTENTS/SOCIAL & BEHAVIORAL SCIENCE"
+            },
+            {
+                "_": "ENTOMOLOGY ABSTRACTS"
+            },
+            {
+                "_": "EXCERPTA MEDICA"
+            },
+            {
+                "_": "INDEX MEDICUS"
+            },
+            {
+                "_": "MICROBIOLOGY ABSTRACTS"
+            },
+            {
+                "_": "NUTRITION ABSTRACTS AND REVIEWS-SERIESB"
+            },
+            {
+                "_": "REVIEW MEDICAL VETERINARY ENTOMOLOGY"
+            },
+            {
+                "_": "SAFETY SCIENCE ABSTRACTS JOURNAL"
+            },
+            {
+                "_": "SOCIAL SCIENCE CITATION INDEX"
+            },
+            {
+                "_": "TROPICAL DISEASES BULLETIN"
+            },
+            {
+                "_": "VETERINARY BULLETIN"
+            },
+            {
+                "_": "VIROLOGY ABSTRACTS"
+            },
+            {
+                "_": "ISI"
+            },
+            {
+                "_": "PUBMED"
+            }
+        ],
+        "v10": [
+            {
+                "_": "br1.1"
+            }
+        ],
+        "v117": [
+            {
+                "_": "vancouv"
+            }
+        ],
+        "v150": [
+            {
+                "_": "Rev. Sa\u00fade P\u00fablica"
+            }
+        ],
+        "v441": [
+            {
+                "_": "Health Sciences"
+            }
+        ],
+        "v950": [
+            {
+                "_": "sonia.reis"
+            }
+        ],
+        "v901": [
+            {
+                "l": "es",
+                "_": "Publicar y diseminar productos del trabajo cient\u00edfico relevantes para la Salud P\u00fablica"
+            },
+            {
+                "l": "pt",
+                "_": "Publicar e disseminar produtos do trabalho cient\u00edfico que sejam relevantes para a Sa\u00fade P\u00fablica"
+            },
+            {
+                "l": "en",
+                "_": "To publish and divulge scientific production on subjects of relevance to Public Health"
+            }
+        ],
+        "v350": [
+            {
+                "_": "en"
+            },
+            {
+                "_": "pt"
+            },
+            {
+                "_": "es"
+            }
+        ],
+        "v68": [
+            {
+                "_": "rsp"
+            }
+        ],
+        "v942": [
+            {
+                "_": "19980430"
+            }
+        ],
+        "v20": [
+            {
+                "_": "068227-6"
+            }
+        ],
+        "updated_date": "2016-04-29",
+        "v880": [
+            {
+                "_": "0034-8910"
+            }
+        ],
+        "v930": [
+            {
+                "_": "rsp"
+            }
+        ],
+        "v35": [
+            {
+                "_": "ONLIN"
+            }
+        ],
+        "v380": [
+            {
+                "_": "B"
+            }
+        ],
+        "v541": [
+            {
+                "_": "BY/4.0"
+            }
+        ],
+        "v935": [
+            {
+                "_": "1518-8787"
+            }
+        ],
+        "v435": [
+            {
+                "_": "1518-8787",
+                "t": "ONLIN"
+            },
+            {
+                "_": "0034-8910",
+                "t": "PRINT"
+            }
+        ],
+        "v440": [
+            {
+                "_": "SAUDE COLETIVA"
+            },
+            {
+                "_": "SAUDE PUBLICA"
+            },
+            {
+                "_": "MICROBIOLOGIA"
+            }
+        ],
+        "updated_at": "2017-08-10",
+        "code": "0034-8910",
+        "v540": [
+            {
+                "l": "en",
+                "t": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.",
+                "_": ""
+            },
+            {
+                "l": "es",
+                "t": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.",
+                "_": ""
+            },
+            {
+                "l": "pt",
+                "t": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.",
+                "_": ""
+            }
+        ],
+        "v992": [
+            {
+                "_": "spa"
+            }
+        ],
+        "v230": [
+            {
+                "_": "Journal of Public Health"
+            }
+        ],
+        "issns": [
+            "1518-8787",
+            "0034-8910"
+        ],
+        "v480": [
+            {
+                "_": "Faculdade de Sa\u00fade P\u00fablica da Universidade de S\u00e3o Paulo"
+            }
+        ],
+        "v400": [
+            {
+                "_": "0034-8910"
+            }
+        ],
+        "v240": [
+            {
+                "_": "Rev Saude Publica"
+            }
+        ],
+        "collection": "spa",
+        "v943": [
+            {
+                "_": "20170804"
+            }
+        ],
+        "v50": [
+            {
+                "_": "C"
+            }
+        ],
+        "v303": [
+            {
+                "_": "1"
+            }
+        ],
+        "v100": [
+            {
+                "_": "Revista de Sa\u00fade P\u00fablica"
+            }
+        ],
+        "v140": [
+            {
+                "_": "CNPq - Conselho Nacional de Desenvolvimento Cient\u00edfico e Tecnol\u00f3gico"
+            }
+        ],
+        "v310": [
+            {
+                "_": "BR"
+            }
+        ],
+        "created_at": "1998-04-30",
+        "v85": [
+            {
+                "_": "decs"
+            }
+        ],
+        "v51": [
+            {
+                "a": "20010801",
+                "_": "",
+                "b": "C"
+            }
+        ],
+        "v66": [
+            {
+                "_": "art"
+            }
+        ]
+    },
+    "citations": [
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400001"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "20130437",
+                    "l": "20130437"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "369"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "20130437"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Philos Trans R Soc Lond B Biol Sci"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "5"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "1645"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Esmail",
+                    "r": "ND",
+                    "n": "H"
+                },
+                {
+                    "_": "",
+                    "s": "Barry 3rd",
+                    "r": "ND",
+                    "n": "CE"
+                },
+                {
+                    "_": "",
+                    "s": "Young",
+                    "r": "ND",
+                    "n": "DB"
+                },
+                {
+                    "_": "",
+                    "s": "Wilkinson",
+                    "r": "ND",
+                    "n": "RJ"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "The ongoing challenge of latent tuberculosis"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "1"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2014"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400001",
+            "v118": [
+                {
+                    "_": "1"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1098/rstb.2013.0437"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1098/rstb.2013.0437"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20140000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400002"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "2459",
+                    "l": "2470"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "30"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "2459-70"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Cad Saude Publica"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "6"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "11"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Bartholomay",
+                    "r": "ND",
+                    "n": "P"
+                },
+                {
+                    "_": "",
+                    "s": "Oliveira",
+                    "r": "ND",
+                    "n": "GP"
+                },
+                {
+                    "_": "",
+                    "s": "Pinheiro",
+                    "r": "ND",
+                    "n": "RS"
+                },
+                {
+                    "_": "",
+                    "s": "Vasconcelos",
+                    "r": "ND",
+                    "n": "AMN"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Melhoria da qualidade das informa\u00e7\u00f5es sobre tuberculose a partir do relacionamento entre bases de dados"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "2"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2014"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400002",
+            "v118": [
+                {
+                    "_": "2"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1590/0102-311X00116313"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1590/0102-311X00116313"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20140000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400003"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "520",
+                    "l": "526"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "16"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "520-6"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Rev Eletron Enferm"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "7"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "3"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Paiva",
+                    "r": "ND",
+                    "n": "RCG"
+                },
+                {
+                    "_": "",
+                    "s": "Nogueira",
+                    "r": "ND",
+                    "n": "JA"
+                },
+                {
+                    "_": "",
+                    "s": "S\u00e1",
+                    "r": "ND",
+                    "n": "LD"
+                },
+                {
+                    "_": "",
+                    "s": "N\u00f3brega",
+                    "r": "ND",
+                    "n": "RG"
+                },
+                {
+                    "_": "",
+                    "s": "Trigueiro",
+                    "r": "ND",
+                    "n": "DRSG"
+                },
+                {
+                    "_": "",
+                    "s": "Villa",
+                    "r": "ND",
+                    "n": "TCS"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Acessibilidade ao diagn\u00f3stico de tuberculose em munic\u00edpio do Nordeste do Brasil: desafio da aten\u00e7\u00e3o b\u00e1sica"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "3"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2014"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400003",
+            "v118": [
+                {
+                    "_": "3"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.5216/ree.v16i3.23491"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.5216/ree.v16i3.23491"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20140000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400004"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "409",
+                    "l": "415"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "17"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "409-15"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Rev RENE"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "8"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "3"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Antunes",
+                    "r": "ND",
+                    "n": "LB"
+                },
+                {
+                    "_": "",
+                    "s": "Tomberg",
+                    "r": "ND",
+                    "n": "JO"
+                },
+                {
+                    "_": "",
+                    "s": "Harter",
+                    "r": "ND",
+                    "n": "J"
+                },
+                {
+                    "_": "",
+                    "s": "Lima",
+                    "r": "ND",
+                    "n": "LM"
+                },
+                {
+                    "_": "",
+                    "s": "Beduhn",
+                    "r": "ND",
+                    "n": "DAV"
+                },
+                {
+                    "_": "",
+                    "s": "Gonzales",
+                    "r": "ND",
+                    "n": "RIC"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Sintom\u00e1tico respirat\u00f3rio de tuberculose na aten\u00e7\u00e3o prim\u00e1ria: avalia\u00e7\u00e3o das a\u00e7\u00f5es segundo as recomenda\u00e7\u00f5es nacionais"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "4"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2016"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400004",
+            "v118": [
+                {
+                    "_": "4"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.15253/2175-6783.2016000300015"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.15253/2175-6783.2016000300015"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20160000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400005"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "5143",
+                    "l": "5149"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "8"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "5143-9"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Rev Pesq Cuid Fundam"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "9"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "4"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Neves",
+                    "r": "ND",
+                    "n": "RR"
+                },
+                {
+                    "_": "",
+                    "s": "Ferro",
+                    "r": "ND",
+                    "n": "PS"
+                },
+                {
+                    "_": "",
+                    "s": "Nogueira",
+                    "r": "ND",
+                    "n": "LMV"
+                },
+                {
+                    "_": "",
+                    "s": "Rodrigues",
+                    "r": "ND",
+                    "n": "ILA"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Acesso e v\u00ednculo ao tratamento de tuberculose na aten\u00e7\u00e3o prim\u00e1ria em sa\u00fade"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "5"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2016"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400005",
+            "v118": [
+                {
+                    "_": "5"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.9789/2175-5361.2016.v8i4.5143-5149"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.9789/2175-5361.2016.v8i4.5143-5149"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20160000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400006"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "1149",
+                    "l": "1158"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "47"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "1149-58"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Rev Saude Publica"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "10"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "6"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Andrade",
+                    "r": "ND",
+                    "n": "RLP"
+                },
+                {
+                    "_": "",
+                    "s": "Scatolin",
+                    "r": "ND",
+                    "n": "BE"
+                },
+                {
+                    "_": "",
+                    "s": "Wysocki",
+                    "r": "ND",
+                    "n": "AD"
+                },
+                {
+                    "_": "",
+                    "s": "Beraldo",
+                    "r": "ND",
+                    "n": "AA"
+                },
+                {
+                    "_": "",
+                    "s": "Monroe",
+                    "r": "ND",
+                    "n": "AA"
+                },
+                {
+                    "_": "",
+                    "s": "Scatena",
+                    "r": "ND",
+                    "n": "LM"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Diagn\u00f3stico da tuberculose: aten\u00e7\u00e3o b\u00e1sica ou pronto atendimento?"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "6"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2013"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400006",
+            "v118": [
+                {
+                    "_": "6"
+                }
+            ],
+            "v810": [
+                {
+                    "_": "et al"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1590/S0034-8910.2013047004650"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1590/S0034-8910.2013047004650"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20130000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400007"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "1",
+                    "l": "8"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "17"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "1-8"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Rev Eletron Enferm"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "11"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "4"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Cardozo-Gonzales",
+                    "r": "ND",
+                    "n": "RI"
+                },
+                {
+                    "_": "",
+                    "s": "Palha",
+                    "r": "ND",
+                    "n": "PF"
+                },
+                {
+                    "_": "",
+                    "s": "Harter",
+                    "r": "ND",
+                    "n": "J"
+                },
+                {
+                    "_": "",
+                    "s": "Alarcon",
+                    "r": "ND",
+                    "n": "E"
+                },
+                {
+                    "_": "",
+                    "s": "Lima",
+                    "r": "ND",
+                    "n": "LM"
+                },
+                {
+                    "_": "",
+                    "s": "Tomberg",
+                    "r": "ND",
+                    "n": "JO"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Avalia\u00e7\u00e3o das a\u00e7\u00f5es de detec\u00e7\u00e3o de casos de tuberculose na aten\u00e7\u00e3o prim\u00e1ria"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "7"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2015"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400007",
+            "v118": [
+                {
+                    "_": "7"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.5216/ree.v17i4.32846"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.5216/ree.v17i4.32846"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20150000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400008"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "292",
+                    "l": "292"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "17"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "292"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "BMC Infect Dis"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "12"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "1"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Yirgu",
+                    "r": "ND",
+                    "n": "R"
+                },
+                {
+                    "_": "",
+                    "s": "Lemessa",
+                    "r": "ND",
+                    "n": "F"
+                },
+                {
+                    "_": "",
+                    "s": "Hirpa",
+                    "r": "ND",
+                    "n": "S"
+                },
+                {
+                    "_": "",
+                    "s": "Alemayehu",
+                    "r": "ND",
+                    "n": "A"
+                },
+                {
+                    "_": "",
+                    "s": "Klinkenberg",
+                    "r": "ND",
+                    "n": "E"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Determinants of delayed care seeking for TB suggestive symptoms in Seru district, Oromiya region, Ethiopia: a community based unmatched case-control study"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "8"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2017"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400008",
+            "v118": [
+                {
+                    "_": "8"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1186/s12879-017-2407-8"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1186/s12879-017-2407-8"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20170000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400009"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "156",
+                    "l": "156"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "11"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20130000"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "156"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "BMC Med"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "13"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Li",
+                    "r": "ND",
+                    "n": "Y"
+                },
+                {
+                    "_": "",
+                    "s": "Ehiri",
+                    "r": "ND",
+                    "n": "J"
+                },
+                {
+                    "_": "",
+                    "s": "Tang",
+                    "r": "ND",
+                    "n": "S"
+                },
+                {
+                    "_": "",
+                    "s": "Li",
+                    "r": "ND",
+                    "n": "D"
+                },
+                {
+                    "_": "",
+                    "s": "Bian",
+                    "r": "ND",
+                    "n": "Y"
+                },
+                {
+                    "_": "",
+                    "s": "Lin",
+                    "r": "ND",
+                    "n": "H"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Factors associated with patient, and diagnostic delays in Chinese TB patients: a systematic review and meta-analysis"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "9"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2013"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400009",
+            "v810": [
+                {
+                    "_": "et al"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1186/1741-7015-11-156"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1186/1741-7015-11-156"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v118": [
+                {
+                    "_": "9"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400010"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20080000"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "book"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v16": [
+                {
+                    "_": "",
+                    "s": "Rothman",
+                    "r": "ND",
+                    "n": "KJ"
+                },
+                {
+                    "_": "",
+                    "s": "Greenland",
+                    "r": "ND",
+                    "n": "S"
+                },
+                {
+                    "_": "",
+                    "s": "Lash",
+                    "r": "ND",
+                    "n": "TL"
+                }
+            ],
+            "v700": [
+                {
+                    "_": "14"
+                }
+            ],
+            "v62": [
+                {
+                    "_": "Lippincott Williams &amp; Wilkins"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v64": [
+                {
+                    "_": "2008"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "10"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v18": [
+                {
+                    "_": "Modern epidemiology"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400010",
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v63": [
+                {
+                    "_": "3.ed."
+                }
+            ],
+            "v118": [
+                {
+                    "_": "10"
+                }
+            ],
+            "v66": [
+                {
+                    "_": "Philadelphia"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400011"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "224",
+                    "l": "227"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "26"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "224-7"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Int J Epidemiol"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "15"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "1"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Victora",
+                    "r": "ND",
+                    "n": "CG"
+                },
+                {
+                    "_": "",
+                    "s": "Huttly",
+                    "r": "ND",
+                    "n": "SR"
+                },
+                {
+                    "_": "",
+                    "s": "Fuchs",
+                    "r": "ND",
+                    "n": "SC"
+                },
+                {
+                    "_": "",
+                    "s": "Olinto",
+                    "r": "ND",
+                    "n": "MT"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "The role of conceptual frameworks in epidemiological analysis: a hierarchical approach"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "11"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "1997"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400011",
+            "v118": [
+                {
+                    "_": "11"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1093/ije/26.1.224"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1093/ije/26.1.224"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "19970000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400012"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20110000"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "book"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v700": [
+                {
+                    "_": "16"
+                }
+            ],
+            "v17": [
+                {
+                    "_": "StataCorp"
+                }
+            ],
+            "v62": [
+                {
+                    "_": "StataCorp LP"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v64": [
+                {
+                    "_": "2011"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "12"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v18": [
+                {
+                    "_": "Stata Statistical Software: release 12"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400012",
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v118": [
+                {
+                    "_": "12"
+                }
+            ],
+            "v66": [
+                {
+                    "_": "College Station"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400013"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "90",
+                    "l": "102"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20110000"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Health conditions and health-policy innovations in Brazil: the way forward"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "collection": "spa",
+            "v71": [
+                {
+                    "_": "webpage"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v14": [
+                {
+                    "_": "90-102"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "The Lancet"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "17"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Victora",
+                    "r": "ND",
+                    "n": "CG"
+                },
+                {
+                    "_": "",
+                    "s": "Barreto",
+                    "r": "ND",
+                    "n": "ML"
+                },
+                {
+                    "_": "",
+                    "s": "Leal",
+                    "r": "ND",
+                    "n": "MC"
+                },
+                {
+                    "_": "",
+                    "s": "Monteiro",
+                    "r": "ND",
+                    "n": "CA"
+                },
+                {
+                    "_": "",
+                    "s": "Schmidt",
+                    "r": "ND",
+                    "n": "MI"
+                },
+                {
+                    "_": "",
+                    "s": "Paim",
+                    "r": "ND",
+                    "n": "JS"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "13"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2011"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400013",
+            "v810": [
+                {
+                    "_": "et al"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1016/S0140-6736(11)60055-X"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1016/S0140-6736(11)60055-X"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v118": [
+                {
+                    "_": "13"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400014"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "16078",
+                    "l": "16078"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "26"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20160000"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "16078"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "NPJ Prim Care Respir Med"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "18"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Sulis",
+                    "r": "ND",
+                    "n": "G"
+                },
+                {
+                    "_": "",
+                    "s": "Centis",
+                    "r": "ND",
+                    "n": "R"
+                },
+                {
+                    "_": "",
+                    "s": "Sotgiu",
+                    "r": "ND",
+                    "n": "G"
+                },
+                {
+                    "_": "",
+                    "s": "D'Ambrosio",
+                    "r": "ND",
+                    "n": "L"
+                },
+                {
+                    "_": "",
+                    "s": "Pontali",
+                    "r": "ND",
+                    "n": "E"
+                },
+                {
+                    "_": "",
+                    "s": "Spanevello",
+                    "r": "ND",
+                    "n": "A"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Recent developments in the diagnosis and management of tuberculosis"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "14"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2016"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400014",
+            "v810": [
+                {
+                    "_": "et al"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1038/npjpcrm.2016.78"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1038/npjpcrm.2016.78"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v118": [
+                {
+                    "_": "14"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400015"
+                }
+            ],
+            "v514": [
+                {
+                    "e": "e0117009",
+                    "_": ""
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "10"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "PloS One"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "19"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "2"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Sekandi",
+                    "r": "ND",
+                    "n": "JN"
+                },
+                {
+                    "_": "",
+                    "s": "Dobbin",
+                    "r": "ND",
+                    "n": "K"
+                },
+                {
+                    "_": "",
+                    "s": "Oloya",
+                    "r": "ND",
+                    "n": "J"
+                },
+                {
+                    "_": "",
+                    "s": "Okwera",
+                    "r": "ND",
+                    "n": "A"
+                },
+                {
+                    "_": "",
+                    "s": "Whalen",
+                    "r": "ND",
+                    "n": "CC"
+                },
+                {
+                    "_": "",
+                    "s": "Corso",
+                    "r": "ND",
+                    "n": "PS"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Cost-effectiveness analysis of community active case finding and household contact investigation for tuberculosis case detection in urban Africa"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "15"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2015"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400015",
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1371/journal.pone.0117009"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1371/journal.pone.0117009"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20150000"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v118": [
+                {
+                    "_": "15"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400016"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "469",
+                    "l": "469"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "12"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20120000"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "469"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "BMC Public Health"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "20"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Eang",
+                    "r": "ND",
+                    "n": "MT"
+                },
+                {
+                    "_": "",
+                    "s": "Satha",
+                    "r": "ND",
+                    "n": "P"
+                },
+                {
+                    "_": "",
+                    "s": "Yadav",
+                    "r": "ND",
+                    "n": "RP"
+                },
+                {
+                    "_": "",
+                    "s": "Morishita",
+                    "r": "ND",
+                    "n": "F"
+                },
+                {
+                    "_": "",
+                    "s": "Nishikiori",
+                    "r": "ND",
+                    "n": "N"
+                },
+                {
+                    "_": "",
+                    "s": "Van-Maaren",
+                    "r": "ND",
+                    "n": "P"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Early detection of tuberculosis through community-based active case finding in Cambodia"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "16"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2012"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400016",
+            "v810": [
+                {
+                    "_": "et al"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1186/1471-2458-12-469"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1186/1471-2458-12-469"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v118": [
+                {
+                    "_": "16"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400017"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "819",
+                    "l": "824"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "84"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "819-24"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Am J Public Health"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "21"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "5"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Schwartz",
+                    "r": "ND",
+                    "n": "S"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "The fallacy of the ecological fallacy: the potential misuse of a concept and the consequences"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "17"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "1994"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400017",
+            "v118": [
+                {
+                    "_": "17"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "Available from: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1615039/pdf/amjph00456-0117.pdf"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1615039/pdf/amjph00456-0117.pdf"
+                }
+            ],
+            "v109": [
+                {
+                    "_": "[cited 2016 Dec 2]"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "19940000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400018"
+                }
+            ],
+            "v514": [
+                {
+                    "e": "e0176116",
+                    "_": ""
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "12"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "PLoS One"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "22"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "4"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Pelissari",
+                    "r": "ND",
+                    "n": "DM"
+                },
+                {
+                    "_": "",
+                    "s": "Diaz-Quijano",
+                    "r": "ND",
+                    "n": "FA"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Household crowding as a potential mediator of socioeconomic determinants of tuberculosis incidence in Brazil"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "18"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2017"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400018",
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1371/journal.pone.0176116"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1371/journal.pone.0176116"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20170000"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v118": [
+                {
+                    "_": "18"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400019"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "294",
+                    "l": "301"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "33"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "294-301"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Rev Panam Salud Publica"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "23"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "4"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "San Pedro",
+                    "r": "ND",
+                    "n": "A"
+                },
+                {
+                    "_": "",
+                    "s": "Oliveira",
+                    "r": "ND",
+                    "n": "RM"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Tuberculose e indicadores socioecon\u00f4micos: revis\u00e3o sistem\u00e1tica da literatura"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "19"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2013"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400019",
+            "v118": [
+                {
+                    "_": "19"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1590/S1020-49892013000400009"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1590/S1020-49892013000400009"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20130000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400020"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "389",
+                    "l": "397"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "43"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "389-97"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Rev Saude Publica"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "24"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "3"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Scatena",
+                    "r": "ND",
+                    "n": "LM"
+                },
+                {
+                    "_": "",
+                    "s": "Villa",
+                    "r": "ND",
+                    "n": "TCS"
+                },
+                {
+                    "_": "",
+                    "s": "Ruffino-Netto",
+                    "r": "ND",
+                    "n": "A"
+                },
+                {
+                    "_": "",
+                    "s": "Kritski",
+                    "r": "ND",
+                    "n": "AL"
+                },
+                {
+                    "_": "",
+                    "s": "Figueiredo",
+                    "r": "ND",
+                    "n": "TMRM"
+                },
+                {
+                    "_": "",
+                    "s": "Vendramini",
+                    "r": "ND",
+                    "n": "SHF"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Dificuldades de acesso a servi\u00e7os de sa\u00fade para diagn\u00f3stico de tuberculose em munic\u00edpios do Brasil"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "20"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2009"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400020",
+            "v118": [
+                {
+                    "_": "20"
+                }
+            ],
+            "v810": [
+                {
+                    "_": "et al"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1590/S0034-89102009005000022"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1590/S0034-89102009005000022"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20090000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400021"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "8643",
+                    "l": "8652"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "9"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "8643-52"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Rev Enferm UFPE"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "25"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "6",
+                    "s": "Supl"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Brito",
+                    "r": "ND",
+                    "n": "EWG"
+                },
+                {
+                    "_": "",
+                    "s": "Silva",
+                    "r": "ND",
+                    "n": "AKF"
+                },
+                {
+                    "_": "",
+                    "s": "Teixeira",
+                    "r": "ND",
+                    "n": "GGA"
+                },
+                {
+                    "_": "",
+                    "s": "Dias",
+                    "r": "ND",
+                    "n": "GBS"
+                },
+                {
+                    "_": "",
+                    "s": "Costa",
+                    "r": "ND",
+                    "n": "NDL"
+                },
+                {
+                    "_": "",
+                    "s": "Uch\u00f4a",
+                    "r": "ND",
+                    "n": "SAC"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Organiza\u00e7\u00e3o do cuidado \u00e0 tuberculose na aten\u00e7\u00e3o b\u00e1sica do Rio Grande do Norte"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "21"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2015"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400021",
+            "v118": [
+                {
+                    "_": "21"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.5205/reuol.7061-61015-5-SM0906supl201503"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.5205/reuol.7061-61015-5-SM0906supl201503"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20150000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400022"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "628",
+                    "l": "634"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "42"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "628-34"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Rev Esc Enferm USP"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "26"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "4"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Gonzales",
+                    "r": "ND",
+                    "n": "RIC"
+                },
+                {
+                    "_": "",
+                    "s": "Monroe",
+                    "r": "ND",
+                    "n": "AA"
+                },
+                {
+                    "_": "",
+                    "s": "Assis",
+                    "r": "ND",
+                    "n": "EG"
+                },
+                {
+                    "_": "",
+                    "s": "Palha",
+                    "r": "ND",
+                    "n": "PF"
+                },
+                {
+                    "_": "",
+                    "s": "Villa",
+                    "r": "ND",
+                    "n": "TCS"
+                },
+                {
+                    "_": "",
+                    "s": "Ruffino-Netto",
+                    "r": "ND",
+                    "n": "A"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Desempenho de servi\u00e7os de sa\u00fade no tratamento diretamente observado no domic\u00edlio para controle da tuberculose"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "22"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2008"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400022",
+            "v118": [
+                {
+                    "_": "22"
+                }
+            ],
+            "v810": [
+                {
+                    "_": "et al"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1590/S0080-62342008000400003"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1590/S0080-62342008000400003"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20080000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400023"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "825",
+                    "l": "831"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "43"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "825-31"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Rev Saude Publica"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "27"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "5"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Figueiredo",
+                    "r": "ND",
+                    "n": "TMRM"
+                },
+                {
+                    "_": "",
+                    "s": "Villa",
+                    "r": "ND",
+                    "n": "TCS"
+                },
+                {
+                    "_": "",
+                    "s": "Scatena",
+                    "r": "ND",
+                    "n": "LM"
+                },
+                {
+                    "_": "",
+                    "s": "Gonzales",
+                    "r": "ND",
+                    "n": "RIC"
+                },
+                {
+                    "_": "",
+                    "s": "Ruffino-Netto",
+                    "r": "ND",
+                    "n": "A"
+                },
+                {
+                    "_": "",
+                    "s": "Nogueira",
+                    "r": "ND",
+                    "n": "JA"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Desempenho da aten\u00e7\u00e3o b\u00e1sica no controle da tuberculose"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "23"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2009"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400023",
+            "v118": [
+                {
+                    "_": "23"
+                }
+            ],
+            "v810": [
+                {
+                    "_": "et al"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1590/S0034-89102009005000054"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1590/S0034-89102009005000054"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20090000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        },
+        {
+            "v2": [
+                {
+                    "_": "S0034-8910(18)05200000244"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "S0034-8910201800010024400024"
+                }
+            ],
+            "v514": [
+                {
+                    "_": "",
+                    "f": "16",
+                    "l": "22"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "19"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "c"
+                }
+            ],
+            "v882": [
+                {
+                    "_": "",
+                    "v": "52"
+                }
+            ],
+            "collection": "spa",
+            "v14": [
+                {
+                    "_": "16-22"
+                }
+            ],
+            "v702": [
+                {
+                    "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+                }
+            ],
+            "v71": [
+                {
+                    "_": "journal"
+                }
+            ],
+            "v936": [
+                {
+                    "_": "",
+                    "o": "1",
+                    "i": "0034-8910",
+                    "y": "2018"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "MEDICC Rev"
+                }
+            ],
+            "processing_date": "2018-05-19",
+            "v700": [
+                {
+                    "_": "28"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "1"
+                }
+            ],
+            "v10": [
+                {
+                    "_": "",
+                    "s": "Chapman",
+                    "r": "ND",
+                    "n": "HJ"
+                },
+                {
+                    "_": "",
+                    "s": "Veras-Est\u00e9vez",
+                    "r": "ND",
+                    "n": "BA"
+                },
+                {
+                    "_": "",
+                    "s": "Pomeranz",
+                    "r": "ND",
+                    "n": "JL"
+                },
+                {
+                    "_": "",
+                    "s": "P\u00e9rez-Then",
+                    "r": "ND",
+                    "n": "EN"
+                },
+                {
+                    "_": "",
+                    "s": "Marcelino",
+                    "r": "ND",
+                    "n": "B"
+                },
+                {
+                    "_": "",
+                    "s": "Lauzardo",
+                    "r": "ND",
+                    "n": "M"
+                }
+            ],
+            "v12": [
+                {
+                    "_": "Perceived barriers to adherence to tuberculosis infection control measures among health care workers in the Dominican Republic"
+                }
+            ],
+            "v701": [
+                {
+                    "_": "24"
+                }
+            ],
+            "v705": [
+                {
+                    "_": "S"
+                }
+            ],
+            "v64": [
+                {
+                    "_": "2017"
+                }
+            ],
+            "v708": [
+                {
+                    "_": "24"
+                }
+            ],
+            "code": "S0034-8910201800010024400024",
+            "v118": [
+                {
+                    "_": "24"
+                }
+            ],
+            "v61": [
+                {
+                    "_": "https://doi.org/10.1590/medicc.2017.190100006"
+                }
+            ],
+            "v37": [
+                {
+                    "_": "https://doi.org/10.1590/medicc.2017.190100006"
+                }
+            ],
+            "v4": [
+                {
+                    "_": "v52"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20170000"
+                }
+            ],
+            "v865": [
+                {
+                    "_": "20180000"
+                }
+            ]
+        }
+    ],
+    "publication_date": "2018-05-21",
+    "collection": "spa",
+    "issue": {
+        "processing_date": "2018-01-15",
+        "code_title": [
+            "0034-8910",
+            "1518-8787"
+        ],
+        "issue_type": "regular",
+        "code": "0034-891020180001",
+        "created_at": "2018-01-15",
+        "publication_year": "2018",
+        "collection": "spa",
+        "issue": {
+            "v43": [
+                {
+                    "c": "S\u00e3o Paulo",
+                    "v": "vol.52",
+                    "a": "2018",
+                    "_": "",
+                    "t": "Rev. Sa\u00fade P\u00fablica",
+                    "l": "es"
+                },
+                {
+                    "c": "S\u00e3o Paulo",
+                    "v": "vol.52",
+                    "a": "2018",
+                    "_": "",
+                    "t": "Rev. Sa\u00fade P\u00fablica",
+                    "l": "pt"
+                },
+                {
+                    "c": "S\u00e3o Paulo",
+                    "v": "vol.52",
+                    "a": "2018",
+                    "_": "",
+                    "t": "Rev. Sa\u00fade P\u00fablica",
+                    "l": "en"
+                }
+            ],
+            "v91": [
+                {
+                    "_": "20180115"
+                }
+            ],
+            "v880": [
+                {
+                    "_": "0034-891020180001"
+                }
+            ],
+            "v930": [
+                {
+                    "_": "rsp"
+                }
+            ],
+            "v35": [
+                {
+                    "_": "0034-8910"
+                }
+            ],
+            "v435": [
+                {
+                    "_": "1518-8787",
+                    "t": "ONLIN"
+                },
+                {
+                    "_": "0034-8910",
+                    "t": "PRINT"
+                }
+            ],
+            "v65": [
+                {
+                    "_": "20180000"
+                }
+            ],
+            "v31": [
+                {
+                    "_": "52"
+                }
+            ],
+            "v122": [
+                {
+                    "_": "3"
+                }
+            ],
+            "v49": [
+                {
+                    "c": "RSP-nsr7",
+                    "_": "",
+                    "t": "Original Articles",
+                    "l": "en"
+                },
+                {
+                    "c": "RSP-nsr7",
+                    "_": "",
+                    "t": "Artigos Originais",
+                    "l": "pt"
+                }
+            ],
+            "v151": [
+                {
+                    "_": "Rev. sa\u00fade p\u00fablica"
+                }
+            ],
+            "v541": [
+                {
+                    "_": "BY/4.0"
+                }
+            ],
+            "v30": [
+                {
+                    "_": "Rev. Sa\u00fade P\u00fablica"
+                }
+            ],
+            "processing_date": "2018-01-15",
+            "code": "0034-891020180001",
+            "v540": [
+                {
+                    "_": "",
+                    "t": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.",
+                    "l": "es"
+                },
+                {
+                    "_": "",
+                    "t": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.",
+                    "l": "pt"
+                },
+                {
+                    "_": "",
+                    "t": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.",
+                    "l": "en"
+                }
+            ],
+            "v85": [
+                {
+                    "_": "decs"
+                }
+            ],
+            "v992": [
+                {
+                    "_": "spa"
+                }
+            ],
+            "v42": [
+                {
+                    "_": "1"
+                }
+            ],
+            "v230": [
+                {
+                    "_": "/api/v1/sponsors/11/"
+                }
+            ],
+            "v480": [
+                {
+                    "_": "Faculdade de Sa\u00fade P\u00fablica da Universidade de S\u00e3o Paulo"
+                }
+            ],
+            "v999": [
+                {
+                    "_": "../bases-work/rsp/rsp"
+                }
+            ],
+            "v421": [
+                {
+                    "_": "Rev Saude Publica"
+                }
+            ],
+            "v36": [
+                {
+                    "_": "20181"
+                }
+            ],
+            "collection": "spa",
+            "v130": [
+                {
+                    "_": "Revista de Sa\u00fade P\u00fablica"
+                }
+            ],
+            "v706": [
+                {
+                    "_": "i"
+                }
+            ],
+            "v117": [
+                {
+                    "_": "vancouv"
+                }
+            ],
+            "v200": [
+                {
+                    "_": "0"
+                }
+            ],
+            "v935": [
+                {
+                    "_": "1518-8787"
+                }
+            ],
+            "v4": "v52",
+            "v48": [
+                {
+                    "h": "Sumario",
+                    "_": "",
+                    "l": "es"
+                },
+                {
+                    "h": "Sumario",
+                    "_": "",
+                    "l": "pt"
+                },
+                {
+                    "h": "Table of Contents",
+                    "_": "",
+                    "l": "en"
+                }
+            ]
+        },
+        "publication_date": "2018"
+    },
+    "processing_date": "2018-05-18",
+    "document_type": "research-article",
+    "code_title": [
+        "1518-8787",
+        "0034-8910"
+    ],
+    "doi": "10.11606/S1518-8787.2018052000131",
+    "applicable": "True",
+    "code": "S0034-89102018000100244",
+    "version": "xml",
+    "validated_wos": "False",
+    "created_at": "2018-05-18",
+    "publication_year": "2018",
+    "validated_scielo": "False",
+    "article": {
+        "v237": [
+            {
+                "_": "10.11606/s1518-8787.2018052000131"
+            }
+        ],
+        "v42": [
+            {
+                "_": "1"
+            }
+        ],
+        "v880": [
+            {
+                "_": "S0034-89102018000100244"
+            }
+        ],
+        "v223": [
+            {
+                "_": "20180521"
+            }
+        ],
+        "v120": [
+            {
+                "_": "XML_1.1"
+            }
+        ],
+        "v35": [
+            {
+                "_": "0034-8910"
+            }
+        ],
+        "v114": [
+            {
+                "_": "20170710"
+            }
+        ],
+        "v65": [
+            {
+                "_": "20180000"
+            }
+        ],
+        "v31": [
+            {
+                "_": "52"
+            }
+        ],
+        "v83": [
+            {
+                "a": "ABSTRACT  OBJECTIVE To evaluate the association between the health services offered by primary care teams and the detection of new tuberculosis cases in Brazil.  METHODS This was an ecological study covering all Brazilian municipalities that registered at least one new tuberculosis case (diagnosed between 2012 to 2014 and notified in the Information System of Notifiable Diseases) and with at least one primary care team evaluated by the second cycle of the National Program for Improving Access and Quality of Primary Care (PMAQ-AB). The variables of the PMAQ-AB were classified as proximal or distal, according to their relation with the tuberculosis diagnosis. Then, they were tested hierarchically in multiple models (adjusted by States) using negative binomial regression.  RESULTS An increase of 10% in the primary health care coverage was associated with a decrease of 2.24% in the tuberculosis detection rate (95%CI -3.35&#8211; -1.11). Regarding the proximal variables in relation to diagnosis, in the multiple model, the detection of tuberculosis was associated with the proportion of teams that conduct contact investigation (increase in Incidence Rate Ratio [IRR] = 2.97%, 95%CI 2.41&#8211;3.53), carry out tuberculosis active case finding (increase in IRR = 2.17%, 95%CI 1.48&#8211;2.87), and request culture for mycobacteria (increase in IRR = 1.87%, 95%CI 0.98&#8211;2.76).  CONCLUSIONS The variables related to the search actions were positively associated with the detection of new tuberculosis cases, which suggests a significant contribution to the strengthening of the sensitivity of the surveillance system. On the other hand, primary care coverage was inversely associated with the tuberculosis detection rate, which could represent the overall effect of the primary care on transmission control, probably from the identification and early treatment of cases.",
+                "_": "",
+                "l": "en"
+            },
+            {
+                "a": "RESUMO  OBJETIVO Avaliar a associa\u00e7\u00e3o entre os servi\u00e7os de sa\u00fade ofertados por equipes de aten\u00e7\u00e3o b\u00e1sica e a detec\u00e7\u00e3o de casos novos de tuberculose no Brasil.  M\u00c9TODOS Estudo ecol\u00f3gico, abrangendo todos os munic\u00edpios brasileiros que registraram pelo menos um caso novo de tuberculose (diagnosticado entre 2012 a 2014 e notificado no Sistema de Informa\u00e7\u00e3o de Agravos de Notifica\u00e7\u00e3o) e com pelo menos uma equipe de aten\u00e7\u00e3o b\u00e1sica avaliada pelo segundo ciclo do Programa Nacional de Melhoria do Acesso e da Qualidade da Aten\u00e7\u00e3o B\u00e1sica (PMAQ-AB). As vari\u00e1veis do PMAQ-AB foram classificadas como pr\u00f3ximais ou distais, segundo a sua rela\u00e7\u00e3o com o diagn\u00f3stico de tuberculose. Em seguida, foram testadas hierarquicamente em modelos m\u00faltiplos (ajustados por Unidade Federada), usando regress\u00e3o binomial negativa.  RESULTADOS Um incremento de 10% na cobertura da aten\u00e7\u00e3o b\u00e1sica esteve associado \u00e0 redu\u00e7\u00e3o de 2,24% na taxa de detec\u00e7\u00e3o de tuberculose (IC95% -3,35&#8211; -1,11). No que se refere \u00e0s vari\u00e1veis proximais ao diagn\u00f3stico, no modelo m\u00faltiplo, a detec\u00e7\u00e3o da tuberculose esteve associada \u00e0 propor\u00e7\u00e3o de equipes que: realizam vigil\u00e2ncia de contatos (incremento na Raz\u00e3o de Taxas de Incid\u00eancia [RTI] = 2,97%; IC95% 2,41&#8211;3,53); fazem busca ativa de casos de tuberculose (incremento na RTI = 2,17%; IC95% 1,48&#8211;2,87); e, ofertam cultura para micobact\u00e9rias (incremento na RTI = 1,87%; IC95% 0,98&#8211;2,76).  CONCLUS\u00d5ES As vari\u00e1veis relacionadas \u00e0s a\u00e7\u00f5es de detec\u00e7\u00e3o estiveram positivamente associadas \u00e0 detec\u00e7\u00e3o de casos novos de tuberculose, sugerindo uma contribui\u00e7\u00e3o significativa ao fortalecimento da sensibilidade do sistema de vigil\u00e2ncia. Por outro lado, a cobertura da aten\u00e7\u00e3o b\u00e1sica esteve inversamente associada \u00e0 taxa de detec\u00e7\u00e3o de tuberculose, o que poderia representar o efeito global da aten\u00e7\u00e3o b\u00e1sica sobre o controle da transmiss\u00e3o, provavelmente, atrav\u00e9s da identifica\u00e7\u00e3o e tratamento precoce de casos.",
+                "_": "",
+                "l": "pt"
+            }
+        ],
+        "v91": [
+            {
+                "_": "20180518"
+            }
+        ],
+        "v601": [
+            {
+                "_": "pt"
+            }
+        ],
+        "v882": [
+            {
+                "_": "",
+                "v": "52"
+            }
+        ],
+        "v435": [
+            {
+                "_": "0034-8910",
+                "t": "ppub"
+            },
+            {
+                "_": "1518-8787",
+                "t": "epub"
+            }
+        ],
+        "v71": [
+            {
+                "_": "oa"
+            }
+        ],
+        "v30": [
+            {
+                "_": "Rev. Sa\u00fade P\u00fablica"
+            }
+        ],
+        "v700": [
+            {
+                "_": "2"
+            }
+        ],
+        "v62": [
+            {
+                "_": "Faculdade de Sa\u00fade P\u00fablica da Universidade de S\u00e3o Paulo"
+            }
+        ],
+        "v706": [
+            {
+                "_": "h"
+            }
+        ],
+        "v121": [
+            {
+                "_": "00244"
+            }
+        ],
+        "v708": [
+            {
+                "_": "1"
+            }
+        ],
+        "code": "S0034-89102018000100244",
+        "v112": [
+            {
+                "_": "20170520"
+            }
+        ],
+        "v38": [
+            {
+                "_": "TAB"
+            },
+            {
+                "_": "GRA"
+            }
+        ],
+        "v992": [
+            {
+                "_": "spa"
+            }
+        ],
+        "v2": [
+            {
+                "_": "S0034-8910(18)05200000244"
+            }
+        ],
+        "processing_date": "2018-05-18",
+        "v999": [
+            {
+                "_": "../bases-work/rsp/rsp"
+            }
+        ],
+        "v12": [
+            {
+                "_": "Offer of primary care services and detection of tuberculosis incidence in Brazil",
+                "l": "en"
+            },
+            {
+                "_": "Oferta de servi\u00e7os pela aten\u00e7\u00e3o b\u00e1sica e detec\u00e7\u00e3o da incid\u00eancia de tuberculose no Brasil",
+                "l": "pt"
+            }
+        ],
+        "v421": [
+            {
+                "_": "Rev Saude Publica"
+            }
+        ],
+        "v240": [
+            {
+                "c": "S\u00e3o Paulo",
+                "p": "BR",
+                "i": "aff4",
+                "s": "S\u00e3o Paulo",
+                "_": "Universidade de S\u00e3o Paulo"
+            },
+            {
+                "c": "Recife",
+                "p": "BR",
+                "i": "aff3",
+                "s": "Pernambuco",
+                "_": "Funda\u00e7\u00e3o Oswaldo Cruz"
+            },
+            {
+                "c": "Bras\u00edlia",
+                "p": "BR",
+                "i": "aff2",
+                "s": "Distrito Federal",
+                "_": "Minist\u00e9rio da Sa\u00fade"
+            },
+            {
+                "c": "Bras\u00edlia",
+                "p": "BR",
+                "i": "aff1",
+                "s": "Distrito Federal",
+                "_": "Minist\u00e9rio da Sa\u00fade"
+            }
+        ],
+        "collection": "spa",
+        "v702": [
+            {
+                "_": "rsp/v52/0034-8910-rsp-S1518-87872018052000131.xml"
+            }
+        ],
+        "v14": [
+            {
+                "e": "53",
+                "_": ""
+            }
+        ],
+        "v936": [
+            {
+                "_": "",
+                "o": "1",
+                "i": "0034-8910",
+                "y": "2018"
+            }
+        ],
+        "v100": [
+            {
+                "_": "Revista de Sa\u00fade P\u00fablica"
+            }
+        ],
+        "v701": [
+            {
+                "_": "1"
+            }
+        ],
+        "v10": [
+            {
+                "_": "",
+                "1": "aff1",
+                "s": "Pelissari",
+                "r": "ND",
+                "n": "Daniele Maria"
+            },
+            {
+                "_": "",
+                "1": "aff1",
+                "s": "Bartholomay",
+                "r": "ND",
+                "n": "Patricia"
+            },
+            {
+                "_": "",
+                "1": "aff1",
+                "s": "Jacobs",
+                "r": "ND",
+                "n": "Marina Gasino"
+            },
+            {
+                "_": "",
+                "1": "aff1",
+                "s": "Arakaki-Sanchez",
+                "r": "ND",
+                "n": "Denise"
+            },
+            {
+                "_": "",
+                "1": "aff2",
+                "s": "Anjos",
+                "r": "ND",
+                "n": "Davllyn Santos Oliveira dos"
+            },
+            {
+                "_": "",
+                "1": "aff2",
+                "s": "Costa",
+                "r": "ND",
+                "n": "Mara Lucia dos Santos"
+            },
+            {
+                "_": "",
+                "1": "aff3",
+                "s": "Cavalcanti",
+                "r": "ND",
+                "n": "Pauline Cristine da Silva"
+            },
+            {
+                "_": "",
+                "1": "aff4",
+                "s": "Diaz-Quijano",
+                "r": "ND",
+                "n": "Fredi Alexander"
+            }
+        ],
+        "v709": [
+            {
+                "_": "article"
+            }
+        ],
+        "v705": [
+            {
+                "_": "S"
+            }
+        ],
+        "v40": [
+            {
+                "_": "en"
+            }
+        ],
+        "v85": [
+            {
+                "_": "",
+                "l": "en",
+                "k": "Tuberculosis, epidemiology"
+            },
+            {
+                "_": "",
+                "l": "en",
+                "k": "Tuberculosis, diagnosis"
+            },
+            {
+                "_": "",
+                "l": "en",
+                "k": "Primary Health Care"
+            },
+            {
+                "_": "",
+                "l": "en",
+                "k": "Health Care Quality, Access, and Evaluation"
+            },
+            {
+                "_": "",
+                "l": "pt",
+                "k": "Tuberculose, epidemiologia"
+            },
+            {
+                "_": "",
+                "l": "pt",
+                "k": "Tuberculose, diagn\u00f3stico"
+            },
+            {
+                "_": "",
+                "l": "pt",
+                "k": "Aten\u00e7\u00e3o Prim\u00e1ria \u00e0 Sa\u00fade"
+            },
+            {
+                "_": "",
+                "l": "pt",
+                "k": "Qualidade, Acesso e Avalia\u00e7\u00e3o da Assist\u00eancia \u00e0 Sa\u00fade"
+            }
+        ],
+        "v4": [
+            {
+                "_": "v52"
+            }
+        ],
+        "v70": [
+            {
+                "c": "Bras\u00edlia",
+                "l": "I",
+                "s": "DF",
+                "_": "Minist\u00e9rio da Sa\u00fade",
+                "i": "aff1",
+                "1": "Programa Nacional de Controle de Tuberculose",
+                "p": "Brasil"
+            },
+            {
+                "c": "Bras\u00edlia",
+                "l": "II",
+                "s": "DF",
+                "_": "Minist\u00e9rio da Sa\u00fade",
+                "i": "aff2",
+                "p": "Brasil"
+            },
+            {
+                "c": "Recife",
+                "l": "III",
+                "s": "PE",
+                "2": "Programa de P\u00f3s-Gradua\u00e7\u00e3o em Sa\u00fade Coletiva",
+                "_": "Funda\u00e7\u00e3o Oswaldo Cruz",
+                "i": "aff3",
+                "1": "Centro de Pesquisa Aggeu Magalh\u00e3es",
+                "p": "Brasil"
+            },
+            {
+                "c": "S\u00e3o Paulo",
+                "l": "IV",
+                "s": "SP",
+                "2": "Departamento de Epidemiologia",
+                "_": "Universidade de S\u00e3o Paulo",
+                "i": "aff4",
+                "1": "Faculdade de Sa\u00fade P\u00fablica",
+                "p": "Brasil"
+            }
+        ],
+        "v72": [
+            {
+                "_": "24"
+            }
+        ],
+        "v49": [
+            {
+                "_": "RSP-nsr7"
+            }
+        ]
+    },
+    "fulltexts": {
+        "html": {
+            "en": "http://www.scielosp.org/scielo.php?script=sci_arttext&pid=S0034-89102018000100244&tlng=en",
+            "pt": "http://www.scielosp.org/scielo.php?script=sci_arttext&pid=S0034-89102018000100244&tlng=pt"
+        }
+    },
+    "code_issue": "0034-891020180001"
+}
