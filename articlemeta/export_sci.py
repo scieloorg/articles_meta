@@ -12,6 +12,38 @@ SUPPLEND_REGEX = re.compile(r' 0$')
 ALLOWED_LANGUAGES = ['af', 'de', 'en', 'es', 'fr', 'it', 'la', 'pt', 'po']
 
 
+def create_children(root_node, tags, values):
+    for tag, value in zip(tags, values):
+        if value is not None or value != '':
+            e = ET.Element(tag)
+            e.text = value
+            root_node.append(e)
+    return root_node
+
+
+def splited_yyyy_mm_dd(date_iso):
+    if date_iso is not None:
+        parts = date_iso.split('-')
+        if len(parts) == 2:
+            parts.append(None)
+        if len(parts) == 1:
+            parts.append(None)
+            parts.append(None)
+        if len(parts) == 3:
+            return parts
+
+
+def create_date_elem(element_date_name, splited_yyyy_mm_dd, date_type=None):
+    if splited_yyyy_mm_dd is not None:
+        y, m, d = splited_yyyy_mm_dd
+        elem_date = ET.Element(element_date_name)
+        if date_type is not None:
+            elem_date.set('date-type', date_type)
+        tags = ['day', 'month', 'year']
+        values = [d, m, y]
+        return create_children(elem_date, tags, values)
+
+
 class XMLCitation(object):
 
     def __init__(self):
@@ -53,12 +85,9 @@ class XMLCitation(object):
     class ElementCitationPipe(plumber.Pipe):
         def transform(self, data):
             raw, xml = data
-
             elementcitation = ET.Element('element-citation')
             elementcitation.set('publication-type', raw.publication_type)
-
             xml.find('.').append(elementcitation)
-
             return data
 
     class ArticleTitlePipe(plumber.Pipe):
@@ -171,11 +200,26 @@ class XMLCitation(object):
         def transform(self, data):
             raw, xml = data
 
-            uri = ET.Element('ext-link')
+            elem_citation = xml.find('./element-citation')
 
-            uri.text = raw.link
+            elem = ET.Element('ext-link')
+            elem.set('ext-link-type', 'uri')
+            elem.set('href', raw.link)
+            elem.text = raw.link
+            elem_citation.append(elem)
 
-            xml.find('./element-citation').append(uri)
+            try:
+                access_date = raw.access_date
+            except AttributeError:
+                access_date = raw.date
+            if access_date is not None:
+                date_in_citation_elem = create_date_elem(
+                    'date-in-citation',
+                    splited_yyyy_mm_dd(access_date),
+                    'access-date'
+                )
+                if date_in_citation_elem is not None:
+                    elem_citation.append(date_in_citation_elem)
 
             return data
 
