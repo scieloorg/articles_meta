@@ -568,6 +568,55 @@ class XMLCitationTests(unittest.TestCase):
         self.assertEqual(
             conf_location['_'], xml.find('./element-citation/conf-loc').text)
 
+    def test_xml_citation_webpage_pipes(self):
+        link = {'_': 'www.vigna.com.br'}
+        access_date_ext = {'_': '10 de junho de 2012'}
+        access_date_iso = {'_': '20120610'}
+        citation = {}
+        citation['v37'] = [link]
+        citation['v109'] = [access_date_ext]
+        citation['v110'] = [access_date_iso]
+        citation['v701'] = [{'_': '1'}]
+        citation['v16'] = [{'s': 'Surname', 'n': 'Name'}]
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [citation]}).citations[0]
+        pxml = ET.Element('ref')
+        data = [fakexylosearticle, pxml]
+
+        data = self._xmlcitation.RefIdPipe().transform(data)
+        data = self._xmlcitation.ElementCitationPipe().transform(data)
+        self.assertEqual(
+            1,
+            len(data[-1].findall('.//element-citation')))
+        data = self._xmlcitation.ArticleTitlePipe().transform(data)
+        data = self._xmlcitation.ThesisTitlePipe().transform(data)
+        data = self._xmlcitation.LinkTitlePipe().transform(data)
+        data = self._xmlcitation.SourcePipe().transform(data)
+        data = self._xmlcitation.DatePipe().transform(data)
+        data = self._xmlcitation.StartPagePipe().transform(data)
+        data = self._xmlcitation.EndPagePipe().transform(data)
+        data = self._xmlcitation.IssuePipe().transform(data)
+        data = self._xmlcitation.VolumePipe().transform(data)
+        data = self._xmlcitation.PersonGroupPipe().transform(data)
+        data = self._xmlcitation.URIPipe().transform(data)
+        xml = data[-1]
+        self.assertEqual(
+            xml.find('./element-citation').get('publication-type'), 'link')
+        self.assertEqual(
+            xml.find('.//person-group//surname').text, 'Surname')
+        self.assertEqual(
+            xml.find('.//person-group//given-names').text, 'Name')
+        self.assertEqual(
+            xml.find('.//date-in-citation/year').text, '2012')
+        self.assertEqual(
+            xml.find('.//date-in-citation/month').text, '06')
+        self.assertEqual(
+            xml.find('.//date-in-citation/day').text, '10')
+        self.assertEqual(
+            xml.find('.//ext-link').text, 'www.vigna.com.br')
+
 
 class ExportTests(unittest.TestCase):
 
