@@ -13,6 +13,7 @@ XML: http://www.scielo.br/static_xml_catalog.txt
 """
 import re
 import os
+import sys
 import argparse
 import logging
 import logging.config
@@ -26,7 +27,6 @@ from xylose.scielodocument import Article
 logger = logging.getLogger(__name__)
 SENTRY_DSN = os.environ.get('SENTRY_DSN', None)
 LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
-MONGODB_HOST = os.environ.get('MONGODB_HOST', None)
 
 LOGGING = {
     'version': 1,
@@ -72,20 +72,15 @@ FROM = FROM.isoformat()[:10]
 file_regex = re.compile(r'serial.*.htm|.*.xml')
 data_struct_regex = re.compile(r'^fulltexts\.(pdf|html)\.[a-z][a-z]$')
 
-try:
-    articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
-except:
-    logger.error('Fail to connect to (%s)', MONGODB_HOST)
 
-
-def collections_acronym():
+def collections_acronym(articlemeta_db):
 
     collections = articlemeta_db['collections'].find({}, {'_id': 0})
 
     return [i['code'] for i in collections]
 
 
-def collection_info(collection):
+def collection_info(collection, articlemeta_db):
 
     info = articlemeta_db['collections'].find_one({'acron': collection}, {'_id': 0})
 
@@ -109,7 +104,7 @@ def do_request(url, json=True):
             return document
 
 
-def load_documents(collection, all_records=False):
+def load_documents(collection, articlemeta_db, all_records=False):
 
     fltr = {
         'collection': collection
@@ -357,7 +352,7 @@ class StaticCatalog(object):
         return ldata
 
 
-def run(collections, all_records=False):
+def run(collections, articlemeta_db, all_records=False, forced_url=None):
 
     if not isinstance(collections, list):
         logger.error('Collections must be a list o collection acronym')
@@ -365,14 +360,16 @@ def run(collections, all_records=False):
 
     for collection in collections:
 
-        coll_info = collection_info(collection)
+        coll_info = collection_info(collection, articlemeta_db)
 
-        logger.info(u'Loading languages for %s', coll_info['domain'])
+        collection_domain = forced_url if forced_url else coll_info['domain']
+        logger.info(u'Loading languages for %s', collection_domain)
         logger.info(u'Using mode all_records %s', str(all_records))
 
-        static_catalogs = StaticCatalog(coll_info['domain'])
+        static_catalogs = StaticCatalog(collection_domain)
 
-        for document in load_documents(collection, all_records=all_records):
+        for document in load_documents(collection, articlemeta_db,
+                all_records=all_records):
             logger.debug(
                 u'Checking fulltexts for %s_%s',
                 collection,
@@ -398,7 +395,7 @@ def run(collections, all_records=False):
                     )
                     continue
 
-            articlemeta_db['articles'].update(
+            articlemeta_db['articles'].update_one(
                 {'code': document.publisher_id, 'collection': document.collection_acronym},
                 {'$set': static_catalogs.fulltexts(document)}
             )
@@ -411,14 +408,25 @@ def run(collections, all_records=False):
 
 
 def main():
+    db_dsn = os.environ.get('MONGODB_HOST', '127.0.0.1:27017')
+    try:
+        db_client = controller.get_dbconn(db_dsn)
+    except:
+        print('Fail to connect to:', db_dsn)
+        sys.exit(1)
+    else:
+        articlemeta_db = controller.DataBroker(db_client).db
+
     parser = argparse.ArgumentParser(
         description="Load Languages from SciELO static files available in the file system"
     )
 
+    _collections_acronyms = collections_acronym(articlemeta_db)
+
     parser.add_argument(
         '--collection',
         '-c',
-        choices=collections_acronym(),
+        choices=_collections_acronyms,
         help='Collection acronym'
     )
 
@@ -443,6 +451,12 @@ def main():
         help='Logggin level'
     )
 
+    parser.add_argument(
+        '--domain',
+        '-d',
+        help='Collection domain to get Static catalog'
+    )
+
     args = parser.parse_args()
     LOGGING['handlers']['console']['level'] = args.logging_level
     for lg, content in LOGGING['loggers'].items():
@@ -450,6 +464,10 @@ def main():
 
     logging.config.dictConfig(LOGGING)
 
-    collections = [args.collection] if args.collection else collections_acronym()
+    collections = [args.collection] if args.collection else _collections_acronyms
 
-    run(collections, args.all_records)
+    run(collections, articlemeta_db, args.all_records)
+
+
+if __name__ == '__main__':
+    main()

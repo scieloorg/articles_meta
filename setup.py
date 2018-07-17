@@ -21,7 +21,7 @@ requires = [
     'crossrefapi>=1.3',
     ]
 
-test_requires = ['mocker', 'nose>=1.0', 'coverage']
+test_requires = ['mocker', 'nose>=1.0', 'coverage', 'mongomock']
 
 setup(
     name="articlemeta",

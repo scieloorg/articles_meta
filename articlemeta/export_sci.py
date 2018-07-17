@@ -12,6 +12,38 @@ SUPPLEND_REGEX = re.compile(r' 0$')
 ALLOWED_LANGUAGES = ['af', 'de', 'en', 'es', 'fr', 'it', 'la', 'pt', 'po']
 
 
+def create_children(root_node, tags, values):
+    for tag, value in zip(tags, values):
+        if value is not None or value != '':
+            e = ET.Element(tag)
+            e.text = value
+            root_node.append(e)
+    return root_node
+
+
+def splited_yyyy_mm_dd(date_iso):
+    if date_iso is not None:
+        parts = date_iso.split('-')
+        if len(parts) == 2:
+            parts.append(None)
+        if len(parts) == 1:
+            parts.append(None)
+            parts.append(None)
+        if len(parts) == 3:
+            return parts
+
+
+def create_date_elem(element_date_name, splited_yyyy_mm_dd, date_type=None):
+    if splited_yyyy_mm_dd is not None:
+        y, m, d = splited_yyyy_mm_dd
+        elem_date = ET.Element(element_date_name)
+        if date_type is not None:
+            elem_date.set('date-type', date_type)
+        tags = ['day', 'month', 'year']
+        values = [d, m, y]
+        return create_children(elem_date, tags, values)
+
+
 class XMLCitation(object):
 
     def __init__(self):
@@ -20,6 +52,7 @@ class XMLCitation(object):
                                      self.ElementCitationPipe(),
                                      self.ArticleTitlePipe(),
                                      self.ThesisTitlePipe(),
+                                     self.ConferencePipe(),
                                      self.LinkTitlePipe(),
                                      self.SourcePipe(),
                                      self.DatePipe(),
@@ -52,12 +85,9 @@ class XMLCitation(object):
     class ElementCitationPipe(plumber.Pipe):
         def transform(self, data):
             raw, xml = data
-
             elementcitation = ET.Element('element-citation')
             elementcitation.set('publication-type', raw.publication_type)
-
             xml.find('.').append(elementcitation)
-
             return data
 
     class ArticleTitlePipe(plumber.Pipe):
@@ -117,6 +147,29 @@ class XMLCitation(object):
 
             return data
 
+    class ConferencePipe(plumber.Pipe):
+        def precond(data):
+            raw, xml = data
+
+            if raw.publication_type != 'conference':
+                raise plumber.UnmetPrecondition()
+
+        @plumber.precondition(precond)
+        def transform(self, data):
+            raw, xml = data
+
+            elem_cit = xml.find('./element-citation')
+            if raw.conference_name != '':
+                conf_name = ET.Element('conf-name')
+                conf_name.text = raw.conference_name
+                elem_cit.append(conf_name)
+            if raw.conference_location != '':
+                conf_location = ET.Element('conf-loc')
+                conf_location.text = raw.conference_location
+                elem_cit.append(conf_location)
+
+            return data
+
     class LinkTitlePipe(plumber.Pipe):
         def precond(data):
             raw, xml = data
@@ -147,11 +200,26 @@ class XMLCitation(object):
         def transform(self, data):
             raw, xml = data
 
-            uri = ET.Element('ext-link')
+            elem_citation = xml.find('./element-citation')
 
-            uri.text = raw.link
+            elem = ET.Element('ext-link')
+            elem.set('ext-link-type', 'uri')
+            elem.set('href', raw.link)
+            elem.text = raw.link
+            elem_citation.append(elem)
 
-            xml.find('./element-citation').append(uri)
+            try:
+                access_date = raw.access_date
+            except AttributeError:
+                access_date = raw.date
+            if access_date is not None:
+                date_in_citation_elem = create_date_elem(
+                    'date-in-citation',
+                    splited_yyyy_mm_dd(access_date),
+                    'access-date'
+                )
+                if date_in_citation_elem is not None:
+                    elem_citation.append(date_in_citation_elem)
 
             return data
 
@@ -263,43 +331,38 @@ class XMLCitation(object):
 
         @plumber.precondition(precond)
         def transform(self, data):
+            def create_elem_name(author):
+                name = ET.Element('name')
+                _surname = author.get('surname')
+                _given_names = author.get('given_names')
+                if _surname == '' and _given_names:
+                    _surname = _given_names
+                    _given_names = ''
+
+                if _surname != '':
+                    surname = ET.Element('surname')
+                    surname.text = _surname
+                    name.append(surname)
+
+                if _given_names != '':
+                    givennames = ET.Element('given-names')
+                    givennames.text = _given_names
+                    name.append(givennames)
+                return name
             raw, xml = data
 
-            persongroup = ET.Element('person-group')
-
-            if raw.authors:
-                for author in raw.authors:
-                    name = ET.Element('name')
-
-                    if "surname" in author:
-                        surname = ET.Element('surname')
-                        surname.text = author['surname']
-                        name.append(surname)
-
-                    if "given_names" in author:
-                        givennames = ET.Element('given-names')
-                        givennames.text = author['given_names']
-                        name.append(givennames)
-
-                    persongroup.append(name)
-
+            author_groups = []
+            if raw.analytic_authors:
+                author_groups.append(raw.analytic_authors)
             if raw.monographic_authors:
-                for author in raw.monographic_authors:
-                    name = ET.Element('name')
+                author_groups.append(raw.monographic_authors)
 
-                    if "surname" in author:
-                        surname = ET.Element('surname')
-                        surname.text = author['surname']
-                        name.append(surname)
-
-                    if "given_names" in author:
-                        givennames = ET.Element('given-names')
-                        givennames.text = author['given_names']
-                        name.append(givennames)
-
-                    persongroup.append(name)
-
-            xml.find('./element-citation').append(persongroup)
+            elem_citation = xml.find('./element-citation')
+            for author_group in author_groups:
+                persongroup = ET.Element('person-group')
+                for author in author_group:
+                    persongroup.append(create_elem_name(author))
+                elem_citation.append(persongroup)
 
             return data
 
@@ -424,17 +487,31 @@ class XMLJournalMetaCollectionPipe(plumber.Pipe):
 
 class XMLJournalMetaPublisherPipe(plumber.Pipe):
     def transform(self, data):
+        return self.join_publisher_names(data, '; ')
+
+    def join_publisher_names(self, data, separator='; '):
         raw, xml = data
+        publisher_names = separator.join(raw.journal.publisher_name or [])
 
-        for item in raw.journal.publisher_name or []:
+        publishername = ET.Element('publisher-name')
+        publishername.text = publisher_names
+
+        publisher = ET.Element('publisher')
+        publisher.append(publishername)
+
+        xml.find('./article/front/journal-meta').append(publisher)
+
+        return data
+
+    def get_first_publisher_name(self, data):
+        raw, xml = data
+        publisher_names = raw.journal.publisher_name or []
+        if len(publisher_names) > 0:
             publishername = ET.Element('publisher-name')
-            publishername.text = item
-
+            publishername.text = publisher_names[0]
             publisher = ET.Element('publisher')
             publisher.append(publishername)
-
             xml.find('./article/front/journal-meta').append(publisher)
-
         return data
 
 

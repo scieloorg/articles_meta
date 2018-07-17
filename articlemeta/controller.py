@@ -987,34 +987,13 @@ class CollectionMeta:
 
 
 class DataBroker(object):
-    _dbconn_cache = {}
-
-    def __init__(self, databroker):
-        self.db = databroker
+    def __init__(self, db_client):
+        self.db = db_client
         self.journalmeta = JournalMeta(self.db['journals'])
         self.issuemeta = IssueMeta(self.db['issues'], self.journalmeta)
         self.articlemeta = ArticleMeta(self.db['articles'], self.journalmeta,
                 self.issuemeta)
         self.collectionmeta = CollectionMeta(self.db['collections'])
-
-    @classmethod
-    def from_dsn(cls, db_dsn, reuse_dbconn=False):
-        """Returns a DataBroker instance for a given DSN.
-
-        :param db_dsn: Domain Service Name, i.e. mongodb://192.168.1.162:27017/scielo_network
-        :reuse_dbconn: (optional) If connections to MongoDB must be reused
-        """
-        if reuse_dbconn:
-            cached_db = cls._dbconn_cache.get(db_dsn)
-            if cached_db is None:
-                db = get_dbconn(db_dsn)
-                cls._dbconn_cache[db_dsn] = db
-            else:
-                db = cached_db
-        else:
-            db = get_dbconn(db_dsn)
-
-        return cls(db)
 
     def _log_changes(self, document_type, code, event, collection=None, date=None):
 

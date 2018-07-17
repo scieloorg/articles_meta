@@ -101,6 +101,46 @@ class XMLCitationTests(unittest.TestCase):
 
         self.assertEqual(u'http://www.scielo.br', expected)
 
+    def test_xml_citation_url_with_access_date_pipe(self):
+        link = {'_': 'www.vigna.com.br'}
+        access_date_ext = {'_': '10 de junho de 2012'}
+        access_date_iso = {'_': '20120610'}
+        citation = {}
+        citation['v37'] = [link]
+        citation['v109'] = [access_date_ext]
+        citation['v110'] = [access_date_iso]
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [citation]}).citations[0]
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.URIPipe().transform(data)
+
+        self.assertEqual(
+            [link['_']],
+            [node.text for node in xml.findall('./element-citation/ext-link')]
+        )
+        self.assertEqual(
+            '2012',
+            xml.find('./element-citation/date-in-citation/year').text
+        )
+        self.assertEqual(
+            '06',
+            xml.find('./element-citation/date-in-citation/month').text
+        )
+        self.assertEqual(
+            '10',
+            xml.find('./element-citation/date-in-citation/day').text
+        )
+        self.assertEqual(
+            'access-date',
+            xml.find('./element-citation/date-in-citation').get('date-type')
+        )
+
     def test_xml_citation_source_pipe(self):
 
         pxml = ET.Element('ref')
@@ -381,6 +421,153 @@ class XMLCitationTests(unittest.TestCase):
 
         self.assertEqual(None, expected)
 
+    def test_xml_citation_webpage_pipes(self):
+        link = {'_': 'www.vigna.com.br'}
+        access_date_ext = {'_': '10 de junho de 2012'}
+        access_date_iso = {'_': '20120610'}
+        citation = {}
+        citation['v37'] = [link]
+        citation['v109'] = [access_date_ext]
+        citation['v110'] = [access_date_iso]
+        citation['v701'] = [{'_': '1'}]
+        citation['v16'] = [{'s': 'Surname', 'n': 'Name'}]
+
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [citation]}).citations[0]
+        pxml = ET.Element('ref')
+        data = [fakexylosearticle, pxml]
+
+        data = self._xmlcitation.RefIdPipe().transform(data)
+        data = self._xmlcitation.ElementCitationPipe().transform(data)
+        self.assertEqual(
+            1,
+            len(data[-1].findall('.//element-citation')))
+        data = self._xmlcitation.ArticleTitlePipe().transform(data)
+        data = self._xmlcitation.ThesisTitlePipe().transform(data)
+        data = self._xmlcitation.LinkTitlePipe().transform(data)
+        data = self._xmlcitation.SourcePipe().transform(data)
+        data = self._xmlcitation.DatePipe().transform(data)
+        data = self._xmlcitation.StartPagePipe().transform(data)
+        data = self._xmlcitation.EndPagePipe().transform(data)
+        data = self._xmlcitation.IssuePipe().transform(data)
+        data = self._xmlcitation.VolumePipe().transform(data)
+        data = self._xmlcitation.PersonGroupPipe().transform(data)
+        data = self._xmlcitation.URIPipe().transform(data)
+        xml = data[-1]
+        self.assertEqual(
+            xml.find('./element-citation').get('publication-type'), 'link')
+        self.assertEqual(
+            xml.find('.//person-group//surname').text, 'Surname')
+        self.assertEqual(
+            xml.find('.//person-group//given-names').text, 'Name')
+        self.assertEqual(
+            xml.find('.//date-in-citation/year').text, '2012')
+        self.assertEqual(
+            xml.find('.//date-in-citation/month').text, '06')
+        self.assertEqual(
+            xml.find('.//date-in-citation/day').text, '10')
+        self.assertEqual(
+            xml.find('.//ext-link').text, 'www.vigna.com.br')
+
+    def test_xml_citation_person_group_no_surname_pipe(self):
+        author1 = {'s': '', 'r': 'ND', '_': '', 'n': u'Platão'}
+        author2 = {'s': '', 'r': 'ND', '_': '', 'n': u'Aristóteles'}
+        citation = {}
+        citation['v10'] = [author1, author2]
+        fakexylosearticle = Article(
+                                {
+                                    'article': {},
+                                    'title': {},
+                                    'citations': [
+                                        citation
+                                    ]
+                                }
+                            ).citations[0]
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.PersonGroupPipe().transform(data)
+
+        gn = xml.findall('./element-citation/person-group/name/given-names')
+        surnames = xml.findall('./element-citation/person-group/name/surname')
+        surnames = [node.text for node in surnames]
+        self.assertEqual(len(gn), 0)
+        self.assertEqual([u'Platão', u'Aristóteles'], surnames)
+
+    def test_xml_citation_person_groups_pipe(self):
+        analytic = [{'s': 'Fausto', 'r': 'ND', '_': '', 'n': u'N'},
+                    {'s': 'Laird', 'r': 'ND', '_': '', 'n': u'AD'},
+                    ]
+        monographic = [{'s': 'Mitchell', 'r': 'ND', '_': '', 'n': u'RH'},
+                       {'s': 'Ruff', 'r': 'ND', '_': '', 'n': u'S'},
+                       ]
+        citation = {}
+        citation['v10'] = analytic
+        citation['v16'] = monographic
+
+        fakexylosearticle = Article(
+                                {
+                                    'article': {},
+                                    'title': {},
+                                    'citations': [
+                                        citation
+                                    ]
+                                }
+                            ).citations[0]
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.PersonGroupPipe().transform(data)
+
+        person_groups = xml.findall('./element-citation/person-group')
+        self.assertEqual(len(person_groups), 2)
+
+        expected = [
+            [('Fausto', 'N'), ('Laird', 'AD')],
+            [('Mitchell', 'RH'), ('Ruff', 'S')],
+        ]
+        for expected_names, person_group in zip(expected, person_groups):
+            names = []
+            for name in person_group.findall('name'):
+                item = (
+                    name.find('surname').text, name.find('given-names').text)
+                names.append(item)
+            self.assertEqual(names, expected_names)
+
+    def test_xml_citation_conference_pipe(self):
+        conf_name = {
+            '_': u'Workshop Internacional sobre Clima'
+                 u' e Recursos Naturais nos Países de Língua Portuguesa',
+            'n': 'II'
+        }
+        conf_location = {
+            '_': u'Bragança',
+        }
+        citation = {
+            'v53': [conf_name],
+            'v56': [conf_location],
+        }
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [citation]}).citations[0]
+
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.ConferencePipe().transform(data)
+
+        self.assertEqual(
+            conf_name['_'], xml.find('./element-citation/conf-name').text)
+        self.assertEqual(
+            conf_location['_'], xml.find('./element-citation/conf-loc').text)
+
 
 class ExportTests(unittest.TestCase):
 
@@ -542,6 +729,50 @@ class ExportTests(unittest.TestCase):
         publishername = xml.find('./article/front/journal-meta/publisher/publisher-name').text
 
         self.assertEqual(u'Faculdade de Saúde Pública da Universidade de São Paulo', publishername)
+
+    def test_xmljournal_meta_publishers_join_publisher_names_pipe(self):
+        titles = {}
+        titles['v480'] = [
+            {'_': 'Publicador 1'},
+            {'_': 'Publicador 2'},
+        ]
+        fakexylosearticle = Article({'article': {}, 'title': titles})
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+        front = article.find('front')
+        front.append(ET.Element('journal-meta'))
+        data = [fakexylosearticle, pxml]
+        xmlarticle = export_sci.XMLJournalMetaPublisherPipe()
+        raw, xml = xmlarticle.join_publisher_names(data, ' | ')
+        publishers = xml.findall('./article/front/journal-meta/publisher')
+        self.assertEqual(1, len(publishers))
+        self.assertEqual(
+            'Publicador 1 | Publicador 2',
+            publishers[0].find('publisher-name').text)
+
+    def test_xmljournal_meta_publishers_get_first_publisher_name_pipe(self):
+        titles = {}
+        titles['v480'] = [
+            {'_': 'Publicador 1'},
+            {'_': 'Publicador 2'},
+        ]
+        fakexylosearticle = Article({'article': {}, 'title': titles})
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+        article = pxml.find('article')
+        article.append(ET.Element('front'))
+        front = article.find('front')
+        front.append(ET.Element('journal-meta'))
+        data = [fakexylosearticle, pxml]
+        xmlarticle = export_sci.XMLJournalMetaPublisherPipe()
+        raw, xml = xmlarticle.get_first_publisher_name(data)
+        publishers = xml.findall('./article/front/journal-meta/publisher')
+        self.assertEqual(1, len(publishers))
+        self.assertEqual(
+            'Publicador 1',
+            publishers[0].find('publisher-name').text)
 
     def test_xml_article_meta_unique_article_id_pipe(self):
 
