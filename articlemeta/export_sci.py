@@ -215,8 +215,7 @@ class XMLCitation(object):
             if access_date is not None:
                 date_in_citation_elem = create_date_elem(
                     'date-in-citation',
-                    splited_yyyy_mm_dd(access_date),
-                    'access-date'
+                    splited_yyyy_mm_dd(access_date)
                 )
                 if date_in_citation_elem is not None:
                     elem_citation.append(date_in_citation_elem)
