@@ -137,8 +137,8 @@ class XMLCitationTests(unittest.TestCase):
             xml.find('./element-citation/date-in-citation/day').text
         )
         self.assertEqual(
-            'access-date',
-            xml.find('./element-citation/date-in-citation').get('date-type')
+            {},
+            xml.find('./element-citation/date-in-citation').attrib
         )
 
     def test_xml_citation_source_pipe(self):
