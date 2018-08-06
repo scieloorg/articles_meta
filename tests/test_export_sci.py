@@ -101,6 +101,78 @@ class XMLCitationTests(unittest.TestCase):
 
         self.assertEqual(u'http://www.scielo.br', expected)
 
+    def test_xml_citation_persongrouppipe_create_author_collab(self):
+        node = self._xmlcitation.PersonGroupPipe()._create_author(
+                'American Cancer Society')
+        self.assertEqual(
+            node.text,
+            'American Cancer Society'
+        )
+        self.assertEqual(
+            node.tag,
+            'collab'
+        )
+
+    def test_xml_citation_persongrouppipe_create_author_name(self):
+        author = {'surname': 'Silva', 'given_names': u'Paulo'}
+        node = self._xmlcitation.PersonGroupPipe()._create_author(
+                author)
+        self.assertEqual(
+            node.tag,
+            'name'
+        )
+        self.assertEqual(
+            node.find('given-names').text,
+            'Paulo'
+        )
+        self.assertEqual(
+            node.find('surname').text,
+            'Silva'
+        )
+
+    def test_xml_citation_corpauth_doctitle_url_pipe(self):
+
+        citation = {
+            'v11': [{'_': 'American Cancer Society'}],
+            'v12': [{'_': 'Colorectal Cancer Facts & Figures 2008-2010'}],
+            'v37': [{'_': 'http://www5.cancer.org/downloads/STT/F861708'}],
+
+        }
+        fakexylosearticle = Article({'article': {},
+                                     'title': {},
+                                     'citations': [
+                                        citation
+                                     ]}).citations[0]
+
+        pxml = ET.Element('ref')
+        data = [fakexylosearticle, pxml]
+
+        pipes = [
+                    self._xmlcitation.ElementCitationPipe,
+                    self._xmlcitation.URIPipe,
+                    self._xmlcitation.PersonGroupPipe,
+                    self._xmlcitation.LinkTitlePipe,
+                    self._xmlcitation.SourcePipe,
+            ]
+        for pipe in pipes:
+            raw, xml = pipe().transform(data)
+            data = raw, xml
+
+        self.assertEqual(
+            xml.find('./element-citation').get('publication-type'), 'link')
+
+        expected = xml.find('./element-citation/ext-link').text
+        self.assertEqual(
+            u'http://www5.cancer.org/downloads/STT/F861708', expected)
+
+        expected = xml.find('./element-citation/source').text
+        self.assertEqual(
+            u'Colorectal Cancer Facts & Figures 2008-2010', expected)
+
+        self.assertEqual(
+           xml.find('./element-citation/person-group/collab').text,
+           u'American Cancer Society')
+
     def test_xml_citation_url_with_access_date_pipe(self):
         link = {'_': 'www.vigna.com.br'}
         access_date_ext = {'_': '10 de junho de 2012'}
@@ -504,9 +576,17 @@ class XMLCitationTests(unittest.TestCase):
         monographic = [{'s': 'Mitchell', 'r': 'ND', '_': '', 'n': u'RH'},
                        {'s': 'Ruff', 'r': 'ND', '_': '', 'n': u'S'},
                        ]
+        analytic_inst = [{'_': 'UNESCO'},
+                         {'_': 'OMS'},
+                         ]
+        monographic_inst = [{'_': 'AABB'},
+                            {'_': 'W3C'},
+                            ]
         citation = {}
         citation['v10'] = analytic
         citation['v16'] = monographic
+        citation['v11'] = analytic_inst
+        citation['v17'] = monographic_inst
 
         fakexylosearticle = Article(
                                 {
@@ -528,16 +608,18 @@ class XMLCitationTests(unittest.TestCase):
         self.assertEqual(len(person_groups), 2)
 
         expected = [
-            [('Fausto', 'N'), ('Laird', 'AD')],
-            [('Mitchell', 'RH'), ('Ruff', 'S')],
+            [('Fausto', 'N'), ('Laird', 'AD'), 'UNESCO', 'OMS'],
+            [('Mitchell', 'RH'), ('Ruff', 'S'), 'AABB', 'W3C'],
         ]
-        for expected_names, person_group in zip(expected, person_groups):
-            names = []
+        for expected_items, person_group in zip(expected, person_groups):
+            items = []
             for name in person_group.findall('name'):
                 item = (
                     name.find('surname').text, name.find('given-names').text)
-                names.append(item)
-            self.assertEqual(names, expected_names)
+                items.append(item)
+            for collab in person_group.findall('collab'):
+                items.append(collab.text)
+            self.assertEqual(items, expected_items)
 
     def test_xml_citation_conference_pipe(self):
         conf_name = {
