@@ -373,12 +373,15 @@ class XMLCitation(object):
             raw, xml = data
 
             elem_citation = xml.find('./element-citation')
-            for author_group in raw.authors_groups.values():
-                persongroup = ET.Element('person-group')
-                for author_type, authors in author_group.items():
-                    for author in authors:
-                        persongroup.append(self._create_author(author))
-                elem_citation.append(persongroup)
+            groups = raw.authors_groups
+            for group in ['analytic', 'monographic']:
+                author_group = groups.get(group)
+                if author_group is not None:
+                    persongroup = ET.Element('person-group')
+                    for author_type, authors in author_group.items():
+                        for author in authors:
+                            persongroup.append(self._create_author(author))
+                    elem_citation.append(persongroup)
 
             return data
 
