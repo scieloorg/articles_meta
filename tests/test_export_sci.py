@@ -621,6 +621,75 @@ class XMLCitationTests(unittest.TestCase):
                 items.append(collab.text)
             self.assertEqual(items, expected_items)
 
+    def test_xml_citation_person_groups_pipe_transform_authors_groups(self):
+        analytic = [{'s': 'Fausto', 'r': 'ND', '_': '', 'n': u'N'},
+                    {'s': 'Laird', 'r': 'ND', '_': '', 'n': u'AD'},
+                    ]
+        monographic = [{'s': 'Mitchell', 'r': 'ND', '_': '', 'n': u'RH'},
+                       {'s': 'Ruff', 'r': 'ND', '_': '', 'n': u'S'},
+                       ]
+        analytic_inst = [{'_': 'UNESCO'},
+                         {'_': 'OMS'},
+                         ]
+        monographic_inst = [{'_': 'AABB'},
+                            {'_': 'W3C'},
+                            ]
+        citation = {}
+        citation['v10'] = analytic
+        citation['v16'] = monographic
+        citation['v11'] = analytic_inst
+        citation['v17'] = monographic_inst
+
+        fakexylosearticle = Article(
+                                {
+                                    'article': {},
+                                    'title': {},
+                                    'citations': [
+                                        citation
+                                    ]
+                                }
+                            ).citations[0]
+        pxml = ET.Element('ref')
+        pxml.append(ET.Element('element-citation'))
+
+        data = [fakexylosearticle, pxml]
+        raw, xml = data
+        authors = {}
+        analytic = [{'surname': 'Fausto', 'given_names': u'N'},
+                    {'surname': 'Laird', 'given_names': u'AD'},
+                    ]
+        monographic = [{'surname': 'Mitchell', 'given_names': u'RH'},
+                       {'surname': 'Ruff', 'given_names': u'S'},
+                       ]
+        analytic_inst = ['UNESCO', 'OMS']
+        monographic_inst = ['AABB', 'W3C']
+
+        authors['analytic'] = {
+            'person': analytic, 'institution': analytic_inst}
+        authors['monographic'] = {
+            'person': monographic, 'institution': monographic_inst}
+        raw.authors_groups = authors
+        data = raw, xml
+        raw, xml = self._xmlcitation.PersonGroupPipe(
+            )._transform_authors_groups(data)
+
+        person_groups = xml.findall('.//person-group')
+        self.assertEqual(len(person_groups), 2)
+
+        expected = [
+            [('Fausto', 'N'), ('Laird', 'AD'), 'UNESCO', 'OMS'],
+            [('Mitchell', 'RH'), ('Ruff', 'S'), 'AABB', 'W3C'],
+        ]
+        for expected_items, person_group in zip(expected, person_groups):
+            items = []
+            for name in person_group.findall('name'):
+                item = (
+                    name.find('surname').text, name.find('given-names').text)
+                items.append(item)
+            for collab in person_group.findall('collab'):
+                items.append(collab.text)
+            self.assertEqual(items, expected_items)
+
     def test_xml_citation_conference_pipe(self):
         conf_name = {
             '_': u'Workshop Internacional sobre Clima'
