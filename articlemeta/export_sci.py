@@ -362,11 +362,13 @@ class XMLCitation(object):
         @plumber.precondition(precond)
         def transform(self, data):
             raw, xml = data
-            try:
-                data = self._transform_authors_groups(data)
-            except AttributeError:
-                # caso não exista raw.authors_groups
-                data = self._transform_authors(data)
+
+            if hasattr(raw, 'authors_groups'):
+                transform_function = self._transform_authors_groups
+            else:
+                transform_function = self._transform_authors
+
+            data = transform_function(data)
             return data
 
         def _transform_authors_groups(self, data):
