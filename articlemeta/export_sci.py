@@ -363,7 +363,7 @@ class XMLCitation(object):
         def transform(self, data):
             raw, xml = data
             try:
-                if not raw.authors_groups:
+                if raw.authors_groups:
                     data = self._transform_authors_groups(data)
             except AttributeError:
                 data = self._transform_authors(data)
