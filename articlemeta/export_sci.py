@@ -363,26 +363,25 @@ class XMLCitation(object):
         def transform(self, data):
             raw, xml = data
             try:
-                if raw.authors_groups:
-                    data = self._transform_authors_groups(data)
+                data = self._transform_authors_groups(data)
             except AttributeError:
+                # caso não exista raw.authors_groups
                 data = self._transform_authors(data)
             return data
 
         def _transform_authors_groups(self, data):
             raw, xml = data
-
-            elem_citation = xml.find('./element-citation')
-            groups = raw.authors_groups
-            for group in ['analytic', 'monographic']:
-                author_group = groups.get(group)
-                if author_group is not None:
-                    persongroup = ET.Element('person-group')
-                    for author_type, authors in author_group.items():
-                        for author in authors:
-                            persongroup.append(self._create_author(author))
-                    elem_citation.append(persongroup)
-
+            if raw.authors_groups:
+                elem_citation = xml.find('./element-citation')
+                groups = raw.authors_groups
+                for group in ['analytic', 'monographic']:
+                    author_group = groups.get(group)
+                    if author_group is not None:
+                        persongroup = ET.Element('person-group')
+                        for author_type, authors in author_group.items():
+                            for author in authors:
+                                persongroup.append(self._create_author(author))
+                        elem_citation.append(persongroup)
             return data
 
         def _transform_authors(self, data):
