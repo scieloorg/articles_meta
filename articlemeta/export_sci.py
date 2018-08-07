@@ -325,42 +325,99 @@ class XMLCitation(object):
         def precond(data):
             raw, xml = data
 
-            if not raw.authors and not raw.monographic_authors:
-                raise plumber.UnmetPrecondition()
+            try:
+                if not raw.authors_groups:
+                    raise plumber.UnmetPrecondition()
+            except AttributeError:
+                conditions = [
+                    raw.authors,
+                    raw.monographic_authors,
+                    raw.data.get('v11'),
+                    raw.data.get('v17')
+                ]
+                if any(conditions) is False:
+                    raise plumber.UnmetPrecondition()
+
+        def _create_author(self, author):
+            if not isinstance(author, dict):
+                element = ET.Element('collab')
+                element.text = author
+                return element
+            element = ET.Element('name')
+            _surname = author.get('surname')
+            _given_names = author.get('given_names')
+            if _surname == '' and _given_names:
+                _surname = _given_names
+                _given_names = ''
+            if _surname != '':
+                surname = ET.Element('surname')
+                surname.text = _surname
+                element.append(surname)
+            if _given_names != '':
+                givennames = ET.Element('given-names')
+                givennames.text = _given_names
+                element.append(givennames)
+            return element
 
         @plumber.precondition(precond)
         def transform(self, data):
-            def create_elem_name(author):
-                name = ET.Element('name')
-                _surname = author.get('surname')
-                _given_names = author.get('given_names')
-                if _surname == '' and _given_names:
-                    _surname = _given_names
-                    _given_names = ''
+            raw, xml = data
+            try:
+                if not raw.authors_groups:
+                    data = self._transform_authors_groups(data)
+            except AttributeError:
+                data = self._transform_authors(data)
+            return data
 
-                if _surname != '':
-                    surname = ET.Element('surname')
-                    surname.text = _surname
-                    name.append(surname)
-
-                if _given_names != '':
-                    givennames = ET.Element('given-names')
-                    givennames.text = _given_names
-                    name.append(givennames)
-                return name
+        def _transform_authors_groups(self, data):
             raw, xml = data
 
+            elem_citation = xml.find('./element-citation')
+            groups = raw.authors_groups
+            for group in ['analytic', 'monographic']:
+                author_group = groups.get(group)
+                if author_group is not None:
+                    persongroup = ET.Element('person-group')
+                    for author_type, authors in author_group.items():
+                        for author in authors:
+                            persongroup.append(self._create_author(author))
+                    elem_citation.append(persongroup)
+
+            return data
+
+        def _transform_authors(self, data):
+            raw, xml = data
+            analytics = raw.analytic_authors or []
+            analytics += raw.analytic_institution or []
+            if raw.analytic_institution is None and \
+                    raw.data.get('v11') is not None:
+                for institution in raw.data.get('v11', []):
+                    analytics.append(institution['_'])
+            aa = []
+            for author in analytics:
+                aa.append(self._create_author(author))
+
+            monographic = raw.monographic_authors or []
+            monographic += raw.monographic_institution or []
+            if raw.monographic_institution is None and \
+                    raw.data.get('v17') is not None:
+                for institution in raw.data.get('v17', []):
+                    monographic.append(institution['_'])
+            ma = []
+            for author in monographic:
+                ma.append(self._create_author(author))
+
             author_groups = []
-            if raw.analytic_authors:
-                author_groups.append(raw.analytic_authors)
-            if raw.monographic_authors:
-                author_groups.append(raw.monographic_authors)
+            if aa:
+                author_groups.append(aa)
+            if ma:
+                author_groups.append(ma)
 
             elem_citation = xml.find('./element-citation')
             for author_group in author_groups:
                 persongroup = ET.Element('person-group')
                 for author in author_group:
-                    persongroup.append(create_elem_name(author))
+                    persongroup.append(author)
                 elem_citation.append(persongroup)
 
             return data
