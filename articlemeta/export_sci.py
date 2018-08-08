@@ -362,27 +362,28 @@ class XMLCitation(object):
         @plumber.precondition(precond)
         def transform(self, data):
             raw, xml = data
-            try:
-                if not raw.authors_groups:
-                    data = self._transform_authors_groups(data)
-            except AttributeError:
-                data = self._transform_authors(data)
+
+            if hasattr(raw, 'authors_groups'):
+                transform_function = self._transform_authors_groups
+            else:
+                transform_function = self._transform_authors
+
+            data = transform_function(data)
             return data
 
         def _transform_authors_groups(self, data):
             raw, xml = data
-
-            elem_citation = xml.find('./element-citation')
-            groups = raw.authors_groups
-            for group in ['analytic', 'monographic']:
-                author_group = groups.get(group)
-                if author_group is not None:
-                    persongroup = ET.Element('person-group')
-                    for author_type, authors in author_group.items():
-                        for author in authors:
-                            persongroup.append(self._create_author(author))
-                    elem_citation.append(persongroup)
-
+            if raw.authors_groups:
+                elem_citation = xml.find('./element-citation')
+                groups = raw.authors_groups
+                for group in ['analytic', 'monographic']:
+                    author_group = groups.get(group)
+                    if author_group is not None:
+                        persongroup = ET.Element('person-group')
+                        for author_type, authors in author_group.items():
+                            for author in authors:
+                                persongroup.append(self._create_author(author))
+                        elem_citation.append(persongroup)
             return data
 
         def _transform_authors(self, data):
