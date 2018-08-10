@@ -6,6 +6,7 @@ legacy databases does not have the doi persisted for each document.
 """
 import re
 import os
+import sys
 import argparse
 import logging
 import logging.config
@@ -17,7 +18,6 @@ import requests
 from xylose.scielodocument import Article
 from crossref.restful import Journals
 
-from articlemeta import utils
 from articlemeta import controller
 
 logger = logging.getLogger(__name__)
@@ -69,27 +69,22 @@ if SENTRY_DSN:
 FROM = datetime.now() - timedelta(days=15)
 FROM = FROM.isoformat()[:10]
 
-try:
-    articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
-except:
-    logger.error('Fail to connect to (%s)', MONGODB_HOST)
 
-
-def collections_acronym():
+def collections_acronym(articlemeta_db):
 
     collections = articlemeta_db['collections'].find({}, {'_id': 0})
 
     return [i['code'] for i in collections]
 
 
-def collection_info(collection):
+def collection_info(articlemeta_db, collection):
 
     info = articlemeta_db['collections'].find_one({'acron': collection}, {'_id': 0})
 
     return info
 
 
-def load_documents(collection, all_records=False):
+def load_documents(articlemeta_db, collection, all_records=False):
 
     fltr = {
         'collection': collection
@@ -165,19 +160,20 @@ def query_to_crossref(document):
     return result.get('DOI', None)
 
 
-def run(collections, all_records=False, scrap_scielo=False, query_crossref=False):
+def run(articlemeta_db, collections, all_records=False, scrap_scielo=False,
+        query_crossref=False):
 
     if not isinstance(collections, list):
         logger.error('Collections must be a list o collection acronym')
         exit()
 
     for collection in collections:
-        coll_info = collection_info(collection)
+        coll_info = collection_info(articlemeta_db, collection)
 
         logger.info(u'Loading DOI for %s', coll_info['domain'])
         logger.info(u'Using mode all_records %s', str(all_records))
 
-        for document in load_documents(collection, all_records=all_records):
+        for document in load_documents(articlemeta_db, collection, all_records=all_records):
 
             doi = None
 
@@ -208,6 +204,15 @@ def run(collections, all_records=False, scrap_scielo=False, query_crossref=False
 
 
 def main():
+    db_dsn = os.environ.get('MONGODB_HOST', 'mongodb://localhost:27017/articlemeta')
+    try:
+        articlemeta_db = controller.get_dbconn(db_dsn)
+    except:
+        print('Fail to connect to:', db_dsn)
+        sys.exit(1)
+
+    _collections = collections_acronym(articlemeta_db)
+
     parser = argparse.ArgumentParser(
         description="Load documents DOI from SciELO website"
     )
@@ -255,6 +260,5 @@ def main():
 
     logging.config.dictConfig(LOGGING)
 
-    collections = [args.collection] if args.collection else collections_acronym()
-
-    run(collections, args.all_records, args.scrap_scielo, args.query_crossref)
+    collections = [args.collection] if args.collection else _collections
+    run(articlemeta_db, collections, args.all_records, args.scrap_scielo, args.query_crossref)

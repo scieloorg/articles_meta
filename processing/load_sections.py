@@ -4,16 +4,16 @@ This scripts loads the issue section whiting a given article.
 The lists of Sections must be given and respect the following format.
 "collection acronym","language","code","text"
 """
-from datetime import datetime, timedelta
 import os
+import re
+import sys
 import argparse
 import logging
-import re
+from datetime import datetime, timedelta
 
 import requests
 from xylose.scielodocument import Article
 
-from articlemeta import utils
 from articlemeta import controller
 
 
@@ -71,12 +71,6 @@ if SENTRY_DSN:
     LOGGING['loggers']['']['handlers'].append('sentry')
 
 
-try:
-    articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
-except:
-    logger.error('Fail to connect to (%s)', MONGODB_HOST)
-
-
 def _config_logging(logging_level='INFO', logging_file=None):
 
     allowed_levels = {
@@ -104,14 +98,14 @@ def _config_logging(logging_level='INFO', logging_file=None):
     return logger
 
 
-def collections_acronym():
+def collections_acronym(articlemeta_db):
 
     collections = articlemeta_db['collections'].find({}, {'_id': 0})
 
     return [i['code'] for i in collections]
 
 
-def collection_info(collection):
+def collection_info(articlemeta_db, collection):
 
     info = articlemeta_db['collections'].find_one({'acron': collection}, {'_id': 0})
 
@@ -119,7 +113,6 @@ def collection_info(collection):
 
 
 def do_request(url, json=True):
-
 
     headers = {
         'User-Agent': 'SciELO Processing ArticleMeta: LoadSection'
@@ -141,7 +134,7 @@ def do_request(url, json=True):
         return document
 
 
-def load_documents(collection, all_records=False):
+def load_documents(articlemeta_db, collection, all_records=False):
 
     fltr = {
         'collection': collection
@@ -279,7 +272,7 @@ class StaticCatalog(object):
         return section
 
 
-def run(collections, all_records=False):
+def run(articlemeta_db, collections, all_records=False):
 
     if not isinstance(collections, list):
         logger.error('Collections must be a list of collection acronym')
@@ -287,7 +280,7 @@ def run(collections, all_records=False):
 
     for collection in collections:
 
-        coll_info = collection_info(collection)
+        coll_info = collection_info(articlemeta_db, collection)
 
         logger.info(u'Loading sections for %s', coll_info['domain'])
         logger.info(u'Using mode all_records %s', str(all_records))
@@ -298,7 +291,7 @@ def run(collections, all_records=False):
             logger.info(u'Section Catalog not found for: %s Processing Interrupited', coll_info['domain'])
             exit()
 
-        for document in load_documents(collection, all_records=all_records):
+        for document in load_documents(articlemeta_db, collection, all_records=all_records):
             logger.debug(
                 u'Checking section for %s_%s',
                 collection,
@@ -328,6 +321,15 @@ def run(collections, all_records=False):
 
 
 def main():
+    db_dsn = os.environ.get('MONGODB_HOST', 'mongodb://localhost:27017/articlemeta')
+    try:
+        articlemeta_db = controller.get_dbconn(db_dsn)
+    except:
+        print('Fail to connect to:', db_dsn)
+        sys.exit(1)
+
+    _collections_acronyms = collections_acronym(articlemeta_db)
+
     parser = argparse.ArgumentParser(
         description="Load Languages from SciELO static files available in the file system"
     )
@@ -335,7 +337,7 @@ def main():
     parser.add_argument(
         '--collection',
         '-c',
-        choices=collections_acronym(),
+        choices=_collections_acronyms,
         help='Collection acronym'
     )
 
@@ -364,6 +366,6 @@ def main():
 
     _config_logging(args.logging_level, args.logging_file)
 
-    collections = [args.collection] if args.collection else collections_acronym()
+    collections = [args.collection] if args.collection else _collections_acronyms
 
-    run(collections, args.all_records)
+    run(articlemeta_db, collections, args.all_records)

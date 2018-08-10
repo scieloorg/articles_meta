@@ -20,7 +20,6 @@ import logging.config
 from datetime import datetime, timedelta
 
 import requests
-from articlemeta import utils
 from articlemeta import controller
 from xylose.scielodocument import Article
 
@@ -291,7 +290,7 @@ class StaticCatalog(object):
             return None
 
         data = {'fulltexts.pdf': set(), 'fulltexts.html': set()}
-        data['fulltexts.html'].add(document.original_language()) # Original language must have fulltext in html.
+        data['fulltexts.html'].add(document.original_language())  # Original language must have fulltext in html.
         if document.data_model_version == 'xml':
             for lang in document.xml_languages() or []:
                 data['fulltexts.html'].add(lang)
@@ -369,7 +368,7 @@ def run(collections, articlemeta_db, all_records=False, forced_url=None):
         static_catalogs = StaticCatalog(collection_domain)
 
         for document in load_documents(collection, articlemeta_db,
-                all_records=all_records):
+                                       all_records=all_records):
             logger.debug(
                 u'Checking fulltexts for %s_%s',
                 collection,
@@ -408,14 +407,12 @@ def run(collections, articlemeta_db, all_records=False, forced_url=None):
 
 
 def main():
-    db_dsn = os.environ.get('MONGODB_HOST', '127.0.0.1:27017')
+    db_dsn = os.environ.get('MONGODB_HOST', 'mongodb://localhost:27017/articlemeta')
     try:
-        db_client = controller.get_dbconn(db_dsn)
+        articlemeta_db = controller.get_dbconn(db_dsn)
     except:
         print('Fail to connect to:', db_dsn)
         sys.exit(1)
-    else:
-        articlemeta_db = controller.DataBroker(db_client).db
 
     parser = argparse.ArgumentParser(
         description="Load Languages from SciELO static files available in the file system"
