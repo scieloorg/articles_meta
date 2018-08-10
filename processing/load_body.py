@@ -344,6 +344,7 @@ def main():
 
     if not args.collection:
         logger.info("Parameter collection -c is mandatory")
+        sys.exit(1)
 
     if args.pids:
         logger.info("Process PIDs from collection: %s", args.collection)
