@@ -1,11 +1,12 @@
 # coding: utf-8
 """
-This scripts scrapy the use licenses of the scielo documents from the website
+This scripts scrapy the body of the scielo documents from the website
 and load them into the Articlemeta, this process is necessary because the
 legacy databases does not have the licenses persisted for each document.
 """
 import re
 import os
+import sys
 import argparse
 import logging
 import logging.config
@@ -70,27 +71,36 @@ FROM = FROM.isoformat()[:10]
 BODY_REGEX = re.compile(r'<div .*class="index,(?P<language>.*?)">(?P<body>.*)</div>')
 REMOVE_LINKS_REGEX = re.compile(r'\[.<a href="javascript\:void\(0\);".*?>Links</a>.\]', re.IGNORECASE)
 
-try:
-    articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
-except:
-    logger.error('Fail to connect to (%s)', MONGODB_HOST)
 
-
-def collections_acronym():
-
+def collections_acronym(articlemeta_db):
     collections = articlemeta_db['collections'].find({}, {'_id': 0})
 
     return [i['code'] for i in collections]
 
 
-def collection_info(collection):
+def collection_info(articlemeta_db, collection):
 
     info = articlemeta_db['collections'].find_one({'acron': collection}, {'_id': 0})
 
     return info
 
 
-def load_documents(collection, all_records=False):
+def load_documents_pids(articlemeta_db, pids, collection):
+
+    fltr = {
+        'collection': collection
+    }
+
+    for pid in pids:
+        fltr['code'] = pid
+        document = articlemeta_db['articles'].find_one(
+            fltr,
+            {'_id': 0, 'citations': 0}
+        )
+        yield Article(document)
+
+
+def load_documents_collection(articlemeta_db, collection, all_records=False):
 
     fltr = {
         'collection': collection
@@ -197,74 +207,111 @@ def scrap_body(data, language):
     return body
 
 
-def run(collections, all_records=False):
+def add_bodies(articlemeta_db, documents, collection):
+
+    for document in documents:
+
+        fulltexts = document.fulltexts()
+        if not fulltexts:
+            logger.debug('Fulltexts not availiable for %s, %s', collection, document.publisher_id)
+            continue
+
+        html_fulltexts = fulltexts.get('html', None)
+
+        if not html_fulltexts:
+            logger.debug('HTML Fulltexts not availiable for %s, %s', collection, document.publisher_id)
+            continue
+
+        bodies = {}
+        for language, url in html_fulltexts.items():
+
+            try:
+                body = scrap_body(do_request(url, json=False), language)
+            except Exception as exc:
+                logger.error('Fail to scrap: %s, %s, %s', collection, document.publisher_id, language)
+                logger.exception(exc)
+                continue
+
+            if not body:
+                logger.error('No body defined for: %s, %s, %s', collection, document.publisher_id, language)
+                continue
+
+            bodies[language] = body
+
+        if len(bodies) < len(html_fulltexts):
+            logger.error('Fail to scrap some of the documents for: %s, %s', collection, document.publisher_id)
+            continue
+
+        if len(bodies) == 0:
+            logger.error('No bodies found for: %s, %s', collection, document.publisher_id)
+            continue
+
+        articlemeta_db['articles'].update(
+            {'code': document.publisher_id, 'collection': document.collection_acronym},
+            {'$set': {'body': bodies}}
+        )
+
+        logger.debug('Bodies collected for: %s, %s', collection, document.publisher_id)
+
+
+def run(articlemeta_db, collections, pids=None, all_records=False):
 
     if not isinstance(collections, list):
-        logger.error('Collections must be a list o collection acronym')
+        logger.error('Collections must be a list of collection acronym')
         exit()
 
-    for collection in collections:
+    if collections and not pids:
 
-        coll_info = collection_info(collection)
+        for collection in collections:
+
+            coll_info = collection_info(articlemeta_db, collection)
+
+            logger.info(u'Loading body for %s', coll_info['domain'])
+            logger.info(u'Using mode all_records %s', str(all_records))
+
+            documents = load_documents_collection(articlemeta_db, collection, all_records)
+
+            add_bodies(articlemeta_db, documents, collection)
+
+    if pids and len(collections) == 1:
+
+        collection = collections[0]
+
+        coll_info = collection_info(articlemeta_db, collection)
 
         logger.info(u'Loading body for %s', coll_info['domain'])
-        logger.info(u'Using mode all_records %s', str(all_records))
 
-        for document in load_documents(collection, all_records=all_records):
+        documents = load_documents_pids(articlemeta_db, pids, collection)
 
-            fulltexts = document.fulltexts()
-            if not fulltexts:
-                logger.debug('Fulltexts not availiable for %s, %s', collection, document.publisher_id)
-                continue
-
-            html_fulltexts = fulltexts.get('html', None)
-
-            if not html_fulltexts:
-                logger.debug('HTML Fulltexts not availiable for %s, %s', collection, document.publisher_id)
-                continue
-
-            bodies = {}
-            for language, url in html_fulltexts.items():
-
-                try:
-                    body = scrap_body(do_request(url, json=False), language)
-                except Exception as exc:
-                    logger.error('Fail to scrap: %s, %s, %s', collection, document.publisher_id, language)
-                    logger.exception(exc)
-                    continue
-
-                if not body:
-                    logger.error('No body defined for: %s, %s, %s', collection, document.publisher_id, language)
-                    continue
-
-                bodies[language] = body
-
-            if len(bodies) < len(html_fulltexts):
-                logger.error('Fail to scrap some of the documents for: %s, %s', collection, document.publisher_id)
-                continue
-
-            if len(bodies) == 0:
-                logger.error('No bodies found for: %s, %s', collection, document.publisher_id)
-                continue
-
-            articlemeta_db['articles'].update(
-                {'code': document.publisher_id, 'collection': document.collection_acronym},
-                {'$set': {'body': bodies}}
-            )
-
-            logger.debug('Bodies collected for: %s, %s', collection, document.publisher_id)
+        add_bodies(articlemeta_db, documents, collection)
 
 
 def main():
+    db_dsn = os.environ.get('MONGODB_HOST', 'mongodb://localhost:27017/articlemeta')
+    try:
+        articlemeta_db = controller.get_dbconn(db_dsn)
+    except:
+        print('Fail to connect to:', db_dsn)
+        sys.exit(1)
+
+    _collections = collections_acronym(articlemeta_db)
+
     parser = argparse.ArgumentParser(
-        description="Load documents license from SciELO website"
+        description="Load documents body from SciELO website"
     )
 
     parser.add_argument(
         '--collection',
         '-c',
-        choices=collections_acronym(),
+        choices=_collections,
         help='Collection acronym'
+    )
+
+    parser.add_argument(
+        '--pids',
+        '-p',
+        nargs='*',
+        help="List of pids. Separate by space Ex.: 'python load_body.py -p 'S0102-05362006000100018 S0102-05362006000100015'"
     )
 
     parser.add_argument(
@@ -295,6 +342,17 @@ def main():
 
     logging.config.dictConfig(LOGGING)
 
-    collections = [args.collection] if args.collection else collections_acronym()
+    if not args.collection:
+        logger.info("Parameter collection -c is mandatory")
+        sys.exit(1)
 
-    run(collections, args.all_records)
+    if args.pids:
+        logger.info("Process PIDs from collection: %s", args.collection)
+        run(articlemeta_db, collections=[args.collection], pids=args.pids)
+    else:
+        collections = [args.collection] if args.collection else _collections
+        run(articlemeta_db, collections=collections, all_records=args.all_records)
+
+
+if __name__ == '__main__':
+    main()
