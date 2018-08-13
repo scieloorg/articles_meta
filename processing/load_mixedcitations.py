@@ -2,13 +2,14 @@
 """
 This scripts loads the mixed citations of a given article.
 """
+import re
+import os
 import argparse
 import logging
 import codecs
 import json
 import unicodedata
 
-from articlemeta import utils
 from articlemeta import controller
 from xylose.scielodocument import Article
 

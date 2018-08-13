@@ -318,7 +318,7 @@ class IssueMeta:
         """Remove o fascículo de código igual a ``code``, da coleção
         ``collection``.
 
-        Retorna um dicionário na forma: 
+        Retorna um dicionário na forma:
 
         .. code-block:: python
 
@@ -378,7 +378,7 @@ class IssueMeta:
         return dates_to_string(issue)
 
     def get_code_from_label(self, label, journal_code, collection):
-        """Retorna o `code` de um fasciculo a partir do seu `label`. 
+        """Retorna o `code` de um fasciculo a partir do seu `label`.
 
         Tenta encontrar o label em 2 estruturas de dados distintas: primeiro
         em uma string e segundo em uma lista de dicts.
@@ -473,7 +473,7 @@ class JournalMeta:
         """Remove o periódico de ISSN igual a ``code``, da coleção
         ``collection``.
 
-        Retorna um dicionário na forma: 
+        Retorna um dicionário na forma:
 
         .. code-block:: python
 
@@ -834,7 +834,7 @@ class ArticleMeta:
         """Remove o artigo de código igual a ``code``, da coleção
         ``collection``.
 
-        Retorna um dicionário na forma: 
+        Retorna um dicionário na forma:
 
         .. code-block:: python
 
@@ -992,7 +992,7 @@ class DataBroker(object):
         self.journalmeta = JournalMeta(self.db['journals'])
         self.issuemeta = IssueMeta(self.db['issues'], self.journalmeta)
         self.articlemeta = ArticleMeta(self.db['articles'], self.journalmeta,
-                self.issuemeta)
+                                       self.issuemeta)
         self.collectionmeta = CollectionMeta(self.db['collections'])
 
     def _log_changes(self, document_type, code, event, collection=None, date=None):
@@ -1230,4 +1230,3 @@ class DataBroker(object):
     def get_issue_code_from_label(self, label, journal_code, collection):
         return self.issuemeta.get_code_from_label(label=label,
                 journal_code=journal_code, collection=collection)
-

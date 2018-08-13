@@ -2,7 +2,7 @@
 """
 This scripts uses the Article Meta API to harvest all SciELO Network Documents
 They are stored into a zip file.
-This processing always harvest the entire database to garantee that all the 
+This processing always harvest the entire database to garantee that all the
 documents are up to date.
 """
 import os
@@ -77,6 +77,7 @@ def dumpdata(*args, **xargs):
 
     logging.info('Zip created: %s', zip_name)
 
+
 def _config_logging(logging_level='INFO', logging_file=None):
 
     allowed_levels = {
@@ -89,7 +90,6 @@ def _config_logging(logging_level='INFO', logging_file=None):
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    
     logger.setLevel(allowed_levels.get(logging_level, 'INFO'))
 
     if logging_file:
@@ -103,6 +103,7 @@ def _config_logging(logging_level='INFO', logging_file=None):
     logger.addHandler(hl)
 
     return logger
+
 
 def main():
 
