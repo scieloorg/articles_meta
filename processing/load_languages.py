@@ -463,7 +463,7 @@ def main():
 
     collections = [args.collection] if args.collection else _collections_acronyms
 
-    run(collections, articlemeta_db, args.all_records)
+    run(collections, articlemeta_db, args.all_records, args.domain)
 
 
 if __name__ == '__main__':
