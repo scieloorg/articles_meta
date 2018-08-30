@@ -6,6 +6,7 @@ import json
 import pymongo
 from xylose.scielodocument import Article, Journal, Issue
 from articlemeta.decorators import LogHistoryChange
+from articlemeta.data import COLLECTIONS_PATH
 from datetime import datetime
 
 LIMIT = 1000
@@ -965,25 +966,23 @@ class ArticleMeta:
 
 
 class CollectionMeta:
-    def __init__(self, db):
-        self.db = db
+    def __init__(self, filepath=COLLECTIONS_PATH):
+        self._filepath = filepath
+
+    @property
+    def _data(self):
+        with open(self._filepath) as f:
+            return json.load(f)
 
     def identifiers(self):
-        """Lista os códigos identificadores das coleções.
-        """
-        data = self.db.find({}, {'_id': 0})
-        if not data:
-            return None
-
-        return [i for i in data]
+        return self._data
 
     def get(self, collection):
-        """Obtém uma coleção de código identificador ``code``.
-
-        Retorna um dicionário ou None.
-        """
-        fltr = {'code': collection}
-        return self.db.find_one(fltr, {'_id': 0})
+        for identifier in self.identifiers():
+            if identifier.get('acron') == collection:
+                return identifier
+        else:
+            return None
 
 
 class DataBroker(object):
@@ -993,7 +992,7 @@ class DataBroker(object):
         self.issuemeta = IssueMeta(self.db['issues'], self.journalmeta)
         self.articlemeta = ArticleMeta(self.db['articles'], self.journalmeta,
                                        self.issuemeta)
-        self.collectionmeta = CollectionMeta(self.db['collections'])
+        self.collectionmeta = CollectionMeta()
 
     def _log_changes(self, document_type, code, event, collection=None, date=None):
 

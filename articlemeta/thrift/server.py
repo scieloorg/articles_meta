@@ -83,7 +83,7 @@ class Dispatcher(object):
 
         return [articlemeta_thrift.collection(i['code'], i['acron'],
             i['acron2'], i['status'], i['domain'], i['original_name'],
-            i['has_analytics']) for i in data]
+            i['has_analytics'], i['is_active'], i['type']) for i in data]
 
     def get_collection(self, code):
 
@@ -96,7 +96,8 @@ class Dispatcher(object):
         return articlemeta_thrift.collection(data['code'], data['acron'],
                                              data['acron2'], data['status'],
                                              data['domain'], data['original_name'],
-                                             data['has_analytics'])
+                                             data['has_analytics'], 
+                                             data['is_active'], data['type'])
 
     def article_history_changes(self, collection, event, code, from_date,
                                 until_date, limit, offset):
