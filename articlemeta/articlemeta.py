@@ -7,7 +7,7 @@ from pyramid.view import view_config, notfound_view_config
 from pyramid.response import Response
 from pyramid.settings import asbool
 
-from articlemeta.export import Export
+from articlemeta.export import Export, JournalExport
 
 DEFAULT_FROM_DATE = '1900-01-01'
 
@@ -74,8 +74,15 @@ def get_journal(request):
 
     collection = request.GET.get('collection', None)
     issn = request.GET.get('issn', None)
+    fmt = request.GET.get('format')
 
     journal = request.databroker.get_journal(collection=collection, issn=issn)
+
+    if fmt == 'scieloorg':
+        try:
+            return JournalExport(journal[0]).pipeline_scieloorg()
+        except IndexError:
+            return None
 
     return journal
 

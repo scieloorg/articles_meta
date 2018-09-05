@@ -1,7 +1,7 @@
 # coding: utf-8
 import plumber
 
-from xylose.scielodocument import Article
+from xylose.scielodocument import Article, Journal
 import xylose
 
 from articlemeta import export_sci
@@ -18,6 +18,32 @@ class CustomArticle(Article):
             return xylose.tools.get_date(self.data['article']['v65'][0]['_'])
         else:
             return None
+
+class JournalExport:
+    def __init__(self, journal):
+        self._journal = journal
+
+    def pipeline_scieloorg(self):
+        journal = Journal(self._journal)
+
+        def _safegetter(func):
+            try:
+                return func()
+            except:
+                return None
+
+        return {'title': _safegetter(lambda: journal.title), 
+                'subtitle': _safegetter(lambda: journal.subtitle),
+                'previous_title': _safegetter(lambda: journal.previous_title),
+                'acronym': _safegetter(lambda: journal.acronym),
+                'scielo_url': _safegetter(lambda: journal.url()), 
+                'institutional_url': _safegetter(lambda: journal.institutional_url),
+                'subject_areas': _safegetter(lambda: journal.subject_areas),
+                'wos_subject_areas': _safegetter(lambda: journal.wos_subject_areas),
+                'publisher_city': _safegetter(lambda: journal.publisher_city),
+                'publisher_country': _safegetter(lambda: journal.publisher_country),
+                'publisher_name': _safegetter(lambda: journal.publisher_name),
+                'status': _safegetter(lambda: journal.current_status)}
 
 
 class Export(object):
