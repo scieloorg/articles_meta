@@ -1456,6 +1456,24 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(0, int(count))
 
+    def test_xml_article_meta_counts_pages_pages_is_none_pipe(self):
+        fakexylosearticle = Article({'article': {}})
+
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaCountsPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        count = xml.find('./front/article-meta/counts/page-count').get('count')
+
+        self.assertEqual(0, int(count))
+
     def test_xml_article_meta_counts_pages_invalid_pages_first_gt_last_pipe(self):
         pxml = ET.Element('article')
         pxml.append(ET.Element('front'))
