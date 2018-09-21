@@ -1005,14 +1005,14 @@ class PublicationStatus:
     def documents_count(self):
         try:
             data = requests.get(self._host+'/api/v1/documents?aggs=collection', timeout=1).json()
-        except requests.exceptions.RequestException:
+        except (requests.exceptions.RequestException, json.JSONDecodeError):
             data = {}
         return {item['key']: item['doc_count'] for item in data.get('collection', {}).get('buckets', [])}
 
     def journals_count(self, collection):
         try:
             data = requests.get(self._host+'/api/v1/journals?aggs=status&collection=%s' % collection, timeout=0.5).json()
-        except requests.exceptions.RequestException:
+        except (requests.exceptions.RequestException, json.JSONDecodeError):
             data = {}
         return {item['key']: item['doc_count'] for item in data.get('status', {}).get('buckets', [])}
 
