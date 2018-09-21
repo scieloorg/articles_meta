@@ -112,6 +112,17 @@
     "is_active": true
   },
   {
+    "domain": "books.scielo.org",
+    "name": {
+      "en": "SciELO Books",
+      "pt": "SciELO Livros",
+      "es": "SciELO Libros"
+    },
+    "has_analytics": false,
+    "type": "books",
+    "is_active": true
+  },
+  {
     "acron": "scl",
     "code": "scl",
     "domain": "www.scielo.br",
