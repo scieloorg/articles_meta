@@ -68,8 +68,40 @@ if SENTRY_DSN:
 FROM = datetime.now() - timedelta(days=15)
 FROM = FROM.isoformat()[:10]
 
-file_regex = re.compile(r'serial.*.htm|.*.xml')
+FILE_REGEX = re.compile(r'serial.*.htm|.*.xml|.*.pdf')
 data_struct_regex = re.compile(r'^fulltexts\.(pdf|html)\.[a-z][a-z]$')
+
+
+def get_acron_issueid_fname_without_extension(file_path):
+    """
+    Recebe file_path que é o arquivo fonte do artigo,
+    podendo ter os seguintes padrões:
+    - xml: delta/v32n2/1678-460X-delta-32-02-00543.xml
+    - html: V:\\Scielo\\serial\\dpjo\\v15n3\\markup\\05.htm
+    - pdf: d:/c.917173/scielo/serial.lilacs//mioc/v51/markup/v51/tomo51(f1)_17-74.pdf
+    Retorna uma lista cujo itens sao
+    acron, issue, nome do arquivo sem extensao
+    """
+    _file_path = file_path.lower().replace('\\', '/').replace('//', '/')
+
+    try:
+        file_id = FILE_REGEX.search(_file_path).group()
+        file_id = file_id.split('/')
+        if not file_path.endswith('.xml'):
+            file_id = [item for item in file_id if item != 'markup']
+            if file_id[-2] == file_id[-3]:
+                del file_id[-2]
+            file_id = file_id[-3:]
+        if len(file_id) != 3:
+            logger.error(
+                u'Fail to parse file_path %s for %s', (file_path, file_id))
+            return
+        file_id[-1] = file_id[-1][:file_id[-1].rfind('.')]
+    except:
+        logger.error(
+            u'Fail to parse file_path %s for %s', (file_path, file_id))
+        return
+    return file_id
 
 
 def collections_acronym(articlemeta_db):
@@ -191,21 +223,8 @@ class StaticCatalog(object):
             self.catalog[splitedline[0]].setdefault(splitedline[1], {'pdf': [], 'html': [], 'xml': []})
             self.catalog[splitedline[0]][splitedline[1]][tipe].append(splitedline[2].replace('.html', '.htm')[:-4])
 
-    def _file_id(self, file_code):
-        file_code = file_code.lower().replace('/', '___').replace('\\', '___')
-
-        try:
-            file_code = file_regex.search(
-                file_code
-            ).group().replace(
-                'serial___', '').replace('markup___', '').split('___')
-        except:
-            logger.error(u'Fail to parse the file_id for %s', file_code)
-            return None
-
-        file_code[2] = file_code[2].replace('.html', '.htm')[:-4]
-
-        return file_code
+    def _file_id(self, file_path):
+        return get_acron_issueid_fname_without_extension(file_path)
 
     def _file_name(self, file_code):
         file_code = file_code.replace('/', '___').replace('\\', '___')
