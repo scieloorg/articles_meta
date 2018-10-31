@@ -80,15 +80,19 @@ def get_acron_issueid_fname_without_extension(file_path):
     - html: V:\\Scielo\\serial\\dpjo\\v15n3\\markup\\05.htm
     - pdf: d:/c.917173/scielo/serial.lilacs//mioc/v51/markup/v51/tomo51(f1)_17-74.pdf
     Retorna uma lista cujo itens sao
-    acron, issue, nome do arquivo sem extensao
+    acron, issue, nome do arquivo sem extensao, em minúsculas
+    - xml: (delta, v32n2, 1678-460x-delta-32-02-00543)
+    - html: (dpjo, v15n3, 05)
+    - pdf: (mioc, v51, tomo51(f1)_17-74)
     """
-    _file_path = file_path.lower().replace('\\', '/').replace('//', '/')
-
+    _file_path = os.path.normcase(os.path.normpath(file_path)).lower()
+    import pdb;pdb.set_trace()
     try:
         file_id = FILE_REGEX.search(_file_path).group()
         file_id = file_id.split('/')
         if not file_path.endswith('.xml'):
-            file_id = [item for item in file_id if item != 'markup']
+            file_id = [item for item in file_id if item not in ['markup', '']]
+            print(file_id)
             if file_id[-2] == file_id[-3]:
                 del file_id[-2]
             file_id = file_id[-3:]
@@ -96,7 +100,7 @@ def get_acron_issueid_fname_without_extension(file_path):
             logger.error(
                 u'Fail to parse file_path %s for %s', (file_path, file_id))
             return
-        file_id[-1] = file_id[-1][:file_id[-1].rfind('.')]
+        file_id[-1], ext = os.path.splitext(file_id[-1])
     except:
         logger.error(
             u'Fail to parse file_path %s for %s', (file_path, file_id))
