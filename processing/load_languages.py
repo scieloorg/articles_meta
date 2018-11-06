@@ -85,27 +85,25 @@ def get_acron_issueid_fname_without_extension(file_path):
     - html: (dpjo, v15n3, 05)
     - pdf: (mioc, v51, tomo51(f1)_17-74)
     """
-    _file_path = os.path.normcase(os.path.normpath(file_path)).lower()
-    import pdb;pdb.set_trace()
+    _file_path = os.path.normpath(file_path.replace('\\', '/')).lower()
     try:
         file_id = FILE_REGEX.search(_file_path).group()
-        file_id = file_id.split('/')
-        if not file_path.endswith('.xml'):
-            file_id = [item for item in file_id if item not in ['markup', '']]
-            print(file_id)
-            if file_id[-2] == file_id[-3]:
-                del file_id[-2]
-            file_id = file_id[-3:]
-        if len(file_id) != 3:
+        file_id, ext = os.path.splitext(file_id)
+        folders = file_id.split('/')
+        if not ext == '.xml':
+            folders = [item for item in folders if item not in ['markup', '']]
+            if folders[-2] == folders[-3]:
+                del folders[-2]
+            folders = folders[-3:]
+        if len(folders) != 3:
             logger.error(
                 u'Fail to parse file_path %s for %s', (file_path, file_id))
             return
-        file_id[-1], ext = os.path.splitext(file_id[-1])
     except:
         logger.error(
             u'Fail to parse file_path %s for %s', (file_path, file_id))
         return
-    return file_id
+    return folders
 
 
 def collections_acronym(articlemeta_db):
