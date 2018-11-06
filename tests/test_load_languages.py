@@ -36,6 +36,33 @@ class LoadLanguageTest(TestCase):
 
         self.mocked_db = MockedDB()
 
+    def test_get_acron_issueid_fname_without_extension(self):
+        get_file_id = load_languages.get_acron_issueid_fname_without_extension
+        self.assertEqual(
+            get_file_id('delta/v32n2/1678-460X-delta-32-02-00543.xml'),
+            ['delta', 'v32n2', '1678-460x-delta-32-02-00543']
+        )
+        self.assertEqual(
+            get_file_id('V:\\Scielo\\serial\\dpjo\\v15n3\\markup\\05.html'),
+            ['dpjo', 'v15n3', '05']
+        )
+        self.assertEqual(
+            get_file_id('C:\\SciELO\\Serial\\aa\\v34n1\\markup\\v34n1a06.html'),
+            ['aa', 'v34n1', 'v34n1a06']
+        )
+        self.assertEqual(
+            get_file_id(
+                'd:/c.917173/scielo/serial.lilacs//'
+                'mioc/v51/markup/v51/tomo51(f1)_17-74.pdf'),
+            ['mioc', 'v51', 'tomo51(f1)_17-74']
+        )
+        self.assertEqual(
+            get_file_id(
+                '/scielo/serial.lilacs//mioc/v82s3/'
+                'markup/v82s3/vol82(fsup3)_II.pdf'),
+            ['mioc', 'v82s3', 'vol82(fsup3)_ii']
+        )
+
     def test_run(self):
         mocked_articlemeta_db = mongomock.MongoClient().db
         mocked_articlemeta_db['collections'].insert_many([
