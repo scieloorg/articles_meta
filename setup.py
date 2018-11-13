@@ -25,7 +25,7 @@ test_requires = ['mocker', 'nose>=1.0', 'coverage', 'mongomock']
 
 setup(
     name="articlemeta",
-    version='1.44.0',
+    version='1.45.0',
     description="A SciELO API to load SciELO Articles metadata",
     author="SciELO",
     author_email="scielo-dev@googlegroups.com",
