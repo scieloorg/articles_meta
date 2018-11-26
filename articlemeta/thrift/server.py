@@ -81,13 +81,9 @@ class Dispatcher(object):
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.identifiers_collection')
 
-        return [
-            articlemeta_thrift.collection(i['code'], i['acron'], i['acron2'],
-                                          i['status'], i['domain'],
-                                          i['original_name'],
-                                          i['has_analytics'],
-                                          i.get('is_active'), i.get('type'))
-            for i in data]
+        return [articlemeta_thrift.collection(i['code'], i['acron'],
+            i.get('acron2', ''), i.get('status', ''), i['domain'], i['original_name'],
+            i['has_analytics'], i.get('is_active', False), i.get('type', '')) for i in data]
 
     def get_collection(self, code):
 

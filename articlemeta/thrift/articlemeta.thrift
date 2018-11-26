@@ -15,8 +15,8 @@ exception Unauthorized {
 struct collection {
     1: string code
     2: string acronym
-    3: string acronym2letters
-    4: string status
+    3: optional string acronym2letters
+    4: optional string status
     5: string domain
     6: string name
     7: bool has_analytics
