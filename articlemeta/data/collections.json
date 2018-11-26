@@ -112,13 +112,18 @@
     "is_active": true
   },
   {
+    "acron": "bks",
+    "code": "books",
     "domain": "books.scielo.org",
+    "acron2": "bk",
     "name": {
       "en": "SciELO Books",
       "pt": "SciELO Livros",
       "es": "SciELO Libros"
     },
     "has_analytics": false,
+    "original_name": "SciELO Books",
+    "status": "independent",
     "type": "books",
     "is_active": true
   },
