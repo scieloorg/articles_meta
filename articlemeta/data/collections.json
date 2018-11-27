@@ -112,6 +112,8 @@
     "is_active": true
   },
   {
+    "acron": "books",
+    "code": "books",
     "domain": "books.scielo.org",
     "name": {
       "en": "SciELO Books",
@@ -119,6 +121,7 @@
       "es": "SciELO Libros"
     },
     "has_analytics": false,
+    "original_name": "SciELO Books",
     "type": "books",
     "is_active": true
   },
