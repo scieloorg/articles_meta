@@ -323,12 +323,12 @@
     "domain": "caribbean.scielo.org",
     "acron2": "wi",
     "name": {
-      "en": "West Indians",
-      "pt": "West Indians",
-      "es": "West Indians"
+      "en": "West Indies",
+      "pt": "West Indies",
+      "es": "West Indies"
     },
     "has_analytics": false,
-    "original_name": "West Indians",
+    "original_name": "West Indies",
     "status": "diffusion",
     "type": "journals",
     "is_active": false
