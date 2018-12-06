@@ -6,7 +6,9 @@ import json
 import pymongo
 from xylose.scielodocument import Article, Journal, Issue
 from articlemeta.decorators import LogHistoryChange
+from articlemeta.data import COLLECTIONS_PATH
 from datetime import datetime
+import requests
 
 LIMIT = 1000
 
@@ -965,25 +967,54 @@ class ArticleMeta:
 
 
 class CollectionMeta:
-    def __init__(self, db):
-        self.db = db
+    def __init__(self, pubstatus, filepath=COLLECTIONS_PATH):
+        self._filepath = filepath
+        self._pubstatus = pubstatus
+
+    @property
+    def _data(self):
+        with open(self._filepath) as f:
+            return json.load(f)
+
+    def _add_counts(self, data, docs_count):
+        data['document_count'] = docs_count.get(data.get('acron'))
+        data['journal_count'] = self._pubstatus.journals_count(data.get('acron'))
 
     def identifiers(self):
-        """Lista os códigos identificadores das coleções.
-        """
-        data = self.db.find({}, {'_id': 0})
-        if not data:
-            return None
-
-        return [i for i in data]
+        docs_count = self._pubstatus.documents_count()
+        collections = self._data
+        [self._add_counts(collection, docs_count) 
+         for collection in collections if collection.get('type') == 'journals']
+        return collections
 
     def get(self, collection):
-        """Obtém uma coleção de código identificador ``code``.
+        for identifier in self._data:
+            if identifier.get('acron') == collection:
+                if identifier.get('type') == 'journals':
+                    docs_count = self._pubstatus.documents_count()
+                    self._add_counts(identifier, docs_count)
+                return identifier
+        else:
+            return None
 
-        Retorna um dicionário ou None.
-        """
-        fltr = {'code': collection}
-        return self.db.find_one(fltr, {'_id': 0})
+
+class PublicationStatus:
+    def __init__(self, host='http://publication.scielo.org'):
+        self._host = host
+
+    def documents_count(self):
+        try:
+            data = requests.get(self._host+'/api/v1/documents?aggs=collection', timeout=1).json()
+        except (requests.exceptions.RequestException, json.JSONDecodeError):
+            data = {}
+        return {item['key']: item['doc_count'] for item in data.get('collection', {}).get('buckets', [])}
+
+    def journals_count(self, collection):
+        try:
+            data = requests.get(self._host+'/api/v1/journals?aggs=status&collection=%s' % collection, timeout=0.5).json()
+        except (requests.exceptions.RequestException, json.JSONDecodeError):
+            data = {}
+        return {item['key']: item['doc_count'] for item in data.get('status', {}).get('buckets', [])}
 
 
 class DataBroker(object):
@@ -993,7 +1024,8 @@ class DataBroker(object):
         self.issuemeta = IssueMeta(self.db['issues'], self.journalmeta)
         self.articlemeta = ArticleMeta(self.db['articles'], self.journalmeta,
                                        self.issuemeta)
-        self.collectionmeta = CollectionMeta(self.db['collections'])
+        pubstatus = PublicationStatus()
+        self.collectionmeta = CollectionMeta(pubstatus=pubstatus)
 
     def _log_changes(self, document_type, code, event, collection=None, date=None):
 

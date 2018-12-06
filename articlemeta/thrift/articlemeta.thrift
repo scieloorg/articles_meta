@@ -1,4 +1,4 @@
-const string VERSION = "1.1.0"
+const string VERSION = "1.2.0"
 
 exception ValueError {
     1: string message,
@@ -15,11 +15,13 @@ exception Unauthorized {
 struct collection {
     1: string code
     2: string acronym
-    3: string acronym2letters
-    4: string status
+    3: optional string acronym2letters
+    4: optional string status
     5: string domain
     6: string name
     7: bool has_analytics
+    8: optional bool is_active
+    9: optional string type
 }
 
 struct article_identifiers {

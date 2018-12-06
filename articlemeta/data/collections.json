@@ -1,0 +1,544 @@
+[
+  {
+    "acron": "arg",
+    "code": "arg",
+    "domain": "www.scielo.org.ar",
+    "acron2": "ar",
+    "name": {
+      "en": "Argentina",
+      "pt": "Argentina",
+      "es": "Argentina"
+    },
+    "has_analytics": true,
+    "original_name": "Argentina",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "chl",
+    "code": "chl",
+    "domain": "www.scielo.cl",
+    "acron2": "cl",
+    "name": {
+      "en": "Chile",
+      "pt": "Chile",
+      "es": "Chile"
+    },
+    "has_analytics": true,
+    "original_name": "Chile",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "col",
+    "code": "col",
+    "domain": "www.scielo.org.co",
+    "acron2": "co",
+    "name": {
+      "en": "Colombia",
+      "pt": "Colombia",
+      "es": "Colombia"
+    },
+    "has_analytics": true,
+    "original_name": "Colombia",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "cub",
+    "code": "cub",
+    "domain": "scielo.sld.cu",
+    "acron2": "cu",
+    "name": {
+      "en": "Cuba",
+      "pt": "Cuba",
+      "es": "Cuba"
+    },
+    "has_analytics": true,
+    "original_name": "Cuba",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "esp",
+    "code": "esp",
+    "domain": "scielo.isciii.es",
+    "acron2": "es",
+    "name": {
+      "en": "Spain",
+      "pt": "Espanha",
+      "es": "Espa\u00f1a"
+    },
+    "has_analytics": true,
+    "original_name": "Espa\u00f1a",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "mex",
+    "code": "mex",
+    "domain": "www.scielo.org.mx",
+    "acron2": "mx",
+    "name": {
+      "en": "Mexico",
+      "pt": "Mexico",
+      "es": "Mexico"
+    },
+    "has_analytics": true,
+    "original_name": "Mexico",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "prt",
+    "code": "prt",
+    "domain": "www.scielo.mec.pt",
+    "acron2": "pt",
+    "name": {
+      "en": "Portugal",
+      "pt": "Portugal",
+      "es": "Portugal"
+    },
+    "has_analytics": true,
+    "original_name": "Portugal",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "books",
+    "code": "books",
+    "domain": "books.scielo.org",
+    "name": {
+      "en": "SciELO Books",
+      "pt": "SciELO Livros",
+      "es": "SciELO Libros"
+    },
+    "has_analytics": false,
+    "original_name": "SciELO Books",
+    "type": "books",
+    "is_active": true
+  },
+  {
+    "acron": "scl",
+    "code": "scl",
+    "domain": "www.scielo.br",
+    "acron2": "br",
+    "name": {
+      "en": "Brazil",
+      "pt": "Brasil",
+      "es": "Brasil"
+    },
+    "has_analytics": true,
+    "original_name": "Brasil",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "spa",
+    "code": "spa",
+    "domain": "www.scielosp.org",
+    "acron2": "sp",
+    "name": {
+      "en": "Public Health",
+      "pt": "Sa\u00fade P\u00fablica",
+      "es": "Salud Publica"
+    },
+    "has_analytics": true,
+    "original_name": "Sa\u00fade P\u00fablica",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "sss",
+    "code": "sss",
+    "domain": "socialsciences.scielo.org",
+    "acron2": "ss",
+    "name": {
+      "en": "Social Sciences",
+      "pt": "Social Sciences",
+      "es": "Social Sciences"
+    },
+    "has_analytics": true,
+    "original_name": "Social Sciences",
+    "status": "certified",
+    "type": "journals",
+    "is_active": false
+  },
+  {
+    "acron": "sza",
+    "code": "sza",
+    "domain": "www.scielo.org.za",
+    "acron2": "za",
+    "name": {
+      "en": "South Africa",
+      "pt": "\u00c1frica do Sul",
+      "es": "Sud\u00e1frica"
+    },
+    "has_analytics": true,
+    "original_name": "South Africa",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "ven",
+    "code": "ven",
+    "domain": "www.scielo.org.ve",
+    "acron2": "ve",
+    "name": {
+      "en": "Venezuela",
+      "pt": "Venezuela",
+      "es": "Venezuela"
+    },
+    "has_analytics": true,
+    "original_name": "Venezuela",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "bio",
+    "code": "bio",
+    "domain": "biodiversidade.scielo.br",
+    "acron2": "bi",
+    "name": {
+      "en": "Biodiversidade",
+      "pt": "Biodiversidade",
+      "es": "Biodiversidade"
+    },
+    "has_analytics": false,
+    "original_name": "Biodiversidade",
+    "status": "diffusion",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "bol",
+    "code": "bol",
+    "domain": "www.scielo.org.bo",
+    "acron2": "bo",
+    "name": {
+      "en": "Bolivia",
+      "pt": "Bolivia",
+      "es": "Bolivia"
+    },
+    "has_analytics": true,
+    "original_name": "Bolivia",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "cri",
+    "code": "cri",
+    "domain": "www.scielo.sa.cr",
+    "acron2": "cr",
+    "name": {
+      "en": "Costa Rica",
+      "pt": "Costa Rica",
+      "es": "Costa Rica"
+    },
+    "has_analytics": true,
+    "original_name": "Costa Rica",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "per",
+    "code": "per",
+    "domain": "www.scielo.org.pe",
+    "acron2": "pe",
+    "name": {
+      "en": "Peru",
+      "pt": "Peru",
+      "es": "Peru"
+    },
+    "has_analytics": true,
+    "original_name": "Peru",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "pro",
+    "code": "pro",
+    "domain": "www.proceedings.scielo.br",
+    "acron2": "pro",
+    "name": {
+      "en": "Proceedings",
+      "pt": "Proceedings",
+      "es": "Proceedings"
+    },
+    "has_analytics": false,
+    "original_name": "Proceedings",
+    "status": "diffusion",
+    "type": "journals",
+    "is_active": false
+  },
+  {
+    "acron": "pry",
+    "code": "pry",
+    "domain": "scielo.iics.una.py",
+    "acron2": "py",
+    "name": {
+      "en": "Paraguay",
+      "pt": "Paraguai",
+      "es": "Paraguay"
+    },
+    "has_analytics": true,
+    "original_name": "Paraguay",
+    "status": "development",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "ury",
+    "code": "ury",
+    "domain": "www.scielo.edu.uy",
+    "acron2": "uy",
+    "name": {
+      "en": "Uruguay",
+      "pt": "Uruguai",
+      "es": "Uruguay"
+    },
+    "has_analytics": true,
+    "original_name": "Uruguay",
+    "status": "certified",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "wid",
+    "code": "wid",
+    "domain": "caribbean.scielo.org",
+    "acron2": "wi",
+    "name": {
+      "en": "West Indies",
+      "pt": "West Indies",
+      "es": "West Indies"
+    },
+    "has_analytics": false,
+    "original_name": "West Indies",
+    "status": "diffusion",
+    "type": "journals",
+    "is_active": false
+  },
+  {
+    "acron": "cci",
+    "code": "cci",
+    "domain": "comciencia.scielo.br",
+    "acron2": "cc",
+    "name": {
+      "en": "ComCi\u00eancia",
+      "pt": "ComCi\u00eancia",
+      "es": "ComCi\u00eancia"
+    },
+    "has_analytics": false,
+    "original_name": "ComCi\u00eancia",
+    "status": "diffusion",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "cic",
+    "code": "cic",
+    "domain": "cienciaecultura.bvs.br",
+    "acron2": "ci",
+    "name": {
+      "en": "Ci\u00eancia e Cultura",
+      "pt": "Ci\u00eancia e Cultura",
+      "es": "Ci\u00eancia e Cultura"
+    },
+    "has_analytics": false,
+    "original_name": "Ci\u00eancia e Cultura",
+    "status": "diffusion",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "inv",
+    "code": "inv",
+    "domain": "inovacao.scielo.br",
+    "acron2": "cinov",
+    "name": {
+      "en": "Conhecimento e Inova\u00e7\u00e3o",
+      "pt": "Conhecimento e Inova\u00e7\u00e3o",
+      "es": "Conhecimento e Inova\u00e7\u00e3o"
+    },
+    "has_analytics": false,
+    "original_name": "Conhecimento e Inova\u00e7\u00e3o",
+    "status": "diffusion",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "pef",
+    "code": "pef",
+    "domain": "revistapesquisa.fapesp.br",
+    "acron2": "pef",
+    "name": {
+      "en": "Pesquisa FAPESP",
+      "pt": "Pesquisa FAPESP",
+      "es": "Pesquisa FAPESP"
+    },
+    "has_analytics": false,
+    "original_name": "Pesquisa Fapesp",
+    "status": "diffusion",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "rvq",
+    "code": "rvq",
+    "domain": "www.uff.br/RVQ",
+    "acron2": "rvq",
+    "name": {
+      "en": "Revista Virtual de Qu\u00edmica",
+      "pt": "Revista Virtual de Qu\u00edmica",
+      "es": "Revista Virtual de Qu\u00edmica"
+    },
+    "has_analytics": false,
+    "original_name": "Revista Virtual de Qu\u00edmica",
+    "status": "diffusion",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "edc",
+    "code": "edc",
+    "domain": "educa.fcc.org.br",
+    "acron2": "educa",
+    "name": {
+      "en": "Educa",
+      "pt": "Educa",
+      "es": "Educa"
+    },
+    "has_analytics": false,
+    "original_name": "Educa",
+    "status": "independent",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "ppg",
+    "code": "ppg",
+    "domain": "ppegeo.igc.usp.br",
+    "acron2": "ppegeo",
+    "name": {
+      "en": "Portal de Peri\u00f3dicos Eletr\u00f4nicos em Geoci\u00eancias",
+      "pt": "Portal de Peri\u00f3dicos Eletr\u00f4nicos em Geoci\u00eancias",
+      "es": "Portal de Peri\u00f3dicos Eletr\u00f4nicos em Geoci\u00eancias"
+    },
+    "has_analytics": false,
+    "original_name": "PPEGEO",
+    "status": "independent",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "psi",
+    "code": "psi",
+    "domain": "pepsic.bvsalud.org",
+    "acron2": "pepsic",
+    "name": {
+      "en": "Peri\u00f3dicos Eletr\u00f4nicos em Psicologia",
+      "pt": "Peri\u00f3dicos Eletr\u00f4nicos em Psicologia",
+      "es": "Peri\u00f3dicos Eletr\u00f4nicos em Psicologia"
+    },
+    "has_analytics": true,
+    "original_name": "PEPSIC",
+    "status": "independent",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "rve",
+    "code": "rve",
+    "domain": "www.revenf.bvs.br",
+    "acron2": "revenf",
+    "name": {
+      "en": "Revista de Enfermagem",
+      "pt": "Revista de Enfermagem",
+      "es": "Revista de Enfermagem"
+    },
+    "has_analytics": true,
+    "original_name": "REVENF",
+    "status": "independent",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "rvo",
+    "code": "rvo",
+    "domain": "revodonto.bvsalud.org",
+    "acron2": "revodonto",
+    "name": {
+      "en": "RevOdonto",
+      "pt": "RevOdonto",
+      "es": "RevOdonto"
+    },
+    "has_analytics": false,
+    "original_name": "RevOdonto",
+    "status": "independent",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "ses",
+    "code": "ses",
+    "domain": "periodicos.ses.sp.bvs.br",
+    "acron2": "ses",
+    "name": {
+      "en": "Portal de Revistas - SES",
+      "pt": "Portal de Revistas - SES",
+      "es": "Portal de Revistas - SES"
+    },
+    "has_analytics": false,
+    "original_name": "SES",
+    "status": "independent",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "ecu",
+    "code": "ecu",
+    "domain": "www.scielo.ec",
+    "acron2": "ec",
+    "name": {
+      "en": "Equador",
+      "pt": "Equador",
+      "es": "Ecuador"
+    },
+    "has_analytics": true,
+    "original_name": "Ecuador",
+    "status": "development",
+    "type": "journals",
+    "is_active": true
+  },
+  {
+    "acron": "rvt",
+    "code": "rvt",
+    "domain": "www.revtur.org",
+    "acron2": "revtur",
+    "name": {
+      "en": "RevTur",
+      "pt": "RevTur",
+      "es": "RevTur"
+    },
+    "has_analytics": true,
+    "original_name": "RevTur",
+    "status": "independent",
+    "type": "journals",
+    "is_active": true
+  }
+]
