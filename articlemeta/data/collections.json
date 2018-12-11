@@ -371,12 +371,12 @@
     "domain": "inovacao.scielo.br",
     "acron2": "cinov",
     "name": {
-      "en": "Conhecimento e Inova\u00e7\u00e3o",
-      "pt": "Conhecimento e Inova\u00e7\u00e3o",
-      "es": "Conhecimento e Inova\u00e7\u00e3o"
+      "en": "Conhecimento & Inova\u00e7\u00e3o",
+      "pt": "Conhecimento & Inova\u00e7\u00e3o",
+      "es": "Conhecimento & Inova\u00e7\u00e3o"
     },
     "has_analytics": false,
-    "original_name": "Conhecimento e Inova\u00e7\u00e3o",
+    "original_name": "Conhecimento & Inova\u00e7\u00e3o",
     "status": "diffusion",
     "type": "journals",
     "is_active": true
