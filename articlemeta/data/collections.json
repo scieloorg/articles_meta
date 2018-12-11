@@ -398,22 +398,6 @@
     "is_active": true
   },
   {
-    "acron": "rvq",
-    "code": "rvq",
-    "domain": "www.uff.br/RVQ",
-    "acron2": "rvq",
-    "name": {
-      "en": "Revista Virtual de Qu\u00edmica",
-      "pt": "Revista Virtual de Qu\u00edmica",
-      "es": "Revista Virtual de Qu\u00edmica"
-    },
-    "has_analytics": false,
-    "original_name": "Revista Virtual de Qu\u00edmica",
-    "status": "diffusion",
-    "type": "journals",
-    "is_active": true
-  },
-  {
     "acron": "edc",
     "code": "edc",
     "domain": "educa.fcc.org.br",
