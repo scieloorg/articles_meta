@@ -208,15 +208,15 @@
   {
     "acron": "bio",
     "code": "bio",
-    "domain": "biodiversidade.scielo.br",
+    "domain": "www.biodiversitylibrary.org/browse/contributor/SCIELO",
     "acron2": "bi",
     "name": {
-      "en": "Biodiversidade",
-      "pt": "Biodiversidade",
-      "es": "Biodiversidade"
+      "en": "Biodiversity Heritage Library",
+      "pt": "Biodiversity Heritage Library",
+      "es": "Biodiversity Heritage Library"
     },
     "has_analytics": false,
-    "original_name": "Biodiversidade",
+    "original_name": "Biodiversity Heritage Library",
     "status": "diffusion",
     "type": "journals",
     "is_active": true
