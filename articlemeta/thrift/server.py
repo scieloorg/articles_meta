@@ -87,20 +87,32 @@ class Dispatcher(object):
 
     def get_collection(self, code):
 
+        logger.debug('AM Thrift - get_collection: %s' % code)
         try:
             data = self._databroker.get_collection(code)
         except:
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.get_collection')
 
+        if not data:
+            raise articlemeta_thrift.ValueError(
+                'Value error: no collection %s' % code)
+
         return articlemeta_thrift.collection(data['code'], data['acron'],
-                                             data['acron2'], data['status'],
+                                             data.get('acron2', ''), data.get('status', ''),
                                              data['domain'], data['original_name'],
                                              data['has_analytics'],
-                                             data['is_active'], data['type'])
+                                             data.get('is_active', False), data.get('type', ''))
 
     def article_history_changes(self, collection, event, code, from_date,
                                 until_date, limit, offset):
+
+        logger.debug(
+            'AM Thrift - article_history_changes: %s %s %s' % (
+                collection,
+                event,
+                code)
+        )
 
         from_date = from_date or '1500-01-01'
         limit = limit or 1000
@@ -129,6 +141,13 @@ class Dispatcher(object):
 
     def issue_history_changes(self, collection, event, code, from_date,
                               until_date, limit, offset):
+
+        logger.debug(
+            'AM Thrift - issue_history_changes: %s %s %s' % (
+                collection,
+                event,
+                code)
+        )
 
         from_date = from_date or '1500-01-01'
         limit = limit or 1000
@@ -164,6 +183,10 @@ class Dispatcher(object):
         body=False
     ):
 
+        logger.debug(
+            'AM Thrift - get_articles: %s %s' % (collection, issn)
+        )
+
         from_date = from_date or '1500-01-01'
         limit = limit or 100
         offset = offset or 0
@@ -188,6 +211,10 @@ class Dispatcher(object):
 
     def get_article_identifiers(self, collection, issn, from_date, until_date,
                                 limit, offset, extra_filter=None):
+
+        logger.debug(
+            'AM Thrift - get_article_identifiers: %s %s' % (collection, issn)
+        )
 
         from_date = from_date or '1500-01-01'
         limit = limit or 1000
@@ -221,6 +248,10 @@ class Dispatcher(object):
         limit, offset, extra_filter=None
     ):
 
+        logger.debug(
+            'AM Thrift - get_issues: %s %s' % (collection, issn)
+        )
+
         from_date = from_date or '1500-01-01'
         limit = limit or 100
         offset = offset or 0
@@ -243,6 +274,10 @@ class Dispatcher(object):
 
     def get_issue_identifiers(self, collection, issn, from_date, until_date,
                                 limit, offset, extra_filter=None):
+
+        logger.debug(
+            'AM Thrift - get_issue_identifiers: %s %s' % (collection, issn)
+        )
 
         from_date = from_date or '1500-01-01'
         limit = limit or 1000
@@ -271,6 +306,10 @@ class Dispatcher(object):
 
     def delete_journal(self, code, collection, admintoken):
 
+        logger.debug(
+            'AM Thrift - delete_journal: %s %s' % (code, collection)
+        )
+
         if admintoken != self._admintoken:
             raise articlemeta_thrift.Unauthorized(
                 'Unautorized Access: Invalid admin token')
@@ -288,6 +327,10 @@ class Dispatcher(object):
                 'Server error: DataBroker.delete_journal')
 
     def delete_issue(self, code, collection, admintoken):
+
+        logger.debug(
+            'AM Thrift - delete_issue: %s %s' % (code, collection)
+        )
 
         if admintoken != self._admintoken:
             raise articlemeta_thrift.Unauthorized(
@@ -307,6 +350,10 @@ class Dispatcher(object):
 
     def delete_article(self, code, collection, admintoken):
 
+        logger.debug(
+            'AM Thrift - delete_article: %s %s' % (code, collection)
+        )
+
         if admintoken != self._admintoken:
             raise articlemeta_thrift.Unauthorized(
                 'Unautorized Access: Invalid admin token')
@@ -324,6 +371,8 @@ class Dispatcher(object):
                 'Server error: DataBroker.delete_journal')
 
     def add_journal(self, metadata, admintoken):
+        logger.debug('AM Thrift - add_journal: %s' % metadata)
+
         if admintoken != self._admintoken:
             raise articlemeta_thrift.Unauthorized(
                 'Unautorized Access: Invalid admin token')
@@ -349,6 +398,8 @@ class Dispatcher(object):
             'Server error: DataBroker.add_journal, Nondata inserted')
 
     def add_article(self, metadata, admintoken):
+        logger.debug('AM Thrift - add_article: %s' % metadata)
+
         if admintoken != self._admintoken:
             raise articlemeta_thrift.Unauthorized(
                 'Unautorized Access: Invalid admin token')
@@ -374,6 +425,8 @@ class Dispatcher(object):
             'Server error: DataBroker.add_article, Nondata inserted')
 
     def add_issue(self, metadata, admintoken):
+        logger.debug('AM Thrift - add_issue: %s' % metadata)
+
         if admintoken != self._admintoken:
             raise articlemeta_thrift.Unauthorized(
                 'Unautorized Access: Invalid admin token')
@@ -399,6 +452,13 @@ class Dispatcher(object):
             'Server error: DataBroker.add_issue, Nondata inserted')
 
     def get_article(self, code, collection, replace_journal_metadata, fmt, body=False):
+
+        logger.debug(
+            'AM Thrift - get_article: %s %s %s' % (
+                code,
+                collection,
+                replace_journal_metadata)
+        )
 
         try:
             data = self._databroker.get_article(
@@ -434,6 +494,13 @@ class Dispatcher(object):
 
     def get_issue(self, code, collection, replace_journal_metadata):
 
+        logger.debug(
+            'AM Thrift - get_issue: %s %s %s' % (
+                code,
+                collection,
+                replace_journal_metadata)
+        )
+
         try:
             data = self._databroker.get_issue(
                 code,
@@ -448,6 +515,10 @@ class Dispatcher(object):
 
     def journal_history_changes(self, collection, event=None, code=None, from_date=None,
                                 until_date=None, limit=None, offset=None):
+
+        logger.debug(
+            'AM Thrift - journal_history_changes: %s' % collection
+        )
 
         from_date = from_date or '1500-01-01'
         limit = limit or 1000
@@ -476,6 +547,10 @@ class Dispatcher(object):
 
     def get_journal_identifiers(self, collection, issn=None, limit=None, offset=None, extra_filter=None):
 
+        logger.debug(
+            'AM Thrift - get_journal_identifiers: %s' % collection
+        )
+
         limit = limit or 0
         offset = offset or 0
 
@@ -500,6 +575,10 @@ class Dispatcher(object):
 
     def get_journal(self, code, collection):
 
+        logger.debug(
+            'AM Thrift - get_journal: %s %s' % (code, collection)
+        )
+
         try:
             data = self._databroker.get_journal(collection=collection,
                                                 issn=code)
@@ -513,6 +592,10 @@ class Dispatcher(object):
         return json.dumps(data)
 
     def set_doaj_id(self, code, collection, doaj_id, admintoken):
+        logger.debug(
+            'AM Thrift - get_journal: %s %s %s' % (code, collection, doaj_id)
+        )
+
         if admintoken != self._admintoken:
             raise articlemeta_thrift.Unauthorized(
                 'Unautorized Access: Invalid admin token')
@@ -541,6 +624,10 @@ class Dispatcher(object):
         return False
 
     def exists_article(self, code, collection):
+        logger.debug(
+            'AM Thrift - exists_article: %s %s' % (code, collection)
+        )
+
         try:
             return self._databroker.exists_article(code, collection)
         except:
@@ -550,6 +637,10 @@ class Dispatcher(object):
         return False
 
     def exists_issue(self, code, collection):
+        logger.debug(
+            'AM Thrift - exists_issue: %s %s' % (code, collection)
+        )
+
         try:
             return self._databroker.exists_issue(code, collection)
         except:
@@ -559,6 +650,10 @@ class Dispatcher(object):
         return False
 
     def exists_journal(self, code, collection):
+        logger.debug(
+            'AM Thrift - exists_journal: %s %s' % (code, collection)
+        )
+
         try:
             return self._databroker.exists_journal(code, collection)
         except:
@@ -568,6 +663,13 @@ class Dispatcher(object):
         return False
 
     def get_issue_code_from_label(self, label, journal_code, collection):
+        logger.debug(
+            'AM Thrift - get_issue_code_from_label: %s %s %s' % (
+                label,
+                journal_code,
+                collection)
+        )
+
         try:
             return self._databroker.get_issue_code_from_label(label,
                     journal_code, collection)
