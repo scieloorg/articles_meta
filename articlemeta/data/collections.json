@@ -347,7 +347,7 @@
     "original_name": "ComCi\u00eancia",
     "status": "diffusion",
     "type": "journals",
-    "is_active": true
+    "is_active": false
   },
   {
     "acron": "cic",
@@ -379,7 +379,7 @@
     "original_name": "Conhecimento & Inova\u00e7\u00e3o",
     "status": "diffusion",
     "type": "journals",
-    "is_active": true
+    "is_active": false
   },
   {
     "acron": "pef",
