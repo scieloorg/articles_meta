@@ -17,7 +17,7 @@ requires = [
     'pyramid>=1.5.4',
     'thriftpy>=0.3.1',
     'thriftpywrap',
-    'xylose<=1.34.1',
+    'xylose',
     'crossrefapi>=1.3',
     ]
 
