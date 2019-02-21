@@ -290,11 +290,10 @@ def get_article(request):
     fmt = request.GET.get('format', 'json')
     body = request.GET.get('body', 'false')
 
-    if not body in ['true', 'false']:
-        raise exc.HTTPBadRequest("parameter 'metaonly' must be 'true' or 'false'")
+    if body not in ['true', 'false']:
+        raise exc.HTTPBadRequest("parameter 'body' must be 'true' or 'false'")
 
     body = asbool(body)
-
     article = request.databroker.get_article(
         code, collection=collection, replace_journal_metadata=True, body=body
     )
