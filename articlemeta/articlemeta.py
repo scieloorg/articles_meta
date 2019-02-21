@@ -289,12 +289,16 @@ def get_article(request):
     collection = request.GET.get('collection', None)
     fmt = request.GET.get('format', 'json')
     body = request.GET.get('body', 'false')
+    doi_for_translation = request.GET.get('doi_for_translation', 'derivate')
 
-    if not body in ['true', 'false']:
-        raise exc.HTTPBadRequest("parameter 'metaonly' must be 'true' or 'false'")
+    if body not in ['true', 'false']:
+        raise exc.HTTPBadRequest("parameter 'body' must be 'true' or 'false'")
+    if doi_for_translation and doi_for_translation not in ['provided', 'derivate']:
+        raise exc.HTTPBadRequest(
+            "parameter 'doi_for_translation' must be 'derivate' or 'provided'. "
+            "Use 'derivate' to generate DOI from the main DOI + translation language ")
 
     body = asbool(body)
-
     article = request.databroker.get_article(
         code, collection=collection, replace_journal_metadata=True, body=body
     )
@@ -317,6 +321,8 @@ def get_article(request):
                 Export(article).pipeline_pubmed(), content_type="application/xml")
 
         if fmt == 'xmlcrossref':
+            if doi_for_translation:
+                article['doi_for_translation'] = doi_for_translation
             return Response(
                 Export(article).pipeline_crossref(), content_type="application/xml")
 

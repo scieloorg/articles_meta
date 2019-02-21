@@ -19,6 +19,39 @@ class CustomArticle(Article):
         else:
             return None
 
+    @property
+    def text_langs(self):
+        _langs = self.xml_languages() or \
+                 (self.translated_htmls() or {}).keys() or \
+                 self.languages() or []
+        langs = [self.original_language()]
+        langs += [lang for lang in _langs if lang != langs[0]]
+        return langs
+
+    @property
+    def derivate_translations_doi(self):
+        """Cria DOI para as traduções derivando de DOI principal + . + lang"""
+        if self.doi:
+            return {
+                lang: '{}.{}'.format(self.doi, lang)
+                for lang in self.text_langs[1:]
+            }
+        return {}
+
+    @property
+    def document_doi_and_lang(self):
+        if self.data.get('doi_for_translation') != 'derivate':
+            return self.doi_and_lang
+        doi_and_lang = dict(self.doi_and_lang)
+        items = []
+        for lang in self.text_langs:
+            doi = doi_and_lang.get(lang) or \
+                  self.derivate_translations_doi.get(lang)
+            if doi:
+                items.append((lang, doi))
+        return items
+
+
 class JournalExport:
     def __init__(self, journal):
         self._journal = journal
