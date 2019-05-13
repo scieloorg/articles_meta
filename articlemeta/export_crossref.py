@@ -3,7 +3,7 @@ from lxml import etree as ET
 import re
 import os
 import uuid
-
+from copy import deepcopy
 from datetime import datetime
 
 from xylose.scielodocument import UnavailableMetadataException
@@ -318,11 +318,13 @@ class XMLJournalArticlePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        el = ET.Element('journal_article')
-        el.set('publication_type', 'full_text')
-        el.set('reference_distribution_opts', 'any')
-        xml.find('./body/journal').append(el)
-
+        journal = xml.find('./body/journal')
+        for item in raw.doi_and_lang:
+            el = ET.Element('journal_article')
+            el.set('language', item[0])
+            el.set('publication_type', 'full_text')
+            el.set('reference_distribution_opts', 'any')
+            journal.append(el)
         return data
 
 
@@ -330,11 +332,9 @@ class XMLArticleTitlesPipe(plumber.Pipe):
 
     def transform(self, data):
         raw, xml = data
-
         el = ET.Element('titles')
-
-        xml.find('./body/journal/journal_article').append(el)
-
+        for ja in xml.findall('.//journal_article'):
+            ja.append(deepcopy(el))
         return data
 
 
@@ -342,12 +342,23 @@ class XMLArticleTitlePipe(plumber.Pipe):
 
     def transform(self, data):
         raw, xml = data
+        nodes = xml.findall('.//journal_article')
 
-        el = ET.Element('title')
-        el.text = raw.original_title() or '[NO TITLE AVAILABLE]'
-
-        xml.find('./body/journal/journal_article/titles').append(el)
-
+        for ja, doi_and_lang in zip(nodes, raw.doi_and_lang):
+            node = ja.find('./titles')
+            el = ET.Element('title')
+            lang, doi = doi_and_lang
+            if lang == raw.original_language():
+                # el.set('language', lang)
+                el.text = raw.original_title() or '[NO TITLE AVAILABLE]'
+                node.append(el)
+            else:
+                el.text = raw.translated_titles().get(lang) or '[NO TITLE AVAILABLE]'
+                el_original = ET.Element('original_language_title')
+                el_original.set('language', raw.original_language())
+                el_original.text = raw.original_title()
+                node.append(el)
+                node.append(el_original)
         return data
 
 
@@ -416,7 +427,9 @@ class XMLArticleContributorsPipe(plumber.Pipe):
                 orcid.text = 'http://orcid.org/%s' % authors['orcid']
                 author.append(orcid)
 
-        xml.find('./body/journal/journal_article').append(el)
+        for journal_article in xml.findall('./body/journal//journal_article'):
+            new_el = deepcopy(el)
+            journal_article.append(new_el)
 
         return data
 
@@ -434,22 +447,28 @@ class XMLArticleAbstractPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
+        abstract = None
         if raw.original_abstract():
             paragraph = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}p')
             paragraph.text = raw.original_abstract()
-            el = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}abstract')
-            el.set('{http://www.w3.org/XML/1998/namespace}lang', raw.original_language())
-            el.append(paragraph)
-            xml.find('./body/journal/journal_article').append(el)
+            abstract = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}abstract')
+            abstract.set('{http://www.w3.org/XML/1998/namespace}lang', raw.original_language())
+            abstract.append(paragraph)
 
+        translated_abstracts = []
         for language, body in raw.translated_abstracts().items():
             paragraph = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}p')
             paragraph.text = body
             el = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}abstract')
             el.set('{http://www.w3.org/XML/1998/namespace}lang', language)
             el.append(paragraph)
-            xml.find('./body/journal/journal_article').append(el)
+            translated_abstracts.append(el)
 
+        for journal_article in xml.findall('./body/journal//journal_article'):
+            if abstract is not None:
+                journal_article.append(deepcopy(abstract))
+            for item in translated_abstracts:
+                journal_article.append(deepcopy(item))
         return data
 
 
@@ -458,7 +477,6 @@ class XMLArticlePubDatePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        journal_article = xml.find('./body/journal/journal_article')
         date = raw.publication_date
 
         el = ET.Element('publication_date')
@@ -480,7 +498,8 @@ class XMLArticlePubDatePipe(plumber.Pipe):
             year.text = date[0:4]
             el.append(year)
 
-        journal_article.append(el)
+        for journal_article in xml.findall('./body/journal//journal_article'):
+            journal_article.append(deepcopy(el))
 
         return data
 
@@ -515,7 +534,8 @@ class XMLPagesPipe(plumber.Pipe):
             otherpage.text = raw.end_page
             el.append(otherpage)
 
-        xml.find('./body/journal/journal_article').append(el)
+        for journal_article in xml.findall('./body/journal//journal_article'):
+            journal_article.append(deepcopy(el))
 
         return data
 
@@ -532,7 +552,8 @@ class XMLPIDPipe(plumber.Pipe):
         el = ET.Element('publisher_item')
         el.append(identifier)
 
-        xml.find('./body/journal/journal_article').append(el)
+        for journal_article in xml.findall('./body/journal//journal_article'):
+            journal_article.append(deepcopy(el))
 
         return data
 
@@ -544,7 +565,8 @@ class XMLDOIDataPipe(plumber.Pipe):
 
         el = ET.Element('doi_data')
 
-        xml.find('./body/journal/journal_article').append(el)
+        for journal_article in xml.findall('./body/journal//journal_article'):
+            journal_article.append(deepcopy(el))
 
         return data
 
@@ -554,23 +576,38 @@ class XMLDOIPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        doi = ET.Element('doi')
-        doi.text = raw.doi
-
-        xml.find('./body/journal/journal_article/doi_data').append(doi)
+        nodes = xml.findall('./body/journal//journal_article/doi_data')
+        for doi_data_elem, doi_and_lang in zip(nodes, raw.doi_and_lang):
+            doi = ET.Element('doi')
+            doi.text = doi_and_lang[1]
+            doi_data_elem.append(doi)
 
         return data
 
 
 class XMLResourcePipe(plumber.Pipe):
 
+    ARTICLE_URL = 'http://{}/scielo.php?script=sci_arttext&pid={}&tlng={}'
+
+    def precond(data):
+        raw, xml = data
+        try:
+            if not raw.scielo_domain or not raw.publisher_id:
+                raise plumber.UnmetPrecondition()
+        except:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
-        resource = ET.Element('resource')
-        resource.text = raw.html_url(language=raw.original_language())
-
-        xml.find('./body/journal/journal_article/doi_data').append(resource)
+        nodes = xml.findall('./body/journal//journal_article/doi_data')
+        for doi_data_elem, doi_and_lang in zip(nodes, raw.doi_and_lang):
+            resource = ET.Element('resource')
+            resource.text = self.ARTICLE_URL.format(
+                    raw.scielo_domain, raw.publisher_id, doi_and_lang[0]
+                )
+            doi_data_elem.append(resource)
 
         return data
 
@@ -584,27 +621,9 @@ class XMLCollectionPipe(plumber.Pipe):
         if not raw.fulltexts().get('pdf', None):
             raise plumber.UnmetPrecondition()
 
-    @plumber.precondition(precond)
-    def transform(self, data):
-        raw, xml = data
-
-        languages = [i for i in raw.fulltexts().get('pdf', {}).keys()]
-
-        if len(languages) == 0:
-            return data
-
-        res = None
-        if raw.original_language() in languages:
-            res = raw.fulltexts()['pdf'][raw.original_language()]
-        else:
-            res = raw.fulltexts()['pdf'][languages[0]]
-
-
-        if not res:
-            return data
-
+    def create_collection_element(self, resource_value):
         resource = ET.Element('resource')
-        resource.text = res
+        resource.text = resource_value
 
         item = ET.Element('item')
         item.set('crawler', 'iParadigms')
@@ -613,8 +632,18 @@ class XMLCollectionPipe(plumber.Pipe):
         collection = ET.Element('collection')
         collection.set('property', 'crawler-based')
         collection.append(item)
+        return collection
 
-        xml.find('./body/journal/journal_article/doi_data').append(collection)
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+        pdf_items = raw.fulltexts().get('pdf')
+        for doi_data, doi_and_lang in zip(
+                xml.findall('.//journal_article/doi_data'),
+                raw.doi_and_lang):
+            collection = self.create_collection_element(
+                pdf_items.get(doi_and_lang[0]))
+            doi_data.append(collection)
 
         return data
 
@@ -632,14 +661,14 @@ class XMLArticleCitationsPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        article = xml.find('./body/journal/journal_article')
-        article.append(ET.Element('citation_list'))
-
-        citations = article.find('citation_list')
+        citations = ET.Element('citation_list')
 
         cit = XMLCitation()
         for citation in raw.citations:
             citations.append(cit.deploy(citation)[1])
+
+        for ja in xml.findall('.//journal_article'):
+            ja.append(deepcopy(citations))
 
         return data
 
@@ -940,5 +969,80 @@ class XMLClosePipe(plumber.Pipe):
 
         data = ET.tostring(
             xml, encoding="utf-8", method="xml", xml_declaration=True)
+
+        return data
+
+
+class XMLProgramPipe(plumber.Pipe):
+
+    def transform(self, data):
+        raw, xml = data
+        data = self._transform_original(data)
+        data = self._transform_translations(data)
+        return data
+
+    def _transform_original(self, data):
+        raw, xml = data
+
+        journal_article_node = xml.find('.//journal_article')
+
+        doi_and_lang = raw.doi_and_lang[1:]
+
+        # program
+        program_node = ET.Element('program')
+        program_node.set('xmlns',  'http://www.crossref.org/relations.xsd')
+
+        translated_titles = raw.translated_titles()
+        for lang, doi in doi_and_lang:
+
+            # program/related_item
+            related_item_node = ET.Element('related_item')
+
+            # program/related_item/description
+            description_node = ET.Element('description')
+            description_node.text = translated_titles.get(lang)
+            related_item_node.append(description_node)
+
+            # program/related_item/intra_work_relation
+            intra_work_relation_node = ET.Element('intra_work_relation')
+            intra_work_relation_node.set(
+                'relationship-type', 'isTranslationOf')
+            intra_work_relation_node.set('identifier-type', 'doi')
+            intra_work_relation_node.text = doi
+            related_item_node.append(intra_work_relation_node)
+
+            program_node.append(related_item_node)
+
+        journal_article_node.append(program_node)
+
+        return data
+
+    def _transform_translations(self, data):
+        raw, xml = data
+
+        # program
+        program_node = ET.Element('program')
+        program_node.set('xmlns',  'http://www.crossref.org/relations.xsd')
+
+        # program/related_item
+        related_item_node = ET.Element('related_item')
+
+        # program/related_item/description
+        description_node = ET.Element('description')
+        description_node.text = raw.original_title()
+        related_item_node.append(description_node)
+
+        # program/related_item/intra_work_relation
+        intra_work_relation_node = ET.Element('intra_work_relation')
+        intra_work_relation_node.set(
+            'relationship-type', 'isTranslationOf')
+        intra_work_relation_node.set('identifier-type', 'doi')
+        intra_work_relation_node.text = raw.doi
+        related_item_node.append(intra_work_relation_node)
+
+        program_node.append(related_item_node)
+
+        for journal_article_node in xml.findall('.//journal_article')[1:]:
+            journal_article_node.append(deepcopy(program_node))
 
         return data

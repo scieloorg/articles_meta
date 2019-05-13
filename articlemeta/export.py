@@ -19,6 +19,7 @@ class CustomArticle(Article):
         else:
             return None
 
+
 class JournalExport:
     def __init__(self, journal):
         self._journal = journal
