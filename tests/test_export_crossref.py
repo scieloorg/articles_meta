@@ -775,7 +775,7 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
                 xml.findall('.//journal_article//publication_date')):
             with self.subTest(label=i):
                 self.assertEqual(pubdate.findtext('year'), '2010')
-                self.assertEqual(pubdate.findtext('month'), '08')
+                self.assertEqual(pubdate.findtext('month'), None)
                 self.assertEqual(pubdate.findtext('data'), None)
 
     def test_article_pages_element(self):
@@ -1256,7 +1256,7 @@ class ExportCrossRef_MultiLingueDoc_with_DOI_pt_es_Tests(unittest.TestCase):
                 xml.findall('.//journal_article//publication_date')):
             with self.subTest(label=i):
                 self.assertEqual(pubdate.findtext('year'), '2010')
-                self.assertEqual(pubdate.findtext('month'), '08')
+                self.assertEqual(pubdate.findtext('month'), None)
                 self.assertEqual(pubdate.findtext('data'), None)
 
     def test_article_pages_element(self):
