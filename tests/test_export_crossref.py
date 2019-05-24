@@ -472,6 +472,54 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
         self.assertTrue(schema.validate(xmlio))
         self.assertEqual(None, schema.assertValid(xmlio))
 
+    def test_article_should_has_elocation_id(self):
+        self._article_meta.data['article']['v14'][0]['e'] = 'e2'
+        xmlcrossref = ET.Element("doi_batch")
+
+        journal_article = ET.Element("journal_article")
+        journal_article.set("publication_type", "full_text")
+
+        journal = ET.Element("journal")
+        journal.append(journal_article)
+
+        body = ET.Element("body")
+        body.append(journal)
+
+        xmlcrossref.append(body)
+
+        data = [self._article_meta, xmlcrossref]
+
+        xmlcrossref = export_crossref.XMLElocationPipe()
+        _, xml = xmlcrossref.transform(data)
+        self.assertEqual(
+            b'<doi_batch><body><journal><journal_article publication_type="full_text"><elocation-id>e2</elocation-id></journal_article></journal></body></doi_batch>',
+            ET.tostring(xml),
+        )
+
+    def test_article_should_has_not_elocation_id(self):
+        xmlcrossref = ET.Element("doi_batch")
+
+        journal_article = ET.Element("journal_article")
+        journal_article.set("publication_type", "full_text")
+
+        journal = ET.Element("journal")
+        journal.append(journal_article)
+
+        body = ET.Element("body")
+        body.append(journal)
+
+        xmlcrossref.append(body)
+
+        data = [self._article_meta, xmlcrossref]
+
+        xmlcrossref = export_crossref.XMLElocationPipe()
+        _, xml = xmlcrossref.transform(data)
+
+        self.assertEqual(
+            b'<doi_batch><body><journal><journal_article publication_type="full_text"/></journal></body></doi_batch>',
+            ET.tostring(xml),
+        )
+
 
 class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
 
