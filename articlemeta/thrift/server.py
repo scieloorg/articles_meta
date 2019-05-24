@@ -506,7 +506,8 @@ class Dispatcher(object):
                 return Export(data).pipeline_pubmed()
 
             if fmt == 'xmlcrossref':
-                return Export(data).pipeline_crossref()
+                return Export(data).pipeline_crossref(
+                    self._databroker.is_name_suffix)
 
             if fmt == 'opac':
                 return json.dumps(Export(data).pipeline_opac())
@@ -704,6 +705,38 @@ class Dispatcher(object):
         except:
             raise articlemeta_thrift.ServerError(
                 'Server error: DataBroker.get_issue_code_from_label')
+
+    def is_name_suffix(self, suffix):
+        logger.debug(
+            'AM Thrift - is_name_suffix(suffix=%s)' % suffix
+        )
+
+        try:
+            return self._databroker.is_name_suffix(suffix)
+        except:
+            raise articlemeta_thrift.ServerError(
+                'Server error: DataBroker.is_name_suffix')
+
+        return False
+
+    def add_name_suffix(self, metadata, admintoken):
+        logger.debug(
+            'AM Thrift - add_name_suffix(metadata=%s)' % metadata
+        )
+        if admintoken != self._admintoken:
+            raise articlemeta_thrift.Unauthorized(
+                'Unautorized Access: Invalid admin token')
+        try:
+            jdata = json.loads(metadata)
+        except:
+            raise articlemeta_thrift.ValueError(
+                'Value error: DataBroker.add_name_suffix, Invalid JSON')
+        else:
+            try:
+                self._databroker.add_name_suffix(jdata)
+            except:
+                raise articlemeta_thrift.ServerError(
+                    'Server error: DataBroker.add_name_suffix, Nondata inserted')
 
 
 main = thriftpywrap.ConsoleApp(articlemeta_thrift.ArticleMeta, Dispatcher)

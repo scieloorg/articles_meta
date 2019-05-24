@@ -85,11 +85,13 @@ service ArticleMeta {
     bool exists_article(1: string code, 2: string collection) throws (1: ValueError value_err, 2:ServerError server_err),
     bool exists_issue(1: string code, 2: string collection) throws (1: ValueError value_err, 2:ServerError server_err),
     bool exists_journal(1: string code, 2: string collection) throws (1: ValueError value_err, 2:ServerError server_err),
+    bool is_name_suffix(1: string suffix) throws (1: ValueError value_err, 2:ServerError server_err),
     string delete_journal(1: string code, 2: string collection, 3: string admintoken) throws (1:ServerError server_err, 2:Unauthorized unauthorized_access),
     string delete_issue(1: string code, 2: string collection, 3: string admintoken) throws (1:ServerError server_err, 2:Unauthorized unauthorized_access),
     string delete_article(1: string code, 2: string collection, 3: string admintoken) throws (1:ServerError server_err, 2:Unauthorized unauthorized_access),
     string add_journal(1: string metadata, 2: string admintoken) throws (1: ValueError value_err, 2:ServerError server_err, 3:Unauthorized unauthorized_access),
     string add_issue(1: string metadata, 2: string admintoken) throws (1: ValueError value_err, 2:ServerError server_err, 3:Unauthorized unauthorized_access),
     string add_article(1: string metadata, 2: string admintoken) throws (1: ValueError value_err, 2:ServerError server_err, 3:Unauthorized unauthorized_access),
+    void add_name_suffix(1: string metadata, 2: string admintoken) throws (1: ValueError value_err, 2:ServerError server_err, 3:Unauthorized unauthorized_access),
     string get_issue_code_from_label(1: string label, 2: string journal_code, 3: string collection) throws (1: ValueError value_err, 2:ServerError server_err)
 }

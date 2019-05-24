@@ -123,7 +123,10 @@ def get_dbconn(db_dsn):
                 [[('version', pymongo.ASCENDING)], {'background': True}],
                 [[('code', pymongo.ASCENDING), ('collection',  pymongo.ASCENDING)], {'unique': True, 'background': True}],
                 [[('collection', pymongo.ASCENDING), ('processing_date',  pymongo.ASCENDING)], {'background': True}]
-            ]
+            ],
+            'name_suffixes': [
+                [[('suffix', pymongo.ASCENDING)], {'background': True}],
+            ],
         }
 
         for collection, indexes in index_by_collection.items():
@@ -1262,3 +1265,16 @@ class DataBroker(object):
     def get_issue_code_from_label(self, label, journal_code, collection):
         return self.issuemeta.get_code_from_label(label=label,
                 journal_code=journal_code, collection=collection)
+
+    def is_name_suffix(self, suffix):
+        if suffix.endswith('.'):
+            suffix = suffix[:-1]
+        result = self.db['name_suffixes'].find_one({'suffix': suffix.lower()})
+        return True if result is not None else False
+
+    def add_name_suffix(self, metadata):
+        suffix_data = {'suffix': metadata["suffix"]}
+        if self.db['name_suffixes'].find(suffix_data).count() < 1:
+            self.db['name_suffixes'].update_one(
+                suffix_data, {'$set': suffix_data}, upsert=True
+            )
