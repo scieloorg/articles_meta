@@ -12,12 +12,22 @@ from articlemeta import export_crossref
 
 
 class CustomArticle(Article):
+
+    def __init__(self, data, fnc_is_name_suffix=None):
+        super().__init__(data)
+        self.fnc_is_name_suffix = fnc_is_name_suffix
+
     @property
     def issue_publication_date(self):
         if 'v65' in self.data['article']:
             return xylose.tools.get_date(self.data['article']['v65'][0]['_'])
         else:
             return None
+
+    def is_name_suffix(self, suffix):
+        if self.fnc_is_name_suffix is not None:
+            return self.fnc_is_name_suffix(suffix)
+        return False
 
 
 class JournalExport:
@@ -178,8 +188,8 @@ class Export(object):
 
         return next(transformed_data)
 
-    def pipeline_crossref(self):
-        xylose_article = CustomArticle(self._article)
+    def pipeline_crossref(self, fnc_is_name_suffix):
+        xylose_article = CustomArticle(self._article, fnc_is_name_suffix)
 
         ppl = plumber.Pipeline(
             export_crossref.SetupDoiBatchPipe(),

@@ -3,6 +3,7 @@ import unittest
 import json
 import os
 import io
+from unittest.mock import Mock
 
 from lxml import etree as ET
 
@@ -358,6 +359,11 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
 
     def test_article_contributors_element(self):
 
+        def mock_is_name_suffix(suffix):
+            if suffix == "Junior":
+                return True
+            return False
+
         xmlcrossref = ET.Element('doi_batch')
 
         journal_article = ET.Element('journal_article')
@@ -371,12 +377,13 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
 
         xmlcrossref.append(body)
 
+        self._article_meta = Article(self._raw_json, mock_is_name_suffix)
         data = [self._article_meta, xmlcrossref]
 
         xmlcrossref = export_crossref.XMLArticleContributorsPipe()
         raw, xml = xmlcrossref.transform(data)
 
-        self.assertEqual(b'<doi_batch><body><journal><journal_article publication_type="full_text"><contributors><person_name contributor_role="author" sequence="first"><given_name>Mariangela Leal</given_name><surname>Cherchiglia</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Elaine Leandro</given_name><surname>Machado</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Daniele Ara&#250;jo Campo</given_name><surname>Szuster</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Eli Iola Gurgel</given_name><surname>Andrade</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Francisco de Assis</given_name><surname>Ac&#250;rcio</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Waleska Teixeira</given_name><surname>Caiaffa</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Ricardo</given_name><surname>Sesso</surname><affiliation>Universidade Federal de S&#227;o Paulo,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Augusto A</given_name><surname>Guerra Junior</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL; Universidade Federal de S&#227;o Paulo,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Odilon Vanni de</given_name><surname>Queiroz</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Isabel Cristina</given_name><surname>Gomes</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name></contributors></journal_article></journal></body></doi_batch>', ET.tostring(xml))
+        self.assertEqual(b'<doi_batch><body><journal><journal_article publication_type="full_text"><contributors><person_name contributor_role="author" sequence="first"><given_name>Mariangela Leal</given_name><surname>Cherchiglia</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Elaine Leandro</given_name><surname>Machado</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Daniele Ara&#250;jo Campo</given_name><surname>Szuster</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Eli Iola Gurgel</given_name><surname>Andrade</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Francisco de Assis</given_name><surname>Ac&#250;rcio</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Waleska Teixeira</given_name><surname>Caiaffa</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Ricardo</given_name><surname>Sesso</surname><affiliation>Universidade Federal de S&#227;o Paulo,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Augusto A</given_name><surname>Guerra</surname><suffix>Junior</suffix><affiliation>Universidade Federal de Minas Gerais,  BRAZIL; Universidade Federal de S&#227;o Paulo,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Odilon Vanni de</given_name><surname>Queiroz</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Isabel Cristina</given_name><surname>Gomes</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name></contributors></journal_article></journal></body></doi_batch>', ET.tostring(xml))
 
     def test_article_publication_date_element(self):
 
@@ -458,7 +465,7 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
 
     def test_validating_against_schema(self):
 
-        xml = export.Export(self._raw_json).pipeline_crossref()
+        xml = export.Export(self._raw_json).pipeline_crossref(Mock())
 
         xmlio = ET.parse(io.BytesIO(xml))
 

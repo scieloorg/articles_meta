@@ -376,7 +376,6 @@ class XMLArticleContributorsPipe(plumber.Pipe):
         raw, xml = data
 
         el = ET.Element('contributors')
-
         for ndx, authors in enumerate(raw.authors):
             author = ET.Element('person_name')
             author.set('contributor_role', 'author')
@@ -392,8 +391,17 @@ class XMLArticleContributorsPipe(plumber.Pipe):
 
             if 'surname' in authors and authors['surname']:
                 lastname = ET.Element('surname')
-                lastname.text = authors['surname']
-                author.append(lastname)
+                author_surname = authors['surname'].split()
+                if len(author_surname) > 1 and \
+                        raw.is_name_suffix(author_surname[-1]): # ver export.CustomArticle
+                    suffix = ET.Element('suffix')
+                    suffix.text = author_surname[-1]
+                    lastname.text = " ".join(author_surname[:-1])
+                    author.append(lastname)
+                    author.append(suffix)
+                else:
+                    lastname.text = authors['surname']
+                    author.append(lastname)
 
             author_index = [i.upper() for i in authors.get('xref', []) or []]
 

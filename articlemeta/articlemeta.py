@@ -317,7 +317,8 @@ def get_article(request):
 
         if fmt == 'xmlcrossref':
             return Response(
-                Export(article).pipeline_crossref(), content_type="application/xml")
+                Export(article).pipeline_crossref(request.databroker.is_name_suffix),
+                content_type="application/xml")
 
         if fmt == 'opac':
             return Export(article).pipeline_opac()
