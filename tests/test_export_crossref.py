@@ -401,7 +401,7 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
         self.assertEqual(b'<doi_batch><body><journal><journal_article publication_type="full_text"><publication_date media_type="online"><month>08</month><year>2010</year></publication_date></journal_article></journal></body></doi_batch>', ET.tostring(xml))
 
     def test_article_pages_element(self):
-
+        self._article_meta.data['article']['v14'].pop()
         xmlcrossref = ET.Element('doi_batch')
 
         journal_article = ET.Element('journal_article')
@@ -471,6 +471,77 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
 
         self.assertTrue(schema.validate(xmlio))
         self.assertEqual(None, schema.assertValid(xmlio))
+
+    def test_journal_article_should_contain_item_number_with_elocation_id(self):
+        xmlcrossref = ET.Element("doi_batch")
+        publisher_item = ET.Element("publisher_item")
+        journal_article = ET.Element("journal_article")
+        journal_article.set("publication_type", "full_text")
+        journal_article.append(publisher_item)
+
+        journal = ET.Element("journal")
+        journal.append(journal_article)
+
+        body = ET.Element("body")
+        body.append(journal)
+
+        xmlcrossref.append(body)
+
+        data = [self._article_meta, xmlcrossref]
+        xmlcrossref = export_crossref.XMLElocationPipe()
+        _, xml = xmlcrossref.transform(data)
+
+        self.assertEqual(
+            b'<doi_batch><body><journal><journal_article publication_type="full_text"><publisher_item><item_number item_number_type="article_number">53</item_number></publisher_item></journal_article></journal></body></doi_batch>',
+            ET.tostring(xml)
+        )
+
+    def test_elocation_id_pipeline_should_create_publisher_item(self):
+        self._article_meta.data['article']['v14'].pop(0)
+        xmlcrossref = ET.Element("doi_batch")
+        journal_article = ET.Element("journal_article")
+        journal_article.set("publication_type", "full_text")
+        journal = ET.Element("journal")
+        journal.append(journal_article)
+
+        body = ET.Element("body")
+        body.append(journal)
+
+        xmlcrossref.append(body)
+
+        data = [self._article_meta, xmlcrossref]
+        xmlcrossref = export_crossref.XMLElocationPipe()
+        _, xml = xmlcrossref.transform(data)
+
+        self.assertEqual(
+            b'<doi_batch><body><journal><journal_article publication_type="full_text"><publisher_item><item_number item_number_type="article_number">53</item_number></publisher_item></journal_article></journal></body></doi_batch>',
+            ET.tostring(xml)
+        )
+
+    def test_journal_article_should_not_contains_publisher_item_and_item_number(self):
+        self._article_meta.data['article']['v14'].pop()
+        xmlcrossref = ET.Element("doi_batch")
+
+        journal_article = ET.Element("journal_article")
+        journal_article.set("publication_type", "full_text")
+
+        journal = ET.Element("journal")
+        journal.append(journal_article)
+
+        body = ET.Element("body")
+        body.append(journal)
+
+        xmlcrossref.append(body)
+
+        data = [self._article_meta, xmlcrossref]
+
+        xmlcrossref = export_crossref.XMLElocationPipe()
+        _, xml = xmlcrossref.transform(data)
+
+        self.assertEqual(
+            b'<doi_batch><body><journal><journal_article publication_type="full_text"/></journal></body></doi_batch>',
+            ET.tostring(xml),
+        )
 
 
     def test_every_journal_article_must_contain_own_license(self):

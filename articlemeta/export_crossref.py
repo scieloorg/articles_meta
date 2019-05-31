@@ -541,6 +541,38 @@ class XMLPagesPipe(plumber.Pipe):
         return data
 
 
+class XMLElocationPipe(plumber.Pipe):
+    """Pipeline que verifica a exisência do elocation-id (v14)
+    e o adiciona no XML de formato crossref"""
+
+    def precond(data):
+        raw, _ = data
+
+        if not raw.elocation:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        item_number = ET.Element("item_number")
+        item_number.set("item_number_type", "article_number")
+        item_number.text = raw.elocation
+
+        publisher_items = xml.findall("./body/journal//journal_article//publisher_item")
+
+        for publisher_item in publisher_items:
+            publisher_item.insert(0, deepcopy(item_number))
+
+        if not publisher_items:
+            publisher_item = ET.Element("publisher_item")
+            publisher_item.append(item_number)
+
+            for journal_article in xml.findall("./body/journal//journal_article"):
+                journal_article.append(deepcopy(publisher_item))
+
+        return data
+
 class XMLPIDPipe(plumber.Pipe):
 
     def transform(self, data):
