@@ -1455,6 +1455,82 @@ class ExportCrossRef_MultiLingueDoc_with_DOI_pt_es_Tests(unittest.TestCase):
             2, len(xml.findall('.//journal_article//citation_list')))
 
 
+class ExportCrossRef_XMLArticlePubDatePipe_Tests(unittest.TestCase):
+
+    def setUp(self):
+        self.xmlcrossref = ET.Element('doi_batch')
+        journal_article = ET.Element('journal_article')
+        journal_article.set('publication_type', 'full_text')
+        journal = ET.Element('journal')
+        journal.append(journal_article)
+        body = ET.Element('body')
+        body.append(journal)
+        self.xmlcrossref.append(body)
+
+    def test_article_publication_date_element_aop_article(self):
+        _raw_json = {
+            'issue': {
+                'issue': {'v32': [{'_': 'ahead'}]},
+             },
+            'article': {
+                'v32': [{'_': 'ahead'}],
+                'v223': [{'_': '20190325'}],
+            },
+        }
+        _article = Article(_raw_json)
+        data = [_article, self.xmlcrossref]
+
+        xmlcrossref = export_crossref.XMLArticlePubDatePipe()
+        raw, xml = xmlcrossref.transform(data)
+
+        self.assertEqual(
+            b'<doi_batch><body><journal><journal_article publication_type="full_text"><publication_date media_type="online"><month>03</month><day>25</day><year>2019</year></publication_date></journal_article></journal></body></doi_batch>',
+            ET.tostring(xml)
+        )
+
+    def test_article_publication_date_element_issue_article(self):
+        _raw_json = {
+            'issue': {
+                'issue': {'v32': [{'_': '10'}]},
+            },
+            'article': {
+                'v32': [{'_': '10'}],
+                'v65': [{'_': '20190300'}],
+            },
+        }
+        _article = Article(_raw_json)
+        data = [_article, self.xmlcrossref]
+
+        xmlcrossref = export_crossref.XMLArticlePubDatePipe()
+        raw, xml = xmlcrossref.transform(data)
+
+        self.assertEqual(
+            b'<doi_batch><body><journal><journal_article publication_type="full_text"><publication_date media_type="online"><month>03</month><year>2019</year></publication_date></journal_article></journal></body></doi_batch>',
+            ET.tostring(xml)
+        )
+
+    def test_article_publication_date_element_continuospub_article(self):
+        _raw_json = {
+            'issue': {
+                'issue': {'v32': [{'_': '10'}]},
+            },
+            'article': {
+                'v32': [{'_': '10'}],
+                'v65': [{'_': '20190000'}],
+            },
+        }
+        _article = Article(_raw_json)
+        data = [_article, self.xmlcrossref]
+
+        xmlcrossref = export_crossref.XMLArticlePubDatePipe()
+        raw, xml = xmlcrossref.transform(data)
+
+        self.assertEqual(
+            b'<doi_batch><body><journal><journal_article publication_type="full_text"><publication_date media_type="online"><year>2019</year></publication_date></journal_article></journal></body></doi_batch>',
+            ET.tostring(xml)
+        )
+
+
 class ExportCrossRef_XMLIssuePipe_Tests(unittest.TestCase):
 
     def setUp(self):

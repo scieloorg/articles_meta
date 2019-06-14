@@ -466,33 +466,45 @@ class XMLArticleAbstractPipe(plumber.Pipe):
 
 class XMLArticlePubDatePipe(plumber.Pipe):
 
+    def _create_date(self, date, media_type):
+        if date is not None:
+            el = ET.Element('publication_date')
+            el.set('media_type', media_type)
+            # Month
+            if date[5:7]:
+                month = ET.Element('month')
+                month.text = date[5:7]
+                el.append(month)
+            # Day
+            if date[8:10]:
+                day = ET.Element('day')
+                day.text = date[8:10]
+                el.append(day)
+            # Year
+            if date[0:4]:
+                year = ET.Element('year')
+                year.text = date[0:4]
+                el.append(year)
+            return el
+
+    def precond(data):
+        raw, __ = data
+        if not raw.issue:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
-        date = raw.publication_date
+        if raw.issue.is_ahead_of_print:
+            date = raw.document_publication_date
+        else:
+            date = raw.issue_publication_date
 
-        el = ET.Element('publication_date')
-        el.set('media_type', "online")
-
-        # Month
-        if date[5:7]:
-            month = ET.Element('month')
-            month.text = date[5:7]
-            el.append(month)
-        # Day
-        if date[8:10]:
-            day = ET.Element('day')
-            day.text = date[8:10]
-            el.append(day)
-        # Year
-        if date[0:4]:
-            year = ET.Element('year')
-            year.text = date[0:4]
-            el.append(year)
-
-        for journal_article in xml.findall('./body/journal//journal_article'):
-            journal_article.append(deepcopy(el))
-
+        pub_date = self._create_date(date, 'online')
+        if pub_date is not None:
+            for journal_article in xml.findall('./body/journal//journal_article'):
+                journal_article.append(deepcopy(pub_date))
         return data
 
 
