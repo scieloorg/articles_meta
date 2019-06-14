@@ -865,8 +865,8 @@ class XMLArticleMetaIssueInfoPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        label_volume = raw.issue.volume.replace('ahead', '0') if raw.issue.volume else '0'
-        label_issue = raw.issue.number.replace('ahead', '0') if raw.issue.number else '0'
+        label_volume = (raw.issue.volume or '').strip()
+        label_issue = raw.issue.number.replace('ahead', '') if raw.issue.number else ''
 
         label_suppl_issue = ' suppl %s' % raw.issue.supplement_number if raw.issue.supplement_number else ''
 
@@ -880,17 +880,18 @@ class XMLArticleMetaIssueInfoPipe(plumber.Pipe):
 
         label_issue = SUPPLBEG_REGEX.sub('', label_issue)
         label_issue = SUPPLEND_REGEX.sub('', label_issue)
+        label_issue = label_issue.strip()
 
-        articlemeta = xml.find('./article/front/article-meta')
+        articlemeta = xml.find('.//front/article-meta')
 
         if label_volume:
             vol = ET.Element('volume')
-            vol.text = label_volume.strip()
+            vol.text = label_volume
             articlemeta.append(vol)
 
         if label_issue:
             issue = ET.Element('issue')
-            issue.text = label_issue.strip()        
+            issue.text = label_issue
             articlemeta.append(issue)
 
         return data
