@@ -998,7 +998,7 @@ class ExportTests(unittest.TestCase):
         self.assertEqual(u'eloc1', eloc)
 
     def test_xmlarticle_meta_general_info_without_elocation_pipe(self):
-
+        self._article_meta.data['article']['v14'].pop()
         pxml = ET.Element('article')
         pxml.append(ET.Element('front'))
 
