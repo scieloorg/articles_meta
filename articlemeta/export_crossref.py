@@ -20,7 +20,8 @@ class SetupDoiBatchPipe(plumber.Pipe):
         nsmap = {
             'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
             'jats': 'http://www.ncbi.nlm.nih.gov/JATS1',
-            'xml': 'http://www.w3.org/XML/1998/namespace'
+            'xml': 'http://www.w3.org/XML/1998/namespace',
+            'ai': 'http://www.crossref.org/AccessIndicators.xsd'
         }
 
         el = ET.Element('doi_batch', nsmap=nsmap)
@@ -554,6 +555,47 @@ class XMLPIDPipe(plumber.Pipe):
 
         for journal_article in xml.findall('./body/journal//journal_article'):
             journal_article.append(deepcopy(el))
+
+        return data
+
+class XMLPermissionsPipe(plumber.Pipe):
+    """Adiciona as licenças de uso ao XML para deposito do Crossref"""
+
+    def precond(data):
+        raw, _ = data
+
+        try:
+            if not raw.permissions:
+                raise plumber.UnmetPrecondition()
+        except UnavailableMetadataException:
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        program = ET.Element(
+            "{http://www.crossref.org/AccessIndicators.xsd}program"
+        )
+        program.set("name", "AccessIndicators")
+
+        free_to_read = ET.Element(
+            "{http://www.crossref.org/AccessIndicators.xsd}free_to_read"
+        )
+
+        program.append(free_to_read)
+
+        if raw.permissions.get("url"):
+            for context in ["vor", "am", "tdm"]:
+                license_ref = ET.Element(
+                    "{http://www.crossref.org/AccessIndicators.xsd}license_ref"
+                )
+                license_ref.set("applies_to", context)
+                license_ref.text = raw.permissions.get("url")
+                program.append(license_ref)
+
+        for journal_article in xml.findall("./body/journal//journal_article"):
+                journal_article.append(deepcopy(program))
 
         return data
 

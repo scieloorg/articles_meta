@@ -473,6 +473,60 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
         self.assertEqual(None, schema.assertValid(xmlio))
 
 
+    def test_every_journal_article_must_contain_own_license(self):
+            self._article_meta.data["license"] = "by/4.0"
+
+            xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+                ["pt", "en", "es"]
+            )
+
+            data = [self._article_meta, xmlcrossref]
+            xmlcrossref = export_crossref.XMLPermissionsPipe()
+            _, xml = xmlcrossref.transform(data)
+
+            programs = xml.findall(
+                ".//{http://www.crossref.org/AccessIndicators.xsd}program"
+            )
+            self.assertEqual(3, len(programs))
+
+            for journal_article in xml.findall(".//journal_article"):
+                with self.subTest(journal_article=journal_article):
+                    program = journal_article.findall(
+                        ".//{http://www.crossref.org/AccessIndicators.xsd}program"
+                    )
+                    self.assertIsNotNone(program)
+                    self.assertEqual(1, len(program))
+                    self.assertEqual(
+                        3,
+                        len(
+                            program[0].findall(
+                                "{http://www.crossref.org/AccessIndicators.xsd}license_ref"
+                            )
+                        ),
+                    )
+                    self.assertIsNotNone(
+                        program[0].findall(
+                            "{http://www.crossref.org/AccessIndicators.xsd}free_to_read"
+                        )
+                    )
+
+
+    def test_journal_article_should_not_contain_licenses(self):
+            xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+                ["pt", "en", "es"]
+            )
+
+            data = [self._article_meta, xmlcrossref]
+            xmlcrossref = export_crossref.XMLPermissionsPipe()
+            _, xml = xmlcrossref.transform(data)
+
+            programs = xml.findall(
+                ".//{http://www.crossref.org/AccessIndicators.xsd}program"
+            )
+
+            self.assertIsNotNone(programs)
+
+
 class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
 
     def setUp(self):
@@ -974,6 +1028,60 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
         raw, xml = xmlcrossref.transform(data)
         self.assertEqual(
             3, len(xml.findall('.//journal_article//citation_list')))
+
+
+    def test_every_journal_article_must_contain_own_license(self):
+            self._article.data["license"] = "by/4.0"
+
+            xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+                ["pt", "en", "es"]
+            )
+
+            data = [self._article, xmlcrossref]
+            xmlcrossref = export_crossref.XMLPermissionsPipe()
+            _, xml = xmlcrossref.transform(data)
+
+            programs = xml.findall(
+                ".//{http://www.crossref.org/AccessIndicators.xsd}program"
+            )
+            self.assertEqual(3, len(programs))
+
+            for journal_article in xml.findall(".//journal_article"):
+                with self.subTest(journal_article=journal_article):
+                    program = journal_article.findall(
+                        ".//{http://www.crossref.org/AccessIndicators.xsd}program"
+                    )
+                    self.assertIsNotNone(program)
+                    self.assertEqual(1, len(program))
+                    self.assertEqual(
+                        3,
+                        len(
+                            program[0].findall(
+                                "{http://www.crossref.org/AccessIndicators.xsd}license_ref"
+                            )
+                        ),
+                    )
+                    self.assertIsNotNone(
+                        program[0].findall(
+                            "{http://www.crossref.org/AccessIndicators.xsd}free_to_read"
+                        )
+                    )
+
+
+    def test_journal_article_should_not_contain_licenses(self):
+            xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+                ["pt", "en", "es"]
+            )
+
+            data = [self._article, xmlcrossref]
+            xmlcrossref = export_crossref.XMLPermissionsPipe()
+            _, xml = xmlcrossref.transform(data)
+
+            programs = xml.findall(
+                ".//{http://www.crossref.org/AccessIndicators.xsd}program"
+            )
+
+            self.assertIsNotNone(programs)
 
 
 class ExportCrossRef_MultiLingueDoc_with_DOI_pt_es_Tests(unittest.TestCase):
