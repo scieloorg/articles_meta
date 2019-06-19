@@ -973,8 +973,8 @@ class XMLArticleMetaIssueInfoPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        label_volume = raw.issue.volume.replace('ahead', '0') if raw.issue.volume else '0'
-        label_issue = raw.issue.number.replace('ahead', '0') if raw.issue.number else '0'
+        label_volume = raw.issue.volume or ''
+        label_issue = raw.issue.number.replace('ahead', '') if raw.issue.number else ''
 
         label_suppl_issue = ' suppl %s' % raw.issue.supplement_number if raw.issue.supplement_number else ''
 

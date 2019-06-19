@@ -335,3 +335,48 @@ class ExportTests(unittest.TestCase):
         dtd = ET.DTD(open('tests/dtd/scielo_pubmed/PubMed.dtd', 'r'))
 
         self.assertEqual(True, dtd.validate(xml))
+
+
+class ExportPubMed_XMLIssuePipe_Tests(unittest.TestCase):
+
+    def setUp(self):
+        self.xml = ET.Element('Article')
+        journal = ET.Element('Journal')
+        self.xml.append(journal)
+
+    def test_aop_element(self):
+        _raw_json = {
+            'issue':
+                {'issue':
+                    {'v32': [{'_': 'ahead'}]},
+                 },
+            'article':
+                {'v32': [{'_': 'ahead'}]},
+            }
+        _article = Article(_raw_json)
+
+        data = [_article, self.xml]
+
+        _xml = export_pubmed.XMLIssuePipe()
+        raw, xml = _xml.transform(data)
+
+        self.assertIsNone(xml.find('.//Journal/Volume'))
+        self.assertIsNone(xml.find('.//Journal/Issue'))
+
+    def test_issue_element(self):
+        _raw_json = {
+            'issue':
+                {'issue':
+                    {'v32': [{'_': '10'}]},
+                 },
+            'article':
+                {'v32': [{'_': '10'}]},
+            }
+        _article = Article(_raw_json)
+
+        data = [_article, self.xml]
+
+        _xml = export_pubmed.XMLIssuePipe()
+        raw, xml = _xml.transform(data)
+
+        self.assertEqual(xml.findtext('.//Journal/Issue'), '10')

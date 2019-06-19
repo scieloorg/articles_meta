@@ -273,23 +273,18 @@ class XMLArticleMetaEndPagePipe(plumber.Pipe):
 class XMLArticleMetaVolumePipe(plumber.Pipe):
 
     def precond(data):
-
-        raw, xml = data
-
-        try:
-            if not raw.issue:
-                raise plumber.UnmetPrecondition()
-        except UnavailableMetadataException as e:
+        raw, __ = data
+        if not raw.issue:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
-        volume = ET.Element('volume')
-        volume.text = raw.issue.volume
-
-        xml.find('./record').append(volume)
+        if raw.issue.volume:
+            volume = ET.Element('volume')
+            volume.text = raw.issue.volume
+            xml.find('./record').append(volume)
 
         return data
 
@@ -310,8 +305,7 @@ class XMLArticleMetaIssuePipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        label_volume = raw.issue.volume.replace('ahead', '0') if raw.issue.volume else '0'
-        label_issue = raw.issue.number.replace('ahead', '0') if raw.issue.number else '0'
+        label_issue = raw.issue.number.replace('ahead', '') if raw.issue.number else ''
 
         label_suppl_issue = ' suppl %s' % raw.issue.supplement_number if raw.issue.supplement_number else ''
 

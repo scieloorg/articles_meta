@@ -1118,9 +1118,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticleMetaIssueInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
-        volume = xml.find('./front/article-meta/volume').text
-
-        self.assertEqual('0', volume)
+        self.assertIsNone(xml.find('./front/article-meta/volume'))
 
     def test_xmlarticle_meta_general_info_issue_pipe(self):
 
@@ -1154,9 +1152,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticleMetaIssueInfoPipe()
         raw, xml = xmlarticle.transform(data)
 
-        issue = xml.find('./front/article-meta/issue').text
-
-        self.assertEqual('0', issue)
+        self.assertIsNone(xml.find('./front/article-meta/issue'))
 
     def test_xmlarticle_meta_general_info_suppl_vol_pipe(self):
 
@@ -1545,3 +1541,47 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(23, citations)
 
+
+class ExportRSPS_XMLArticleMetaIssueInfoPipe_Tests(unittest.TestCase):
+
+    def setUp(self):
+        self._xml = ET.Element('article')
+        front = ET.Element('front')
+        front.append(ET.Element('article-meta'))
+        self._xml.append(front)
+
+    def test_aop(self):
+        _raw_json = {
+            'issue':
+                {'issue':
+                    {'v32': [{'_': 'ahead'}]},
+                 },
+            'article':
+                {'v32': [{'_': 'ahead'}]},
+            }
+        _article = Article(_raw_json)
+
+        data = [_article, self._xml]
+
+        _xml = export_rsps.XMLArticleMetaIssueInfoPipe()
+        raw, xml = _xml.transform(data)
+
+        self.assertEqual(xml.find('.//article-meta/issue'), None)
+
+    def test_issue(self):
+        _raw_json = {
+            'issue':
+                {'issue':
+                    {'v32': [{'_': '4'}]},
+                 },
+            'article':
+                {'v32': [{'_': '4'}]},
+            }
+        _article = Article(_raw_json)
+
+        data = [_article, self._xml]
+
+        _xml = export_rsps.XMLArticleMetaIssueInfoPipe()
+        raw, xml = _xml.transform(data)
+
+        self.assertEqual(xml.findtext('.//article-meta/issue'), '4')

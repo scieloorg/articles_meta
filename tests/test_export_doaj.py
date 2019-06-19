@@ -423,7 +423,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_doaj.XMLArticleMetaVolumePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual(None, xml.find('./record/volume').text)
+        self.assertIsNone(xml.find('./record/volume'))
 
     def test_xmlarticle_meta_general_info_issue_pipe(self):
 
@@ -451,7 +451,7 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_doaj.XMLArticleMetaIssuePipe()
         raw, xml = xmlarticle.transform(data)
 
-        self.assertEqual(xml.find('./record/issue').text, '0')
+        self.assertIsNone(xml.find('./record/issue'))
 
     def test_xmlarticle_meta_general_info_document_type_pipe(self):
 
@@ -622,3 +622,46 @@ class ExportTests(unittest.TestCase):
         expected = etree.fromstring(xml, xmlparser).tag
 
         self.assertEqual('records', expected)
+
+
+class ExportPubMed_XMLArticleMetaIssuePipe_Tests(unittest.TestCase):
+
+    def setUp(self):
+        self._xml = ET.Element('records')
+        self._xml.append(ET.Element('record'))
+
+    def test_aop_element(self):
+        _raw_json = {
+            'issue':
+                {'issue':
+                    {'v32': [{'_': 'ahead'}]},
+                 },
+            'article':
+                {'v32': [{'_': 'ahead'}]},
+            }
+        _article = Article(_raw_json)
+
+        data = [_article, self._xml]
+
+        _xml = export_doaj.XMLArticleMetaIssuePipe()
+        raw, xml = _xml.transform(data)
+
+        self.assertEqual(xml.find('.//record/issue'), None)
+
+    def test_issue_element(self):
+        _raw_json = {
+            'issue':
+                {'issue':
+                    {'v32': [{'_': '10'}]},
+                 },
+            'article':
+                {'v32': [{'_': '10'}]},
+            }
+        _article = Article(_raw_json)
+
+        data = [_article, self._xml]
+
+        _xml = export_doaj.XMLArticleMetaIssuePipe()
+        raw, xml = _xml.transform(data)
+
+        self.assertEqual(xml.findtext('.//record/issue'), '10')
