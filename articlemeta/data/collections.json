@@ -320,7 +320,7 @@
   {
     "acron": "wid",
     "code": "wid",
-    "domain": "caribbean.scielo.org",
+    "domain": "westindies.scielo.org",
     "acron2": "wi",
     "name": {
       "en": "West Indies",
@@ -329,9 +329,9 @@
     },
     "has_analytics": false,
     "original_name": "West Indies",
-    "status": "diffusion",
+    "status": "development",
     "type": "journals",
-    "is_active": false
+    "is_active": true
   },
   {
     "acron": "cci",
