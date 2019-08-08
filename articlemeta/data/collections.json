@@ -324,10 +324,10 @@
     "acron2": "wi",
     "name": {
       "en": "West Indies",
-      "pt": "West Indies",
-      "es": "West Indies"
+      "pt": "Índias Ocidentais",
+      "es": "Indias Occidentales"
     },
-    "has_analytics": false,
+    "has_analytics": true,
     "original_name": "West Indies",
     "status": "development",
     "type": "journals",
