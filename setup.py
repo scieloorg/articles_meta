@@ -17,7 +17,7 @@ requires = [
     'pyramid>=1.5.4',
     'thriftpy>=0.3.1',
     'thriftpywrap',
-    'xylose>=1.35.4',
+    'xylose>=1.35.5',
     'crossrefapi>=1.3',
     ]
 
@@ -25,7 +25,7 @@ test_requires = ['mocker', 'nose>=1.0', 'coverage', 'mongomock']
 
 setup(
     name="articlemeta",
-    version='1.45.0',
+    version='1.45.1',
     description="A SciELO API to load SciELO Articles metadata",
     author="SciELO",
     author_email="scielo-dev@googlegroups.com",
@@ -44,7 +44,7 @@ setup(
     ],
     dependency_links=[
         "git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap",
-        "git+https://github.com/scieloorg/xylose.git@1.35.4#egg=xylose",
+        "git+https://github.com/scieloorg/xylose.git@1.35.5#egg=xylose",
     ],
     include_package_data=True,
     zip_safe=False,
