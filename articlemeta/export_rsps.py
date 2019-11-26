@@ -639,12 +639,20 @@ class XMLArticleMetaArticleIdPublisherPipe(plumber.Pipe):
         except UnavailableMetadataException as e:
             pass
 
-        articleidpublisher = ET.Element('article-id')
-        articleidpublisher.set('pub-id-type', 'publisher-id')
-        articleidpublisher.text = raw.publisher_id
+        article_id_items = []
+        if raw.publisher_id:
+            article_id_items.append(
+                ("scielo-v2", raw.publisher_id))
+        if raw.data['article'].get("v885"):
+            article_id_items.append(
+                ("scielo-v3", raw.data['article']['v885'][0]['_']))
 
-        article_meta.append(articleidpublisher)
-
+        for version, value in article_id_items:
+            articleidpublisher = ET.Element('article-id')
+            articleidpublisher.set('pub-id-type', 'publisher-id')
+            articleidpublisher.set('specific-use', version)
+            articleidpublisher.text = value
+            article_meta.append(articleidpublisher)
         return data
 
 

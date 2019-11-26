@@ -572,7 +572,48 @@ class ExportTests(unittest.TestCase):
 
         articleidpublisher = xml.find('./front/article-meta/article-id[@pub-id-type="publisher-id"]').text
 
-        self.assertEqual(u'S0034-89102010000400007', articleidpublisher)
+    def test_xml_article_meta_article_id_publisher_pipe_creates_scielo_v2_v3(self):
+        fakexylosearticle = Article(
+                                {'article': {
+                                    "v880": [{"_": "SXXXXX2"}],
+                                    "v885": [{"_": "SXXXXX3"}],
+                                    "v2": [{"_": "SXXXXX1"}],
+                                }},
+                            )
+
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+        xmlarticle = export_rsps.XMLArticleMetaArticleIdPublisherPipe()
+        raw, xml = xmlarticle.transform(data)
+        article_id = xml.findall('./front/article-meta/article-id[@pub-id-type="publisher-id"]')
+        self.assertEqual(article_id[0].text, "SXXXXX2")
+        self.assertEqual(article_id[1].text, "SXXXXX3")
+
+    def test_xml_article_meta_article_id_publisher_pipe_creates_scielo_v2(self):
+        fakexylosearticle = Article(
+                                {'article': {
+                                    "v880": [{"_": "SXXXXX2"}],
+                                    "v2": [{"_": "SXXXXX1"}],
+                                }},
+                            )
+
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [fakexylosearticle, pxml]
+        xmlarticle = export_rsps.XMLArticleMetaArticleIdPublisherPipe()
+        raw, xml = xmlarticle.transform(data)
+        article_id = xml.findall('./front/article-meta/article-id[@pub-id-type="publisher-id"]')
+        self.assertEqual(article_id[0].text, "SXXXXX2")
+        self.assertEqual(len(article_id), 1)
 
     def test_xml_article_meta_article_id_doi_pipe(self):
 
