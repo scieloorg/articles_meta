@@ -592,7 +592,8 @@ class ExportTests(unittest.TestCase):
         raw, xml = xmlarticle.transform(data)
         article_id = xml.findall('./front/article-meta/article-id[@pub-id-type="publisher-id"]')
         self.assertEqual(article_id[0].text, "SXXXXX2")
-        self.assertEqual(article_id[1].text, "SXXXXX3")
+        self.assertEqual(article_id[1].text, "SXXXXX1")
+        self.assertEqual(article_id[2].text, "SXXXXX3")
 
     def test_xml_article_meta_article_id_publisher_pipe_creates_scielo_v2(self):
         fakexylosearticle = Article(
@@ -613,7 +614,8 @@ class ExportTests(unittest.TestCase):
         raw, xml = xmlarticle.transform(data)
         article_id = xml.findall('./front/article-meta/article-id[@pub-id-type="publisher-id"]')
         self.assertEqual(article_id[0].text, "SXXXXX2")
-        self.assertEqual(len(article_id), 1)
+        self.assertEqual(article_id[1].text, "SXXXXX1")
+        self.assertEqual(len(article_id), 2)
 
     def test_xml_article_meta_article_id_doi_pipe(self):
 
