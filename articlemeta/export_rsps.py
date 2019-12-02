@@ -643,6 +643,9 @@ class XMLArticleMetaArticleIdPublisherPipe(plumber.Pipe):
         if raw.publisher_id:
             article_id_items.append(
                 ("scielo-v2", raw.publisher_id))
+        if raw.data['article'].get("v2"):
+            article_id_items.append(
+                ("scielo-v1", raw.data['article']['v2'][0]['_']))
         if raw.data['article'].get("v885"):
             article_id_items.append(
                 ("scielo-v3", raw.data['article']['v885'][0]['_']))
