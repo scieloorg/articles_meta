@@ -13,6 +13,10 @@ def convert_ahref_to_extlink(xml_etree):
 
     for ahref in xml_etree.findall('.//a'):
         uri = ahref.get('href', '')
+
+        if len(uri) == 0 or not uri.strip().startswith("http"):
+            continue
+
         ahref.tag = 'ext-link'
         ahref.set('ext-link-type', 'uri')
         ahref.set('{http://www.w3.org/1999/xlink}href', uri)
