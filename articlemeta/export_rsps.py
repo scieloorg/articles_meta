@@ -978,38 +978,47 @@ class XMLArticleMetaIssueInfoPipe(plumber.Pipe):
             if not raw.issue:
                 raise plumber.UnmetPrecondition()
         except UnavailableMetadataException as e:
-            raise plumber.UnmetPrecondition()
+            volume = raw.data.get("article", {}).get("v31", [{}])[0].get("_", None)
+            number = raw.data.get("article", {}).get("v32", [{}])[0].get("_", None)
+
+            if volume is None and number is None:
+                raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
+        labels = {}
 
-        label_volume = raw.issue.volume or ''
-        label_issue = raw.issue.number.replace('ahead', '') if raw.issue.number else ''
+        fields = (
+            ("volume", raw.data.get("article", {}).get("v31", [{}])[0].get("_", "")),
+            ("number", raw.data.get("article", {}).get("v32", [{}])[0].get("_", "")),
+            ("supplement_number", ""),
+            ("supplement_volume", ""),
+        )
 
-        label_suppl_issue = ' suppl %s' % raw.issue.supplement_number if raw.issue.supplement_number else ''
+        for name, default in fields:
+            try:
+                labels[name] = getattr(raw.issue, name, default) or default
+            except UnavailableMetadataException:
+                labels[name] = default
 
-        if label_suppl_issue:
-            label_issue += label_suppl_issue
+        for supplement in ["supplement_number", "supplement_volume"]:
+            if labels[supplement] is not None and len(labels[supplement]) > 0:
+                labels["number"] += " suppl %s" % labels[supplement]
 
-        label_suppl_volume = ' suppl %s' % raw.issue.supplement_volume if raw.issue.supplement_volume else ''
-
-        if label_suppl_volume:
-            label_issue += label_suppl_volume
-
-        label_issue = SUPPLBEG_REGEX.sub('', label_issue)
-        label_issue = SUPPLEND_REGEX.sub('', label_issue)
+        for regex in [SUPPLBEG_REGEX, SUPPLEND_REGEX, re.compile(r"ahead")]:
+            labels["number"] = regex.sub("", labels["number"])
 
         articlemeta = xml.find('./front/article-meta')
 
-        if label_volume:
-            vol = ET.Element('volume')
-            vol.text = label_volume.strip()
+        if labels.get("volume"):
+            vol = ET.Element("volume")
+            vol.text = labels.get("volume").strip()
             articlemeta.append(vol)
 
-        if label_issue:
-            issue = ET.Element('issue')
-            issue.text = label_issue.strip()
+        if labels.get("number"):
+            issue = ET.Element("issue")
+            issue.text = labels.get("number").strip()
             articlemeta.append(issue)
 
         return data
