@@ -1149,6 +1149,7 @@ class ExportTests(unittest.TestCase):
     def test_xmlarticle_meta_general_info_without_volume_pipe(self):
 
         del(self._article_meta.data['issue']['issue']['v31'])
+        del(self._article_meta.data['article']['v31'])
 
         pxml = ET.Element('article')
         pxml.append(ET.Element('front'))
@@ -1183,6 +1184,7 @@ class ExportTests(unittest.TestCase):
     def test_xmlarticle_meta_general_info_without_issue_pipe(self):
 
         del(self._article_meta.data['issue']['issue']['v32'])
+        del(self._article_meta.data['article']['v32'])
 
         pxml = ET.Element('article')
         pxml.append(ET.Element('front'))
@@ -1201,6 +1203,7 @@ class ExportTests(unittest.TestCase):
 
         self._article_meta.data['issue']['issue']['v65'] = [{'_': '201008'}]
         del(self._article_meta.data['issue']['issue']['v32'])
+        del(self._article_meta.data['article']['v32'])
         self._article_meta.data['issue']['issue']['v131'] = [{'_': '1'}]
 
         pxml = ET.Element('article')
@@ -1222,6 +1225,7 @@ class ExportTests(unittest.TestCase):
 
         self._article_meta.data['issue']['issue']['v65'] = [{'_': '201008'}]
         del(self._article_meta.data['issue']['issue']['v32'])
+        del(self._article_meta.data['article']['v32'])
         self._article_meta.data['issue']['issue']['v31'] = [{'_': '10'}]
         self._article_meta.data['issue']['issue']['v131'] = [{'_': '0'}]
 
@@ -1583,6 +1587,44 @@ class ExportTests(unittest.TestCase):
         citations = len(xml.findall('./back/ref-list/ref'))
 
         self.assertEqual(23, citations)
+
+    def test_xml_article_meta_issue_info_pipeline_should_look_by_volume_in_article_if_property_is_not_present_in_issue(self):
+
+        del(self._article_meta.data['issue']['issue']['v31']) # remove volume from issue object
+        self._article_meta.data['article']['v31'] = [{"_": "100"}]
+
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaIssueInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        self.assertIsNotNone(xml.find('./front/article-meta/volume'))
+        self.assertEqual("100", xml.find('./front/article-meta/volume').text)
+
+    def test_xml_article_meta_issue_info_pipeline_should_look_by_number_in_article_if_property_is_not_present_in_issue(self):
+
+        del(self._article_meta.data['issue']['issue']['v32']) # remove number from issue object
+        self._article_meta.data['article']['v32'] = [{"_": "100"}]
+
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaIssueInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        self.assertIsNotNone(xml.find('./front/article-meta/issue'))
+        self.assertEqual("100", xml.find('./front/article-meta/issue').text)
 
 
 class ExportRSPS_XMLArticleMetaIssueInfoPipe_Tests(unittest.TestCase):
