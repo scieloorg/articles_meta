@@ -999,9 +999,12 @@ class XMLArticleMetaIssueInfoPipe(plumber.Pipe):
 
         for name, default in fields:
             try:
-                labels[name] = getattr(raw.issue, name, default) or default
-            except UnavailableMetadataException:
+                labels[name] = getattr(raw.issue, name)
+            except (UnavailableMetadataException, AttributeError):
                 labels[name] = default
+            else:
+                if labels[name] is None:
+                    labels[name] = default
 
         for supplement in ["supplement_number", "supplement_volume"]:
             if labels[supplement] is not None and len(labels[supplement]) > 0:
