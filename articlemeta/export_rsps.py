@@ -15,6 +15,7 @@ LANG_REGEX = re.compile(r'ns\d:lang')
 URI_REGEXT = re.compile(r'http://.*')
 SUPPLBEG_REGEX = re.compile(r'^0 ')
 SUPPLEND_REGEX = re.compile(r' 0$')
+REMOVE_AHEAD_STR_REGEX = re.compile(r"ahead")
 
 
 class XMLCitation(object):
@@ -1006,7 +1007,7 @@ class XMLArticleMetaIssueInfoPipe(plumber.Pipe):
             if labels[supplement] is not None and len(labels[supplement]) > 0:
                 labels["number"] += " suppl %s" % labels[supplement]
 
-        for regex in [SUPPLBEG_REGEX, SUPPLEND_REGEX, re.compile(r"ahead")]:
+        for regex in [SUPPLBEG_REGEX, SUPPLEND_REGEX, REMOVE_AHEAD_STR_REGEX]:
             labels["number"] = regex.sub("", labels["number"])
 
         articlemeta = xml.find('./front/article-meta')
