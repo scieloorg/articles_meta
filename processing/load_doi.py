@@ -220,7 +220,7 @@ def main():
     parser.add_argument(
         '--collection',
         '-c',
-        choices=collections_acronym(),
+        choices=_collections,
         help='Collection acronym'
     )
 
