@@ -884,7 +884,7 @@ class XMLArticleMetaAffiliationPipe(plumber.Pipe):
 
             if 'email' in affiliation:
                 email = ET.Element('email')
-                email.text = affiliation['email']
+                email.text = affiliation.get('email_html_removed', affiliation['email'])
                 aff.append(email)
 
 

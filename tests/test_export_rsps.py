@@ -987,6 +987,41 @@ class ExportTests(unittest.TestCase):
                           u'São Paulo',
                           u'Belo Horizonte']), address)
 
+    def test_xmlarticle_meta_affiliation_email_pipe(self):
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+        self._article_meta.data['article']['v70'] = [
+            {
+                u"c": u"Sorocaba",
+                u"e": u'<A HREF="mailto:abcd@inst.br">abcd@inst.br</A>',
+                u"i": u"A01",
+                u"1": u"Departamento de Ci\u00eancias Ambientais 1",
+                u"2": u"Departamento de Ci\u00eancias Ambientais 2",
+                u"p": u"BRAZIL",
+                u"s": u"SP",
+                u"z": u"18052-780"
+            },
+            {
+                u"c": u"Sorocaba",
+                u"e": u'efgh@inst.br',
+                u"i": u"A02",
+                u"1": u"Departamento de Ci\u00eancias Ambientais 1",
+                u"2": u"Departamento de Ci\u00eancias Ambientais 2",
+                u"p": u"BRAZIL",
+                u"s": u"SP",
+                u"z": u"18052-780"
+            },
+        ]
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaAffiliationPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        emails = sorted([i.text for i in xml.findall('./front/article-meta/aff/email')])
+        self.assertEqual(emails, [u"abcd@inst.br", u"efgh@inst.br"])
+
     def test_xmlarticle_meta_general_info_pub_year_pipe(self):
 
         pxml = ET.Element('article')
