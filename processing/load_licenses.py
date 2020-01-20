@@ -152,7 +152,7 @@ def run(articlemeta_db, collections, all_records=False):
         exit()
 
     for collection in collections:
-        coll_info = collection_info(collection)
+        coll_info = collection_info(articlemeta_db, collection)
 
         logger.info(u'Loading licenses for %s', coll_info['domain'])
         logger.info(u'Using mode all_records %s', str(all_records))
