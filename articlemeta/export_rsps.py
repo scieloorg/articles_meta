@@ -17,6 +17,11 @@ SUPPLBEG_REGEX = re.compile(r'^0 ')
 SUPPLEND_REGEX = re.compile(r' 0$')
 REMOVE_AHEAD_STR_REGEX = re.compile(r"ahead")
 
+SELF_URI_TEXT_TRANSLATIONS = {
+    "pt": "Texto completo somente em PDF",
+    "en": "Full text available only in PDF format",
+    "es": "Texto completo solamente en formato PDF",
+}
 
 class XMLCitation(object):
 
@@ -1172,8 +1177,39 @@ class XMLArticleMetaPermissionPipe(plumber.Pipe):
         return data
 
 
-class XMLArticleMetaCitationsPipe(plumber.Pipe):
+class XMLArticleMetaSelfUriPipe(plumber.Pipe):
+    """Adiciona tag `self-uri` ao article-meta do artigo.
 
+    As tags `self-uri` disponibilizam fontes alternativas para o
+    texto completo."""
+
+    def precond(data):
+        article, _ = data
+
+        if not article.data.get("fulltexts"):
+            raise plumber.UnmetPrecondition()
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        article, xml = data
+        article_meta = xml.find(".//article-meta")
+
+        for language, uri in article.data.get("fulltexts", {}).get("pdf", {}).items():
+            self_uri = ET.Element("self-uri")
+            self_uri.set("{http://www.w3.org/1999/xlink}href", uri)
+            self_uri.set("{http://www.w3.org/XML/1998/namespace}lang", language)
+            self_uri.text = "%s (%s)" % (
+                SELF_URI_TEXT_TRANSLATIONS.get(
+                    language, SELF_URI_TEXT_TRANSLATIONS["en"]
+                ),
+                language.upper(),
+            )
+            article_meta.append(self_uri)
+
+        return data
+
+
+class XMLArticleMetaCitationsPipe(plumber.Pipe):
     def precond(data):
 
         raw, xml = data

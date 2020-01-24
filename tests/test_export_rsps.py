@@ -1587,6 +1587,45 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(None, citations)
 
+    def test_xml_article_meta_should_contains_self_uris_when_pdf_are_linked_to_article(self):
+        article_xml = ET.Element("article")
+        front = ET.Element("front")
+        front.append(ET.Element("article-meta"))
+        article_xml.append(front)
+
+        data = [self._article_meta, article_xml]
+        xmlarticle = export_rsps.XMLArticleMetaSelfUriPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        self.assertEqual(2, len(xml.findall(".//self-uri")))
+
+    def test_self_uri_tags_should_contain_language_attribute_referencing_pdf_lang(self):
+        article_xml = ET.Element("article")
+        front = ET.Element("front")
+        front.append(ET.Element("article-meta"))
+        article_xml.append(front)
+
+        data = [self._article_meta, article_xml]
+        xmlarticle = export_rsps.XMLArticleMetaSelfUriPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        for tag in xml.findall(".//self-uri"):
+            self.assertTrue(tag.get("{http://www.w3.org/XML/1998/namespace}lang"))
+
+    def test_self_uri_tags_should_output_english_text_as_default(self):
+        article_xml = ET.Element("article")
+        front = ET.Element("front")
+        front.append(ET.Element("article-meta"))
+        article_xml.append(front)
+
+        self._article_meta.data["fulltexts"]["pdf"].update({"fr": "http://fake-url/fr.pdf"})
+
+        data = [self._article_meta, article_xml]
+        xmlarticle = export_rsps.XMLArticleMetaSelfUriPipe()
+        raw, xml = xmlarticle.transform(data)
+        self_uri_fr = xml.find(".//self-uri[@{http://www.w3.org/XML/1998/namespace}lang='fr']")
+        self.assertEqual("Full text available only in PDF format (FR)", self_uri_fr.text)
+
     def test_xml_citations_without_data_pipe(self):
 
         fakexylosearticle = Article({'article': {}, 'title': {}, 'citatons': {}})
