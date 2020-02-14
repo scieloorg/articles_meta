@@ -1984,6 +1984,23 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual('articles', expected)
 
+    def test_doi_url_paths_are_quoted(self):
+        fake_article = self._article_meta
+        fake_article.data["citations"] = [{'v37': [{'_': 'https://doi.org/10.1671/0272-4634(2007)27[247:AESITS]2.0.CO;2'}]}]
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+        article = pxml.find('article')
+        article.append(ET.Element('back'))
+        back = article.find('back')
+        back.append(ET.Element('ref-list'))
+
+        data = [fake_article, pxml]
+        raw, xml = export_sci.XMLArticleMetaCitationsPipe().transform(data)
+        expected = xml.xpath('//element-citation/ext-link')[0].attrib["href"]
+
+        self.assertEqual(u'https://doi.org/10.1671/0272-4634%282007%2927%5B247%3AAESITS%5D2.0.CO%3B2', expected)
+
 
 class ExportSci_XMLArticleMetaIssueInfoPipe_Tests(unittest.TestCase):
 
