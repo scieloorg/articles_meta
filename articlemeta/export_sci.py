@@ -1,5 +1,6 @@
 # coding: utf-8
 import re
+from urllib.parse import quote, urlsplit, urlunsplit
 
 from lxml import etree as ET
 
@@ -1043,7 +1044,13 @@ class XMLArticleMetaCitationsPipe(plumber.Pipe):
 
         cit = XMLCitation()
         for citation in raw.citations:
-            reflist.append(cit.deploy(citation)[1])
+            ref = cit.deploy(citation)[1]
+            extlinks = ref.xpath("element-citation/ext-link[@ext-link-type='uri']")
+            for extlink in extlinks:
+                url_parts = list(urlsplit(extlink.attrib["href"]))
+                url_parts[2] = quote(url_parts[2])
+                extlink.attrib["href"] = urlunsplit(url_parts)
+            reflist.append(ref)
 
         return data
 
