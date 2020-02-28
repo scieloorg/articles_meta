@@ -357,6 +357,12 @@ class XMLArticleTitlePipe(plumber.Pipe):
 
 class XMLArticleContributorsPipe(plumber.Pipe):
 
+    translate = {
+        "ND": "author",
+        "ed": "editor",
+        "tr": "translator",
+    }
+
     def precond(data):
 
         raw, xml = data
@@ -366,13 +372,31 @@ class XMLArticleContributorsPipe(plumber.Pipe):
 
     @plumber.precondition(precond)
     def transform(self, data):
+        """
+        https://data.crossref.org/reports/help/schema_doc/4.4.2/index.html
+          <xsd:enumeration value="author"/>
+          <xsd:enumeration value="editor"/>
+          <xsd:enumeration value="chair"/>
+          <xsd:enumeration value="reviewer"/>
+          <xsd:enumeration value="review-assistant"/>
+          <xsd:enumeration value="stats-reviewer"/>
+          <xsd:enumeration value="reviewer-external"/>
+          <xsd:enumeration value="reader"/>
+          <xsd:enumeration value="translator"/>
+        http://data.crossref.org/reports/help/schema_doc/4.3.6/4.3.6.html
+          <xsd:enumeration value="author"/>
+          <xsd:enumeration value="editor"/>
+          <xsd:enumeration value="chair"/>
+          <xsd:enumeration value="translator"/>
+        """
         raw, xml = data
 
         el = ET.Element('contributors')
 
         for ndx, authors in enumerate(raw.authors):
             author = ET.Element('person_name')
-            author.set('contributor_role', 'author')
+            author.set('contributor_role',
+                       self.translate.get(authors.get("role"), "author"))
 
             seq = 'first' if ndx == 0 else 'additional'
             author.set('sequence', seq)
