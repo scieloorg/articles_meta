@@ -1159,6 +1159,16 @@ class ExportTests(unittest.TestCase):
 
     def test_xmlarticle_meta_contrib_group_author_roles_pipe(self):
 
+        raw_json = self._raw_json.copy()
+
+        raw_json['article']['v10'][0]['r'] = 'ed'
+        raw_json['article']['v10'][1]['r'] = 'org'
+        raw_json['article']['v10'][2]['r'] = 'tr'
+        raw_json['article']['v10'][3]['r'] = 'coord'
+        raw_json['article']['v10'][-1]['r'] = 'inventor'
+
+        self._article_meta = Article(raw_json)
+
         pxml = ET.Element('articles')
         pxml.append(ET.Element('article'))
 
@@ -1174,9 +1184,9 @@ class ExportTests(unittest.TestCase):
         raw, xml = xmlarticle.transform(data)
 
         fullnames = [i.text for i in xml.findall('./article/front/article-meta/contrib-group/contrib/role')]
-
-        self.assertEqual([u'ND', u'ND', u'ND', u'ND', u'ND', u'ND', u'ND',
-                          u'ND', u'ND', u'ND'], fullnames)
+        self.assertEqual([], fullnames)
+        roles = [i.get("contrib-type") for i in xml.findall('./article/front/article-meta/contrib-group/contrib')]
+        self.assertEqual(['ed', 'org', 'tr', 'coord', 'author', 'author', 'author', 'author', 'author', 'inventor'], roles)
 
     def test_xmlarticle_meta_contrib_group_author_xrefs_pipe(self):
 
@@ -2045,3 +2055,5 @@ class ExportSci_XMLArticleMetaIssueInfoPipe_Tests(unittest.TestCase):
         raw, xml = _xml.transform(data)
 
         self.assertEqual(xml.findtext('.//article-meta/issue'), '4')
+
+
