@@ -816,7 +816,27 @@ class ExportTests(unittest.TestCase):
                           u'Odilon Vanni de Queiroz',
                           u'Isabel Cristina Gomes'], fullnames)
 
-    def test_xmlarticle_meta_contrib_group_author_roles_pipe(self):
+    def test_xmlarticle_meta_contrib_group_author_roles_pipe_returns_zero_roles(self):
+        """
+        raw_json['article']['v10'][0]['r'] é um atributo, é um código, não faz
+        parte explícita do texto do documento, e por isso, não deveria ser
+        gerado nenhum elemento com seu conteúdo, no entanto, este valor pode
+        preencher `contrib/@contrib-type`
+        """
+
+        raw_json = self._raw_json.copy()
+
+        raw_json['article']['v10'][0]['r'] = 'ed'
+        raw_json['article']['v10'][1]['r'] = 'org'
+        raw_json['article']['v10'][2]['r'] = 'tr'
+        raw_json['article']['v10'][3]['r'] = 'coord'
+        raw_json['article']['v10'][-1]['r'] = 'inventor'
+
+        roles = [item['r']
+                 for item in raw_json['article']['v10']]
+        self.assertEqual(roles, ['ed', 'org', 'tr', 'coord', 'ND', 'ND', 'ND', 'ND', 'ND', 'inventor'])
+
+        self._article_meta = Article(raw_json)
 
         pxml = ET.Element('article')
         pxml.append(ET.Element('front'))
@@ -829,10 +849,10 @@ class ExportTests(unittest.TestCase):
         xmlarticle = export_rsps.XMLArticleMetaContribGroupPipe()
         raw, xml = xmlarticle.transform(data)
 
-        fullnames = [i.text for i in xml.findall('./front/article-meta/contrib-group/contrib/role')]
-
-        self.assertEqual([u'ND', u'ND', u'ND', u'ND', u'ND', u'ND', u'ND',
-                          u'ND', u'ND', u'ND'], fullnames)
+        roles = [i.text for i in xml.findall('./front/article-meta/contrib-group/contrib/role')]
+        self.assertEqual([], roles)
+        roles = [i.get("contrib-type") for i in xml.findall('./front/article-meta/contrib-group/contrib')]
+        self.assertEqual(['ed', 'org', 'tr', 'coord', 'author', 'author', 'author', 'author', 'author', 'inventor'], roles)
 
     def test_xmlarticle_meta_contrib_group_author_xrefs_pipe(self):
 

@@ -780,7 +780,6 @@ class XMLArticleMetaContribGroupPipe(plumber.Pipe):
         raw, xml = data
 
         contribgroup = ET.Element('contrib-group')
-
         for author in raw.authors:
             contribname = ET.Element('name')
 
@@ -794,13 +793,12 @@ class XMLArticleMetaContribGroupPipe(plumber.Pipe):
                 contribgivennames.text = author['given_names']
                 contribname.append(contribgivennames)
 
-            role = ET.Element('role')
-            role.text = author.get('role', 'ND')
-
             contrib = ET.Element('contrib')
-            contrib.set('contrib-type', 'author')
+            contrib_type = "author"
+            if author.get("role", "ND") != "ND":
+                contrib_type = author.get("role")
+            contrib.set('contrib-type', contrib_type)
             contrib.append(contribname)
-            contrib.append(role)
 
             for xr in author.get('xref', []):
                 xref = ET.Element('xref')
