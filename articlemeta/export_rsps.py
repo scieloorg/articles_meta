@@ -472,7 +472,7 @@ class XMLSubArticlePipe(plumber.Pipe):
                     abstract = ET.Element('abstract')
                     abstract.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
                     abstract.append(p)
-                frontstub.append(abstract)
+                    frontstub.append(abstract)
 
             # KEYWORDS
             if raw.keywords():
