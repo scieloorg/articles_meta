@@ -227,30 +227,28 @@ class XMLCitation(object):
         def precond(data):
             raw, xml = data
 
-            if not raw.date:
+            if not raw.publication_date:
                 raise plumber.UnmetPrecondition()
 
         @plumber.precondition(precond)
         def transform(self, data):
             raw, xml = data
 
-            pdate = ET.Element('date')
+            pdate = ET.Element("date")
 
-            if raw.date[8:10]:
-                day = ET.Element('day')
-                day.text = raw.date[8:10]
-                pdate.append(day)
+            date = {
+                "year": raw.publication_date[0:4],
+                "month": raw.publication_date[5:7],
+                "day": raw.publication_date[8:10],
+            }
 
-            if raw.date[5:7]:
-                month = ET.Element('month')
-                month.text = raw.date[5:7]
-                pdate.append(month)
+            for name, value in date.items():
+                if len(value) > 0 and value.isdigit() and int(value) > 0:
+                    date_element = ET.Element(name)
+                    date_element.text = value
+                    pdate.append(date_element)
 
-            year = ET.Element('year')
-            year.text = raw.date[0:4]
-            pdate.append(year)
-
-            xml.find('./element-citation').append(pdate)
+            xml.find("./element-citation").append(pdate)
 
             return data
 

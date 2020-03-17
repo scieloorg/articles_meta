@@ -296,6 +296,76 @@ class XMLCitationTests(unittest.TestCase):
         self.assertEqual(u'04', expected_month)
         self.assertEqual(u'30', expected_day)
 
+    def test_xml_citation_should_not_includes_month_when_number_is_zero(self):
+        fakexylosearticle = Article(
+            {"article": {}, "title": {}, "citations": [{"v65": [{"_": "20060000"}]}]}
+        ).citations[0]
+
+        pxml = ET.Element("ref")
+        pxml.append(ET.Element("element-citation"))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.DatePipe().transform(data)
+
+        expected_year = xml.find("./element-citation/date/year")
+        not_expected_month = xml.find("./element-citation/date/month")
+
+        self.assertEqual(u"2006", expected_year.text)
+        self.assertIsNone(not_expected_month)
+
+    def test_xml_citation_should_not_includes_day_when_number_is_zero(self):
+        fakexylosearticle = Article(
+            {"article": {}, "title": {}, "citations": [{"v65": [{"_": "20060000"}]}]}
+        ).citations[0]
+
+        pxml = ET.Element("ref")
+        pxml.append(ET.Element("element-citation"))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.DatePipe().transform(data)
+
+        expected_year = xml.find("./element-citation/date/year")
+        not_expected_day = xml.find("./element-citation/date/day")
+
+        self.assertEqual(u"2006", expected_year.text)
+        self.assertIsNone(not_expected_day)
+
+    def test_xml_citation_should_not_includes_month_when_number_is_zero(self):
+        fakexylosearticle = Article(
+            {"article": {}, "title": {}, "citations": [{"v65": [{"_": "20060000"}]}]}
+        ).citations[0]
+
+        pxml = ET.Element("ref")
+        pxml.append(ET.Element("element-citation"))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.DatePipe().transform(data)
+
+        expected_year = xml.find("./element-citation/date/year")
+        not_expected_month = xml.find("./element-citation/date/month")
+
+        self.assertEqual(u"2006", expected_year.text)
+        self.assertIsNone(not_expected_month)
+
+    def test_xml_citation_should_not_includes_year_when_number_is_zero(self):
+        fakexylosearticle = Article(
+            {"article": {}, "title": {}, "citations": [{"v65": [{"_": "00000000"}]}]}
+        ).citations[0]
+
+        pxml = ET.Element("ref")
+        pxml.append(ET.Element("element-citation"))
+
+        data = [fakexylosearticle, pxml]
+
+        raw, xml = self._xmlcitation.DatePipe().transform(data)
+
+        not_expected_year = xml.find("./element-citation/date/year")
+
+        self.assertIsNone(not_expected_year)
+
     def test_xml_citation_date_without_data_pipe(self):
 
         fakexylosearticle = Article({'article': {},
