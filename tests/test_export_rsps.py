@@ -1199,6 +1199,31 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'639', fpage)
 
+    def test_xmlarticle_meta_general_info_first_page_with_seq(self):
+
+        pxml = ET.Element('article')
+        pxml.append(ET.Element('front'))
+
+        front = pxml.find('front')
+        front.append(ET.Element('article-meta'))
+        self._article_meta.data['article']['v14'] = [
+            {
+                "l": "610",
+                "s": "34",
+                "_": "",
+                "f": "609"
+            }
+        ]
+
+        data = [self._article_meta, pxml]
+
+        xmlarticle = export_rsps.XMLArticleMetaPagesInfoPipe()
+        raw, xml = xmlarticle.transform(data)
+
+        fpage = xml.find('./front/article-meta/fpage')
+
+        self.assertEqual(u'34', fpage.attrib["seq"])
+
     def test_xmlarticle_meta_general_info_without_first_page_pipe(self):
 
         del(self._article_meta.data['article']['v14'][0]['f'])
