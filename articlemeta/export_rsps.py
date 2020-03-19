@@ -935,6 +935,10 @@ class XMLArticleMetaPagesInfoPipe(plumber.Pipe):
         fpage = ET.Element('fpage')
         fpage.text = raw.start_page
 
+        seq = raw.start_page_sequence
+        if seq:
+            fpage.set("seq", seq)
+
         lpage = ET.Element('lpage')
         lpage.text = raw.end_page
 
