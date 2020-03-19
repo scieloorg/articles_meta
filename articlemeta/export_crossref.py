@@ -893,17 +893,19 @@ class XMLCitation(object):
         def precond(data):
             raw, xml = data
 
-            if not raw.date:
+            if not raw.publication_date:
                 raise plumber.UnmetPrecondition()
 
         @plumber.precondition(precond)
         def transform(self, data):
             raw, xml = data
 
-            pdate = ET.Element('cYear')
-            pdate.text = raw.date[0:4]
+            year = raw.publication_date[0:4]
 
-            xml.find('.').append(pdate)
+            if len(year) > 0 and year.isdigit() and int(year) > 0:
+                pdate = ET.Element("cYear")
+                pdate.text = year
+                xml.find(".").append(pdate)
 
             return data
 

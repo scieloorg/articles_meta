@@ -608,6 +608,37 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
             self.assertIsNotNone(programs)
 
 
+    def test_date_pipe_should_includes_year_when_it_is_valid(self):
+        doi_batch = create_xmlcrossref_with_n_journal_article_element(["pt"])
+        self._raw_json["citations"] = [{"v65": [{"_": "20060320"}]}]
+        article_json = Article(self._raw_json)
+        data = [article_json, doi_batch]
+
+        xmlcrossref = export_crossref.XMLArticleCitationsPipe()
+        raw, xml = xmlcrossref.transform(data)
+
+        self.assertIsNotNone(xml.find(".//citation"))  # ensure citation
+
+        expected_c_year = xml.find(".//cYear")
+
+        self.assertIsNotNone(expected_c_year)
+        self.assertEqual(u"2006", expected_c_year.text)
+
+    def test_date_pipe_should_not_includes_year_when_it_is_zero(self):
+        doi_batch = create_xmlcrossref_with_n_journal_article_element(["pt"])
+        self._raw_json["citations"] = [{"v65": [{"_": "0000"}]}]
+        article_json = Article(self._raw_json)
+        data = [article_json, doi_batch]
+
+        xmlcrossref = export_crossref.XMLArticleCitationsPipe()
+        raw, xml = xmlcrossref.transform(data)
+
+        self.assertIsNotNone(xml.find(".//citation"))  # ensure citation
+
+        not_expected_c_year = xml.find(".//cYear")
+
+        self.assertIsNone(not_expected_c_year)
+
 class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
 
     def setUp(self):
