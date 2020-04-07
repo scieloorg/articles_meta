@@ -524,5 +524,19 @@
     "status": "independent",
     "type": "journals",
     "is_active": true
+  },
+  {
+    "acron": "preprints",
+    "code": "preprints",
+    "domain": "preprints.scielo.org",
+    "name": {
+      "en": "SciELO Preprints",
+      "pt": "SciELO Preprints",
+      "es": "SciELO Preprints"
+    },
+    "has_analytics": false,
+    "original_name": "SciELO Preprints",
+    "type": "preprints",
+    "is_active": true
   }
 ]
