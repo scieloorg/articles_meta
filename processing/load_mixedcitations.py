@@ -4,6 +4,7 @@ This scripts loads the mixed citations of a given article.
 """
 import re
 import os
+import html
 import argparse
 import logging
 import codecs
@@ -70,8 +71,48 @@ def remove_control_characters(data):
     return "".join(ch for ch in data if unicodedata.category(ch)[0] != "C")
 
 
-def html_decode(string):
+def escape_html_http_tags(string):
+    """Escapa trechos de uma string que podem ser interpretadas como tags HTML.
 
+    >>> escape_html_http_tags("Citação disponível em <http://www.scielo.br>.")
+    >>> "Citação disponível em &lt;http://www.scielo.br&gt;."
+    >>> escape_html_http_tags("Citação disponível em <http://www.scielo.br")
+    >>> "Citação disponível em &lt;http://www.scielo.br"
+    """
+
+    if "<http" not in string:
+        return string
+
+    match = re.compile(".*(<http.*?>|<http.*?>?).*", re.MULTILINE).match(string)
+
+    if match:
+        http_string = match.groups()[0]
+        string = string.replace(http_string, html.escape(http_string))
+    return string
+
+
+def change_w_namespace(string):
+    if 'w:st="on"' not in string:
+        return string
+
+    return string.replace('w:st="on"', 'w-st="on"')
+
+
+def normalize_string(string):
+    """Remove tags HTML, pontuação e espaços desnecessários.
+
+    >>> normalize_string("<font>Mixed citation    <i>italic </i> :).</font>")
+    >>> "Mixed citation "
+    """
+
+    string = re.sub(re.compile("<.*?>"), "", string)
+    string = re.sub(r"\s+", " ", string)
+    string = re.sub(r"[^\w\s]+", "", string, re.UNICODE)
+    return string.strip()
+
+
+def html_decode(string):
+    string = escape_html_http_tags(string)
     string = remove_control_characters(string)
 
     return string
@@ -110,7 +151,7 @@ def audity(mixed, document):
     if int(mixed['order']) > len(document.citations or []):
         return False
 
-    check = mixed['mixed'].lower()
+    check = html.unescape(mixed['mixed'].lower())
     citation_index = int(mixed['order'])-1
     citation_titles = [i.lower() for i in [
         document.citations[citation_index].title() or '',
@@ -126,7 +167,15 @@ def audity(mixed, document):
     citation_authors = document.citations[citation_index].authors or []
 
     for title in citation_titles:
-        if title in check:
+        _title = normalize_string(title).split(" ")
+        _check = normalize_string(check)
+        total_matches = 0
+
+        for _str in _title:
+            if _str in _check:
+                total_matches += 1
+
+        if (total_matches/len(_title)) >= 0.9:
             return True
 
     for author in citation_authors:
@@ -173,6 +222,7 @@ def run(mixed_citations_file, import_data):
         for line in mixed_citations:
             mixed = json.loads(line)
             mixed['mixed'] = html_decode(mixed['mixed'])
+            mixed["mixed"] = change_w_namespace(mixed['mixed'])
             document = get_document(mixed['collection'], mixed['pid'])
 
             logger.info('Trying to import %s %s %s', mixed['collection'], mixed['pid'], mixed['order'])
@@ -228,3 +278,7 @@ def main():
     _config_logging(args.logging_level, args.logging_file)
 
     run(args.csv_file, args.import_data)
+
+
+if __name__ == "__main__":
+    main()
