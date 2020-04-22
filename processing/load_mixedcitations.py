@@ -16,7 +16,7 @@ from xylose.scielodocument import Article
 logger = logging.getLogger(__name__)
 SENTRY_DSN = os.environ.get('SENTRY_DSN', None)
 LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
-MONGODB_HOST = os.environ.get('MONGODB_HOST', None)
+MONGODB_HOST = os.environ.get('MONGODB_HOST', 'mongodb://localhost:27017/articlemeta')
 
 DOI_REGEX = re.compile(r'[0-9][0-9]\.[0-9].*/.*\S')
 
@@ -60,9 +60,10 @@ if SENTRY_DSN:
 
 
 try:
-    articlemeta_db = controller.DataBroker.from_dsn(MONGODB_HOST).db
+    articlemeta_db = controller.get_dbconn(MONGODB_HOST)
 except:
-    logger.error('Fail to connect to (%s)', MONGODB_HOST)
+    print('Fail to connect to:', MONGODB_HOST)
+    sys.exit(1)
 
 
 def remove_control_characters(data):
