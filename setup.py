@@ -44,7 +44,7 @@ setup(
     ],
     dependency_links=[
         "git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap",
-        "git+https://github.com/scieloorg/xylose.git@1.35.8#egg=xylose",
+        "git+https://github.com/scieloorg/xylose.git@1.35.9#egg=xylose",
     ],
     include_package_data=True,
     zip_safe=False,
