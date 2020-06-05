@@ -138,7 +138,9 @@ def do_request(url, json=True):
 
 
 def load_documents(collection, articlemeta_db, all_records=False):
-
+    """
+    Carrega dos documentos da base de dados mongodb do AM.
+    """
     fltr = {
         'collection': collection
     }
@@ -148,10 +150,11 @@ def load_documents(collection, articlemeta_db, all_records=False):
 
     documents = articlemeta_db['articles'].find(
         fltr,
-        {'code': 1}
+        {'code': 1}, no_cursor_timeout=True
     )
 
     pids = []
+
     for document in documents:
         pids.append(document['code'])
 
@@ -159,11 +162,13 @@ def load_documents(collection, articlemeta_db, all_records=False):
         del(fltr['fulltexts'])
 
     for pid in pids:
+
         fltr['code'] = pid
         document = articlemeta_db['articles'].find_one(
             fltr,
             {'_id': 0, 'citations': 0}
         )
+
         yield Article(document)
 
     documents.close()
