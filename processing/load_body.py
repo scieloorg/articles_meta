@@ -19,6 +19,7 @@ from io import StringIO
 from xylose.scielodocument import Article
 
 from articlemeta import controller
+from processing import escape_html_http_tags
 
 
 logger = logging.getLogger(__name__)
@@ -168,6 +169,7 @@ def scrap_body(data, language):
     data = data.decode(encoding, 'replace')
 
     data = ' '.join([i.strip() for i in data.split('\n')])
+    data = escape_html_http_tags(data)
 
     parser = etree.HTMLParser(remove_blank_text=True)
     tree = etree.parse(StringIO(data), parser)
