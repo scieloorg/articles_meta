@@ -10,6 +10,23 @@ from processing import load_languages
 from articlemeta import controller
 
 
+def mock_static_catalog_init_method(self, collection):
+    self.catalog = {
+        "rsp": {
+            "v52": {
+                'html': [],
+                'pdf': [
+                    '0034-8910-rsp-s1518-87872018052000131-pt',
+                    '0034-8910-rsp-s1518-87872018052000131',
+                    'pt_0034-8910-rsp-s1518-87872018052000131'
+                ],
+                'xml': [
+                    '0034-8910-rsp-s1518-87872018052000131'
+                ]
+            }
+        }
+    }
+
 class LoadLanguageTest(TestCase):
 
     def setUp(self):
@@ -63,6 +80,9 @@ class LoadLanguageTest(TestCase):
             ['mioc', 'v82s3', 'vol82(fsup3)_ii']
         )
 
+    @patch.object(
+        load_languages.StaticCatalog, "__init__", mock_static_catalog_init_method
+    )
     def test_run(self):
         mocked_articlemeta_db = mongomock.MongoClient().db
         mocked_articlemeta_db['collections'].insert_many([
