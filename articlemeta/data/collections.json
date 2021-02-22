@@ -538,5 +538,19 @@
     "original_name": "SciELO Preprints",
     "type": "preprints",
     "is_active": true
+  },
+  {
+    "acron": "data",
+    "code": "data",
+    "domain": "data.scielo.org",
+    "name": {
+      "en": "SciELO Data",
+      "pt": "SciELO Data",
+      "es": "SciELO Data"
+    },
+    "has_analytics": false,
+    "original_name": "SciELO Data",
+    "type": "repositories",
+    "is_active": true
   }
 ]
