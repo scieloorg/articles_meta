@@ -1,6 +1,7 @@
 import unittest
 from lxml import etree
 from articlemeta.utils import convert_ahref_to_extlink
+from processing import escape_html_http_tags
 
 
 class TestConvertAtoExtlink(unittest.TestCase):
@@ -21,3 +22,20 @@ class TestConvertAtoExtlink(unittest.TestCase):
         xml_etree = convert_ahref_to_extlink(self.etree_with_links)
         self.assertEqual(1, len(xml_etree.findall(".//ext-link")))
 
+
+class TestProcessingEscapeHTTPTags(unittest.TestCase):
+
+    def test_should_escape_http_tags(self):
+        string = "<http://www.scielo.br>Texto"
+        expected = "&lt;http://www.scielo.br&gt;Texto"
+        self.assertEqual(expected, escape_html_http_tags(string))
+
+    def test_should_escape_all_html_tags_in_the_string(self):
+        string = "<http://www.scielo.br>Texto<p><https://www.scielo.org></p>"
+        expected = "&lt;http://www.scielo.br&gt;Texto<p>&lt;https://www.scielo.org&gt;</p>"
+        self.assertEqual(expected, escape_html_http_tags(string))
+
+    def test_should_not_scape_regular_tags_or_texts(self):
+        string = "<p>Some text available in &lt;http://www.scielo.br&gt;</p>"
+        expected = "<p>Some text available in &lt;http://www.scielo.br&gt;</p>"
+        self.assertEqual(expected, escape_html_http_tags(string))
