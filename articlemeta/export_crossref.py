@@ -331,6 +331,25 @@ class XMLArticleTitlesPipe(plumber.Pipe):
         return data
 
 
+def title_doi_lang(raw):
+    items = {}
+
+    items[raw.original_language()] = {
+        "article_title": raw.original_title(),
+        "doi": raw.doi,
+        "original": True,
+    }
+    for lang, article_title in (raw.translated_titles() or {}).items():
+        items[lang] = items.get(lang) or {}
+        items[lang]["article_title"] = article_title
+
+    for lang, doi in raw.doi_and_lang:
+        items[lang] = items.get(lang) or {}
+        items[lang]["doi"] = doi
+
+    return items
+
+
 class XMLArticleTitlePipe(plumber.Pipe):
 
     def transform(self, data):
