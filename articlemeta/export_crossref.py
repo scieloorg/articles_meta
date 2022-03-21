@@ -1096,7 +1096,7 @@ class XMLClosePipe(plumber.Pipe):
         return data
 
 
-class XMLProgramPipe(plumber.Pipe):
+class XMLProgramRelatedItemPipe(plumber.Pipe):
 
     def transform(self, data):
         raw, xml = data
@@ -1107,16 +1107,18 @@ class XMLProgramPipe(plumber.Pipe):
     def _transform_original(self, data):
         raw, xml = data
 
+        # first journal_article (main)
         journal_article_node = xml.find('.//journal_article')
 
-        doi_and_lang = raw.doi_and_lang[1:]
-
         # program
-        program_node = ET.Element('program')
+        program_node = ET.Element("program")
         program_node.set('xmlns',  'http://www.crossref.org/relations.xsd')
 
+        original_language = raw.original_language()
         translated_titles = raw.translated_titles()
-        for lang, doi in doi_and_lang:
+        for lang, doi in raw.doi_and_lang:
+            if lang == original_language:
+                continue
 
             # program/related_item
             related_item_node = ET.Element('related_item')
@@ -1144,7 +1146,7 @@ class XMLProgramPipe(plumber.Pipe):
         raw, xml = data
 
         # program
-        program_node = ET.Element('program')
+        program_node = ET.Element("program")
         program_node.set('xmlns',  'http://www.crossref.org/relations.xsd')
 
         # program/related_item
@@ -1158,7 +1160,7 @@ class XMLProgramPipe(plumber.Pipe):
         # program/related_item/intra_work_relation
         intra_work_relation_node = ET.Element('intra_work_relation')
         intra_work_relation_node.set(
-            'relationship-type', 'isTranslationOf')
+            'relationship-type', 'hasTranslation')
         intra_work_relation_node.set('identifier-type', 'doi')
         intra_work_relation_node.text = raw.doi
         related_item_node.append(intra_work_relation_node)

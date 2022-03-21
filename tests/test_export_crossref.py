@@ -1251,29 +1251,33 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
             ['pt', 'en', 'es'])
 
         data = [self._article, xmlcrossref]
-        xmlcrossref = export_crossref.XMLProgramPipe()
+        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
         raw, xml = xmlcrossref.transform(data)
 
         expected_content = [
             ('10.1590/ID.en',
              "Epidemiological profile of patients on"
              " renal replacement therapy in Brazil, 2000-2004",
-             0
+             0,
+             "isTranslationOf",
              ),
             ('10.1590/ID.es',
              "Perfil epidemiológico de los pacientes en terapia"
              " renal substitutiva en Brasil, 2000-2004",
-             1
+             1,
+             "isTranslationOf",
              ),
             ('10.1590/S0034-89102010000400007',
              "Perfil epidemiológico dos pacientes em terapia"
              " renal substitutiva no Brasil, 2000-2004",
-             2
+             2,
+             "hasTranslation",
              ),
             ('10.1590/S0034-89102010000400007',
              "Perfil epidemiológico dos pacientes em terapia"
              " renal substitutiva no Brasil, 2000-2004",
-             3
+             3,
+             "hasTranslation",
              ),
         ]
         self.assertEqual(
@@ -1294,7 +1298,7 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
                 self.assertEqual(
                     'doi', intra_work_relation.attrib.get('identifier-type'))
                 self.assertEqual(
-                    'isTranslationOf',
+                    content[3],
                     intra_work_relation.attrib.get('relationship-type'))
 
     def test_collection_for_multilingue_document(self):
@@ -1787,24 +1791,21 @@ class ExportCrossRef_MultiLingueDoc_with_DOI_pt_es_Tests(unittest.TestCase):
             ['pt', 'es'])
 
         data = [self._article, xmlcrossref]
-        xmlcrossref = export_crossref.XMLProgramPipe()
+        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
         raw, xml = xmlcrossref.transform(data)
 
         expected_content = [
             ('10.1590/ID.es',
              "Perfil epidemiológico de los pacientes en terapia"
              " renal substitutiva en Brasil, 2000-2004",
-             0
+             0,
+             "isTranslationOf",
              ),
             ('10.1590/S0034-89102010000400007',
              "Perfil epidemiológico dos pacientes em terapia"
              " renal substitutiva no Brasil, 2000-2004",
-             1
-             ),
-            ('10.1590/S0034-89102010000400007',
-             "Perfil epidemiológico dos pacientes em terapia"
-             " renal substitutiva no Brasil, 2000-2004",
-             2
+             1,
+             "hasTranslation",
              ),
         ]
         self.assertEqual(
@@ -1825,7 +1826,7 @@ class ExportCrossRef_MultiLingueDoc_with_DOI_pt_es_Tests(unittest.TestCase):
                 self.assertEqual(
                     'doi', intra_work_relation.attrib.get('identifier-type'))
                 self.assertEqual(
-                    'isTranslationOf',
+                    content[3],
                     intra_work_relation.attrib.get('relationship-type'))
 
     def test_collection_for_multilingue_document(self):
