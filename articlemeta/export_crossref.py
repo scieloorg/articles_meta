@@ -483,27 +483,28 @@ class XMLArticleAbstractPipe(plumber.Pipe):
     def transform(self, data):
         raw, xml = data
 
-        abstract = None
-        if raw.original_abstract():
-            paragraph = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}p')
-            paragraph.text = raw.original_abstract()
-            abstract = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}abstract')
-            abstract.set('{http://www.w3.org/XML/1998/namespace}lang', raw.original_language())
-            abstract.append(paragraph)
+        paragraph = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}p')
+        paragraph.text = raw.original_abstract()
+        abstract = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}abstract')
+        abstract.set('{http://www.w3.org/XML/1998/namespace}lang', raw.original_language())
+        abstract.append(paragraph)
+        abstracts = {raw.original_language(): abstract}
 
-        translated_abstracts = []
         for language, body in raw.translated_abstracts().items():
             paragraph = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}p')
             paragraph.text = body
-            el = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}abstract')
-            el.set('{http://www.w3.org/XML/1998/namespace}lang', language)
-            el.append(paragraph)
-            translated_abstracts.append(el)
+            abstract = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}abstract')
+            abstract.set('{http://www.w3.org/XML/1998/namespace}lang', language)
+            abstract.append(paragraph)
+            abstracts[language] = abstract
 
         for journal_article in xml.findall('./body/journal//journal_article'):
-            if abstract is not None:
-                journal_article.append(deepcopy(abstract))
-            for item in translated_abstracts:
+            language = journal_article.get("language")
+
+            journal_article.append(deepcopy(abstracts[language]))
+            for lang, item in abstracts.items():
+                if lang == language:
+                    continue
                 journal_article.append(deepcopy(item))
         return data
 
