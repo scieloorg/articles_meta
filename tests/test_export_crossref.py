@@ -659,7 +659,6 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
         schema_root = ET.parse(fp)
         schema = ET.XMLSchema(schema_root)
         fp.close()
-        print(ET.tostring(xmlio))
 
         schema.assertValid(xmlio)
         self.assertTrue(schema.validate(xmlio))

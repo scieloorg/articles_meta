@@ -206,8 +206,8 @@ class Export(object):
             export_crossref.XMLArticleAbstractPipe(),
             export_crossref.XMLArticlePubDatePipe(),
             export_crossref.XMLPagesPipe(),
-            export_crossref.XMLElocationPipe(),
             export_crossref.XMLPIDPipe(),
+            export_crossref.XMLElocationPipe(),
             export_crossref.XMLPermissionsPipe(),
             export_crossref.XMLProgramRelatedItemPipe(),
             export_crossref.XMLDOIDataPipe(),
@@ -215,7 +215,6 @@ class Export(object):
             export_crossref.XMLResourcePipe(),
             export_crossref.XMLCollectionPipe(),
             export_crossref.XMLArticleCitationsPipe(),
-            
             export_crossref.XMLClosePipe()
         )
 
