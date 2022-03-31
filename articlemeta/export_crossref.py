@@ -350,27 +350,55 @@ def title_doi_lang(raw):
     return items
 
 
+def _get_langs_ordered_by_priority(raw):
+    article_langs = [raw.original_language()] + list(raw.translated_titles().keys())
+    main_langs = []
+    for lang in ["en", "pt", "es"] + article_langs:
+        if lang in article_langs and lang not in main_langs:
+            main_langs.append(lang)
+    return main_langs
+
+
 class XMLArticleTitlePipe(plumber.Pipe):
+    """
+    Create `<title>` and `<original_language_title/>`
+    `<title>` contains the article title related to the corresponding DOI
+    `<original_language_title>` is a title different from `<title>`, select the
+    first title from a priority list: en, pt, es, other article title languages
+    """
 
     def transform(self, data):
         raw, xml = data
         nodes = xml.findall('.//journal_article')
 
-        for ja, doi_and_lang in zip(nodes, raw.doi_and_lang):
+        article_titles = {raw.original_language(): raw.original_title()}
+        article_titles.update(raw.translated_titles())
+        langs_ordered_by_priority = _get_langs_ordered_by_priority(raw)
+
+        for ja in nodes:
+            ja_lang = ja.get("language")
+
             node = ja.find('./titles')
+
+            # create `<title>` which content is a title in a language equal to `ja_lang`
             el = ET.Element('title')
-            lang, doi = doi_and_lang
-            if lang == raw.original_language():
-                # el.set('language', lang)
-                el.text = raw.original_title() or '[NO TITLE AVAILABLE]'
-                node.append(el)
-            else:
-                el.text = raw.translated_titles().get(lang) or '[NO TITLE AVAILABLE]'
-                el_original = ET.Element('original_language_title')
-                el_original.set('language', raw.original_language())
-                el_original.text = raw.original_title()
-                node.append(el)
-                node.append(el_original)
+            el.text = article_titles.get(ja_lang) or '[NO TITLE AVAILABLE]'
+            node.append(el)
+
+            for lang in langs_ordered_by_priority:
+                if ja_lang == lang:
+                    continue
+
+                # create `<original_language_title>` which content is
+                # a title in a language different from `ja_lang`
+                # (http://support.crossref.org/hc/requests/407513)
+                alt_title = ET.Element('original_language_title')
+                alt_title.set('language', lang)
+                alt_title.text = article_titles.get(lang) or '[NO TITLE AVAILABLE]'
+                node.append(alt_title)
+                # select only the first title
+                break
+
         return data
 
 
