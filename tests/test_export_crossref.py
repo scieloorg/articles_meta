@@ -122,21 +122,28 @@ def create_xmlcrossref_with_journal_element(journal_child_name=None):
 
 def create_xmlcrossref_with_n_journal_article_element(
         languages, journal_article_child_name=None):
-    xmlcrossref = ET.Element('doi_batch')
-    body = ET.Element('body')
-    journal = ET.Element('journal')
-    for lang in languages:
-        journal_article = ET.Element('journal_article')
-        journal_article.set('language', lang)
-        journal_article.set('publication_type', 'full_text')
-        if journal_article_child_name:
-            journal_article_child = ET.Element(journal_article_child_name)
-            journal_article.append(journal_article_child)
-        journal.append(journal_article)
-    body.append(journal)
 
-    xmlcrossref.append(body)
-    return xmlcrossref
+    journal_article_child = (
+        journal_article_child_name and f"<{journal_article_child_name}/>" or ''
+    )
+    items = []
+    for lang in languages:
+        items.append(
+            f'<journal_article language="{lang}" publication_type="full_text">'
+            f'{journal_article_child}'
+            '</journal_article>'
+        )
+    journal_articles = "\n".join(items)
+    xml = (
+        '<doi_batch>'
+        '<body>'
+        '<journal>'
+        f'{journal_articles}'
+        '</journal>'
+        '</body>'
+        '</doi_batch>'
+    )
+    return ET.fromstring(xml)
 
 
 class ExportCrossRefTitleDoiLangTests(unittest.TestCase):
@@ -516,28 +523,46 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
 
     def test_article_title_element(self):
 
-        xmlcrossref = ET.Element('doi_batch')
-
-        titles = ET.Element('titles')
-
-        journal_article = ET.Element('journal_article')
-        journal_article.set('publication_type', 'full_text')
-        journal_article.append(titles)
-
-        journal = ET.Element('journal')
-        journal.append(journal_article)
-
-        body = ET.Element('body')
-        body.append(journal)
-
-        xmlcrossref.append(body)
+        xml = (
+            '<doi_batch>'
+            '<body>'
+            '<journal>'
+            '<journal_article language="pt" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '<journal_article language="en" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '<journal_article language="es" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '</journal>'
+            '</body>'
+            '</doi_batch>'
+        )
+        xmlcrossref = ET.fromstring(xml)
 
         data = [self._article_meta, xmlcrossref]
 
         xmlcrossref = export_crossref.XMLArticleTitlePipe()
         raw, xml = xmlcrossref.transform(data)
 
-        self.assertEqual(b'<doi_batch><body><journal><journal_article publication_type="full_text"><titles><title>Perfil epidemiol&#243;gico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004</title></titles></journal_article></journal></body></doi_batch>', ET.tostring(xml))
+        expected_titles = [
+            'Perfil epidemiológico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004',
+            'Epidemiological profile of patients on renal replacement therapy in Brazil, 2000-2004',
+            'Perfil epidemiológico de los pacientes en terapia renal substitutiva en Brasil, 2000-2004',
+        ]
+        expected_alt_titles = [
+            'Epidemiological profile of patients on renal replacement therapy in Brazil, 2000-2004',
+            'Perfil epidemiológico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004',
+            'Epidemiological profile of patients on renal replacement therapy in Brazil, 2000-2004',
+        ]
+        
+        titles = [node.text for node in xml.findall(".//journal_article//title")]
+        alt_titles = [node.text for node in xml.findall(".//journal_article//original_language_title")]
+
+        self.assertEqual(expected_titles, titles)
+        self.assertEqual(expected_alt_titles, alt_titles)
 
     def test_article_contributors_element(self):
 
@@ -1060,29 +1085,22 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
         xmlcrossref = export_crossref.XMLArticleTitlePipe()
         raw, xml = xmlcrossref.transform(data)
 
-        expected_content = [
-            ('Perfil epidemiológico dos pacientes em terapia renal'
-             ' substitutiva no Brasil, 2000-2004', None, None),
-            ('Epidemiological profile of patients on'
-             ' renal replacement therapy in Brazil, 2000-2004', 'pt',
-             'Perfil epidemiológico dos pacientes em terapia renal'
-             ' substitutiva no Brasil, 2000-2004'),
-            ('Perfil epidemiológico de los pacientes en terapia'
-             ' renal substitutiva en Brasil, 2000-2004', 'pt',
-             'Perfil epidemiológico dos pacientes em terapia renal'
-             ' substitutiva no Brasil, 2000-2004'),
+        expected_titles = [
+            'Perfil epidemiológico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004',
+            'Epidemiological profile of patients on renal replacement therapy in Brazil, 2000-2004',
+            'Perfil epidemiológico de los pacientes en terapia renal substitutiva en Brasil, 2000-2004',
         ]
-        self.assertEqual(len(xml.findall('.//titles')), 3)
-        for titles, content in zip(xml.findall('.//titles'), expected_content):
-            with self.subTest(content[0]):
-                self.assertEqual(
-                    titles.findtext('title'), content[0])
-                self.assertEqual(
-                    titles.findtext('original_language_title'), content[2])
-                lang = titles.find('original_language_title')
-                if lang is not None:
-                    lang = lang.attrib.get('language')
-                self.assertEqual(lang, content[1])
+        expected_alt_titles = [
+            'Epidemiological profile of patients on renal replacement therapy in Brazil, 2000-2004',
+            'Perfil epidemiológico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004',
+            'Epidemiological profile of patients on renal replacement therapy in Brazil, 2000-2004',
+        ]
+        
+        titles = [node.text for node in xml.findall(".//journal_article//title")]
+        alt_titles = [node.text for node in xml.findall(".//journal_article//original_language_title")]
+
+        self.assertEqual(expected_titles, titles)
+        self.assertEqual(expected_alt_titles, alt_titles)
 
     def test_article_contributors_element(self):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
@@ -1624,30 +1642,36 @@ class ExportCrossRef_MultiLingueDoc_with_DOI_pt_es_Tests(unittest.TestCase):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
             ['pt', 'es'], 'titles')
 
+        self._article.data["article"]["v12"] = [
+            {
+                "l": "pt",
+                "_": "Perfil epidemiológico dos pacientes em terapia"
+                " renal substitutiva no Brasil, 2000-2004"
+            },
+            {
+                "l": "es",
+                "_": "Perfil epidemiológico de los pacientes en terapia"
+                " renal substitutiva en Brasil, 2000-2004"
+            }
+        ]
         data = [self._article, xmlcrossref]
 
         xmlcrossref = export_crossref.XMLArticleTitlePipe()
         raw, xml = xmlcrossref.transform(data)
 
-        expected_content = [
-            ('Perfil epidemiológico dos pacientes em terapia renal'
-             ' substitutiva no Brasil, 2000-2004', None, None),
-            ('Perfil epidemiológico de los pacientes en terapia'
-             ' renal substitutiva en Brasil, 2000-2004', 'pt',
-             'Perfil epidemiológico dos pacientes em terapia renal'
-             ' substitutiva no Brasil, 2000-2004'),
+        expected_titles = [
+            'Perfil epidemiológico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004',
+            'Perfil epidemiológico de los pacientes en terapia renal substitutiva en Brasil, 2000-2004',
         ]
-        self.assertEqual(len(xml.findall('.//titles')), 2)
-        for titles, content in zip(xml.findall('.//titles'), expected_content):
-            with self.subTest(content[0]):
-                self.assertEqual(
-                    titles.findtext('title'), content[0])
-                self.assertEqual(
-                    titles.findtext('original_language_title'), content[2])
-                lang = titles.find('original_language_title')
-                if lang is not None:
-                    lang = lang.attrib.get('language')
-                self.assertEqual(lang, content[1])
+        expected_alt_titles = [
+            'Perfil epidemiológico de los pacientes en terapia renal substitutiva en Brasil, 2000-2004',
+            'Perfil epidemiológico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004',
+        ]
+        titles = [node.text for node in xml.findall(".//journal_article//title")]
+        alt_titles = [node.text for node in xml.findall(".//journal_article//original_language_title")]
+
+        self.assertEqual(expected_titles, titles)
+        self.assertEqual(expected_alt_titles, alt_titles)
 
     def test_article_contributors_element(self):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
