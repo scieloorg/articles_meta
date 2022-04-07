@@ -764,12 +764,7 @@ class XMLResourcePipe(plumber.Pipe):
 
 class XMLCollectionPipe(plumber.Pipe):
 
-    def precond(data):
-
-        raw, xml = data
-
-        if not raw.fulltexts().get('pdf', None):
-            raise plumber.UnmetPrecondition()
+    ARTICLE_PDF = 'http://{}/scielo.php?script=sci_pdf&pid={}&tlng={}'
 
     def create_collection_element(self, resource_value):
         resource = ET.Element('resource')
@@ -784,15 +779,17 @@ class XMLCollectionPipe(plumber.Pipe):
         collection.append(item)
         return collection
 
-    @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
-        pdf_items = raw.fulltexts().get('pdf')
+
         for doi_data, doi_and_lang in zip(
                 xml.findall('.//journal_article/doi_data'),
                 raw.doi_and_lang):
             collection = self.create_collection_element(
-                pdf_items.get(doi_and_lang[0]))
+                self.ARTICLE_PDF.format(
+                    raw.scielo_domain, raw.publisher_id, doi_and_lang[0]
+                )
+            )
             doi_data.append(collection)
 
         return data

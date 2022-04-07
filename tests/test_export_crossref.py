@@ -1336,9 +1336,9 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
         raw, xml = xmlcrossref.transform(data)
 
         texts = [
-            "http://www.scielo.br/pdf/rsp/v44n4/07.pdf",
-            "http://www.scielo.br/pdf/rsp/v44n4/en_07.pdf",
-            "http://www.scielo.br/pdf/rsp/v44n4/es_07.pdf",
+            "http://www.scielo.br/scielo.php?script=sci_pdf&pid=S0034-89102010000400007&tlng=pt",
+            "http://www.scielo.br/scielo.php?script=sci_pdf&pid=S0034-89102010000400007&tlng=en",
+            "http://www.scielo.br/scielo.php?script=sci_pdf&pid=S0034-89102010000400007&tlng=es",
         ]
         self.assertEqual(
             3, len(xml.findall('.//doi_data//collection')))
@@ -1875,9 +1875,10 @@ class ExportCrossRef_MultiLingueDoc_with_DOI_pt_es_Tests(unittest.TestCase):
         raw, xml = xmlcrossref.transform(data)
 
         texts = [
-            "http://www.scielo.br/pdf/rsp/v44n4/07.pdf",
-            "http://www.scielo.br/pdf/rsp/v44n4/es_07.pdf",
+            "http://www.scielo.br/scielo.php?script=sci_pdf&pid=S0034-89102010000400007&tlng=pt",
+            "http://www.scielo.br/scielo.php?script=sci_pdf&pid=S0034-89102010000400007&tlng=es",
         ]
+
         self.assertEqual(
             2, len(xml.findall('.//doi_data//collection')))
         for res, text in zip(
