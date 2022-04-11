@@ -1,4 +1,5 @@
 import unittest
+import json
 from datetime import datetime
 
 from articlemeta import controller
@@ -48,4 +49,29 @@ class FunctionDatesToStringTests(unittest.TestCase):
         data_copy = data.copy()
         _ = controller.dates_to_string(data)
         self.assertEqual(data, data_copy)
+
+
+class PdfsPathsTests(unittest.TestCase):
+    def test_pdfs_paths_only_one_doi(self):
+        with open("./tests/fixtures/article_meta_pdfs_paths_only_one_doi.json") as fp:
+            data = json.loads(fp.read())
+        expected = {
+            "code": "S0004-27492000000500002",
+            "collection": "scl",
+            "processing_date": "2007-04-03T00:00:00.000Z",
+            "pdfs": [{
+                "lang": "pt",
+                "path": "pdf/aa/v34n1/v34n1a13.pdf",
+                "doi": "10.1590/S0044-59672004000100013",
+                "checked": False,
+            },
+            {
+                "lang": "en",
+                "path": "pdf/aa/v34n1/en_v34n1a13.pdf",
+                "doi": "10.1590/S0044-59672004000100013",
+                "checked": False,
+            }
+        ]}
+        self.assertEqual(expected, controller._pdfs_paths(data))
+
 
