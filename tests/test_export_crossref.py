@@ -1673,6 +1673,32 @@ class ExportCrossRef_MultiLingueDoc_with_DOI_pt_es_Tests(unittest.TestCase):
         self.assertEqual(expected_titles, titles)
         self.assertEqual(expected_alt_titles, alt_titles)
 
+    def test_article_title_element_once(self):
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+            ['pt'], 'titles')
+
+        self._article.data["article"]["v12"] = [
+            {
+                "l": "pt",
+                "_": "Perfil epidemiológico dos pacientes em terapia"
+                " renal substitutiva no Brasil, 2000-2004"
+            },
+        ]
+        data = [self._article, xmlcrossref]
+
+        xmlcrossref = export_crossref.XMLArticleTitlePipe()
+        raw, xml = xmlcrossref.transform(data)
+
+        expected_titles = [
+            'Perfil epidemiológico dos pacientes em terapia renal substitutiva no Brasil, 2000-2004',
+        ]
+        expected_alt_titles = []
+        titles = [node.text for node in xml.findall(".//journal_article//title")]
+        alt_titles = [node.text for node in xml.findall(".//journal_article//original_language_title")]
+
+        self.assertEqual(expected_titles, titles)
+        self.assertEqual(expected_alt_titles, alt_titles)
+
     def test_article_contributors_element(self):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
             ['pt', 'es'])
