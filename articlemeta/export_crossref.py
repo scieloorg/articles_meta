@@ -351,7 +351,8 @@ def title_doi_lang(raw):
 
 
 def _get_langs_ordered_by_priority(raw):
-    article_langs = [raw.original_language()] + list(raw.translated_titles().keys())
+    other_langs = list((raw.translated_titles() or {}).keys())
+    article_langs = [raw.original_language()] + other_langs
     main_langs = []
     for lang in ["en", "pt", "es"] + article_langs:
         if lang in article_langs and lang not in main_langs:
@@ -372,7 +373,7 @@ class XMLArticleTitlePipe(plumber.Pipe):
         nodes = xml.findall('.//journal_article')
 
         article_titles = {raw.original_language(): raw.original_title()}
-        article_titles.update(raw.translated_titles())
+        article_titles.update(raw.translated_titles() or {})
         langs_ordered_by_priority = _get_langs_ordered_by_priority(raw)
 
         for ja in nodes:
@@ -1141,7 +1142,7 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
         program_node.set('xmlns',  'http://www.crossref.org/relations.xsd')
 
         original_language = raw.original_language()
-        translated_titles = raw.translated_titles()
+        translated_titles = raw.translated_titles() or {}
         for lang, doi in raw.doi_and_lang:
             if lang == original_language:
                 continue
