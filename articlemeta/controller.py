@@ -13,6 +13,64 @@ import requests
 LIMIT = 1000
 
 
+def _doi_with_lang(doi_and_lang):
+    d = {}
+    for lang, doi in doi_and_lang:
+        d[lang] = doi
+    return d
+
+
+def _pdfs_paths(record):
+    rec = {
+        'code': record['code'],
+        'collection': record['collection'],
+        'processing_date': record['processing_date'],
+    }
+
+    article = Article(record)
+    try:
+        rec['pid_v3'] = article.data['article']['v885'][0]['_']
+    except KeyError:
+        pass
+    if article.publisher_ahead_id:
+        rec['previous_pid'] = article.publisher_ahead_id
+
+    j_acron = article.journal.acronym.lower()
+
+    issue_label = article.issue.label
+    if "ahead" in issue_label:
+        issue_label = article.issue.publication_date[:4] + "nahead"
+
+    filename = "{}.pdf".format(article.file_code())
+
+    doi_with_lang = _doi_with_lang(article.doi_and_lang)
+
+    langs = [article.original_language()] + list(article.translated_titles().keys())
+    pdfs = []
+    for lang in langs:
+        pdf_filename = filename
+        if lang != article.original_language():
+            pdf_filename = "{}_{}".format(lang, filename)
+
+        path = [
+            "pdf", j_acron, issue_label, pdf_filename,
+        ]
+        pdf = {
+            "lang": lang,
+            "path": "/".join(path),
+            "checked": False,
+        }
+
+        doi = doi_with_lang.get(lang) or article.doi
+        if doi:
+            pdf["doi"] = doi
+
+        pdfs.append(pdf)
+    if pdfs:
+        rec["pdfs"] = pdfs
+    return rec
+
+
 def dates_to_string(data):
     """Convert instances of datetime to text in YYYY-MM-DD format,
     up to ``sys.getrecursionlimit()`` levels of depth.
@@ -703,6 +761,56 @@ class ArticleMeta:
 
         return result
 
+    def pdfs_paths(self, collection=None, issn=None, from_date='1500-01-01',
+            until_date=None, limit=LIMIT, offset=0, extra_filter=None):
+        """Lista os códigos identificadores dos artigos. A listagem pode ser
+        completa, por coleção, por ISSN ou por intervalo da data de processamento.
+        """
+        if offset < 0:
+            offset = 0
+
+        if limit < 0:
+            limit = LIMIT
+
+        fltr = {}
+        fltr['processing_date'] = get_date_range_filter(from_date, until_date)
+
+        if collection:
+            fltr['collection'] = collection
+
+        if issn:
+            fltr['code_title'] = issn
+
+        if extra_filter:
+            fltr.update(json.loads(extra_filter))
+
+        total = self.db.find(fltr).count()
+        items = self.db.find(fltr, {
+            'code': 1,
+            'collection': 1,
+            'processing_date': 1,
+            'aid': 1,
+            'doi': 1}).sort('processing_date').skip(offset).limit(limit)
+
+        meta = {
+            'limit': limit,
+            'offset': offset,
+            'filter': fltr,
+            'total': total
+        }
+
+        result = {'meta': meta, 'objects': []}
+
+        for item in items:
+
+            rec = _pdfs_paths(item)
+
+            result['objects'].append(dates_to_string(rec))
+
+        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
+
+        return result
+
     def get(self, code, collection=None, replace_journal_metadata=False, body=False):
         """Obtém um artigo de código identificador ``code``. Opcionalmente,
         um acrônimo de coleção pode ser passado por meio do arg ``collection``
@@ -1169,6 +1277,18 @@ class DataBroker(object):
     @LogHistoryChange(document_type="issue", event_type="update")
     def update_issue(self, metadata):
         return self.issuemeta.update(metadata)
+
+    def pdfs_paths(self,
+                            collection=None,
+                            issn=None,
+                            from_date='1500-01-01',
+                            until_date=None,
+                            limit=LIMIT,
+                            offset=0,
+                            extra_filter=None):
+        return self.articlemeta.pdfs_paths(collection=collection, issn=issn,
+                from_date=from_date, until_date=until_date, limit=limit,
+                offset=offset, extra_filter=extra_filter)
 
     def identifiers_article(self,
                             collection=None,
