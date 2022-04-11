@@ -97,3 +97,25 @@ class PdfsPathsTests(unittest.TestCase):
         }
         self.assertEqual(expected, controller._pdfs_paths(data))
 
+    def test_pdfs_paths_one_doi_for_each(self):
+        with open("./tests/fixtures/article_meta_pdfs_paths_one_doi_for_each.json") as fp:
+            data = json.loads(fp.read())
+        expected = {
+            "code": "S0004-27492000000500002",
+            "collection": "scl",
+            "processing_date": "2007-04-03T00:00:00.000Z",
+            "pid_v3": "GlaPaaeoKaeKaPjaeHaHjae",
+            "pdfs": [{
+                "lang": "pt",
+                "path": "pdf/aa/v34n1/v34n1a13.pdf",
+                "doi": "10.1590/S0044-59672004000100013.pt",
+                "checked": False,
+            },
+            {
+                "lang": "en",
+                "path": "pdf/aa/v34n1/en_v34n1a13.pdf",
+                "doi": "10.1590/S0044-59672004000100013.en",
+                "checked": False,
+            }
+        ]}
+        self.assertEqual(expected, controller._pdfs_paths(data))
