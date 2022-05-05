@@ -21,14 +21,13 @@ def _doi_with_lang(doi_and_lang):
 
 
 def _counter_dict(record):
-    rec = {
-        'code': record['code'],
-        'collection': record['collection'],
-        'processing_date': record['processing_date'],
-    }
+    rec = {}
+    rec.update(_get_article_record_dates(record))
+    rec.update(_get_article_record_fields(record))
 
     article = Article(record)
-    rec.update(_get_article_pids(article))
+
+    rec.update(_get_article_data(article))
 
     issue_label = article.issue.label
     if "ahead" in issue_label:
@@ -44,6 +43,30 @@ def _counter_dict(record):
         main_doi=article.doi,
     )
     return rec
+
+
+def _get_article_record_dates(record):
+    fields = (
+        "created_at",
+        "updated_at",
+        "processing_date",
+        "publication_date",
+    )
+    return {k: record[k][:10] for k in fields}
+
+
+def _get_article_record_fields(record, fields=None):
+    fields = fields or (
+        "publication_year",
+        "collection",
+        "code",
+        "code_title",
+    )
+    return {k: record[k] for k in fields}
+
+
+def YYYYMMDD_separated_by_hyphen(yyyymmdd):
+    return datetime.strptime(yyyymmdd, "%Y%m%d").isoformat()[:10]
 
 
 def dates_to_string(data):
@@ -67,8 +90,13 @@ def dates_to_string(data):
     return datacopy
 
 
-def _get_article_pids(article):
+def _get_article_data(article):
     rec = {}
+    rec.update({
+        "journal_acronym": article.journal.acronym.lower(),
+        "text_langs": article.journal.languages,
+        "default_language": article.original_language(),
+    })
     try:
         rec['pid_v3'] = article.data['article']['v885'][0]['_']
     except KeyError:
@@ -811,7 +839,6 @@ class ArticleMeta:
         for item in items:
 
             rec = _counter_dict(item)
-
             result['objects'].append(dates_to_string(rec))
 
         result['meta']['filter'] = dates_to_string(result['meta']['filter'])

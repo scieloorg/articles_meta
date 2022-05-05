@@ -56,9 +56,17 @@ class PdfsPathsTests(unittest.TestCase):
         with open("./tests/fixtures/article_meta_counter_dict_only_one_doi.json") as fp:
             data = json.loads(fp.read())
         expected = {
-            "code": "S0004-27492000000500002",
+            "created_at": "2007-04-03",
+            "updated_at": "2007-04-04",
+            "processing_date": "2007-04-03",
+            "publication_date": "2007-04",
+            "publication_year": "2007",
             "collection": "scl",
-            "processing_date": "2007-04-03T00:00:00.000Z",
+            "code": "S0004-27492000000500002",
+            "code_title": ["0004-2749", "1234-0987"],
+            "journal_acronym": "aa",
+            "text_langs": ["fr", "de"],
+            "default_language": "pt",
             "pdfs": [{
                 "lang": "pt",
                 "path": "pdf/aa/v34n1/v34n1a13.pdf",
@@ -72,15 +80,24 @@ class PdfsPathsTests(unittest.TestCase):
                 "checked": False,
             }
         ]}
-        self.assertEqual(expected, controller._counter_dict(data))
+        result = controller._counter_dict(data)
+        self.assertDictEqual(expected, result)
 
     def test_counter_dict_aop(self):
         with open("./tests/fixtures/article_meta_counter_dict_aop.json") as fp:
             data = json.loads(fp.read())
         expected = {
-            "code": "S0004-27492000000500002",
+            "created_at": "2007-04-03",
+            "updated_at": "2007-04-04",
+            "processing_date": "2007-04-03",
+            "publication_date": "2007-04",
+            "publication_year": "2007",
             "collection": "scl",
-            "processing_date": "2007-04-03T00:00:00.000Z",
+            "code": "S0004-27492000000500002",
+            "code_title": ["0004-2749", "1234-0987"],
+            "journal_acronym": "aa",
+            "text_langs": ["fr", "de"],
+            "default_language": "pt",
             "previous_pid": "S0044-59672004005000013",
             "pdfs": [{
                     "lang": "pt",
@@ -95,15 +112,24 @@ class PdfsPathsTests(unittest.TestCase):
                     "checked": False,
                 }]
         }
-        self.assertEqual(expected, controller._counter_dict(data))
+        result = controller._counter_dict(data)
+        self.assertDictEqual(expected, result)
 
     def test_counter_dict_one_doi_for_each(self):
         with open("./tests/fixtures/article_meta_counter_dict_one_doi_for_each.json") as fp:
             data = json.loads(fp.read())
         expected = {
-            "code": "S0004-27492000000500002",
+            "created_at": "2007-04-03",
+            "updated_at": "2007-04-04",
+            "processing_date": "2007-04-03",
+            "publication_date": "2007-04",
+            "publication_year": "2007",
             "collection": "scl",
-            "processing_date": "2007-04-03T00:00:00.000Z",
+            "code": "S0004-27492000000500002",
+            "code_title": ["0004-2749", "1234-0987"],
+            "journal_acronym": "aa",
+            "text_langs": ["fr", "de"],
+            "default_language": "pt",
             "pid_v3": "GlaPaaeoKaeKaPjaeHaHjae",
             "pdfs": [{
                 "lang": "pt",
@@ -118,4 +144,5 @@ class PdfsPathsTests(unittest.TestCase):
                 "checked": False,
             }
         ]}
-        self.assertEqual(expected, controller._counter_dict(data))
+        result = controller._counter_dict(data)
+        self.assertDictEqual(expected, result)
