@@ -52,8 +52,8 @@ class FunctionDatesToStringTests(unittest.TestCase):
 
 
 class PdfsPathsTests(unittest.TestCase):
-    def test_pdfs_paths_only_one_doi(self):
-        with open("./tests/fixtures/article_meta_pdfs_paths_only_one_doi.json") as fp:
+    def test_counter_dict_only_one_doi(self):
+        with open("./tests/fixtures/article_meta_counter_dict_only_one_doi.json") as fp:
             data = json.loads(fp.read())
         expected = {
             "code": "S0004-27492000000500002",
@@ -72,10 +72,10 @@ class PdfsPathsTests(unittest.TestCase):
                 "checked": False,
             }
         ]}
-        self.assertEqual(expected, controller._pdfs_paths(data))
+        self.assertEqual(expected, controller._counter_dict(data))
 
-    def test_pdfs_paths_aop(self):
-        with open("./tests/fixtures/article_meta_pdfs_paths_aop.json") as fp:
+    def test_counter_dict_aop(self):
+        with open("./tests/fixtures/article_meta_counter_dict_aop.json") as fp:
             data = json.loads(fp.read())
         expected = {
             "code": "S0004-27492000000500002",
@@ -95,10 +95,10 @@ class PdfsPathsTests(unittest.TestCase):
                     "checked": False,
                 }]
         }
-        self.assertEqual(expected, controller._pdfs_paths(data))
+        self.assertEqual(expected, controller._counter_dict(data))
 
-    def test_pdfs_paths_one_doi_for_each(self):
-        with open("./tests/fixtures/article_meta_pdfs_paths_one_doi_for_each.json") as fp:
+    def test_counter_dict_one_doi_for_each(self):
+        with open("./tests/fixtures/article_meta_counter_dict_one_doi_for_each.json") as fp:
             data = json.loads(fp.read())
         expected = {
             "code": "S0004-27492000000500002",
@@ -118,4 +118,4 @@ class PdfsPathsTests(unittest.TestCase):
                 "checked": False,
             }
         ]}
-        self.assertEqual(expected, controller._pdfs_paths(data))
+        self.assertEqual(expected, controller._counter_dict(data))

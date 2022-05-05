@@ -41,7 +41,7 @@ def main(global_config, **settings):
     config.add_route('get_article', '/api/v1/article/')
     config.add_route('get_articles', '/api/v1/articles/')
     config.add_route('identifiers_article', '/api/v1/article/identifiers/')
-    config.add_route('pdfs_paths', '/api/v1/article/pdfs/')
+    config.add_route('counter_dict', '/api/v1/article/counter_dict/')
     config.add_route('exists_article', '/api/v1/article/exists/')
     # press releases - GET method:
     config.add_route('identifiers_press_release', '/api/v1/press_release/identifiers/')

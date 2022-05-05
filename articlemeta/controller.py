@@ -20,7 +20,7 @@ def _doi_with_lang(doi_and_lang):
     return d
 
 
-def _pdfs_paths(record):
+def _counter_dict(record):
     rec = {
         'code': record['code'],
         'collection': record['collection'],
@@ -761,7 +761,7 @@ class ArticleMeta:
 
         return result
 
-    def pdfs_paths(self, collection=None, issn=None, from_date='1500-01-01',
+    def counter_dict(self, collection=None, issn=None, from_date='1500-01-01',
             until_date=None, limit=LIMIT, offset=0, extra_filter=None):
         """Lista os códigos identificadores dos artigos. A listagem pode ser
         completa, por coleção, por ISSN ou por intervalo da data de processamento.
@@ -803,7 +803,7 @@ class ArticleMeta:
 
         for item in items:
 
-            rec = _pdfs_paths(item)
+            rec = _counter_dict(item)
 
             result['objects'].append(dates_to_string(rec))
 
@@ -1278,7 +1278,7 @@ class DataBroker(object):
     def update_issue(self, metadata):
         return self.issuemeta.update(metadata)
 
-    def pdfs_paths(self,
+    def counter_dict(self,
                             collection=None,
                             issn=None,
                             from_date='1500-01-01',
@@ -1286,7 +1286,7 @@ class DataBroker(object):
                             limit=LIMIT,
                             offset=0,
                             extra_filter=None):
-        return self.articlemeta.pdfs_paths(collection=collection, issn=issn,
+        return self.articlemeta.counter_dict(collection=collection, issn=issn,
                 from_date=from_date, until_date=until_date, limit=limit,
                 offset=offset, extra_filter=extra_filter)
 

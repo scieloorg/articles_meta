@@ -416,9 +416,9 @@ def list_historychanges(request):
     return objs
 
 
-@view_config(route_name='pdfs_paths',
+@view_config(route_name='counter_dict',
              request_method='GET', renderer='jsonp')
-def pdfs_paths(request):
+def counter_dict(request):
 
     collection = request.GET.get('collection', None)
     issn = request.GET.get('issn', None)
@@ -435,11 +435,12 @@ def pdfs_paths(request):
     if offset < 0:
         raise exc.HTTPBadRequest('offset must be integer >= 0')
 
-    ids = request.databroker.pdfs_paths(collection=collection,
-                                        issn=issn,
-                                        limit=limit,
-                                        offset=offset,
-                                        from_date=from_date,
-                                        until_date=until_date)
+    ids = request.databroker.counter_dict(
+            collection=collection,
+            issn=issn,
+            limit=limit,
+            offset=offset,
+            from_date=from_date,
+            until_date=until_date)
 
     return ids
