@@ -28,46 +28,21 @@ def _counter_dict(record):
     }
 
     article = Article(record)
-    try:
-        rec['pid_v3'] = article.data['article']['v885'][0]['_']
-    except KeyError:
-        pass
-    if article.publisher_ahead_id:
-        rec['previous_pid'] = article.publisher_ahead_id
-
-    j_acron = article.journal.acronym.lower()
+    rec.update(_get_article_pids(article))
 
     issue_label = article.issue.label
     if "ahead" in issue_label:
         issue_label = article.issue.publication_date[:4] + "nahead"
 
-    filename = "{}.pdf".format(article.file_code())
-
-    doi_with_lang = _doi_with_lang(article.doi_and_lang)
-
-    langs = [article.original_language()] + list(article.translated_titles().keys())
-    pdfs = []
-    for lang in langs:
-        pdf_filename = filename
-        if lang != article.original_language():
-            pdf_filename = "{}_{}".format(lang, filename)
-
-        path = [
-            "pdf", j_acron, issue_label, pdf_filename,
-        ]
-        pdf = {
-            "lang": lang,
-            "path": "/".join(path),
-            "checked": False,
-        }
-
-        doi = doi_with_lang.get(lang) or article.doi
-        if doi:
-            pdf["doi"] = doi
-
-        pdfs.append(pdf)
-    if pdfs:
-        rec["pdfs"] = pdfs
+    rec["pdfs"] = _get_pdfs_paths(
+        j_acron=article.journal.acronym.lower(),
+        issue_label=issue_label,
+        main_language=article.original_language(),
+        translation_langs=list(article.translated_titles().keys()),
+        filename="{}.pdf".format(article.file_code()),
+        doi_with_lang=_doi_with_lang(article.doi_and_lang),
+        main_doi=article.doi,
+    )
     return rec
 
 
@@ -90,6 +65,38 @@ def dates_to_string(data):
 
     datacopy.update(newdata)
     return datacopy
+
+
+def _get_article_pids(article):
+    rec = {}
+    try:
+        rec['pid_v3'] = article.data['article']['v885'][0]['_']
+    except KeyError:
+        pass
+    if article.publisher_ahead_id:
+        rec['previous_pid'] = article.publisher_ahead_id
+    return rec
+
+
+def _get_pdfs_paths(j_acron, issue_label, main_language, translation_langs, filename, doi_with_lang, main_doi):
+    pdfs = []
+    for lang in [main_language] + translation_langs:
+        pdf_filename = filename
+        if lang != main_language:
+            pdf_filename = "{}_{}".format(lang, filename)
+
+        pdf = {
+            "lang": lang,
+            "path": "/".join(["pdf", j_acron, issue_label, pdf_filename]),
+            "checked": False,
+        }
+
+        doi = doi_with_lang.get(lang) or main_doi
+        if doi:
+            pdf["doi"] = doi
+
+        pdfs.append(pdf)
+    return pdfs
 
 
 def get_date_range_filter(from_date=None, until_date=None):
