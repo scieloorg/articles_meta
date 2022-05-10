@@ -116,9 +116,14 @@ def _get_pdfs_paths(j_acron, issue_label, main_language, translation_langs, file
         if lang != main_language:
             pdf_filename = "{}_{}".format(lang, filename)
 
+        if issue_label:
+            path = "/".join(["pdf", j_acron, issue_label, pdf_filename])
+        else:
+            path = "/".join(["pdf", j_acron, pdf_filename])
+
         pdf = {
             "lang": lang,
-            "path": "/".join(["pdf", j_acron, issue_label, pdf_filename]),
+            "path": path,
             "checked": False,
         }
 
