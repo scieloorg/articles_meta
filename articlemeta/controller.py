@@ -846,6 +846,9 @@ class ArticleMeta:
         result = {'meta': meta, 'objects': []}
 
         for item in items:
+            issue = self.issuemeta.get(collection=item['collection'], code=item['code_issue'])
+            if issue:
+                item['issue'] = issue
 
             rec = _counter_dict(item)
             result['objects'].append(dates_to_string(rec))
