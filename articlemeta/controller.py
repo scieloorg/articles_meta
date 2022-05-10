@@ -825,7 +825,16 @@ class ArticleMeta:
             'collection': 1,
             'processing_date': 1,
             'aid': 1,
-            'doi': 1}).sort('processing_date').skip(offset).limit(limit)
+            'doi': 1,
+            'article': 1,
+            'code_issue': 1,
+            'code_title': 1,
+            'created_at': 1,
+            'processing_date': 1,
+            'publication_date': 1,
+            'publication_year': 1,
+            'title': 1,
+            'updated_at': 1}).sort('processing_date').skip(offset).limit(limit)
 
         meta = {
             'limit': limit,
