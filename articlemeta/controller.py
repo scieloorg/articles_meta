@@ -4,7 +4,7 @@ import warnings
 import json
 
 import pymongo
-from xylose.scielodocument import Article, Journal, Issue
+from xylose.scielodocument import Article, Journal, Issue, UnavailableMetadataException
 from articlemeta.decorators import LogHistoryChange
 from articlemeta.data import COLLECTIONS_PATH
 from datetime import datetime
