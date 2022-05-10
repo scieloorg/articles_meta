@@ -56,9 +56,9 @@ class PdfsPathsTests(unittest.TestCase):
         with open("./tests/fixtures/article_meta_counter_dict_only_one_doi.json") as fp:
             data = json.loads(fp.read())
         expected = {
-            "created_at": "2007-04-03",
-            "updated_at": "2007-04-04",
-            "processing_date": "2007-04-03",
+            "created_at": "2007-04-03T00:00:00.000Z",
+            "updated_at": "2007-04-04T00:00:00.000Z",
+            "processing_date": "2007-04-03T00:00:00.000Z",
             "publication_date": "2007-04",
             "publication_year": "2007",
             "collection": "scl",
@@ -87,9 +87,9 @@ class PdfsPathsTests(unittest.TestCase):
         with open("./tests/fixtures/article_meta_counter_dict_aop.json") as fp:
             data = json.loads(fp.read())
         expected = {
-            "created_at": "2007-04-03",
-            "updated_at": "2007-04-04",
-            "processing_date": "2007-04-03",
+            "created_at": "2007-04-03T00:00:00.000Z",
+            "updated_at": "2007-04-04T00:00:00.000Z",
+            "processing_date": "2007-04-03T00:00:00.000Z",
             "publication_date": "2007-04",
             "publication_year": "2007",
             "collection": "scl",
@@ -119,9 +119,9 @@ class PdfsPathsTests(unittest.TestCase):
         with open("./tests/fixtures/article_meta_counter_dict_one_doi_for_each.json") as fp:
             data = json.loads(fp.read())
         expected = {
-            "created_at": "2007-04-03",
-            "updated_at": "2007-04-04",
-            "processing_date": "2007-04-03",
+            "created_at": "2007-04-03T00:00:00.000Z",
+            "updated_at": "2007-04-04T00:00:00.000Z",
+            "processing_date": "2007-04-03T00:00:00.000Z",
             "publication_date": "2007-04",
             "publication_year": "2007",
             "collection": "scl",
