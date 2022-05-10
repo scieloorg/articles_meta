@@ -29,9 +29,12 @@ def _counter_dict(record):
 
     rec.update(_get_article_data(article))
 
-    issue_label = article.issue.label
-    if "ahead" in issue_label:
-        issue_label = article.issue.publication_date[:4] + "nahead"
+    try:
+        issue_label = article.issue.label
+        if "ahead" in issue_label:
+            issue_label = article.issue.publication_date[:4] + "nahead"
+    except UnavailableMetadataException:
+        issue_label = ''
 
     rec["pdfs"] = _get_pdfs_paths(
         j_acron=article.journal.acronym.lower(),
