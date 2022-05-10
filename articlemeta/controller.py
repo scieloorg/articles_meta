@@ -60,7 +60,7 @@ def _get_article_record_dates(record):
         "processing_date",
         "publication_date",
     )
-    return {k: record[k][:10] for k in fields}
+    return {k: record.get(k) for k in fields}
 
 
 def _get_article_record_fields(record, fields=None):
@@ -70,7 +70,7 @@ def _get_article_record_fields(record, fields=None):
         "code",
         "code_title",
     )
-    return {k: record[k] for k in fields}
+    return {k: record.get(k) for k in fields}
 
 
 def YYYYMMDD_separated_by_hyphen(yyyymmdd):
