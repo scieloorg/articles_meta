@@ -36,11 +36,16 @@ def _counter_dict(record):
     except UnavailableMetadataException:
         issue_label = ''
 
+    try:
+        translated_langs = list(article.translated_titles().keys())
+    except AttributeError:
+        translated_langs = []
+
     rec["pdfs"] = _get_pdfs_paths(
         j_acron=article.journal.acronym.lower(),
         issue_label=issue_label,
         main_language=article.original_language(),
-        translation_langs=list(article.translated_titles().keys()),
+        translation_langs=translated_langs,
         filename="{}.pdf".format(article.file_code()),
         doi_with_lang=_doi_with_lang(article.doi_and_lang),
         main_doi=article.doi,
