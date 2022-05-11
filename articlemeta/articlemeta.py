@@ -414,3 +414,33 @@ def list_historychanges(request):
     )
 
     return objs
+
+
+@view_config(route_name='counter_dict',
+             request_method='GET', renderer='jsonp')
+def counter_dict(request):
+
+    collection = request.GET.get('collection', None)
+    issn = request.GET.get('issn', None)
+    from_date = request.GET.get('from', DEFAULT_FROM_DATE)
+    until_date = request.GET.get('until', datetime.now().date().isoformat())
+    limit = _get_request_limit_param(request)
+    offset = request.GET.get('offset', 0)
+
+    try:
+        offset = int(offset)
+    except ValueError:
+        raise exc.HTTPBadRequest('offset must be integer')
+
+    if offset < 0:
+        raise exc.HTTPBadRequest('offset must be integer >= 0')
+
+    ids = request.databroker.counter_dict(
+            collection=collection,
+            issn=issn,
+            limit=limit,
+            offset=offset,
+            from_date=from_date,
+            until_date=until_date)
+
+    return ids

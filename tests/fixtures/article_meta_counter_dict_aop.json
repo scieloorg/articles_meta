@@ -1,0 +1,78 @@
+{
+    "issue": {
+        "publication_date": "2010-08",
+        "issue": {
+            "v65": [
+                {
+                    "_": "2017"
+                }
+            ],
+            "v32": [
+                {
+                    "_": "ahead"
+                }
+            ]
+		}
+    },
+    "title": {
+        "v68": [
+            {
+                "_": "aa"
+            }
+        ],
+        "v350": [
+			{
+                "_":  "fr"
+            },
+			{
+                "_":  "de"
+            }
+        ]
+    }, 
+    "article" : {
+        "v12" : [ 
+            {
+                "l" : "pt",
+                "_" : "Tecnologia alternativa para a quebra de dormência das sementes de pau-de-balsa (Ochroma lagopus Sw., Bombacaceae)"
+            }, 
+            {
+                "l" : "en",
+                "_" : "Alternative technology for breaking dormancy of balsa wood (Ochroma lagopus Sw., Bombacaceae) seeds"
+            }
+        ],
+        "v40" : [ 
+            {
+                "_" : "pt"
+            }
+        ],
+        "v32": [
+            {
+                "_": "ahead"
+            }
+        ],
+        "v702" : [ 
+            {
+                "_" : "C:\\SciELO\\Serial\\aa\\2017nahead\\v34n1a13.html"
+            }
+        ],
+        "v880" : [ 
+            {
+                "_" : "S0044-59672004000100013"
+            }
+        ],
+        "v881" : [ 
+            {
+                "_" : "S0044-59672004005000013"
+            }
+        ]
+    },
+    "doi" : "10.1590/S0044-59672004000100013",
+    "code" : "S0004-27492000000500002",
+    "collection" : "scl",
+    "code_title" : ["0004-2749", "1234-0987"],
+    "publication_year" : "2007",
+    "publication_date" : "2007-04",
+    "created_at" : "2007-04-03T00:00:00.000Z",
+    "updated_at" : "2007-04-04T00:00:00.000Z",
+    "processing_date" : "2007-04-03T00:00:00.000Z"
+}

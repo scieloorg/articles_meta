@@ -4,13 +4,88 @@ import warnings
 import json
 
 import pymongo
-from xylose.scielodocument import Article, Journal, Issue
+from xylose.scielodocument import Article, Journal, Issue, UnavailableMetadataException
 from articlemeta.decorators import LogHistoryChange
 from articlemeta.data import COLLECTIONS_PATH
 from datetime import datetime
 import requests
 
 LIMIT = 1000
+
+
+def _doi_with_lang(doi_and_lang):
+    d = {}
+    for lang, doi in doi_and_lang:
+        d[lang] = doi
+    return d
+
+
+def _counter_dict(record):
+    rec = {}
+    rec.update(_get_article_record_dates(record))
+    rec.update(_get_article_record_fields(record))
+
+    article = Article(record)
+
+    rec.update(_get_article_data(article))
+
+    issue_record = {}
+    try:
+        issue_label = article.issue.label
+        if "ahead" in issue_label:
+            issue_label = article.issue.publication_date[:4] + "nahead"
+        issue_record["label"] = issue_label
+    except UnavailableMetadataException:
+        issue_record["error"] = "Não foi possível acessar issue"
+
+    try:
+        translated_langs = list(article.translated_titles().keys())
+    except AttributeError:
+        translated_langs = []
+
+    rec["pdfs"] = _get_pdfs_paths(
+        j_acron=article.journal.acronym.lower(),
+        issue_record=issue_record,
+        main_language=article.original_language(),
+        translation_langs=translated_langs,
+        filename="{}.pdf".format(article.file_code()),
+        doi_with_lang=_doi_with_lang(article.doi_and_lang),
+        main_doi=article.doi,
+    )
+    return rec
+
+
+def _get_article_record_dates(record):
+    fields = (
+        "created_at",
+        "updated_at",
+        "processing_date",
+        "publication_date",
+    )
+    record_dates.update({k: record.get(k) for k in fields})
+
+    if record_dates["updated_at"] is None:
+        record_dates["updated_at"] = record_dates["created_at"]
+
+    if record_dates["publication_date"] is None:
+        del record_dates["publication_date"]
+        record_dates["error"] = "Não foi possível acessar publication_date"
+
+    return record_dates
+
+
+def _get_article_record_fields(record, fields=None):
+    fields = fields or (
+        "publication_year",
+        "collection",
+        "code",
+        "code_title",
+    )
+    return {k: record.get(k) for k in fields}
+
+
+def YYYYMMDD_separated_by_hyphen(yyyymmdd):
+    return datetime.strptime(yyyymmdd, "%Y%m%d").isoformat()[:10]
 
 
 def dates_to_string(data):
@@ -32,6 +107,48 @@ def dates_to_string(data):
 
     datacopy.update(newdata)
     return datacopy
+
+
+def _get_article_data(article):
+    rec = {}
+    rec.update({
+        "journal_acronym": article.journal.acronym.lower(),
+        "text_langs": article.journal.languages,
+        "default_language": article.original_language(),
+    })
+    try:
+        rec['pid_v3'] = article.data['article']['v885'][0]['_']
+    except KeyError:
+        pass
+    if article.publisher_ahead_id:
+        rec['previous_pid'] = article.publisher_ahead_id
+    return rec
+
+
+def _get_pdfs_paths(j_acron, issue_record, main_language, translation_langs, filename, doi_with_lang, main_doi):
+    pdfs = []
+    for lang in [main_language] + translation_langs:
+        pdf_filename = filename
+        if lang != main_language:
+            pdf_filename = "{}_{}".format(lang, filename)
+
+        pdf = {
+            "lang": lang, 
+            "checked": False,
+        }
+
+        if 'label' in issue_record:
+            path = "/".join(["pdf", j_acron, issue_record["label"], pdf_filename])
+            pdf.update({"path": path})
+        else:
+            pdf.update({"error": issue_record["error"]})
+
+        doi = doi_with_lang.get(lang) or main_doi
+        if doi:
+            pdf["doi"] = doi
+
+        pdfs.append(pdf)
+    return pdfs
 
 
 def get_date_range_filter(from_date=None, until_date=None):
@@ -703,6 +820,67 @@ class ArticleMeta:
 
         return result
 
+    def counter_dict(self, collection=None, issn=None, from_date='1500-01-01',
+            until_date=None, limit=LIMIT, offset=0, extra_filter=None):
+        """Lista os códigos identificadores dos artigos. A listagem pode ser
+        completa, por coleção, por ISSN ou por intervalo da data de processamento.
+        """
+        if offset < 0:
+            offset = 0
+
+        if limit < 0:
+            limit = LIMIT
+
+        fltr = {}
+        fltr['processing_date'] = get_date_range_filter(from_date, until_date)
+
+        if collection:
+            fltr['collection'] = collection
+
+        if issn:
+            fltr['code_title'] = issn
+
+        if extra_filter:
+            fltr.update(json.loads(extra_filter))
+
+        total = self.db.find(fltr).count()
+        items = self.db.find(fltr, {
+            'code': 1,
+            'collection': 1,
+            'processing_date': 1,
+            'aid': 1,
+            'doi': 1,
+            'article': 1,
+            'code_issue': 1,
+            'code_title': 1,
+            'created_at': 1,
+            'processing_date': 1,
+            'publication_date': 1,
+            'publication_year': 1,
+            'title': 1,
+            'updated_at': 1}).sort('processing_date').skip(offset).limit(limit)
+
+        meta = {
+            'limit': limit,
+            'offset': offset,
+            'filter': fltr,
+            'total': total
+        }
+
+        result = {'meta': meta, 'objects': []}
+
+        for item in items:
+            issue = self.issuemeta.get(collection=item['collection'], code=item['code_issue'])
+            if issue:
+                item['issue'] = issue
+
+            rec = _counter_dict(item)
+            result['objects'].append(dates_to_string(rec))
+
+        result['meta']['filter'] = dates_to_string(result['meta']['filter'])
+
+        return result
+
     def get(self, code, collection=None, replace_journal_metadata=False, body=False):
         """Obtém um artigo de código identificador ``code``. Opcionalmente,
         um acrônimo de coleção pode ser passado por meio do arg ``collection``
@@ -1169,6 +1347,18 @@ class DataBroker(object):
     @LogHistoryChange(document_type="issue", event_type="update")
     def update_issue(self, metadata):
         return self.issuemeta.update(metadata)
+
+    def counter_dict(self,
+                            collection=None,
+                            issn=None,
+                            from_date='1500-01-01',
+                            until_date=None,
+                            limit=LIMIT,
+                            offset=0,
+                            extra_filter=None):
+        return self.articlemeta.counter_dict(collection=collection, issn=issn,
+                from_date=from_date, until_date=until_date, limit=limit,
+                offset=offset, extra_filter=extra_filter)
 
     def identifiers_article(self,
                             collection=None,

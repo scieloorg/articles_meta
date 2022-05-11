@@ -1,4 +1,5 @@
 import unittest
+import json
 from datetime import datetime
 
 from articlemeta import controller
@@ -49,3 +50,99 @@ class FunctionDatesToStringTests(unittest.TestCase):
         _ = controller.dates_to_string(data)
         self.assertEqual(data, data_copy)
 
+
+class PdfsPathsTests(unittest.TestCase):
+    def test_counter_dict_only_one_doi(self):
+        with open("./tests/fixtures/article_meta_counter_dict_only_one_doi.json") as fp:
+            data = json.loads(fp.read())
+        expected = {
+            "created_at": "2007-04-03T00:00:00.000Z",
+            "updated_at": "2007-04-04T00:00:00.000Z",
+            "processing_date": "2007-04-03T00:00:00.000Z",
+            "publication_date": "2007-04",
+            "publication_year": "2007",
+            "collection": "scl",
+            "code": "S0004-27492000000500002",
+            "code_title": ["0004-2749", "1234-0987"],
+            "journal_acronym": "aa",
+            "text_langs": ["fr", "de"],
+            "default_language": "pt",
+            "pdfs": [{
+                "lang": "pt",
+                "path": "pdf/aa/v34n1/v34n1a13.pdf",
+                "doi": "10.1590/S0044-59672004000100013",
+                "checked": False,
+            },
+            {
+                "lang": "en",
+                "path": "pdf/aa/v34n1/en_v34n1a13.pdf",
+                "doi": "10.1590/S0044-59672004000100013",
+                "checked": False,
+            }
+        ]}
+        result = controller._counter_dict(data)
+        self.assertDictEqual(expected, result)
+
+    def test_counter_dict_aop(self):
+        with open("./tests/fixtures/article_meta_counter_dict_aop.json") as fp:
+            data = json.loads(fp.read())
+        expected = {
+            "created_at": "2007-04-03T00:00:00.000Z",
+            "updated_at": "2007-04-04T00:00:00.000Z",
+            "processing_date": "2007-04-03T00:00:00.000Z",
+            "publication_date": "2007-04",
+            "publication_year": "2007",
+            "collection": "scl",
+            "code": "S0004-27492000000500002",
+            "code_title": ["0004-2749", "1234-0987"],
+            "journal_acronym": "aa",
+            "text_langs": ["fr", "de"],
+            "default_language": "pt",
+            "previous_pid": "S0044-59672004005000013",
+            "pdfs": [{
+                    "lang": "pt",
+                    "path": "pdf/aa/2017nahead/v34n1a13.pdf",
+                    "doi": "10.1590/S0044-59672004000100013",
+                    "checked": False,
+                },
+                {
+                    "lang": "en",
+                    "path": "pdf/aa/2017nahead/en_v34n1a13.pdf",
+                    "doi": "10.1590/S0044-59672004000100013",
+                    "checked": False,
+                }]
+        }
+        result = controller._counter_dict(data)
+        self.assertDictEqual(expected, result)
+
+    def test_counter_dict_one_doi_for_each(self):
+        with open("./tests/fixtures/article_meta_counter_dict_one_doi_for_each.json") as fp:
+            data = json.loads(fp.read())
+        expected = {
+            "created_at": "2007-04-03T00:00:00.000Z",
+            "updated_at": "2007-04-04T00:00:00.000Z",
+            "processing_date": "2007-04-03T00:00:00.000Z",
+            "publication_date": "2007-04",
+            "publication_year": "2007",
+            "collection": "scl",
+            "code": "S0004-27492000000500002",
+            "code_title": ["0004-2749", "1234-0987"],
+            "journal_acronym": "aa",
+            "text_langs": ["fr", "de"],
+            "default_language": "pt",
+            "pid_v3": "GlaPaaeoKaeKaPjaeHaHjae",
+            "pdfs": [{
+                "lang": "pt",
+                "path": "pdf/aa/v34n1/v34n1a13.pdf",
+                "doi": "10.1590/S0044-59672004000100013.pt",
+                "checked": False,
+            },
+            {
+                "lang": "en",
+                "path": "pdf/aa/v34n1/en_v34n1a13.pdf",
+                "doi": "10.1590/S0044-59672004000100013.en",
+                "checked": False,
+            }
+        ]}
+        result = controller._counter_dict(data)
+        self.assertDictEqual(expected, result)
