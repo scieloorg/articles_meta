@@ -62,7 +62,10 @@ def _get_article_record_dates(record):
         "processing_date",
         "publication_date",
     )
-    return {k: record.get(k) for k in fields}
+    record_dates.update({k: record.get(k) for k in fields})
+
+    if record_dates["updated_at"] is None:
+        record_dates["updated_at"] = record_dates["created_at"]
 
 
 def _get_article_record_fields(record, fields=None):
