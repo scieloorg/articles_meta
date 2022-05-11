@@ -29,12 +29,14 @@ def _counter_dict(record):
 
     rec.update(_get_article_data(article))
 
+    issue_record = {}
     try:
         issue_label = article.issue.label
         if "ahead" in issue_label:
             issue_label = article.issue.publication_date[:4] + "nahead"
+        issue_record["label"] = issue_label
     except UnavailableMetadataException:
-        issue_label = ''
+        issue_record["error"] = "Não foi possível acessar issue"
 
     try:
         translated_langs = list(article.translated_titles().keys())
@@ -43,7 +45,7 @@ def _counter_dict(record):
 
     rec["pdfs"] = _get_pdfs_paths(
         j_acron=article.journal.acronym.lower(),
-        issue_label=issue_label,
+        issue_record=issue_record,
         main_language=article.original_language(),
         translation_langs=translated_langs,
         filename="{}.pdf".format(article.file_code()),
@@ -114,23 +116,23 @@ def _get_article_data(article):
     return rec
 
 
-def _get_pdfs_paths(j_acron, issue_label, main_language, translation_langs, filename, doi_with_lang, main_doi):
+def _get_pdfs_paths(j_acron, issue_record, main_language, translation_langs, filename, doi_with_lang, main_doi):
     pdfs = []
     for lang in [main_language] + translation_langs:
         pdf_filename = filename
         if lang != main_language:
             pdf_filename = "{}_{}".format(lang, filename)
 
-        if issue_label:
-            path = "/".join(["pdf", j_acron, issue_label, pdf_filename])
-        else:
-            path = "/".join(["pdf", j_acron, pdf_filename])
-
         pdf = {
-            "lang": lang,
-            "path": path,
+            "lang": lang, 
             "checked": False,
         }
+
+        if 'label' in issue_record:
+            path = "/".join(["pdf", j_acron, issue_record["label"], pdf_filename])
+            pdf.update({"path": path})
+        else:
+            pdf.update({"error": issue_record["error"]})
 
         doi = doi_with_lang.get(lang) or main_doi
         if doi:
