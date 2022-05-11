@@ -67,6 +67,12 @@ def _get_article_record_dates(record):
     if record_dates["updated_at"] is None:
         record_dates["updated_at"] = record_dates["created_at"]
 
+    if record_dates["publication_date"] is None:
+        del record_dates["publication_date"]
+        record_dates["error"] = "Não foi possível acessar publication_date"
+
+    return record_dates
+
 
 def _get_article_record_fields(record, fields=None):
     fields = fields or (
