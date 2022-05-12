@@ -56,6 +56,8 @@ def _counter_dict(record):
 
 
 def _get_article_record_dates(record):
+    record_dates = {}
+
     fields = (
         "created_at",
         "updated_at",
