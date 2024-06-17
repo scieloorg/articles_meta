@@ -1,6 +1,6 @@
 language: python
 python:
-  - 3.11
+  - 3.16
 env:
   - ARTICLEMETA_SETTINGS_FILE=./config.ini
 before_install:
