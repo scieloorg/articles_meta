@@ -1,4 +1,4 @@
-FROM python:3.5.2-alpine AS build
+FROM python:3.11-bullseye AS build
 COPY . /src
 RUN pip install --upgrade pip \
     && pip install wheel
@@ -6,8 +6,8 @@ RUN cd /src \
     && python setup.py bdist_wheel -d /deps
 
 
-FROM python:3.5.2-alpine
-MAINTAINER gustavo.fonseca@scielo.org
+FROM python:3.11-bullseye
+MAINTAINER tecnologia@scielo.org
 
 COPY --from=build /deps/* /deps/
 COPY production.ini-TEMPLATE /app/config.ini
