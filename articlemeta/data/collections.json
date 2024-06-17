@@ -201,9 +201,9 @@
     },
     "has_analytics": true,
     "original_name": "Venezuela",
-    "status": "development",
+    "status": "discontinued",
     "type": "journals",
-    "is_active": true
+    "is_active": false
   },
   {
     "acron": "bio",
