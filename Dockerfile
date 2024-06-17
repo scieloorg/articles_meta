@@ -1,4 +1,4 @@
-FROM python:3.11-bullseye AS build
+FROM python:3.16 AS build
 COPY . /src
 RUN pip install --upgrade pip \
     && pip install wheel
@@ -6,7 +6,7 @@ RUN cd /src \
     && python setup.py bdist_wheel -d /deps
 
 
-FROM python:3.11-bullseye
+FROM alpine:3.16
 MAINTAINER tecnologia@scielo.org
 
 COPY --from=build /deps/* /deps/
