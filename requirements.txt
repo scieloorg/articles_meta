@@ -3,7 +3,7 @@ chardet==3.0.4
 hupper==1.0
 idna==2.6
 legendarium==2.0.2
-lxml==4.1.1
+lxml==4.9.1
 PasteDeploy==1.5.2
 picles.plumber==0.11
 plaster==1.0
