@@ -43,7 +43,7 @@ setup(
         "Topic :: Utilities",
     ],
     dependency_links=[
-        "git+https://github.com/scieloorg/thriftpy-wrap@0.1.2#egg=thriftpywrap",
+        "git+https://github.com/scieloorg/thriftpy2-wrap@01.0.0#egg=thriftpywrap",
         "git+https://github.com/scieloorg/xylose.git@1.35.9#egg=xylose",
     ],
     include_package_data=True,
