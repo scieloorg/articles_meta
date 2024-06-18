@@ -1,7 +1,7 @@
 version: '2'
 services:
   articlemeta-restfulapi:
-    image: scieloorg/articles_meta:release-1.19.12
+    image: scieloorg/articles_meta
     environment:
       ADMIN_TOKEN:
       LOGGING_LEVEL: DEBUG
@@ -18,7 +18,7 @@ services:
     labels:
       io.rancher.container.pull_image: always
   articlemeta-thriftserver:
-    image: scieloorg/articles_meta:release-1.19.12
+    image: scieloorg/articles_meta
     environment:
       ADMIN_TOKEN:
       LOGGING_LEVEL: DEBUG
