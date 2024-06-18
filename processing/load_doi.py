@@ -15,6 +15,7 @@ from lxml import etree
 from io import BytesIO
 
 import requests
+import sentry_sdk
 from xylose.scielodocument import Article
 from crossref.restful import Journals
 
@@ -58,13 +59,17 @@ LOGGING = {
 }
 
 if SENTRY_DSN:
-    LOGGING['handlers']['sentry'] = {
-        'level': 'ERROR',
-        'class': 'raven.handlers.logging.SentryHandler',
-        'dsn': SENTRY_DSN,
-    }
-    LOGGING['loggers']['']['handlers'].append('sentry')
-
+    # com raven (python < 3.7)
+    # LOGGING['handlers']['sentry'] = {
+    #     'level': 'ERROR',
+    #     'class': 'raven.handlers.logging.SentryHandler',
+    #     'dsn': SENTRY_DSN,
+    # }
+    # LOGGING['loggers']['']['handlers'].append('sentry')
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[sentry_sdk.integrations.LoggingIntegration()]
+    )
 
 FROM = datetime.now() - timedelta(days=15)
 FROM = FROM.isoformat()[:10]
