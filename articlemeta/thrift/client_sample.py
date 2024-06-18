@@ -1,14 +1,14 @@
 # coding: utf-8
 import os
 import json
-import thriftpy
+import thriftpy2
 
-articlemeta_thrift = thriftpy.load(
+articlemeta_thrift = thriftpy2.load(
     os.path.dirname(__file__)+'/articlemeta.thrift',
     module_name='articlemeta_thrift'
 )
 
-from thriftpy.rpc import make_client
+from thriftpy2.rpc import make_client
 
 if __name__ == '__main__':
     client = make_client(
