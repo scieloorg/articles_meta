@@ -15,8 +15,8 @@ requires = [
     'requests>=2.11.1',
     'picles.plumber>=0.10',
     'pyramid>=1.5.4',
-    'thriftpy>=0.3.1',
-    'thriftpywrap',
+    'thriftpy2==0.5.0',
+    'thriftpywrap==1.0.0',
     'xylose>=1.35.9',
     'crossrefapi>=1.3',
     ]
@@ -25,7 +25,7 @@ test_requires = ['mocker', 'nose>=1.0', 'coverage', 'mongomock']
 
 setup(
     name="articlemeta",
-    version='1.46.1',
+    version='1.47.1',
     description="A SciELO API to load SciELO Articles metadata",
     author="SciELO",
     author_email="scielo-dev@googlegroups.com",
