@@ -15,7 +15,7 @@ RUN apk update && apk add --no-cache \
 RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt \
     && pip install pyramid_debugtoolbar \
-    %% pip install waitress 
+    && pip install waitress 
 
 ENV ARTICLEMETA_SETTINGS_FILE=/app/config.ini
 
