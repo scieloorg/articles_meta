@@ -8,9 +8,9 @@ services:
     environment:
       ADMIN_TOKEN:
       LOGGING_LEVEL: DEBUG
-      MONGODB_HOST: mongodb://mongo-admin:Wang4oon@node10-mongodb.scielo.org/articlemeta
-      MONGODB_PORT: 27017
-      SENTRY_DSN: https://7740431797ffb50b9a990a33f7381e17@sentinela.scielo.org/12
+      MONGODB_HOST:
+      MONGODB_PORT:
+      SENTRY_DSN:
     command:
         - gunicorn
         - --paste
