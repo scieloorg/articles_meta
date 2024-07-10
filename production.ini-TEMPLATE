@@ -25,10 +25,10 @@ reload = true
 loglevel = info
 
 [loggers]
-keys = root, articlemeta, sentry
+keys = root, articlemeta
 
 [handlers]
-keys = console, sentry
+keys = console
 
 [formatters]
 keys = generic

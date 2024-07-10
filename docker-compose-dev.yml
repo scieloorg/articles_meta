@@ -1,0 +1,23 @@
+version: '3'
+services:
+  articlemeta-restfulapi:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: my-articlemeta
+    environment:
+      ADMIN_TOKEN:
+      LOGGING_LEVEL: DEBUG
+      MONGODB_HOST: mongodb://mongo-admin:Wang4oon@node10-mongodb.scielo.org/articlemeta
+      MONGODB_PORT: 27017
+      SENTRY_DSN: https://7740431797ffb50b9a990a33f7381e17@sentinela.scielo.org/12
+    command:
+        - gunicorn
+        - --paste
+        - config.ini
+        - -w
+        - '4'
+        - -b
+        - 0.0.0.0
+    labels:
+      io.rancher.container.pull_image: always
