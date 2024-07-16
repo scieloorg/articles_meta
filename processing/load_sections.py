@@ -63,18 +63,18 @@ LOGGING = {
     }
 }
 
-if SENTRY_DSN:
-    # com raven (python < 3.7)
-    # LOGGING['handlers']['sentry'] = {
-    #     'level': 'ERROR',
-    #     'class': 'raven.handlers.logging.SentryHandler',
-    #     'dsn': SENTRY_DSN,
-    # }
-    # LOGGING['loggers']['']['handlers'].append('sentry')
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        integrations=[sentry_sdk.integrations.LoggingIntegration()]
-    )
+# if SENTRY_DSN:
+#     # com raven (python < 3.7)
+#     # LOGGING['handlers']['sentry'] = {
+#     #     'level': 'ERROR',
+#     #     'class': 'raven.handlers.logging.SentryHandler',
+#     #     'dsn': SENTRY_DSN,
+#     # }
+#     # LOGGING['loggers']['']['handlers'].append('sentry')
+#     sentry_sdk.init(
+#         dsn=SENTRY_DSN,
+#         integrations=[sentry_sdk.integrations.LoggingIntegration()]
+#     )
 
 
 def _config_logging(logging_level='INFO', logging_file=None):
