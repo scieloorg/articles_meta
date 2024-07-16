@@ -12,7 +12,6 @@ import json
 import unicodedata
 import sys
 
-import sentry_sdk
 
 from articlemeta import controller
 from xylose.scielodocument import Article

@@ -20,7 +20,6 @@ import logging.config
 from datetime import datetime, timedelta
 
 import requests
-import sentry_sdk
 from articlemeta import controller
 from xylose.scielodocument import Article
 

@@ -6,7 +6,6 @@ import uuid
 
 import thriftpywrap
 import thriftpy2
-import sentry_sdk
 
 from articlemeta.controller import DataBroker, get_dbconn
 from articlemeta import utils

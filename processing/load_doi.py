@@ -15,7 +15,6 @@ from lxml import etree
 from io import BytesIO
 
 import requests
-import sentry_sdk
 from xylose.scielodocument import Article
 from crossref.restful import Journals
 

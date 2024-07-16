@@ -14,7 +14,6 @@ from datetime import datetime, timedelta
 
 import chardet
 import requests
-import sentry_sdk
 from lxml import etree
 from io import StringIO
 from xylose.scielodocument import Article
