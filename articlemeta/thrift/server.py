@@ -6,7 +6,6 @@ import uuid
 
 import thriftpywrap
 import thriftpy2
-import sentry_sdk
 
 from articlemeta.controller import DataBroker, get_dbconn
 from articlemeta import utils
@@ -49,7 +48,7 @@ LOGGING = {
     }
 }
 
-if SENTRY_DSN:
+# if SENTRY_DSN:
     # com raven (python < 3.7)
     # LOGGING['handlers']['sentry'] = {
     #     'level': 'ERROR',
@@ -57,10 +56,10 @@ if SENTRY_DSN:
     #     'dsn': SENTRY_DSN,
     # }
     # LOGGING['loggers']['']['handlers'].append('sentry')
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        integrations=[sentry_sdk.integrations.LoggingIntegration()]
-    )
+    # sentry_sdk.init(
+    #     dsn=SENTRY_DSN,
+    #     integrations=[sentry_sdk.integrations.LoggingIntegration()]
+    # )
 
 articlemeta_thrift = thriftpy2.load(
     os.path.join(os.path.dirname(__file__), 'articlemeta.thrift'))
