@@ -725,6 +725,14 @@ class XMLArticleMetaContribGroupPipe(plumber.Pipe):
             if author.get("role", "ND") != "ND":
                 contrib_type = author.get("role")
             contrib.set('contrib-type', contrib_type)
+
+            # <contrib-id contrib-id-type="orcid">0000-0003-1447-4613</contrib-id>
+            if author.get("orcid"):
+                contrib_id = ET.Element("contrib-id")
+                contrib_id.set("contrib-id-type", "orcid")
+                contrib_id.text = author['orcid']
+                contrib.append(contrib_id)
+                
             contrib.append(contribname)
 
             for xr in author.get('xref', []):
