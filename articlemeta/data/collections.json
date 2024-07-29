@@ -203,7 +203,7 @@
     "original_name": "Venezuela",
     "status": "development",
     "type": "journals",
-    "is_active": false
+    "is_active": true
   },
   {
     "acron": "bio",
