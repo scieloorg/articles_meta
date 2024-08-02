@@ -1047,14 +1047,18 @@ class XMLArticleMetaCitationsPipe(plumber.Pipe):
 
         reflist = xml.find('./article/back/ref-list')
 
+        
         cit = XMLCitation()
         for citation in raw.citations:
             ref = cit.deploy(citation)[1]
             extlinks = ref.xpath("element-citation/ext-link[@ext-link-type='uri']")
-            for extlink in extlinks:
-                url_parts = list(urlsplit(extlink.attrib["href"]))
-                url_parts[2] = quote(url_parts[2])
-                extlink.attrib["href"] = urlunsplit(url_parts)
+            try: 
+                for extlink in extlinks:
+                    url_parts = list(urlsplit(extlink.attrib["href"]))
+                    url_parts[2] = quote(url_parts[2])
+                    extlink.attrib["href"] = urlunsplit(url_parts)
+            except ValueError as e:
+                pass
             reflist.append(ref)
 
         return data
