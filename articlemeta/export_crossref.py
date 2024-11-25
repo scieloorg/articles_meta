@@ -25,9 +25,9 @@ class SetupDoiBatchPipe(plumber.Pipe):
         }
 
         el = ET.Element('doi_batch', nsmap=nsmap)
-        el.set('version', '4.8.1')
-        el.set('xmlns', 'http://www.crossref.org/schema/4.8.1')
-        el.set('{http://www.w3.org/2001/XMLSchema-instance}schemaLocation', 'http://www.crossref.org/schema/4.8.1 http://www.crossref.org/schemas/crossref4.8.1.xsd')
+        el.set('version', '5.3.1')
+        el.set('xmlns', 'http://www.crossref.org/schema/5.3.1')
+        el.set('{http://www.w3.org/2001/XMLSchema-instance}schemaLocation', 'http://www.crossref.org/schema/5.3.1 http://crossref.org/schemas/crossref5.3.1.xsd')
 
         return data, el
 
