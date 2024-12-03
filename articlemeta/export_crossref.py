@@ -7,6 +7,7 @@ from copy import deepcopy
 from datetime import datetime
 
 from xylose.scielodocument import UnavailableMetadataException
+from xylose.choices import article_type
 import plumber
 
 SUPPLBEG_REGEX = re.compile(r'^0 ')
@@ -1197,4 +1198,74 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
         for journal_article_node in xml.findall('.//journal_article')[1:]:
             journal_article_node.append(deepcopy(program_node))
 
+        return data
+
+
+class XMLCrossmark(plumber.Pipe):
+    def precond(self,):
+        #   TODO
+        pass
+    
+    def create_element(self, tag, text=None, **attributes):
+        element = ET.Element(tag)
+        if text:
+            element.text = text
+
+        for key, value in attributes.items():
+            element.set(key, value)
+        return element
+
+    def create_elem_crossmark(self,):
+        return ET.Element("crossmark")
+
+    def create_element_crossmark_policy(self, raw):
+        # TODO
+        # É preciso ter uma página que explique para os readers
+        # Como atualizar um conteudo depois da publicação. 
+        # Está página tem que ser registrada e ter um DOi para habilitar um link permanente
+        # https://www.crossref.org/documentation/crossmark/participating-in-crossmark/#00277
+        # https://www.crossref.org/documentation/crossmark/participating-in-crossmark/#00278
+        return self.create_element("crossmark_policy", text="10.33012/example_policy")
+
+    def create_element_crossmark_domain(self, raw):
+        crossmark_domains = self.create_element(tag="crossmark_domains")
+        crossmark_domain = self.create_element(tag="crossmark_domain")
+        domain = self.create_element(tag="domain", text=raw.article.scielo_domain)
+        crossmark_domain.append(domain)
+        crossmark_domains.append(crossmark_domain)
+        return crossmark_domains
+
+    def create_custom_metadata(self, raw):
+        # TODO
+        # Criar elementos de datas para: received, accepted e published.
+        # EX:
+        # <assertion name="received" label="Received" group_name="publication_history" group_label="Publication History" order="0">2012-07-24</assertion>
+        # <assertion name="accepted" label="Accepted" group_name="publication_history" group_label="Publication History" order="1">2012-08-29</assertion>
+        # <assertion name="published" label="Published" group_name="publication_history" group_label="Publication History" order="2">2012-09-10</assertion>
+        pass
+
+    
+    def create_crossmark_for_new_content(self, raw):
+        crossmark = self.create_elem_crossmark()
+        crossmark.append(self.create_element_crossmark_policy(raw=raw))
+        crossmark.append(self.create_element_crossmark_domain(raw=raw))
+        crossmark.append(self.create_custom_metadata(raw=raw))
+        return crossmark
+
+    def set_element_update(self, raw):
+        # TODO
+        # Conforme: https://github.com/scieloorg/xylose/blob/262126e37e55bb7df2ebc585472f260daddedce9/xylose/choices.py#L54
+        # Verificar quais tipos de artigos são passiveis de atribuição da tag update
+        updates = ET.Element("updates")
+        update = ET.Element("update")
+        update.text = article_type.get(raw.article.document_type)
+        updates.append()
+        
+    def transform(self, data):
+        raw, xml = data
+
+        element_crossmark = self.create_crossmark_for_new_content()
+        for journal_article in xml.findall(".//journal_article"):
+            journal_article.append(element_crossmark)
+    
         return data
