@@ -505,7 +505,7 @@ class XMLArticleAbstractPipe(plumber.Pipe):
 
         raw, xml = data
 
-        if not raw.original_abstract() or not raw.translated_abstracts():
+        if not raw.original_abstract():
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
