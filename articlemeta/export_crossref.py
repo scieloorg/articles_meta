@@ -1254,7 +1254,7 @@ class XMLFundingDataPipe(plumber.Pipe):
         self.append_funding_data(
             program=program,
             sponsors=raw.project_sponsor,
-            contracts=raw.funding_sources
+            contracts=raw.award_ids
         )
         
         for journal_article in xml.findall(".//journal_article"):
