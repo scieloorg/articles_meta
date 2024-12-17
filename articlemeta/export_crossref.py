@@ -1258,7 +1258,12 @@ class XMLFundingDataPipe(plumber.Pipe):
         )
         
         for journal_article in xml.findall(".//journal_article"):
-            journal_article.append(program)
+            crossmark = journal_article.find("crossmark")
+
+            if crossmark is not None:
+                crossmark.append(program)
+            else:
+                journal_article.append(program)
         
         return data
 
