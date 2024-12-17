@@ -1223,10 +1223,10 @@ class XMLFundingDataPipe(plumber.Pipe):
         foundgroup.set("name", "fundgroup")
         return foundgroup
 
-    def append_funding_data(self, program, sponsors=None, contracts=None):
-        if sponsors and contracts:
+    def append_funding_data(self, program, sponsors=None, award_ids=None):
+        if sponsors and award_ids:
             sponsors_name = [i.get("orgname") for i in sponsors if i.get("orgname")]
-            for sponsor, contract in product(sponsors_name, contracts):
+            for sponsor, contract in product(sponsors_name, award_ids):
                 foundgroup = self.create_fundgroup()
                 foundgroup.append(self.create_assertion(name="funder_name", text=sponsor))
                 foundgroup.append(self.create_assertion(name="award_number", text=contract))
@@ -1236,8 +1236,8 @@ class XMLFundingDataPipe(plumber.Pipe):
                 foundgroup = self.create_fundgroup()
                 foundgroup.append(self.create_assertion(name="funder_name", text=sponsor))
                 program.append(foundgroup)
-        elif contracts:
-            for contract in contracts:
+        elif award_ids:
+            for contract in award_ids:
                 foundgroup = self.create_fundgroup()
                 foundgroup.append(self.create_assertion(name="award_number", text=contract))
                 program.append(foundgroup)
@@ -1254,7 +1254,7 @@ class XMLFundingDataPipe(plumber.Pipe):
         self.append_funding_data(
             program=program,
             sponsors=raw.project_sponsor,
-            contracts=raw.award_ids
+            award_ids=raw.award_ids
         )
         
         for journal_article in xml.findall(".//journal_article"):
