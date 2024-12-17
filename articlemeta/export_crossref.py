@@ -505,7 +505,7 @@ class XMLArticleAbstractPipe(plumber.Pipe):
 
         raw, xml = data
 
-        if not raw.original_abstract() or not raw.translated_abstracts():
+        if not raw.original_abstract():
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
@@ -519,13 +519,14 @@ class XMLArticleAbstractPipe(plumber.Pipe):
         abstract.append(paragraph)
         abstracts = {raw.original_language(): abstract}
 
-        for language, body in raw.translated_abstracts().items():
-            paragraph = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}p')
-            paragraph.text = body
-            abstract = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}abstract')
-            abstract.set('{http://www.w3.org/XML/1998/namespace}lang', language)
-            abstract.append(paragraph)
-            abstracts[language] = abstract
+        if raw.translated_abstracts():
+            for language, body in raw.translated_abstracts().items():
+                paragraph = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}p')
+                paragraph.text = body
+                abstract = ET.Element('{http://www.ncbi.nlm.nih.gov/JATS1}abstract')
+                abstract.set('{http://www.w3.org/XML/1998/namespace}lang', language)
+                abstract.append(paragraph)
+                abstracts[language] = abstract
 
         for journal_article in xml.findall('./body/journal//journal_article'):
             language = journal_article.get("language")
