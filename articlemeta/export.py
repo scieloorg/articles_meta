@@ -215,8 +215,8 @@ class Export(object):
             export_crossref.XMLResourcePipe(),
             export_crossref.XMLCollectionPipe(),
             export_crossref.XMLArticleCitationsPipe(),
-            export_crossref.XMLClosePipe(),
-            export_crossref.XMLFundingDataPipe()
+            export_crossref.XMLFundingDataPipe(),
+            export_crossref.XMLClosePipe()
         )
 
         transformed_data = ppl.run(xylose_article, rewrap=True)
