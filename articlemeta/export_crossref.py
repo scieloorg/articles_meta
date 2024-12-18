@@ -5,6 +5,7 @@ import os
 import uuid
 from copy import deepcopy
 from datetime import datetime
+from itertools import product
 
 from xylose.scielodocument import UnavailableMetadataException
 import plumber
@@ -21,7 +22,8 @@ class SetupDoiBatchPipe(plumber.Pipe):
             'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
             'jats': 'http://www.ncbi.nlm.nih.gov/JATS1',
             'xml': 'http://www.w3.org/XML/1998/namespace',
-            'ai': 'http://www.crossref.org/AccessIndicators.xsd'
+            'ai': 'http://www.crossref.org/AccessIndicators.xsd',
+            'fr': 'http://www.crossref.org/fundref.xsd'
         }
 
         el = ET.Element('doi_batch', nsmap=nsmap)
@@ -1199,3 +1201,70 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
             journal_article_node.append(deepcopy(program_node))
 
         return data
+
+class XMLFundingDataPipe(plumber.Pipe):
+    def precond(data):
+        raw, _ = data
+        if not raw.contract and not raw.journal.sponsors:
+            raise plumber.UnmetPrecondition()
+
+    @staticmethod
+    def create_assertion(name, text):
+        element = ET.Element("{http://www.crossref.org/fundref.xsd}assertion")
+        element.set("name", name)
+        element.text = text
+        
+        return element
+
+    @staticmethod
+    def create_fundgroup():
+        foundgroup = ET.Element(
+            "{http://www.crossref.org/fundref.xsd}assertion"
+        )
+        foundgroup.set("name", "fundgroup")
+        return foundgroup
+
+    def append_funding_data(self, program, sponsors=None, award_ids=None):
+        if sponsors and award_ids:
+            sponsors_name = [i.get("orgname") for i in sponsors if i.get("orgname")]
+            for sponsor, contract in product(sponsors_name, award_ids):
+                foundgroup = self.create_fundgroup()
+                foundgroup.append(self.create_assertion(name="funder_name", text=sponsor))
+                foundgroup.append(self.create_assertion(name="award_number", text=contract))
+                program.append(foundgroup)
+        elif sponsors:
+            for sponsor in sponsors:
+                foundgroup = self.create_fundgroup()
+                foundgroup.append(self.create_assertion(name="funder_name", text=sponsor))
+                program.append(foundgroup)
+        elif award_ids:
+            for contract in award_ids:
+                foundgroup = self.create_fundgroup()
+                foundgroup.append(self.create_assertion(name="award_number", text=contract))
+                program.append(foundgroup)
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+        
+        program = ET.Element(
+            "{http://www.crossref.org/fundref.xsd}program"
+        )
+        program.set("name", "fundref")
+        
+        self.append_funding_data(
+            program=program,
+            sponsors=raw.project_sponsor,
+            award_ids=raw.award_ids
+        )
+        
+        for journal_article in xml.findall(".//journal_article"):
+            crossmark = journal_article.find("crossmark")
+
+            if crossmark is not None:
+                crossmark.append(program)
+            else:
+                journal_article.append(program)
+        
+        return data
+

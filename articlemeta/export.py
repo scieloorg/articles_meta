@@ -215,6 +215,7 @@ class Export(object):
             export_crossref.XMLResourcePipe(),
             export_crossref.XMLCollectionPipe(),
             export_crossref.XMLArticleCitationsPipe(),
+            export_crossref.XMLFundingDataPipe(),
             export_crossref.XMLClosePipe()
         )
 
