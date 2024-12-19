@@ -1233,7 +1233,8 @@ class XMLFundingDataPipe(plumber.Pipe):
                 foundgroup.append(self.create_assertion(name="award_number", text=contract))
                 program.append(foundgroup)
         elif sponsors:
-            for sponsor in sponsors:
+            sponsors_name = [i.get("orgname") for i in sponsors if i.get("orgname")]
+            for sponsor in sponsors_name:
                 foundgroup = self.create_fundgroup()
                 foundgroup.append(self.create_assertion(name="funder_name", text=sponsor))
                 program.append(foundgroup)
