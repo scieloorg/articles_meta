@@ -1205,7 +1205,7 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
 class XMLFundingDataPipe(plumber.Pipe):
     def precond(data):
         raw, _ = data
-        if not raw.contract and not raw.journal.sponsors:
+        if not raw.award_ids and not raw.project_sponsors:
             raise plumber.UnmetPrecondition()
 
     @staticmethod
@@ -1258,14 +1258,14 @@ class XMLFundingDataPipe(plumber.Pipe):
             sponsors=raw.project_sponsor,
             award_ids=raw.award_ids
         )
-        
-        for journal_article in xml.findall(".//journal_article"):
-            crossmark = journal_article.find("crossmark")
 
-            if crossmark is not None:
-                crossmark.append(program)
-            else:
-                journal_article.append(program)
-        
+        publisher_item = xml.xpath(".//journal_article/publisher_item")[-1]
+        crossmark = publisher_item.find("../crossmark")
+
+        if crossmark is not None:
+            crossmark.append(program)
+        else:
+            publisher_item.addnext(program)
+
         return data
 

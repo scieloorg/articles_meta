@@ -2079,3 +2079,74 @@ class ExportCrossRef_XMLVolumePipe_Tests(unittest.TestCase):
         self.assertEqual(
             b'<doi_batch><body><journal><journal_issue/></journal></body></doi_batch>',
             ET.tostring(xml))
+
+class ExportCrossRef_XMLFundingData_Tests(unittest.TestCase):
+    def setUp(self):
+        namespace_map = {
+            "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+            "jats": "http://www.ncbi.nlm.nih.gov/JATS1",
+            "ai": "http://www.crossref.org/AccessIndicators.xsd",
+            "fr": "http://www.crossref.org/fundref.xsd",
+        }
+
+        ET.register_namespace('xsi', "http://www.w3.org/2001/XMLSchema-instance")
+        ET.register_namespace('jats', "http://www.ncbi.nlm.nih.gov/JATS1")
+        ET.register_namespace('ai', "http://www.crossref.org/AccessIndicators.xsd")
+        ET.register_namespace('fr', "http://www.crossref.org/fundref.xsd")
+
+        self.xmlcrossref =  ET.Element(
+            '{http://www.crossref.org/schema/4.4.0}doi_batch',
+            nsmap=namespace_map,
+            attrib={
+                '{http://www.w3.org/2001/XMLSchema-instance}schemaLocation': (
+                    "http://www.crossref.org/schema/4.4.0 "
+                    "http://www.crossref.org/schemas/crossref4.4.0.xsd"
+                ),
+                'version': '4.4.0'
+            }
+        )
+        journal = ET.Element('journal')
+        journal_article = ET.Element('journal_article')
+        publisher_item = ET.Element('publisher_item')
+        xxx = ET.Element('xxx')
+        body = ET.Element('body')
+
+        journal_article.append(publisher_item)
+        journal_article.append(xxx)
+        journal.append(journal_article)
+        
+        body.append(journal)
+        self.xmlcrossref.append(body)
+
+    def test_funding_data_element(self):
+        _raw_json = {
+            'article':
+                {
+                    'v58': [
+                        {
+                            "_": "CNPQ"
+                        },
+                        {
+                            "_": "Ministério da Saúde"
+                        }
+                    ],
+                    'v60': [
+                        {
+                            "_": "nº 308051/2022-0-CNPQ"
+                        },
+                        {
+                            "_": "nº 18/2020"
+                        }
+                    ],
+                },
+            }
+        _article = Article(_raw_json)
+        data = [_article, self.xmlcrossref]
+
+        _xmlcrossref = export_crossref.XMLFundingDataPipe()
+        raw, xml = _xmlcrossref.transform(data)
+        
+        publisher_item = xml.xpath(".//journal_article/publisher_item")[-1]
+
+        self.assertEqual(publisher_item.getnext().find("*").tag, "{http://www.crossref.org/fundref.xsd}assertion")
+        self.assertIn("fr:program", ET.tostring(xml).decode("utf-8"))
