@@ -1205,7 +1205,7 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
 class XMLFundingDataPipe(plumber.Pipe):
     def precond(data):
         raw, _ = data
-        if not raw.award_ids and not raw.project_sponsors:
+        if not raw.award_ids and not raw.project_sponsor:
             raise plumber.UnmetPrecondition()
 
     @staticmethod
