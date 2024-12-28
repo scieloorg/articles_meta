@@ -237,9 +237,9 @@ class XMLCitation(object):
             pdate = ET.Element("date")
 
             date = {
-                "year": raw.publication_date[0:4],
-                "month": raw.publication_date[5:7],
                 "day": raw.publication_date[8:10],
+                "month": raw.publication_date[5:7],
+                "year": raw.publication_date[0:4]               
             }
 
             for name, value in date.items():
