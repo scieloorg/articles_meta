@@ -709,41 +709,46 @@ class XMLArticleMetaContribGroupPipe(plumber.Pipe):
 
         for author in raw.authors:
             contribname = ET.Element('name')
+            if author.get("role") == "ND" or author.get("role") == "ED":
+            
+                if 'surname' in author:
+                    contribsurname = ET.Element('surname')
+                    contribsurname.text = author['surname']
+                    contribname.append(contribsurname)
 
-            if 'surname' in author:
-                contribsurname = ET.Element('surname')
-                contribsurname.text = author['surname']
-                contribname.append(contribsurname)
-
-            if 'given_names' in author:
-                contribgivennames = ET.Element('given-names')
-                contribgivennames.text = author['given_names']
-                contribname.append(contribgivennames)
-
-            contrib = ET.Element('contrib')
-            contrib_type = "author"
-            if author.get("role", "ND") != "ND":
-                contrib_type = author.get("role")
-            contrib.set('contrib-type', contrib_type)
-
-            # <contrib-id contrib-id-type="orcid">0000-0003-1447-4613</contrib-id>
-            if author.get("orcid"):
-                contrib_id = ET.Element("contrib-id")
-                contrib_id.set("contrib-id-type", "orcid")
-                contrib_id.text = author['orcid']
-                contrib.append(contrib_id)
+                if 'given_names' in author:
+                    contribgivennames = ET.Element('given-names')
+                    contribgivennames.text = author['given_names']
+                    contribname.append(contribgivennames)
                 
-            contrib.append(contribname)
 
-            for xr in author.get('xref', []):
-                xref = ET.Element('xref')
-                xref.set('ref-type', 'aff')
-                xref.set('rid', xr.upper())
-                contrib.append(xref)
+                contrib = ET.Element('contrib')
+                if author.get("role") == "ND":
+                    contrib_type = "author"
+                else:
+                    contrib_type = "editor"
 
-            contribgroup.append(contrib)
+                contrib.set('contrib-type', contrib_type)
 
-        xml.find('./article/front/article-meta').append(contribgroup)
+                # <contrib-id contrib-id-type="orcid">0000-0003-1447-4613</contrib-id>
+                if author.get("orcid"):
+                    contrib_id = ET.Element("contrib-id")
+                    contrib_id.set("contrib-id-type", "orcid")
+                    contrib_id.text = author['orcid']
+                    contrib.append(contrib_id)
+                    
+                contrib.append(contribname)
+
+                for xr in author.get('xref', []):
+                    xref = ET.Element('xref')
+                    xref.set('ref-type', 'aff')
+                    xref.set('rid', xr.upper())
+                    contrib.append(xref)
+
+                contribgroup.append(contrib)
+        
+        if len(contribgroup):
+            xml.find('./article/front/article-meta').append(contribgroup)
 
         return data
 
