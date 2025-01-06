@@ -197,17 +197,24 @@ class XMLCitation(object):
             if not raw.link:
                 raise plumber.UnmetPrecondition()
 
+        @classmethod
+        def extract_url(cls, text):
+            # Regex para capturar URLs válidas
+            pattern = r'https?://(?:www\.)?[^\s/]+(?:\.[a-z]{2,})(/[^\s]*)?'
+            matches = re.search(pattern, text)
+            return matches.group(0) if matches else None
+
         @plumber.precondition(precond)
         def transform(self, data):
             raw, xml = data
 
             elem_citation = xml.find('./element-citation')
-
-            elem = ET.Element('ext-link')
-            elem.set('ext-link-type', 'uri')
-            elem.set('href', raw.link)
-            elem.text = raw.link
-            elem_citation.append(elem)
+            if link := self.extract_url(raw.link):
+                elem = ET.Element('ext-link')
+                elem.set('ext-link-type', 'uri')
+                elem.set('href', link)
+                elem.text = link
+                elem_citation.append(elem)
 
             try:
                 access_date = raw.access_date
@@ -1052,13 +1059,13 @@ class XMLArticleMetaCitationsPipe(plumber.Pipe):
         for citation in raw.citations:
             ref = cit.deploy(citation)[1]
             extlinks = ref.xpath("element-citation/ext-link[@ext-link-type='uri']")
-            try: 
-                for extlink in extlinks:
+            for extlink in extlinks:
+                try:
                     url_parts = list(urlsplit(extlink.attrib["href"]))
                     url_parts[2] = quote(url_parts[2])
                     extlink.attrib["href"] = urlunsplit(url_parts)
-            except ValueError as e:
-                pass
+                except ValueError as e:
+                    pass
             reflist.append(ref)
 
         return data
