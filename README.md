@@ -43,6 +43,18 @@ Carga de Licenças de uso:
    $ docker exec -i -t my-articlemeta articlemeta_loadlicenses --help
 ```
 
+### Fixtures
+
+Procedimento para popular a instância de desenvolvimento a partir de fixtures disponibilizadas pelo SciELO.
+
+1. Para execução dos procedimentos que adicionam dados no banco é necessário que o ambiente de desenvolvimento do article_meta esteja rodando a aplicação
+2. Baixar a fixture de desenvolvimento versão light com 4 periódicos, execute: ``wget https://minio.scielo.br/dev/fixtures/article_meta.zip`` 
+3. Extraia o conteúdo, execute: ``unzip article_meta.zip``
+4. Repare que uma pasta chamada article_meta foi criada e dentro dela há arquivos .bson, .json.
+5. Acesse a pasta **article_meta**, execute: ``cd article_meta``
+6. Utilizando **mongorestore** realize a recuperação do banco de dados apontando para o endereço que está rodando o seu mongo local, exemplo: ``mongorestore --host=localhost --port=27017 --db=articlemeta --dir .``
+
+
 # Nota
 
 Para histórico de desenvolvimento anterior ao registrado neste repositório, verificar: https://bitbucket.org/scieloorg/xmlwos
