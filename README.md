@@ -43,7 +43,7 @@ Carga de Licenças de uso:
    $ docker exec -i -t my-articlemeta articlemeta_loadlicenses --help
 ```
 
-### Fixtures
+# Fixtures
 
 Procedimento para popular a instância de desenvolvimento a partir de fixtures disponibilizadas pelo SciELO.
 
