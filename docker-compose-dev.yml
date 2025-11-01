@@ -8,16 +8,32 @@ services:
     environment:
       ADMIN_TOKEN:
       LOGGING_LEVEL: DEBUG
-      MONGODB_HOST:
+      MONGODB_HOST: mongodb://mongodb:27017/articlemeta
       MONGODB_PORT:
       SENTRY_DSN:
     command:
-        - gunicorn
-        - --paste
-        - config.ini
-        - -w
-        - '4'
-        - -b
-        - 0.0.0.0
-    labels:
-      io.rancher.container.pull_image: always
+      - gunicorn
+      - --paste
+      - config.ini
+      - -w
+      - '4'
+      - -b
+      - 0.0.0.0
+    depends_on:
+      - mongodb
+    networks:
+      - articlemeta-network
+    ports:
+     - "8000:8000"
+
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    container_name: articlemeta
+    ports:
+      - "27017:27017"
+    networks:
+      - articlemeta-network
+
+networks:
+  articlemeta-network:
+    driver: bridge
