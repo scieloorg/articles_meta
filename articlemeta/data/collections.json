@@ -552,5 +552,21 @@
     "original_name": "SciELO Data",
     "type": "repositories",
     "is_active": true
+  },
+  {
+    "acron": "dom",
+    "code": "dom",
+    "domain": "scielo.do",
+    "acron2": "do",
+    "name": {
+      "en": "Dominican Republic",
+      "pt": "República Dominicana",
+      "es": "República Dominicana"
+    },
+    "has_analytics": true,
+    "original_name": "República Dominicana",
+    "status": "development",
+    "type": "journals",
+    "is_active": true
   }
 ]
