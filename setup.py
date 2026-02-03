@@ -17,7 +17,7 @@ requires = [
     'pyramid>=1.5.4',
     'thriftpy2==0.5.0',
     'thriftpywrap==1.0.0',
-    'xylose>=1.35.9',
+    'xylose>=1.35.13',
     'crossrefapi>=1.3',
     ]
 
@@ -44,7 +44,7 @@ setup(
     ],
     dependency_links=[
         "git+https://github.com/scieloorg/thriftpy2-wrap@01.0.0#egg=thriftpywrap",
-        "git+https://github.com/scieloorg/xylose.git@1.35.9#egg=xylose",
+        "git+https://github.com/scieloorg/xylose.git@1.35.13#egg=xylose",
     ],
     include_package_data=True,
     zip_safe=False,
