@@ -192,7 +192,7 @@ class StaticCatalog(object):
     def _load_static_catalog(self, source, classic_source, tipe):
         """
         source: www.scielo.br
-        classic_source: antigo.scielo.br (optional primary source; source is used as fallback if classic_source is provided)
+        classic_source: antigo.scielo.br (optional, used as primary if available)
         type: in ['pdf', 'html', 'xml']
 
         Download the static files text lists from the selected SciELO Domain.
@@ -222,26 +222,18 @@ class StaticCatalog(object):
         }
         """
 
-        # Use classic_source as primary if available, otherwise use source
-        primary_source = classic_source if classic_source else source
-        fallback_source = source if classic_source else None
+        domain = classic_source or source
 
-        logger.info(u'Loading static_%s_files.txt from server %s', tipe, primary_source)
+        logger.info(u'Loading static_%s_files.txt from server %s', tipe, domain)
 
         filename = 'static_%s_files.txt' % tipe
 
-        url = '/'.join(['http:/', primary_source, filename])
+        url = '/'.join(['http:/', domain, filename])
 
         response = do_request(url, json=False)
 
-        # Try fallback domain if primary domain fails
-        if response is None and fallback_source:
-            logger.warning(u'Failed to load from %s, trying fallback domain %s', primary_source, fallback_source)
-            url = '/'.join(['http:/', fallback_source, filename])
-            response = do_request(url, json=False)
-
         if response is None:
-            logger.error(u'Failed to load static catalog from both primary and fallback domains')
+            logger.error(u'Failed to load static catalog from %s', domain)
             return
 
         content = response.iter_lines(decode_unicode='utf-8')
