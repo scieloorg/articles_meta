@@ -411,11 +411,11 @@ def run(collections, articlemeta_db, all_records=False, forced_url=None, fallbac
         logger.info(u'Using mode all_records %s', str(all_records))
         
         # Use environment variable fallback if not provided as parameter
-        effective_fallback = fallback_domain if fallback_domain else STATIC_CATALOG_FALLBACK_DOMAIN
-        if effective_fallback:
-            logger.info(u'Using fallback domain: %s', effective_fallback)
+        effective_fallback_domain = fallback_domain if fallback_domain else STATIC_CATALOG_FALLBACK_DOMAIN
+        if effective_fallback_domain:
+            logger.info(u'Using fallback domain: %s', effective_fallback_domain)
 
-        static_catalogs = StaticCatalog(collection_domain, fallback_domain=effective_fallback)
+        static_catalogs = StaticCatalog(collection_domain, fallback_domain=effective_fallback_domain)
 
         for document in load_documents(collection, articlemeta_db,
                                        all_records=all_records):
