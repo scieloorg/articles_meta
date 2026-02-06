@@ -229,17 +229,17 @@ class StaticCatalog(object):
         url = '/'.join(['http:/', source, filename])
 
         response = do_request(url, json=False)
-        
+
         # Try classic domain as fallback if primary domain fails
         if response is None and classic_source:
             logger.warning(u'Failed to load from %s, trying classic domain %s', source, classic_source)
             url = '/'.join(['http:/', classic_source, filename])
             response = do_request(url, json=False)
-        
+
         if response is None:
             logger.error(u'Failed to load static catalog from both primary and classic domains')
             return
-        
+
         content = response.iter_lines(decode_unicode='utf-8')
 
         for line in sorted([i for i in content]):
