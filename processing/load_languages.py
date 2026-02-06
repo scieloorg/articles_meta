@@ -192,7 +192,7 @@ class StaticCatalog(object):
     def _load_static_catalog(self, source, classic_source, tipe):
         """
         source: www.scielo.br
-        classic_source: antigo.scielo.br (optional, used as default if available)
+        classic_source: antigo.scielo.br (optional primary source; source is used as fallback if classic_source is provided)
         type: in ['pdf', 'html', 'xml']
 
         Download the static files text lists from the selected SciELO Domain.
@@ -222,7 +222,7 @@ class StaticCatalog(object):
         }
         """
 
-        # Use classic_source as default if available, otherwise use source
+        # Use classic_source as primary if available, otherwise use source
         primary_source = classic_source if classic_source else source
         fallback_source = source if classic_source else None
 
