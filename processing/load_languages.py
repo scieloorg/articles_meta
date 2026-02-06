@@ -181,15 +181,18 @@ def load_documents(collection, articlemeta_db, all_records=False):
 
 class StaticCatalog(object):
 
-    def __init__(self, collection):
+    def __init__(self, collection_domain, classic_domain=None):
         self.catalog = {}
-        self._load_static_catalog(collection, 'pdf')
-        self._load_static_catalog(collection, 'html')
-        self._load_static_catalog(collection, 'xml')
+        self.collection_domain = collection_domain
+        self.classic_domain = classic_domain
+        self._load_static_catalog(collection_domain, classic_domain, 'pdf')
+        self._load_static_catalog(collection_domain, classic_domain, 'html')
+        self._load_static_catalog(collection_domain, classic_domain, 'xml')
 
-    def _load_static_catalog(self, source, tipe):
+    def _load_static_catalog(self, source, classic_source, tipe):
         """
         source: www.scielo.br
+        classic_source: antigo.scielo.br (optional fallback)
         type: in ['pdf', 'html', 'xml']
 
         Download the static files text lists from the selected SciELO Domain.
@@ -225,7 +228,19 @@ class StaticCatalog(object):
 
         url = '/'.join(['http:/', source, filename])
 
-        content = do_request(url, json=False).iter_lines(decode_unicode='utf-8')
+        response = do_request(url, json=False)
+        
+        # Try classic domain as fallback if primary domain fails
+        if response is None and classic_source:
+            logger.warning(u'Failed to load from %s, trying classic domain %s', source, classic_source)
+            url = '/'.join(['http:/', classic_source, filename])
+            response = do_request(url, json=False)
+        
+        if response is None:
+            logger.error(u'Failed to load static catalog from both primary and classic domains')
+            return
+        
+        content = response.iter_lines(decode_unicode='utf-8')
 
         for line in sorted([i for i in content]):
             splitedline = line.lower().split('/')[1:]
@@ -393,10 +408,11 @@ def run(collections, articlemeta_db, all_records=False, forced_url=None):
         coll_info = collection_info(collection, articlemeta_db)
 
         collection_domain = forced_url if forced_url else coll_info['domain']
+        classic_domain = coll_info.get('classic_domain') if not forced_url else None
         logger.info(u'Loading languages for %s', collection_domain)
         logger.info(u'Using mode all_records %s', str(all_records))
 
-        static_catalogs = StaticCatalog(collection_domain)
+        static_catalogs = StaticCatalog(collection_domain, classic_domain)
 
         for document in load_documents(collection, articlemeta_db,
                                        all_records=all_records):

@@ -129,6 +129,7 @@
     "acron": "scl",
     "code": "scl",
     "domain": "www.scielo.br",
+    "classic_domain": "antigo.scielo.br",
     "acron2": "br",
     "name": {
       "en": "Brazil",

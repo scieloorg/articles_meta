@@ -10,7 +10,7 @@ from processing import load_languages
 from articlemeta import controller
 
 
-def mock_static_catalog_init_method(self, collection):
+def mock_static_catalog_init_method(self, collection_domain, classic_domain=None):
     self.catalog = {
         "rsp": {
             "v52": {
