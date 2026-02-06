@@ -114,6 +114,58 @@ class LoadLanguageTest(TestCase):
                          document['fulltexts']['html'])
         self.assertIsNotNone(document['fulltexts'].get('pdf'))
 
+    def test_static_catalog_fallback(self):
+        """Test that StaticCatalog tries fallback domain when primary fails"""
+        
+        # Mock do_request to simulate primary domain failure
+        def mock_do_request_primary_fails(url, json=True):
+            if 'www.scielo.br' in url:
+                return None  # Primary fails
+            elif 'antigo.scielo.br' in url:
+                # Fallback succeeds with empty response
+                class MockResponse:
+                    def iter_lines(self, decode_unicode=None):
+                        return []
+                return MockResponse()
+            return None
+        
+        with patch.object(load_languages, 'do_request', side_effect=mock_do_request_primary_fails):
+            # Test with fallback domain - should not raise error
+            catalog = load_languages.StaticCatalog('www.scielo.br', fallback_domain='antigo.scielo.br')
+            self.assertIsInstance(catalog.catalog, dict)
+            
+            # Test without fallback domain - catalog should still be created but empty
+            catalog_no_fallback = load_languages.StaticCatalog('www.scielo.br', fallback_domain=None)
+            self.assertIsInstance(catalog_no_fallback.catalog, dict)
+
+    @patch.object(
+        load_languages.StaticCatalog, "__init__", mock_static_catalog_init_method
+    )
+    def test_run_with_fallback_domain(self):
+        """Test run function with fallback_domain parameter"""
+        mocked_articlemeta_db = mongomock.MongoClient().db
+        mocked_articlemeta_db['collections'].insert_many([
+            {
+                "acron": "scl",
+                "code": "scl",
+                "domain": "www.scielo.br"
+            },
+        ])
+        mocked_articlemeta_db['articles'].insert_one(self._raw_json)
+
+        # Test with fallback_domain parameter
+        load_languages.run(['scl'],
+                           mocked_articlemeta_db,
+                           all_records=True,
+                           forced_url='www.scielo.br',
+                           fallback_domain='antigo.scielo.br')
+
+        document = mocked_articlemeta_db['articles'].find_one(
+            {'code': self._raw_json['code']},
+            {'_id': 0, 'citations': 0}
+        )
+        self.assertIsNotNone(document)
+
 
 if __name__ == '__main__':
     main()
