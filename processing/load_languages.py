@@ -26,6 +26,7 @@ from xylose.scielodocument import Article
 logger = logging.getLogger(__name__)
 SENTRY_DSN = os.environ.get('SENTRY_DSN', None)
 LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'DEBUG')
+STATIC_CATALOG_FALLBACK_DOMAIN = os.environ.get('STATIC_CATALOG_FALLBACK_DOMAIN', None)
 
 LOGGING = {
     'version': 1,
@@ -181,8 +182,9 @@ def load_documents(collection, articlemeta_db, all_records=False):
 
 class StaticCatalog(object):
 
-    def __init__(self, collection):
+    def __init__(self, collection, fallback_domain=None):
         self.catalog = {}
+        self.fallback_domain = fallback_domain
         self._load_static_catalog(collection, 'pdf')
         self._load_static_catalog(collection, 'html')
         self._load_static_catalog(collection, 'xml')
@@ -225,7 +227,19 @@ class StaticCatalog(object):
 
         url = '/'.join(['http:/', source, filename])
 
-        content = do_request(url, json=False).iter_lines(decode_unicode='utf-8')
+        response = do_request(url, json=False)
+        
+        # If primary domain fails and fallback domain is configured, try fallback
+        if response is None and self.fallback_domain:
+            logger.warning(u'Failed to load from %s, trying fallback domain %s', source, self.fallback_domain)
+            fallback_url = '/'.join(['http:/', self.fallback_domain, filename])
+            response = do_request(fallback_url, json=False)
+        
+        if response is None:
+            logger.error(u'Failed to load static catalog from %s (and fallback if configured)', source)
+            return
+        
+        content = response.iter_lines(decode_unicode='utf-8')
 
         for line in sorted([i for i in content]):
             splitedline = line.lower().split('/')[1:]
@@ -382,7 +396,7 @@ class StaticCatalog(object):
         return ldata
 
 
-def run(collections, articlemeta_db, all_records=False, forced_url=None):
+def run(collections, articlemeta_db, all_records=False, forced_url=None, fallback_domain=None):
 
     if not isinstance(collections, list):
         logger.error('Collections must be a list o collection acronym')
@@ -395,8 +409,13 @@ def run(collections, articlemeta_db, all_records=False, forced_url=None):
         collection_domain = forced_url if forced_url else coll_info['domain']
         logger.info(u'Loading languages for %s', collection_domain)
         logger.info(u'Using mode all_records %s', str(all_records))
+        
+        # Use environment variable fallback if not provided as parameter
+        effective_fallback = fallback_domain if fallback_domain else STATIC_CATALOG_FALLBACK_DOMAIN
+        if effective_fallback:
+            logger.info(u'Using fallback domain: %s', effective_fallback)
 
-        static_catalogs = StaticCatalog(collection_domain)
+        static_catalogs = StaticCatalog(collection_domain, fallback_domain=effective_fallback)
 
         for document in load_documents(collection, articlemeta_db,
                                        all_records=all_records):
@@ -485,6 +504,12 @@ def main():
         help='Collection domain to get Static catalog'
     )
 
+    parser.add_argument(
+        '--fallback_domain',
+        '-f',
+        help='Fallback domain to try if primary domain fails (e.g., antigo.scielo.br)'
+    )
+
     args = parser.parse_args()
     LOGGING['handlers']['console']['level'] = args.logging_level
     for lg, content in LOGGING['loggers'].items():
@@ -494,7 +519,7 @@ def main():
 
     collections = [args.collection] if args.collection else _collections_acronyms
 
-    run(collections, articlemeta_db, args.all_records, args.domain)
+    run(collections, articlemeta_db, args.all_records, args.domain, args.fallback_domain)
 
 
 if __name__ == '__main__':
