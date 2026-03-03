@@ -1,11 +1,28 @@
-version: '2'
 services:
+  mongo:
+    image: mongo:8.0
+    restart: unless-stopped
+    volumes:
+      - mongo8_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand({ ping: 1 }).ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   articlemeta-restfulapi:
-    image: scieloorg/articles_meta
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: articles_meta_local:rest
+    depends_on:
+      mongo:
+        condition: service_healthy
     environment:
       ADMIN_TOKEN:
       LOGGING_LEVEL: DEBUG
-      MONGODB_HOST: 
+      MONGODB_HOST: //mongo:27017/articlemeta
       SENTRY_DSN: 
     command:
         - gunicorn
@@ -18,11 +35,17 @@ services:
     labels:
       io.rancher.container.pull_image: always
   articlemeta-thriftserver:
-    image: scieloorg/articles_meta
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: articles_meta_local:thrift
+    depends_on:
+      mongo:
+        condition: service_healthy
     environment:
       ADMIN_TOKEN:
       LOGGING_LEVEL: DEBUG
-      MONGODB_HOST: 
+      MONGODB_HOST: //mongo:27017/articlemeta
       SENTRY_DSN: 
     command:
         - articlemeta_thriftserver
@@ -32,3 +55,6 @@ services:
         - 0.0.0.0
     labels:
       io.rancher.container.pull_image: always
+
+volumes:
+  mongo8_data:
