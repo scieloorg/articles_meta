@@ -324,7 +324,7 @@ class IssueMeta:
         if extra_filter:
             fltr.update(json.loads(extra_filter))
 
-        total = self.db.find(fltr).count()
+        total = self.db.count_documents(fltr)
         data = self.db.find(fltr, {
             'code': 1, 'collection': 1, 'processing_date': 1}).sort(
                     'processing_date').skip(offset).limit(limit)
@@ -403,7 +403,7 @@ class IssueMeta:
         if extra_filter:
             fltr.update(json.loads(extra_filter))
 
-        total = self.db.find(fltr).count()
+        total = self.db.count_documents(fltr)
         data = self.db.find(fltr, {'_id': 0}).sort(
                 'processing_date').skip(offset).limit(limit)
 
@@ -430,7 +430,7 @@ class IssueMeta:
         if collection:
             fltr['collection'] = collection
 
-        if self.db.find(fltr).count() >= 1:
+        if self.db.count_documents(fltr) >= 1:
             return True
 
         return False
@@ -676,7 +676,7 @@ class JournalMeta:
         if extra_filter:
             fltr.update(json.loads(extra_filter))
 
-        total = self.db.find(fltr).count()
+        total = self.db.count_documents(fltr)
         data = self.db.find(
                 fltr,
                 {'code': 1, 'collection': 1, 'processing_date': 1}).sort(
@@ -710,7 +710,7 @@ class JournalMeta:
         if collection:
             fltr['collection'] = collection
 
-        if self.db.find(fltr).count() >= 1:
+        if self.db.count_documents(fltr) >= 1:
             return True
 
         return False
@@ -788,7 +788,7 @@ class ArticleMeta:
         if extra_filter:
             fltr.update(json.loads(extra_filter))
 
-        total = self.db.find(fltr).count()
+        total = self.db.count_documents(fltr)
         data = self.db.find(fltr, {
             'code': 1,
             'collection': 1,
@@ -845,7 +845,7 @@ class ArticleMeta:
         if extra_filter:
             fltr.update(json.loads(extra_filter))
 
-        total = self.db.find(fltr).count()
+        total = self.db.count_documents(fltr)
         items = self.db.find(fltr, {
             'code': 1,
             'collection': 1,
@@ -967,7 +967,7 @@ class ArticleMeta:
         if body is False:
             content['body'] = 0
 
-        total = self.db.find(fltr).count()
+        total = self.db.count_documents(fltr)
         data = self.db.find(fltr, content).sort(
                 'processing_date').skip(offset).limit(limit)
 
@@ -1007,7 +1007,7 @@ class ArticleMeta:
         if collection:
             fltr['collection'] = collection
 
-        if self.db.find(fltr).count() >= 1:
+        if self.db.count_documents(fltr) >= 1:
             return True
 
         return False
@@ -1097,7 +1097,7 @@ class ArticleMeta:
         if issn:
             fltr['code_title'] = issn
 
-        total = self.db.find(fltr).count()
+        total = self.db.count_documents(fltr)
         data = self.db.find(fltr, {
             'code': 1,
             'collection': 1,
@@ -1216,8 +1216,8 @@ class DataBroker(object):
                 'event': event,
                 'date': date or datetime.now(),
             }
-            log_id = self.db['historychanges_%s' % document_type].insert(log_data)
-            return log_id
+            result = self.db['historychanges_%s' % document_type].insert_one(log_data)
+            return result.inserted_id
 
     def historychanges(self, document_type, collection=None, event=None,
                        code=None, from_date='1997-01-01',
@@ -1242,7 +1242,7 @@ class DataBroker(object):
         if code:
             fltr['code'] = code
 
-        total = self.db['historychanges_%s' % document_type].find(fltr).count()
+        total = self.db['historychanges_%s' % document_type].count_documents(fltr)
         data = self.db['historychanges_%s' % document_type].find(fltr).sort("date").skip(offset).limit(limit)
 
         meta = {

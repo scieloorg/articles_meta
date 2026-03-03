@@ -13,7 +13,6 @@ input example:
 CSV Total parameters size: 13
 """
 import logging
-import codecs
 import re
 import argparse
 import csv
@@ -268,7 +267,7 @@ def import_doc_affiliations(data, normalized_affiliations):
         ilj.append(from_normalized)
 
     try:
-        scielo_network_articles.update(
+        scielo_network_articles.update_one(
             {
                 'code': code,
                 'collection': collection
@@ -281,7 +280,7 @@ def import_doc_affiliations(data, normalized_affiliations):
             }
         )
         logger.debug(u'reacording at(%s): ', code)
-    except:
+    except Exception:
         logger.error(u'Error recording metadata at (%s): ', code)
 
 
@@ -293,11 +292,9 @@ def check_affiliations(file_name='processing/normalized_affiliations.csv', impor
 
     line_count = 0
     doc_affiliations = {}
-    with codecs.open(file_name, 'r') as csvfile:
+    with open(file_name, 'r', encoding=encoding, newline='') as csvfile:
         spamreader = csv.reader(csvfile, delimiter='|')
-        lines = []
-        for line in spamreader:
-            lines.append([i.decode(encoding) for i in line])
+        lines = [line for line in spamreader]
 
     for line in sorted(lines):
         line_count += 1
@@ -322,8 +319,9 @@ def check_affiliations(file_name='processing/normalized_affiliations.csv', impor
             continue
 
         if not parsed_line['pid'] in doc_affiliations and len(doc_affiliations) == 1:
+            previous_pid = next(iter(doc_affiliations))
             previous_article = get_original_article(
-                doc_affiliations.keys()[0], parsed_line['collection']
+                previous_pid, parsed_line['collection']
             )
             import_doc_affiliations(doc_affiliations, previous_article.normalized_affiliations)
             doc_affiliations = {}

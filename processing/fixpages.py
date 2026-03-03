@@ -10,7 +10,6 @@ input example:
     scl|S0001-37652013000100001|first page|first page seq|last page|e-location|ahead id
 """
 import logging
-import codecs
 import re
 import argparse
 import csv
@@ -141,7 +140,7 @@ def fix_pages(data):
         pages['e'] = data['elocation']
 
     try:
-        scielo_network_articles.update(
+        scielo_network_articles.update_one(
             {
                 'code': data['pid'],
                 'collection': data['collection']
@@ -153,9 +152,9 @@ def fix_pages(data):
                 }
             }
         )
-        logger.debug(u'reacording at (%s-%s): %s', data['collection'], data['pid'], unicode(pages))
-    except:
-        logger.error(u'Error recording metadata at (%s-%s): %s', data['collection'], data['pid'], unicode(pages))
+        logger.debug(u'reacording at (%s-%s): %s', data['collection'], data['pid'], str(pages))
+    except Exception:
+        logger.error(u'Error recording metadata at (%s-%s): %s', data['collection'], data['pid'], str(pages))
 
 
 def check_affiliations(file_name, import_data=False, encoding='utf-8'):
@@ -163,11 +162,9 @@ def check_affiliations(file_name, import_data=False, encoding='utf-8'):
     logger.info('reading file (%s)', file_name)
 
     line_count = 0
-    with codecs.open(file_name, 'r') as csvfile:
+    with open(file_name, 'r', encoding=encoding, newline='') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',')
-        lines = []
-        for line in spamreader:
-            lines.append([i.decode(encoding) for i in line])
+        lines = [line for line in spamreader]
 
     for line in sorted(lines):
         line_count += 1

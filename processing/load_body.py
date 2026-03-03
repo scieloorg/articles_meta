@@ -253,7 +253,7 @@ def add_bodies(articlemeta_db, documents, collection):
             logger.error('No bodies found for: %s, %s', collection, document.publisher_id)
             continue
 
-        articlemeta_db['articles'].update(
+        articlemeta_db['articles'].update_one(
             {'code': document.publisher_id, 'collection': document.collection_acronym},
             {'$set': {'body': bodies}}
         )

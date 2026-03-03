@@ -209,7 +209,7 @@ def update_document(mixed, document):
     logger.debug('Updating citation in database')
 
     citation_field = 'citations.%s.mixed' % str(int(mixed['order'])-1)
-    articlemeta_db['articles'].update(
+    articlemeta_db['articles'].update_one(
         {
             'collection': document.collection_acronym,
             'code': document.publisher_id

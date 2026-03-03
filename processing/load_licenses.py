@@ -179,7 +179,7 @@ def run(articlemeta_db, collections, all_records=False):
                 logger.debug('No license defined for: %s', document.publisher_id)
                 continue
 
-            articlemeta_db['articles'].update(
+            articlemeta_db['articles'].update_one(
                 {'code': document.publisher_id, 'collection': document.collection_acronym},
                 {'$set': {'license': lic}}
             )

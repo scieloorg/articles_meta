@@ -10,7 +10,7 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
     CHANGES = f.read()
 
 requires = [
-    'pymongo>=3.5.1',
+    'pymongo>=4.9,<5',
     'lxml>=3.4.2',
     'requests>=2.11.1',
     'picles.plumber>=0.10',
@@ -38,10 +38,13 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.12",
         "Operating System :: POSIX :: Linux",
         "Topic :: System",
         "Topic :: Utilities",
     ],
+    python_requires=">=3.9",
     dependency_links=[
         "git+https://github.com/scieloorg/thriftpy2-wrap@01.0.0#egg=thriftpywrap",
         "git+https://github.com/scieloorg/xylose.git@1.35.13#egg=xylose",
