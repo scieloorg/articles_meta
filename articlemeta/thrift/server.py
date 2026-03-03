@@ -2,10 +2,12 @@
 import json
 import logging
 import os
+import threading
 import uuid
 
 import thriftpywrap
 import thriftpy2
+from pymongo import errors as pymongo_errors
 
 from articlemeta.controller import DataBroker, get_dbconn
 from articlemeta import utils
@@ -64,6 +66,44 @@ LOGGING = {
 articlemeta_thrift = thriftpy2.load(
     os.path.join(os.path.dirname(__file__), 'articlemeta.thrift'))
 
+TRANSIENT_MONGO_ERRORS = (
+    pymongo_errors.AutoReconnect,
+    pymongo_errors.NetworkTimeout,
+    pymongo_errors.ServerSelectionTimeoutError,
+    pymongo_errors.ConnectionFailure,
+)
+
+
+class ResilientDataBroker(object):
+    """Wraps DataBroker calls with one reconnect/retry on transient Mongo errors."""
+
+    def __init__(self, broker_factory):
+        self._broker_factory = broker_factory
+        self._lock = threading.Lock()
+        self._broker = broker_factory()
+
+    def _reset(self):
+        with self._lock:
+            self._broker = self._broker_factory()
+
+    def __getattr__(self, attr_name):
+        attr = getattr(self._broker, attr_name)
+        if not callable(attr):
+            return attr
+
+        def _wrapped(*args, **kwargs):
+            try:
+                return getattr(self._broker, attr_name)(*args, **kwargs)
+            except TRANSIENT_MONGO_ERRORS:
+                logger.exception(
+                    "Transient MongoDB error on '%s', reconnecting and retrying once",
+                    attr_name,
+                )
+                self._reset()
+                return getattr(self._broker, attr_name)(*args, **kwargs)
+
+        return _wrapped
+
 
 class Dispatcher(object):
     def __init__(self):
@@ -73,9 +113,9 @@ class Dispatcher(object):
         db_dsn = os.environ.get('MONGODB_HOST', settings.get('mongo_uri', '127.0.0.1:27017'))
 
         self._admintoken = os.environ.get('ADMIN_TOKEN', None) or settings['app:main'].get('admintoken', uuid.uuid4().hex)
-
-        db_client = get_dbconn(db_dsn)
-        self._databroker = DataBroker(db_client)
+        self._databroker = ResilientDataBroker(
+            lambda: DataBroker(get_dbconn(db_dsn))
+        )
 
     def getInterfaceVersion(self):
         return articlemeta_thrift.VERSION

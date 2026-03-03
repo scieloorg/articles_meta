@@ -1,4 +1,5 @@
 # coding: utf-8
+import os
 from urllib.parse import urlparse
 import warnings
 import json
@@ -173,6 +174,24 @@ def get_date_range_filter(from_date=None, until_date=None):
 def get_dbconn(db_dsn):
     """Connects to the MongoDB server and returns a database handler."""
 
+    def _mongo_timeouts():
+        return {
+            "serverSelectionTimeoutMS": int(os.environ.get("MONGO_SERVER_SELECTION_TIMEOUT_MS", 5000)),
+            "connectTimeoutMS": int(os.environ.get("MONGO_CONNECT_TIMEOUT_MS", 5000)),
+            "socketTimeoutMS": int(os.environ.get("MONGO_SOCKET_TIMEOUT_MS", 15000)),
+            "waitQueueTimeoutMS": int(os.environ.get("MONGO_WAIT_QUEUE_TIMEOUT_MS", 5000)),
+            "maxPoolSize": int(os.environ.get("MONGO_MAX_POOL_SIZE", 100)),
+            "retryWrites": False,
+        }
+
+    def _normalize_dsn(raw_dsn):
+        # Accepts legacy forms like "host:27017/db", "//host:27017/db", or full mongodb URI.
+        if raw_dsn.startswith("mongodb://") or raw_dsn.startswith("mongodb+srv://"):
+            return raw_dsn
+        if raw_dsn.startswith("//"):
+            return "mongodb:%s" % raw_dsn
+        return "mongodb://%s" % raw_dsn
+
     def _create_indexes(db):
         """
         Ensures that an index exists on specified collections.
@@ -254,10 +273,23 @@ def get_dbconn(db_dsn):
                     db[collection].create_index(index[0], **index[1])
 
     print('End Creation index')
-    db_url = urlparse(db_dsn)
-    conn = pymongo.MongoClient('mongodb://%s' % db_url.netloc)
-    db = conn[db_url.path[1:]]
-    _create_indexes(db)
+    mongo_uri = _normalize_dsn(db_dsn)
+    db_url = urlparse(mongo_uri)
+    db_name = db_url.path[1:] or "articlemeta"
+    conn = pymongo.MongoClient(mongo_uri, **_mongo_timeouts())
+    db = conn[db_name]
+    try:
+        _create_indexes(db)
+    except (
+        pymongo.errors.AutoReconnect,
+        pymongo.errors.NetworkTimeout,
+        pymongo.errors.ServerSelectionTimeoutError,
+        pymongo.errors.ConnectionFailure,
+    ) as exc:
+        warnings.warn(
+            "MongoDB unavailable during index creation; continuing startup "
+            "without blocking. Error: %s" % exc
+        )
     return db
 
 
