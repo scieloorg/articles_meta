@@ -81,7 +81,7 @@ class Configuration(SingletonMixin):
     """
     def __init__(self, fp, parser_dep=ConfigParser):
         self.conf = parser_dep()
-        self.conf.readfp(fp)
+        self.conf.read_file(fp)
 
     @classmethod
     def from_env(cls):
@@ -99,8 +99,8 @@ class Configuration(SingletonMixin):
 
         ``filepath`` is a text string.
         """
-        fp = open(filepath, 'r')
-        return cls(fp)
+        with open(filepath, 'r', encoding='utf-8') as fp:
+            return cls(fp)
 
     def __getattr__(self, attr):
         return getattr(self.conf, attr)

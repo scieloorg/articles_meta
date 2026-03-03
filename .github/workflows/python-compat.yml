@@ -1,0 +1,98 @@
+name: Python Compatibility
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  compat:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Compile changed modules
+        run: |
+          python -m py_compile articlemeta/utils.py processing/fixpages.py processing/importaffiliation.py
+
+      - name: Run compatibility smoke test
+        run: |
+          python - <<'PY'
+          import importlib.util
+          import os
+          import sys
+          import tempfile
+          import types
+          from pathlib import Path
+
+          ROOT = Path(".").resolve()
+
+          spec_utils = importlib.util.spec_from_file_location("articlemeta.utils", ROOT / "articlemeta" / "utils.py")
+          utils = importlib.util.module_from_spec(spec_utils)
+          spec_utils.loader.exec_module(utils)
+
+          with tempfile.NamedTemporaryFile("w+", encoding="utf-8", delete=False) as fp:
+              fp.write("[app:main]\nkey=value\nmongo_uri=mongodb://localhost:27017\n")
+              name = fp.name
+
+          cfg = utils.Configuration.from_file(name)
+          assert cfg.get("app:main", "key") == "value"
+
+          xylose = types.ModuleType("xylose")
+          scielodoc = types.ModuleType("xylose.scielodocument")
+
+          class DummyArticle:
+              def __init__(self, data=None):
+                  self.data = data or {}
+
+          scielodoc.Article = DummyArticle
+          sys.modules["xylose"] = xylose
+          sys.modules["xylose.scielodocument"] = scielodoc
+
+          articlemeta_stub = types.ModuleType("articlemeta")
+          articlemeta_stub.utils = utils
+          sys.modules["articlemeta"] = articlemeta_stub
+
+          pymongo = types.ModuleType("pymongo")
+
+          class DummyClient:
+              def __init__(self, *args, **kwargs):
+                  pass
+
+              def __getitem__(self, key):
+                  if key == "articlemeta":
+                      return {"articles": types.SimpleNamespace(find_one=lambda q: None)}
+                  return {}
+
+          pymongo.MongoClient = DummyClient
+          sys.modules["pymongo"] = pymongo
+
+          os.environ["ARTICLEMETA_SETTINGS_FILE"] = name
+
+          spec_fix = importlib.util.spec_from_file_location("processing.fixpages", ROOT / "processing" / "fixpages.py")
+          fixpages = importlib.util.module_from_spec(spec_fix)
+          spec_fix.loader.exec_module(fixpages)
+
+          spec_imp = importlib.util.spec_from_file_location("processing.importaffiliation", ROOT / "processing" / "importaffiliation.py")
+          importaff = importlib.util.module_from_spec(spec_imp)
+          spec_imp.loader.exec_module(importaff)
+
+          line_fix = ["1", "scl", "S0001-37652013000100001", "10", "2", "20", "eloc", "ahead"]
+          assert fixpages.parse_csv_line(line_fix)["pid"] == "S0001-37652013000100001"
+
+          line_imp = (
+              "27136|scl|S0001-37652013000100001|2013|An. Acad. Bras. Ciênc.|v85n1|"
+              "aff1|Museu Nacional/UFRJ|Brasil|Universidade Federal do Rio de Janeiro|"
+              "Brazil|BR|São Paulo|SP"
+          )
+          assert importaff.parse_csv_line(line_imp.split("|"))["collection"] == "scl"
+          PY
