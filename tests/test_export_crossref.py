@@ -302,6 +302,21 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
 
         self.assertEqual('timestamp', xml.find('head/timestamp').tag)
 
+    def test_time_stamp_17_digits(self):
+
+        xmlcrossref = ET.Element('doi_batch')
+
+        xmlcrossref.append(ET.Element('head'))
+
+        data = [self._article_meta, xmlcrossref]
+
+        xmlcrossref = export_crossref.XMLTimeStampPipe()
+        raw, xml = xmlcrossref.transform(data)
+
+        timestamp = xml.find('head/timestamp').text
+        self.assertEqual(17, len(timestamp))
+        self.assertTrue(timestamp.isdigit())
+
     def test_head_element(self):
 
         xmlcrossref = ET.Element('doi_batch')
