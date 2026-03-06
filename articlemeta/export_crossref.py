@@ -13,6 +13,12 @@ import plumber
 SUPPLBEG_REGEX = re.compile(r'^0 ')
 SUPPLEND_REGEX = re.compile(r' 0$')
 
+CROSSMARK_UPDATE_TYPES = frozenset([
+    'addendum', 'clarification', 'correction', 'corrigendum', 'erratum',
+    'expression_of_concern', 'new_edition', 'new_version', 'partial_retraction',
+    'removal', 'retraction', 'withdrawal',
+])
+
 
 class SetupDoiBatchPipe(plumber.Pipe):
 
@@ -1201,6 +1207,120 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
             journal_article_node.append(deepcopy(program_node))
 
         return data
+
+class XMLCrossmarkPipe(plumber.Pipe):
+    """Adds the <crossmark> element to each journal_article element.
+
+    The crossmark_policy value is read from the CROSSMARK_POLICY environment
+    variable.  When the variable is empty or absent the pipe is skipped.
+
+    Optional updates (corrections, retractions, etc.) are read from the
+    ``related_articles`` list stored at the top level of the raw article JSON.
+    Each item in that list is expected to be a dict with at least the keys
+    ``type`` (one of the 12 Crossref update types) and ``doi``.  An optional
+    ``date`` key (format YYYY-MM-DD, YYYY-MM, YYYYMM, or YYYY/MM/DD) is used to populate
+    the ``<date>`` child element.
+    """
+
+    def precond(data):
+        raw, _ = data
+        if not os.environ.get('CROSSMARK_POLICY', ''):
+            raise plumber.UnmetPrecondition()
+
+    @staticmethod
+    def _build_date_element(date_str):
+        """Return a ``<date media_type="online">`` element or *None*."""
+        if not date_str:
+            return None
+        # Normalise separators
+        clean = date_str.replace('-', '').replace('/', '')
+        if len(clean) < 4:
+            return None
+        date_el = ET.Element('date')
+        date_el.set('media_type', 'online')
+        year_text = clean[0:4]
+        month_text = clean[4:6] if len(clean) >= 6 else ''
+        if month_text:
+            month_el = ET.Element('month')
+            month_el.text = month_text
+            date_el.append(month_el)
+        year_el = ET.Element('year')
+        year_el.text = year_text
+        date_el.append(year_el)
+        return date_el
+
+    @staticmethod
+    def _build_updates_element(related_articles):
+        """Return an ``<updates>`` element populated from *related_articles*.
+
+        Items whose ``type`` is not one of the 12 recognised Crossref update
+        types, or that are missing a ``doi``, are silently ignored.
+        """
+        updates_el = ET.Element('updates')
+        for item in related_articles:
+            update_type = item.get('type', '')
+            update_doi = item.get('doi', '')
+            if not update_type or not update_doi:
+                continue
+            if update_type not in CROSSMARK_UPDATE_TYPES:
+                continue
+            update_el = ET.Element('update')
+            update_el.set('type', update_type)
+            doi_el = ET.Element('doi')
+            doi_el.text = update_doi
+            update_el.append(doi_el)
+            date_el = XMLCrossmarkPipe._build_date_element(item.get('date', ''))
+            if date_el is not None:
+                update_el.append(date_el)
+            updates_el.append(update_el)
+        return updates_el
+
+    @plumber.precondition(precond)
+    def transform(self, data):
+        raw, xml = data
+
+        policy = os.environ.get('CROSSMARK_POLICY', '')
+
+        crossmark = ET.Element('crossmark')
+
+        version_el = ET.Element('crossmark_version')
+        version_el.text = '1'
+        crossmark.append(version_el)
+
+        policy_el = ET.Element('crossmark_policy')
+        policy_el.text = policy
+        crossmark.append(policy_el)
+
+        scielo_domain = getattr(raw, 'scielo_domain', None)
+        if scielo_domain:
+            domains_el = ET.Element('crossmark_domains')
+            domain_el = ET.Element('crossmark_domain')
+            d_el = ET.Element('domain')
+            d_el.text = scielo_domain
+            domain_el.append(d_el)
+            domains_el.append(domain_el)
+            crossmark.append(domains_el)
+
+            exclusive_el = ET.Element('crossmark_domain_exclusive')
+            exclusive_el.text = 'true'
+            crossmark.append(exclusive_el)
+
+        related_articles = []
+        try:
+            related_articles = raw.data.get('related_articles') or []
+        except Exception:
+            pass
+
+        if related_articles:
+            updates_el = self._build_updates_element(related_articles)
+            if len(updates_el):
+                crossmark.append(updates_el)
+
+        for journal_article in xml.findall('./body/journal//journal_article'):
+            journal_article.append(deepcopy(crossmark))
+
+        return data
+
 
 class XMLFundingDataPipe(plumber.Pipe):
     def precond(data):

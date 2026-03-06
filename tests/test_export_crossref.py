@@ -2150,3 +2150,277 @@ class ExportCrossRef_XMLFundingData_Tests(unittest.TestCase):
 
         self.assertEqual(publisher_item.getnext().find("*").tag, "{http://www.crossref.org/fundref.xsd}assertion")
         self.assertIn("fr:program", ET.tostring(xml).decode("utf-8"))
+
+class ExportCrossRef_XMLCrossmarkPipe_Tests(unittest.TestCase):
+    """Tests for the XMLCrossmarkPipe."""
+
+    def _make_xml_with_publisher_item(self):
+        xml = ET.fromstring(
+            '<doi_batch>'
+            '<body>'
+            '<journal>'
+            '<journal_article publication_type="full_text">'
+            '<publisher_item>'
+            '<identifier id_type="pii">S0034-89102010000400007</identifier>'
+            '</publisher_item>'
+            '</journal_article>'
+            '</journal>'
+            '</body>'
+            '</doi_batch>'
+        )
+        return xml
+
+    def _make_article(self, extra_data=None):
+        raw_data = {
+            'article': {
+                'v880': [{'_': 'S0034-89102010000400007'}],
+                'v40': [{'_': 'pt'}],
+            },
+            'title': {},
+            'issue': {'issue': {}},
+        }
+        if extra_data:
+            raw_data.update(extra_data)
+        return Article(raw_data)
+
+    def test_crossmark_not_added_when_no_policy_env_var(self):
+        """When CROSSMARK_POLICY is not set, pipe is skipped."""
+        os.environ.pop('CROSSMARK_POLICY', None)
+        xml = self._make_xml_with_publisher_item()
+        article = self._make_article()
+
+        pipe = export_crossref.XMLCrossmarkPipe()
+        raw, result_xml = pipe.transform([article, xml])
+
+        self.assertEqual([], result_xml.findall('.//crossmark'))
+
+    def test_crossmark_added_when_policy_env_var_set(self):
+        """When CROSSMARK_POLICY is set, crossmark element is added."""
+        os.environ['CROSSMARK_POLICY'] = 'https://www.scielo.br/crossmark-policy'
+        try:
+            xml = self._make_xml_with_publisher_item()
+            article = self._make_article()
+
+            pipe = export_crossref.XMLCrossmarkPipe()
+            raw, result_xml = pipe.transform([article, xml])
+
+            crossmark_nodes = result_xml.findall('.//crossmark')
+            self.assertEqual(1, len(crossmark_nodes))
+        finally:
+            os.environ.pop('CROSSMARK_POLICY', None)
+
+    def test_crossmark_version_is_one(self):
+        """crossmark_version element has text '1'."""
+        os.environ['CROSSMARK_POLICY'] = 'https://www.scielo.br/crossmark-policy'
+        try:
+            xml = self._make_xml_with_publisher_item()
+            article = self._make_article()
+
+            pipe = export_crossref.XMLCrossmarkPipe()
+            raw, result_xml = pipe.transform([article, xml])
+
+            version = result_xml.find('.//crossmark/crossmark_version')
+            self.assertIsNotNone(version)
+            self.assertEqual('1', version.text)
+        finally:
+            os.environ.pop('CROSSMARK_POLICY', None)
+
+    def test_crossmark_policy_contains_env_value(self):
+        """crossmark_policy element reflects CROSSMARK_POLICY env var."""
+        policy_url = 'https://www.scielo.br/crossmark-policy'
+        os.environ['CROSSMARK_POLICY'] = policy_url
+        try:
+            xml = self._make_xml_with_publisher_item()
+            article = self._make_article()
+
+            pipe = export_crossref.XMLCrossmarkPipe()
+            raw, result_xml = pipe.transform([article, xml])
+
+            policy = result_xml.find('.//crossmark/crossmark_policy')
+            self.assertIsNotNone(policy)
+            self.assertEqual(policy_url, policy.text)
+        finally:
+            os.environ.pop('CROSSMARK_POLICY', None)
+
+    def test_crossmark_domains_from_scielo_domain(self):
+        """crossmark_domains element is populated from raw.scielo_domain."""
+        os.environ['CROSSMARK_POLICY'] = 'https://www.scielo.br/crossmark-policy'
+        try:
+            xml = self._make_xml_with_publisher_item()
+            raw_data = {
+                'article': {
+                    'v880': [{'_': 'S0034-89102010000400007'}],
+                    'v40': [{'_': 'pt'}],
+                },
+                'title': {'v690': [{'_': 'www.scielo.br'}]},
+                'issue': {'issue': {}},
+            }
+            article = Article(raw_data)
+
+            pipe = export_crossref.XMLCrossmarkPipe()
+            raw, result_xml = pipe.transform([article, xml])
+
+            domain = result_xml.find(
+                './/crossmark/crossmark_domains/crossmark_domain/domain')
+            self.assertIsNotNone(domain)
+            self.assertEqual('www.scielo.br', domain.text)
+        finally:
+            os.environ.pop('CROSSMARK_POLICY', None)
+
+    def test_crossmark_no_updates_when_no_related_articles(self):
+        """No <updates> element when related_articles is absent."""
+        os.environ['CROSSMARK_POLICY'] = 'https://www.scielo.br/crossmark-policy'
+        try:
+            xml = self._make_xml_with_publisher_item()
+            article = self._make_article()
+
+            pipe = export_crossref.XMLCrossmarkPipe()
+            raw, result_xml = pipe.transform([article, xml])
+
+            self.assertIsNone(result_xml.find('.//crossmark/updates'))
+        finally:
+            os.environ.pop('CROSSMARK_POLICY', None)
+
+    def test_crossmark_updates_with_related_articles(self):
+        """<updates> element is created from related_articles data."""
+        os.environ['CROSSMARK_POLICY'] = 'https://www.scielo.br/crossmark-policy'
+        try:
+            xml = self._make_xml_with_publisher_item()
+            article = self._make_article({
+                'related_articles': [
+                    {
+                        'type': 'erratum',
+                        'doi': '10.1590/erratum-example-001',
+                        'date': '2025-03',
+                    }
+                ]
+            })
+
+            pipe = export_crossref.XMLCrossmarkPipe()
+            raw, result_xml = pipe.transform([article, xml])
+
+            updates = result_xml.find('.//crossmark/updates')
+            self.assertIsNotNone(updates)
+            update = updates.find('update')
+            self.assertIsNotNone(update)
+            self.assertEqual('erratum', update.get('type'))
+            self.assertEqual(
+                '10.1590/erratum-example-001',
+                update.find('doi').text
+            )
+        finally:
+            os.environ.pop('CROSSMARK_POLICY', None)
+
+    def test_crossmark_update_date_elements(self):
+        """Date elements within <update> are correctly built."""
+        os.environ['CROSSMARK_POLICY'] = 'https://www.scielo.br/crossmark-policy'
+        try:
+            xml = self._make_xml_with_publisher_item()
+            article = self._make_article({
+                'related_articles': [
+                    {
+                        'type': 'retraction',
+                        'doi': '10.1590/retraction-001',
+                        'date': '2025-06',
+                    }
+                ]
+            })
+
+            pipe = export_crossref.XMLCrossmarkPipe()
+            raw, result_xml = pipe.transform([article, xml])
+
+            update = result_xml.find('.//crossmark/updates/update')
+            date_el = update.find('date')
+            self.assertIsNotNone(date_el)
+            self.assertEqual('online', date_el.get('media_type'))
+            children = list(date_el)
+            self.assertEqual('month', children[0].tag)
+            self.assertEqual('06', children[0].text)
+            self.assertEqual('year', children[1].tag)
+            self.assertEqual('2025', children[1].text)
+        finally:
+            os.environ.pop('CROSSMARK_POLICY', None)
+
+    def test_crossmark_update_unknown_type_is_skipped(self):
+        """Related articles with unrecognised type are silently ignored."""
+        os.environ['CROSSMARK_POLICY'] = 'https://www.scielo.br/crossmark-policy'
+        try:
+            xml = self._make_xml_with_publisher_item()
+            article = self._make_article({
+                'related_articles': [
+                    {
+                        'type': 'invalid_type',
+                        'doi': '10.1590/invalid-001',
+                        'date': '2025-01',
+                    }
+                ]
+            })
+
+            pipe = export_crossref.XMLCrossmarkPipe()
+            raw, result_xml = pipe.transform([article, xml])
+
+            self.assertIsNone(result_xml.find('.//crossmark/updates'))
+        finally:
+            os.environ.pop('CROSSMARK_POLICY', None)
+
+    def test_crossmark_multiple_updates(self):
+        """Multiple related articles produce multiple <update> elements."""
+        os.environ['CROSSMARK_POLICY'] = 'https://www.scielo.br/crossmark-policy'
+        try:
+            xml = self._make_xml_with_publisher_item()
+            article = self._make_article({
+                'related_articles': [
+                    {
+                        'type': 'erratum',
+                        'doi': '10.1590/erratum-001',
+                        'date': '2024-06',
+                    },
+                    {
+                        'type': 'retraction',
+                        'doi': '10.1590/retraction-001',
+                        'date': '2025-03',
+                    },
+                ]
+            })
+
+            pipe = export_crossref.XMLCrossmarkPipe()
+            raw, result_xml = pipe.transform([article, xml])
+
+            updates = result_xml.find('.//crossmark/updates')
+            self.assertIsNotNone(updates)
+            self.assertEqual(2, len(updates.findall('update')))
+        finally:
+            os.environ.pop('CROSSMARK_POLICY', None)
+
+    def test_crossmark_funding_pipe_appends_inside_crossmark(self):
+        """XMLFundingDataPipe appends funding data inside existing crossmark."""
+        os.environ['CROSSMARK_POLICY'] = 'https://www.scielo.br/crossmark-policy'
+        try:
+            xml = self._make_xml_with_publisher_item()
+            raw_data = {
+                'article': {
+                    'v880': [{'_': 'S0034-89102010000400007'}],
+                    'v40': [{'_': 'pt'}],
+                    'v58': [{'_': 'CNPQ'}],
+                    'v60': [{'_': '123456'}],
+                },
+                'title': {},
+                'issue': {'issue': {}},
+            }
+            article = Article(raw_data)
+
+            # First run XMLCrossmarkPipe to insert the crossmark element
+            crossmark_pipe = export_crossref.XMLCrossmarkPipe()
+            _, xml = crossmark_pipe.transform([article, xml])
+
+            # Then run XMLFundingDataPipe
+            funding_pipe = export_crossref.XMLFundingDataPipe()
+            _, xml = funding_pipe.transform([article, xml])
+
+            crossmark = xml.find('.//crossmark')
+            self.assertIsNotNone(crossmark)
+            fundref_program = crossmark.find(
+                '{http://www.crossref.org/fundref.xsd}program')
+            self.assertIsNotNone(fundref_program)
+        finally:
+            os.environ.pop('CROSSMARK_POLICY', None)
