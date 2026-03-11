@@ -80,6 +80,15 @@ class LoadLanguageTest(TestCase):
             ['mioc', 'v82s3', 'vol82(fsup3)_ii']
         )
 
+    def test_get_acron_issueid_fname_without_extension_no_match(self):
+        get_file_id = load_languages.get_acron_issueid_fname_without_extension
+        self.assertIsNone(
+            get_file_id('./argos/aceeed/n21/2545-8299-ACEEED-21-137')
+        )
+        self.assertIsNone(
+            get_file_id('some/random/path/without/valid/extension')
+        )
+
     @patch.object(
         load_languages.StaticCatalog, "__init__", mock_static_catalog_init_method
     )
