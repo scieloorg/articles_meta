@@ -21,7 +21,7 @@ seguintes atributos:
   "status": "certified",
   "type": "journals",
   "is_active": true,
-  "network_classification": "scielonetwork"
+  "network_classification": ["scielonetwork"]
 },
 ```
 
@@ -37,5 +37,5 @@ original_name          | o nome da coleção no seu idioma original
 status                 | indica se trata-se de uma coleção certificada (certified), de divulgação científica (diffusion), em desenvolvimento (development) ou Scielito (independent)
 type                   | indica se trata-se de uma coleção de periódicos ou de livros
 is_active              | valor booleano que indica se a coleção está ativa ou foi descontinuada
-network_classification | classificação da coleção na rede: coleções nacionais e com SciELO no nome (scielonetwork), coleções temáticas de uma área específica (thematic), coleções independentes (independent) ou outras (other)
+network_classification | lista com a classificação da coleção na rede (multivalorado): coleções nacionais e com SciELO no nome (scielonetwork), coleções temáticas de uma área específica (thematic), coleções independentes (independent) ou outras (other)
 
