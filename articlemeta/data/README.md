@@ -34,7 +34,7 @@ acron2                 | acrônimo alternativo da coleção
 name                   | dicionário contendo o nome da coleção nos 3 idiomas oficiais da Rede
 has_analytics          | se suas métricas estão disponíveis em analytics.scielo.org
 original_name          | o nome da coleção no seu idioma original
-status                 | indica se trata-se de uma coleção certificada (certified), de divulgação científica (diffusion), em desenvolvimento (development) ou Scielito (independent)
+status                 | indica se trata-se de uma coleção certificada (certified), de divulgação científica (diffusion), em desenvolvimento (development) ou adotantes da metodologia SciELO (independent)
 type                   | indica se trata-se de uma coleção de periódicos ou de livros
 is_active              | valor booleano que indica se a coleção está ativa ou foi descontinuada
 network_classification | lista com a classificação da coleção na rede (multivalorado): coleções nacionais e com SciELO no nome (scielonetwork), coleções temáticas de uma área específica (thematic), coleções independentes (independent) ou outras (other)
