@@ -1134,6 +1134,36 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
         data = self._transform_translations(data)
         return data
 
+    @staticmethod
+    def _get_preprint_relations(raw):
+        """Return the list of related-article entries marked as preprint.
+
+        SciELO stores related-article info in ISIS field ``v241``, with
+        subfields ``i`` (identifier/href), ``t`` (related-article-type) and
+        ``n`` (ext-link-type). Only entries whose type is ``preprint`` and
+        whose link type is ``doi`` (or unspecified) carry a usable DOI for
+        the Crossref ``hasPreprint`` relation.
+        """
+        try:
+            related = raw.data['article'].get('v241') or []
+        except (AttributeError, KeyError, TypeError):
+            return []
+
+        preprints = []
+        for item in related:
+            if not isinstance(item, dict):
+                continue
+            if item.get('t') != 'preprint':
+                continue
+            identifier = item.get('i') or item.get('_')
+            if not identifier:
+                continue
+            ext_link_type = item.get('n')
+            if ext_link_type and ext_link_type != 'doi':
+                continue
+            preprints.append(identifier)
+        return preprints
+
     def _transform_original(self, data):
         raw, xml = data
 
@@ -1164,6 +1194,19 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
                 'relationship-type', 'isTranslationOf')
             intra_work_relation_node.set('identifier-type', 'doi')
             intra_work_relation_node.text = doi
+            related_item_node.append(intra_work_relation_node)
+
+            program_node.append(related_item_node)
+
+        # program/related_item (hasPreprint)
+        for preprint_doi in self._get_preprint_relations(raw):
+            related_item_node = ET.Element('related_item')
+
+            intra_work_relation_node = ET.Element('intra_work_relation')
+            intra_work_relation_node.set(
+                'relationship-type', 'hasPreprint')
+            intra_work_relation_node.set('identifier-type', 'doi')
+            intra_work_relation_node.text = preprint_doi
             related_item_node.append(intra_work_relation_node)
 
             program_node.append(related_item_node)
