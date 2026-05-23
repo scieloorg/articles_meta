@@ -209,6 +209,7 @@ class Export(object):
             export_crossref.XMLPIDPipe(),
             export_crossref.XMLElocationPipe(),
             export_crossref.XMLPermissionsPipe(),
+            export_crossref.XMLCrossmarkPipe(),
             export_crossref.XMLProgramRelatedItemPipe(),
             export_crossref.XMLDOIDataPipe(),
             export_crossref.XMLDOIPipe(),
