@@ -1,14 +1,14 @@
 # coding: utf-8
-from lxml import etree as ET
-import re
 import os
+import re
 import uuid
 from copy import deepcopy
 from datetime import datetime
 from itertools import product
 
-from xylose.scielodocument import UnavailableMetadataException
 import plumber
+from lxml import etree as ET
+from xylose.scielodocument import UnavailableMetadataException
 
 SUPPLBEG_REGEX = re.compile(r'^0 ')
 SUPPLEND_REGEX = re.compile(r' 0$')
@@ -204,7 +204,7 @@ class XMLJournalIssuePipe(plumber.Pipe):
         try:
             if raw.issue.is_ahead_of_print:
                 raise plumber.UnmetPrecondition()
-        except UnavailableMetadataException as e:
+        except UnavailableMetadataException:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
@@ -1127,22 +1127,77 @@ class XMLClosePipe(plumber.Pipe):
 
 
 class XMLProgramRelatedItemPipe(plumber.Pipe):
+    RELATIONS_NAMESPACE = 'http://www.crossref.org/relations.xsd'
+    RELATION_TYPES = {
+        'commentary-article': ('inter_work_relation', 'isCommentOn'),
+        'reply': ('inter_work_relation', 'isReplyTo'),
+        'reviewed-article': ('inter_work_relation', 'isReviewOf'),
+        'reviewer-report': ('inter_work_relation', 'hasReview'),
+        'preprint': ('intra_work_relation', 'hasPreprint'),
+        'article-commentary': ('inter_work_relation', 'isCommentOn'),
+        'letter': ('inter_work_relation', 'isReplyTo'),
+        'book-review': ('inter_work_relation', 'isReviewOf'),
+        'editorial': ('inter_work_relation', 'isCommentOn'),
+    }
+    DEFAULT_DESCRIPTIONS = {
+        'commentary-article': 'Documento comentado',
+        'reply': 'Documento respondido',
+        'reviewed-article': 'Documento revisado por pares',
+        'reviewer-report': 'Documento com parecer (revisão por pares)',
+        'preprint': 'Preprint relacionado ao artigo',
+        'article-commentary': 'Documento comentado',
+        'letter': 'Documento respondido',
+        'book-review': 'Documento resenhado',
+        'editorial': 'Documento editorial relacionado',
+    }
 
     def transform(self, data):
         raw, xml = data
         data = self._transform_original(data)
+        data = self._transform_related_articles(data)
         data = self._transform_translations(data)
         return data
+
+    @classmethod
+    def _create_program(cls):
+        program_node = ET.Element('program')
+        program_node.set('xmlns', cls.RELATIONS_NAMESPACE)
+        return program_node
+
+    @classmethod
+    def _get_or_create_program(cls, journal_article_node):
+        program_node = journal_article_node.find('program')
+        if program_node is None:
+            program_node = cls._create_program()
+            journal_article_node.append(program_node)
+        return program_node
+
+    @staticmethod
+    def _create_related_item(
+            description,
+            relation_element,
+            relationship_type,
+            identifier,
+            identifier_type='doi'):
+        related_item_node = ET.Element('related_item')
+
+        description_node = ET.Element('description')
+        description_node.text = description
+        related_item_node.append(description_node)
+
+        relation_node = ET.Element(relation_element)
+        relation_node.set('relationship-type', relationship_type)
+        relation_node.set('identifier-type', identifier_type)
+        relation_node.text = identifier
+        related_item_node.append(relation_node)
+
+        return related_item_node
 
     def _transform_original(self, data):
         raw, xml = data
 
-        # first journal_article (main)
         journal_article_node = xml.find('.//journal_article')
-
-        # program
-        program_node = ET.Element("program")
-        program_node.set('xmlns',  'http://www.crossref.org/relations.xsd')
+        program_node = self._get_or_create_program(journal_article_node)
 
         original_language = raw.original_language()
         translated_titles = raw.translated_titles() or {}
@@ -1150,57 +1205,62 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
             if lang == original_language:
                 continue
 
-            # program/related_item
-            related_item_node = ET.Element('related_item')
-
-            # program/related_item/description
-            description_node = ET.Element('description')
-            description_node.text = translated_titles.get(lang)
-            related_item_node.append(description_node)
-
-            # program/related_item/intra_work_relation
-            intra_work_relation_node = ET.Element('intra_work_relation')
-            intra_work_relation_node.set(
-                'relationship-type', 'isTranslationOf')
-            intra_work_relation_node.set('identifier-type', 'doi')
-            intra_work_relation_node.text = doi
-            related_item_node.append(intra_work_relation_node)
-
-            program_node.append(related_item_node)
-
-        journal_article_node.append(program_node)
+            program_node.append(self._create_related_item(
+                translated_titles.get(lang),
+                'intra_work_relation',
+                'isTranslationOf',
+                doi,
+            ))
 
         return data
 
     def _transform_translations(self, data):
         raw, xml = data
 
-        # program
-        program_node = ET.Element("program")
-        program_node.set('xmlns',  'http://www.crossref.org/relations.xsd')
-
-        # program/related_item
-        related_item_node = ET.Element('related_item')
-
-        # program/related_item/description
-        description_node = ET.Element('description')
-        description_node.text = raw.original_title()
-        related_item_node.append(description_node)
-
-        # program/related_item/intra_work_relation
-        intra_work_relation_node = ET.Element('intra_work_relation')
-        intra_work_relation_node.set(
-            'relationship-type', 'hasTranslation')
-        intra_work_relation_node.set('identifier-type', 'doi')
-        intra_work_relation_node.text = raw.doi
-        related_item_node.append(intra_work_relation_node)
-
-        program_node.append(related_item_node)
-
         for journal_article_node in xml.findall('.//journal_article')[1:]:
-            journal_article_node.append(deepcopy(program_node))
+            program_node = self._create_program()
+            program_node.append(self._create_related_item(
+                raw.original_title(),
+                'intra_work_relation',
+                'hasTranslation',
+                raw.doi,
+            ))
+            journal_article_node.append(program_node)
 
         return data
+
+    def _transform_related_articles(self, data):
+        raw, xml = data
+        related_articles = getattr(raw, 'related_documents', None)
+        if callable(related_articles):
+            related_articles = related_articles()
+
+        if not related_articles:
+            return data
+
+        journal_article_node = xml.find('.//journal_article')
+        program_node = self._get_or_create_program(journal_article_node)
+
+        for related_article in related_articles:
+            document_type = related_article.get('document_type')
+            if not document_type:
+                document_type = getattr(raw, 'document_type', None)
+            relation_data = self.RELATION_TYPES.get(document_type)
+            identifier = related_article.get('identifier')
+            if not relation_data or not identifier:
+                continue
+
+            program_node.append(self._create_related_item(
+                self.DEFAULT_DESCRIPTIONS.get(
+                    document_type, ''),
+                relation_data[0],
+                relation_data[1],
+                identifier,
+                related_article.get('identifier_type') or 'doi',
+            ))
+
+        return data
+
 
 class XMLFundingDataPipe(plumber.Pipe):
     def precond(data):
@@ -1213,7 +1273,7 @@ class XMLFundingDataPipe(plumber.Pipe):
         element = ET.Element("{http://www.crossref.org/fundref.xsd}assertion")
         element.set("name", name)
         element.text = text
-        
+
         return element
 
     @staticmethod
@@ -1247,12 +1307,12 @@ class XMLFundingDataPipe(plumber.Pipe):
     @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
-        
+
         program = ET.Element(
             "{http://www.crossref.org/fundref.xsd}program"
         )
         program.set("name", "fundref")
-        
+
         self.append_funding_data(
             program=program,
             sponsors=raw.project_sponsor,

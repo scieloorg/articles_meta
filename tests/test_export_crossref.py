@@ -3,6 +3,7 @@ import unittest
 import json
 import os
 import io
+from unittest.mock import patch
 
 from lxml import etree as ET
 
@@ -689,6 +690,48 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
         self.assertTrue(schema.validate(xmlio))
         self.assertEqual(None, schema.assertValid(xmlio))
 
+    def test_related_articles_validating_against_schema(self):
+        related_documents = [
+            {
+                'identifier': '10.1590/S2237-96222025v34e20240180.a',
+                'document_type': 'reviewed-article',
+                'identifier_type': 'doi',
+            },
+            {
+                'identifier': '10.1590/S2237-96222025v34e20240180.b',
+                'document_type': 'commentary-article',
+                'identifier_type': 'doi',
+            },
+        ]
+        with patch.object(
+                Article,
+                'related_documents',
+                create=True,
+                return_value=related_documents):
+            xml = export.Export(self._raw_json).pipeline_crossref()
+
+        xmlio = ET.parse(io.BytesIO(xml))
+        schema_path = (
+            os.path.dirname(__file__) +
+            '/xsd/scielo_crossref/crossref4.4.0.xsd'
+        )
+        with open(schema_path) as fp:
+            schema = ET.XMLSchema(ET.parse(fp))
+
+        schema.assertValid(xmlio)
+        relations = xmlio.findall(
+            './/{http://www.crossref.org/relations.xsd}'
+            'inter_work_relation'
+        )
+        self.assertEqual(2, len(relations))
+        self.assertEqual(
+            ['isReviewOf', 'isCommentOn'],
+            [
+                relation.attrib.get('relationship-type')
+                for relation in relations
+            ]
+        )
+
     def test_journal_article_should_contain_item_number_with_elocation_id(self):
         xmlcrossref = ET.Element("doi_batch")
         publisher_item = ET.Element("publisher_item")
@@ -1326,6 +1369,172 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
                 self.assertEqual(
                     content[3],
                     intra_work_relation.attrib.get('relationship-type'))
+
+    def test_related_item_for_supported_related_articles(self):
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+            ['pt', 'en', 'es'])
+        self._article.related_documents = lambda: [
+            {
+                'identifier': '10.1590/commentary',
+                'document_type': 'commentary-article',
+                'identifier_type': 'doi',
+            },
+            {
+                'identifier': '10.1590/reply',
+                'document_type': 'reply',
+                'identifier_type': 'doi',
+            },
+            {
+                'identifier': '10.1590/reviewed',
+                'document_type': 'reviewed-article',
+                'identifier_type': 'doi',
+            },
+            {
+                'identifier': '10.1590/preprint',
+                'document_type': 'preprint',
+                'identifier_type': 'doi',
+            },
+            {
+                'identifier': '10.1590/corrected',
+                'document_type': 'corrected-article',
+                'identifier_type': 'doi',
+            },
+        ]
+
+        data = [self._article, xmlcrossref]
+        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
+        raw, xml = xmlcrossref.transform(data)
+
+        journal_articles = xml.findall('.//journal_article')
+        original_program = journal_articles[0].find('program')
+        related_items = original_program.findall('./related_item')
+
+        self.assertEqual(3, len(xml.findall('.//program')))
+        self.assertEqual(
+            6, len(related_items))
+
+        expected_content = [
+            (
+                '10.1590/commentary',
+                'Documento comentado',
+                'inter_work_relation',
+                'isCommentOn',
+            ),
+            (
+                '10.1590/reply',
+                'Documento respondido',
+                'inter_work_relation',
+                'isReplyTo',
+            ),
+            (
+                '10.1590/reviewed',
+                'Documento revisado por pares',
+                'inter_work_relation',
+                'isReviewOf',
+            ),
+            (
+                '10.1590/preprint',
+                'Preprint relacionado ao artigo',
+                'intra_work_relation',
+                'hasPreprint',
+            ),
+        ]
+        for related_item, content in zip(related_items[2:], expected_content):
+            with self.subTest(identifier=content[0]):
+                self.assertEqual(
+                    content[1], related_item.findtext('description'))
+                relation = related_item.find(content[2])
+                self.assertEqual(content[0], relation.text)
+                self.assertEqual(
+                    'doi', relation.attrib.get('identifier-type'))
+                self.assertEqual(
+                    content[3],
+                    relation.attrib.get('relationship-type'))
+
+    def test_related_item_for_article_type_mappings(self):
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
+        self._article.related_documents = lambda: [
+            {
+                'identifier': '10.1590/commented',
+                'document_type': 'article-commentary',
+                'identifier_type': 'doi',
+            },
+            {
+                'identifier': '10.1590/replied',
+                'document_type': 'letter',
+                'identifier_type': 'doi',
+            },
+            {
+                'identifier': '10.1590/reviewed-book',
+                'document_type': 'book-review',
+                'identifier_type': 'doi',
+            },
+            {
+                'identifier': '10.1590/editorial-target',
+                'document_type': 'editorial',
+                'identifier_type': 'doi',
+            },
+        ]
+
+        data = [self._article, xmlcrossref]
+        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
+        raw, xml = xmlcrossref.transform(data)
+
+        related_items = xml.findall('.//program/related_item/inter_work_relation')
+        expected_content = [
+            ('10.1590/commented', 'isCommentOn'),
+            ('10.1590/replied', 'isReplyTo'),
+            ('10.1590/reviewed-book', 'isReviewOf'),
+            ('10.1590/editorial-target', 'isCommentOn'),
+        ]
+        self.assertEqual(len(expected_content), len(related_items))
+        for relation, content in zip(related_items, expected_content):
+            with self.subTest(identifier=content[0]):
+                self.assertEqual(content[0], relation.text)
+                self.assertEqual(
+                    content[1],
+                    relation.attrib.get('relationship-type'))
+
+    def test_related_item_uses_article_document_type_when_missing(self):
+        article = _get_article({'v71': [{'_': 'le'}]})
+        article.related_documents = lambda: [
+            {
+                'identifier': '10.1590/target',
+                'identifier_type': 'doi',
+            },
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
+
+        data = [article, xmlcrossref]
+        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
+        raw, xml = xmlcrossref.transform(data)
+
+        relation = xml.find(
+            './/program/related_item/inter_work_relation')
+        self.assertEqual('10.1590/target', relation.text)
+        self.assertEqual('isReplyTo', relation.attrib.get('relationship-type'))
+
+    def test_related_item_without_related_documents(self):
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+            ['pt', 'en', 'es'])
+        self._article.related_documents = lambda: []
+
+        data = [self._article, xmlcrossref]
+        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
+        raw, xml = xmlcrossref.transform(data)
+
+        self.assertEqual(
+            0,
+            len(xml.findall(
+                './/program/related_item/inter_work_relation'
+            ))
+        )
+        self.assertEqual(
+            4,
+            len(xml.findall(
+                './/program/related_item/intra_work_relation'
+            ))
+        )
 
     def test_collection_for_multilingue_document(self):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
