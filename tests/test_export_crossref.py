@@ -3,7 +3,7 @@ import unittest
 import json
 import os
 import io
-from unittest.mock import patch
+from unittest.mock import patch, PropertyMock
 
 from lxml import etree as ET
 
@@ -1373,7 +1373,7 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
     def test_related_item_for_supported_related_articles(self):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
             ['pt', 'en', 'es'])
-        self._article.related_documents = lambda: [
+        related_documents = [
             {
                 'identifier': '10.1590/commentary',
                 'document_type': 'commentary-article',
@@ -1403,7 +1403,12 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
 
         data = [self._article, xmlcrossref]
         xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
-        raw, xml = xmlcrossref.transform(data)
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = xmlcrossref.transform(data)
 
         journal_articles = xml.findall('.//journal_article')
         original_program = journal_articles[0].find('program')
@@ -1453,7 +1458,7 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
 
     def test_related_item_for_article_type_mappings(self):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
-        self._article.related_documents = lambda: [
+        related_documents = [
             {
                 'identifier': '10.1590/commented',
                 'document_type': 'article-commentary',
@@ -1478,7 +1483,12 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
 
         data = [self._article, xmlcrossref]
         xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
-        raw, xml = xmlcrossref.transform(data)
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = xmlcrossref.transform(data)
 
         related_items = xml.findall('.//program/related_item/inter_work_relation')
         expected_content = [
@@ -1497,7 +1507,7 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
 
     def test_related_item_uses_article_document_type_when_missing(self):
         article = _get_article({'v71': [{'_': 'le'}]})
-        article.related_documents = lambda: [
+        related_documents = [
             {
                 'identifier': '10.1590/target',
                 'identifier_type': 'doi',
@@ -1507,7 +1517,12 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
 
         data = [article, xmlcrossref]
         xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
-        raw, xml = xmlcrossref.transform(data)
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = xmlcrossref.transform(data)
 
         relation = xml.find(
             './/program/related_item/inter_work_relation')
@@ -1517,11 +1532,15 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
     def test_related_item_without_related_documents(self):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
             ['pt', 'en', 'es'])
-        self._article.related_documents = lambda: []
 
         data = [self._article, xmlcrossref]
         xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
-        raw, xml = xmlcrossref.transform(data)
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=[]):
+            raw, xml = xmlcrossref.transform(data)
 
         self.assertEqual(
             0,
