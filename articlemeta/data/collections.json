@@ -13,7 +13,10 @@
     "original_name": "Argentina",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "chl",
@@ -29,7 +32,10 @@
     "original_name": "Chile",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "col",
@@ -38,14 +44,17 @@
     "acron2": "co",
     "name": {
       "en": "Colombia",
-      "pt": "Col\u00f4mbia",
+      "pt": "Colômbia",
       "es": "Colombia"
     },
     "has_analytics": true,
     "original_name": "Colombia",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "cub",
@@ -61,7 +70,10 @@
     "original_name": "Cuba",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "esp",
@@ -71,13 +83,16 @@
     "name": {
       "en": "Spain",
       "pt": "Espanha",
-      "es": "Espa\u00f1a"
+      "es": "España"
     },
     "has_analytics": true,
-    "original_name": "Espa\u00f1a",
+    "original_name": "España",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "mex",
@@ -86,14 +101,17 @@
     "acron2": "mx",
     "name": {
       "en": "Mexico",
-      "pt": "M\u00e9xico",
-      "es": "M\u00e9xico"
+      "pt": "México",
+      "es": "México"
     },
     "has_analytics": true,
     "original_name": "Mexico",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "prt",
@@ -109,7 +127,10 @@
     "original_name": "Portugal",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "books",
@@ -123,7 +144,10 @@
     "has_analytics": false,
     "original_name": "SciELO Books",
     "type": "books",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "scl",
@@ -139,7 +163,10 @@
     "original_name": "Brasil",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "spa",
@@ -148,14 +175,18 @@
     "acron2": "sp",
     "name": {
       "en": "Public Health",
-      "pt": "Sa\u00fade P\u00fablica",
+      "pt": "Saúde Pública",
       "es": "Salud Publica"
     },
     "has_analytics": true,
-    "original_name": "Sa\u00fade P\u00fablica",
+    "original_name": "Saúde Pública",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork",
+      "thematic"
+    ]
   },
   {
     "acron": "sss",
@@ -171,7 +202,10 @@
     "original_name": "Social Sciences",
     "status": "certified",
     "type": "journals",
-    "is_active": false
+    "is_active": false,
+    "network_classification": [
+      "thematic"
+    ]
   },
   {
     "acron": "sza",
@@ -180,14 +214,17 @@
     "acron2": "za",
     "name": {
       "en": "South Africa",
-      "pt": "\u00c1frica do Sul",
-      "es": "Sud\u00e1frica"
+      "pt": "África do Sul",
+      "es": "Sudáfrica"
     },
     "has_analytics": true,
     "original_name": "South Africa",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "ven",
@@ -203,7 +240,10 @@
     "original_name": "Venezuela",
     "status": "development",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "bio",
@@ -219,7 +259,10 @@
     "original_name": "Biodiversity Heritage Library",
     "status": "diffusion",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "thematic"
+    ]
   },
   {
     "acron": "bol",
@@ -228,14 +271,17 @@
     "acron2": "bo",
     "name": {
       "en": "Bolivia",
-      "pt": "Bol\u00edvia",
+      "pt": "Bolívia",
       "es": "Bolivia"
     },
     "has_analytics": true,
     "original_name": "Bolivia",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "cri",
@@ -251,7 +297,10 @@
     "original_name": "Costa Rica",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "per",
@@ -267,7 +316,10 @@
     "original_name": "Peru",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "pro",
@@ -283,7 +335,10 @@
     "original_name": "Proceedings",
     "status": "diffusion",
     "type": "journals",
-    "is_active": false
+    "is_active": false,
+    "network_classification": [
+      "independent"
+    ]
   },
   {
     "acron": "pry",
@@ -299,7 +354,10 @@
     "original_name": "Paraguay",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "ury",
@@ -315,7 +373,10 @@
     "original_name": "Uruguay",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "wid",
@@ -324,14 +385,17 @@
     "acron2": "wi",
     "name": {
       "en": "West Indies",
-      "pt": "\u00cdndias Ocidentais",
+      "pt": "Índias Ocidentais",
       "es": "Indias Occidentales"
     },
     "has_analytics": true,
     "original_name": "West Indies",
     "status": "development",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "cci",
@@ -339,15 +403,18 @@
     "domain": "comciencia.scielo.br",
     "acron2": "cc",
     "name": {
-      "en": "ComCi\u00eancia",
-      "pt": "ComCi\u00eancia",
-      "es": "ComCi\u00eancia"
+      "en": "ComCiência",
+      "pt": "ComCiência",
+      "es": "ComCiência"
     },
     "has_analytics": false,
-    "original_name": "ComCi\u00eancia",
+    "original_name": "ComCiência",
     "status": "diffusion",
     "type": "journals",
-    "is_active": false
+    "is_active": false,
+    "network_classification": [
+      "independent"
+    ]
   },
   {
     "acron": "cic",
@@ -355,15 +422,18 @@
     "domain": "cienciaecultura.bvs.br",
     "acron2": "ci",
     "name": {
-      "en": "Ci\u00eancia e Cultura",
-      "pt": "Ci\u00eancia e Cultura",
-      "es": "Ci\u00eancia e Cultura"
+      "en": "Ciência e Cultura",
+      "pt": "Ciência e Cultura",
+      "es": "Ciência e Cultura"
     },
     "has_analytics": false,
-    "original_name": "Ci\u00eancia e Cultura",
+    "original_name": "Ciência e Cultura",
     "status": "diffusion",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "independent"
+    ]
   },
   {
     "acron": "inv",
@@ -371,15 +441,18 @@
     "domain": "inovacao.scielo.br",
     "acron2": "cinov",
     "name": {
-      "en": "Conhecimento & Inova\u00e7\u00e3o",
-      "pt": "Conhecimento & Inova\u00e7\u00e3o",
-      "es": "Conhecimento & Inova\u00e7\u00e3o"
+      "en": "Conhecimento & Inovação",
+      "pt": "Conhecimento & Inovação",
+      "es": "Conhecimento & Inovação"
     },
     "has_analytics": false,
-    "original_name": "Conhecimento & Inova\u00e7\u00e3o",
+    "original_name": "Conhecimento & Inovação",
     "status": "diffusion",
     "type": "journals",
-    "is_active": false
+    "is_active": false,
+    "network_classification": [
+      "independent"
+    ]
   },
   {
     "acron": "pef",
@@ -395,7 +468,10 @@
     "original_name": "Pesquisa Fapesp",
     "status": "diffusion",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "independent"
+    ]
   },
   {
     "acron": "edc",
@@ -411,7 +487,10 @@
     "original_name": "Educa",
     "status": "independent",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "independent"
+    ]
   },
   {
     "acron": "ppg",
@@ -419,15 +498,18 @@
     "domain": "ppegeo.igc.usp.br",
     "acron2": "ppegeo",
     "name": {
-      "en": "Portal de Peri\u00f3dicos Eletr\u00f4nicos em Geoci\u00eancias",
-      "pt": "Portal de Peri\u00f3dicos Eletr\u00f4nicos em Geoci\u00eancias",
-      "es": "Portal de Peri\u00f3dicos Eletr\u00f4nicos em Geoci\u00eancias"
+      "en": "Portal de Periódicos Eletrônicos em Geociências",
+      "pt": "Portal de Periódicos Eletrônicos em Geociências",
+      "es": "Portal de Periódicos Eletrônicos em Geociências"
     },
     "has_analytics": false,
     "original_name": "PPEGEO",
     "status": "independent",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "thematic"
+    ]
   },
   {
     "acron": "psi",
@@ -435,15 +517,18 @@
     "domain": "pepsic.bvsalud.org",
     "acron2": "pepsic",
     "name": {
-      "en": "Peri\u00f3dicos Eletr\u00f4nicos em Psicologia",
-      "pt": "Peri\u00f3dicos Eletr\u00f4nicos em Psicologia",
-      "es": "Peri\u00f3dicos Eletr\u00f4nicos em Psicologia"
+      "en": "Periódicos Eletrônicos em Psicologia",
+      "pt": "Periódicos Eletrônicos em Psicologia",
+      "es": "Periódicos Eletrônicos em Psicologia"
     },
     "has_analytics": true,
     "original_name": "PEPSIC",
     "status": "independent",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "thematic"
+    ]
   },
   {
     "acron": "rve",
@@ -459,7 +544,10 @@
     "original_name": "REVENF",
     "status": "independent",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "thematic"
+    ]
   },
   {
     "acron": "rvo",
@@ -475,7 +563,10 @@
     "original_name": "RevOdonto",
     "status": "independent",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "thematic"
+    ]
   },
   {
     "acron": "ses",
@@ -491,7 +582,10 @@
     "original_name": "SES",
     "status": "independent",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "independent"
+    ]
   },
   {
     "acron": "ecu",
@@ -507,7 +601,10 @@
     "original_name": "Ecuador",
     "status": "certified",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "rvt",
@@ -523,7 +620,10 @@
     "original_name": "RevTur",
     "status": "independent",
     "type": "journals",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "thematic"
+    ]
   },
   {
     "acron": "preprints",
@@ -537,7 +637,10 @@
     "has_analytics": false,
     "original_name": "SciELO Preprints",
     "type": "preprints",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   },
   {
     "acron": "data",
@@ -551,6 +654,28 @@
     "has_analytics": false,
     "original_name": "SciELO Data",
     "type": "repositories",
-    "is_active": true
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
+  },
+  {
+    "acron": "dom",
+    "code": "dom",
+    "domain": "scielo.do",
+    "acron2": "do",
+    "name": {
+      "en": "Dominican Republic",
+      "pt": "República Dominicana",
+      "es": "República Dominicana"
+    },
+    "has_analytics": true,
+    "original_name": "República Dominicana",
+    "status": "development",
+    "type": "journals",
+    "is_active": true,
+    "network_classification": [
+      "scielonetwork"
+    ]
   }
 ]

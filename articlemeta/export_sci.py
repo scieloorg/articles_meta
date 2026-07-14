@@ -197,17 +197,24 @@ class XMLCitation(object):
             if not raw.link:
                 raise plumber.UnmetPrecondition()
 
+        @classmethod
+        def extract_url(cls, text):
+            # Regex para capturar URLs válidas
+            pattern = r'https?://(?:www\.)?[^\s/]+(?:\.[a-z]{2,})(/[^\s]*)?'
+            matches = re.search(pattern, text)
+            return matches.group(0) if matches else None
+
         @plumber.precondition(precond)
         def transform(self, data):
             raw, xml = data
 
             elem_citation = xml.find('./element-citation')
-
-            elem = ET.Element('ext-link')
-            elem.set('ext-link-type', 'uri')
-            elem.set('href', raw.link)
-            elem.text = raw.link
-            elem_citation.append(elem)
+            if link := self.extract_url(raw.link):
+                elem = ET.Element('ext-link')
+                elem.set('ext-link-type', 'uri')
+                elem.set('href', link)
+                elem.text = link
+                elem_citation.append(elem)
 
             try:
                 access_date = raw.access_date
@@ -237,9 +244,9 @@ class XMLCitation(object):
             pdate = ET.Element("date")
 
             date = {
-                "year": raw.publication_date[0:4],
-                "month": raw.publication_date[5:7],
                 "day": raw.publication_date[8:10],
+                "month": raw.publication_date[5:7],
+                "year": raw.publication_date[0:4]               
             }
 
             for name, value in date.items():
@@ -709,41 +716,46 @@ class XMLArticleMetaContribGroupPipe(plumber.Pipe):
 
         for author in raw.authors:
             contribname = ET.Element('name')
+            if author.get("role") == "ND" or author.get("role") == "ED":
+            
+                if 'surname' in author:
+                    contribsurname = ET.Element('surname')
+                    contribsurname.text = author['surname']
+                    contribname.append(contribsurname)
 
-            if 'surname' in author:
-                contribsurname = ET.Element('surname')
-                contribsurname.text = author['surname']
-                contribname.append(contribsurname)
-
-            if 'given_names' in author:
-                contribgivennames = ET.Element('given-names')
-                contribgivennames.text = author['given_names']
-                contribname.append(contribgivennames)
-
-            contrib = ET.Element('contrib')
-            contrib_type = "author"
-            if author.get("role", "ND") != "ND":
-                contrib_type = author.get("role")
-            contrib.set('contrib-type', contrib_type)
-
-            # <contrib-id contrib-id-type="orcid">0000-0003-1447-4613</contrib-id>
-            if author.get("orcid"):
-                contrib_id = ET.Element("contrib-id")
-                contrib_id.set("contrib-id-type", "orcid")
-                contrib_id.text = author['orcid']
-                contrib.append(contrib_id)
+                if 'given_names' in author:
+                    contribgivennames = ET.Element('given-names')
+                    contribgivennames.text = author['given_names']
+                    contribname.append(contribgivennames)
                 
-            contrib.append(contribname)
 
-            for xr in author.get('xref', []):
-                xref = ET.Element('xref')
-                xref.set('ref-type', 'aff')
-                xref.set('rid', xr.upper())
-                contrib.append(xref)
+                contrib = ET.Element('contrib')
+                if author.get("role") == "ND":
+                    contrib_type = "author"
+                else:
+                    contrib_type = "editor"
 
-            contribgroup.append(contrib)
+                contrib.set('contrib-type', contrib_type)
 
-        xml.find('./article/front/article-meta').append(contribgroup)
+                # <contrib-id contrib-id-type="orcid">0000-0003-1447-4613</contrib-id>
+                if author.get("orcid"):
+                    contrib_id = ET.Element("contrib-id")
+                    contrib_id.set("contrib-id-type", "orcid")
+                    contrib_id.text = author['orcid']
+                    contrib.append(contrib_id)
+                    
+                contrib.append(contribname)
+
+                for xr in author.get('xref', []):
+                    xref = ET.Element('xref')
+                    xref.set('ref-type', 'aff')
+                    xref.set('rid', xr.upper())
+                    contrib.append(xref)
+
+                contribgroup.append(contrib)
+        
+        if len(contribgroup):
+            xml.find('./article/front/article-meta').append(contribgroup)
 
         return data
 
@@ -1052,13 +1064,13 @@ class XMLArticleMetaCitationsPipe(plumber.Pipe):
         for citation in raw.citations:
             ref = cit.deploy(citation)[1]
             extlinks = ref.xpath("element-citation/ext-link[@ext-link-type='uri']")
-            try: 
-                for extlink in extlinks:
+            for extlink in extlinks:
+                try:
                     url_parts = list(urlsplit(extlink.attrib["href"]))
                     url_parts[2] = quote(url_parts[2])
                     extlink.attrib["href"] = urlunsplit(url_parts)
-            except ValueError as e:
-                pass
+                except ValueError as e:
+                    pass
             reflist.append(ref)
 
         return data

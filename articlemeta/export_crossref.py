@@ -79,7 +79,7 @@ class XMLTimeStampPipe(plumber.Pipe):
 
         el = ET.Element('timestamp')
 
-        el.text = datetime.now().strftime('%Y%m%d%H%M%S')
+        el.text = datetime.now().strftime('%Y%m%d%H%M%S%f')[:17]
 
         xml.find('./head').append(el)
 

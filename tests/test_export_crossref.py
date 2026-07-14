@@ -303,6 +303,21 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
 
         self.assertEqual('timestamp', xml.find('head/timestamp').tag)
 
+    def test_time_stamp_17_digits(self):
+
+        xmlcrossref = ET.Element('doi_batch')
+
+        xmlcrossref.append(ET.Element('head'))
+
+        data = [self._article_meta, xmlcrossref]
+
+        xmlcrossref = export_crossref.XMLTimeStampPipe()
+        raw, xml = xmlcrossref.transform(data)
+
+        timestamp = xml.find('head/timestamp').text
+        self.assertEqual(17, len(timestamp))
+        self.assertTrue(timestamp.isdigit())
+
     def test_head_element(self):
 
         xmlcrossref = ET.Element('doi_batch')
@@ -1370,6 +1385,7 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
                     content[3],
                     intra_work_relation.attrib.get('relationship-type'))
 
+
     def test_related_item_for_supported_related_articles(self):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
             ['pt', 'en', 'es'])
@@ -1534,7 +1550,7 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
             ['pt', 'en', 'es'])
 
         data = [self._article, xmlcrossref]
-        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
+        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()      
         with patch.object(
                 Article,
                 'related_documents',
@@ -1553,7 +1569,86 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
             len(xml.findall(
                 './/program/related_item/intra_work_relation'
             ))
+        )        
+    def test_related_item_includes_has_preprint_relation(self):
+        self._article.data['article']['v241'] = [
+            {
+                'i': '10.1590/SciELOPreprints.9348',
+                't': 'preprint',
+                'n': 'doi',
+            }
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+            ['pt', 'en', 'es'])
+
+        data = [self._article, xmlcrossref]
+        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
+        raw, xml = xmlcrossref.transform(data)
+
+        # main journal_article keeps its translations and gains the preprint
+        main_program = xml.findall('.//journal_article')[0].find('program')
+        relations = main_program.findall('related_item/intra_work_relation')
+        relation_types = [r.attrib.get('relationship-type') for r in relations]
+
+        self.assertIn('hasPreprint', relation_types)
+        preprint_node = next(
+            r for r in relations
+            if r.attrib.get('relationship-type') == 'hasPreprint'
         )
+        self.assertEqual('doi', preprint_node.attrib.get('identifier-type'))
+        self.assertEqual('10.1590/SciELOPreprints.9348', preprint_node.text)
+
+        # translations should not get the hasPreprint relation
+        for journal_article in xml.findall('.//journal_article')[1:]:
+            translation_relations = journal_article.findall(
+                'program/related_item/intra_work_relation')
+            translation_types = [
+                r.attrib.get('relationship-type')
+                for r in translation_relations
+            ]
+            self.assertNotIn('hasPreprint', translation_types)
+
+    def test_related_item_without_preprint_does_not_emit_has_preprint(self):
+        # ensure no v241 entries -> no hasPreprint relation is emitted
+        self._article.data['article'].pop('v241', None)
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+            ['pt', 'en', 'es'])
+
+        data = [self._article, xmlcrossref]
+        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
+        raw, xml = xmlcrossref.transform(data)
+
+        relation_types = [
+            r.attrib.get('relationship-type')
+            for r in xml.findall(
+                './/program/related_item/intra_work_relation')
+        ]
+        self.assertNotIn('hasPreprint', relation_types)
+
+    def test_related_item_ignores_non_preprint_related_articles(self):
+        self._article.data['article']['v241'] = [
+            {
+                'i': '10.1590/some-other.1234',
+                't': 'commentary',
+                'n': 'doi',
+            }
+        ]
+
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+            ['pt', 'en', 'es'])
+
+        data = [self._article, xmlcrossref]
+        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
+
+        raw, xml = xmlcrossref.transform(data)
+
+        relation_types = [
+            r.attrib.get('relationship-type')
+            for r in xml.findall(
+                './/program/related_item/intra_work_relation')
+        ]
+        self.assertNotIn('hasPreprint', relation_types)
+
 
     def test_collection_for_multilingue_document(self):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
