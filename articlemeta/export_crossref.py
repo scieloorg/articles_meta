@@ -1139,17 +1139,6 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
         'book-review': ('inter_work_relation', 'isReviewOf'),
         'editorial': ('inter_work_relation', 'isCommentOn'),
     }
-    DEFAULT_DESCRIPTIONS = {
-        'commentary-article': 'Documento comentado',
-        'reply': 'Documento respondido',
-        'reviewed-article': 'Documento revisado por pares',
-        'reviewer-report': 'Documento com parecer (revisão por pares)',
-        'preprint': 'Preprint relacionado ao artigo',
-        'article-commentary': 'Documento comentado',
-        'letter': 'Documento respondido',
-        'book-review': 'Documento resenhado',
-        'editorial': 'Documento editorial relacionado',
-    }
 
     def transform(self, data):
         raw, xml = data
@@ -1174,16 +1163,17 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
 
     @staticmethod
     def _create_related_item(
-            description,
             relation_element,
             relationship_type,
             identifier,
-            identifier_type='doi'):
+            identifier_type='doi',
+            description=None):
         related_item_node = ET.Element('related_item')
 
-        description_node = ET.Element('description')
-        description_node.text = description
-        related_item_node.append(description_node)
+        if description is not None:
+            description_node = ET.Element('description')
+            description_node.text = description
+            related_item_node.append(description_node)
 
         relation_node = ET.Element(relation_element)
         relation_node.set('relationship-type', relationship_type)
@@ -1206,10 +1196,10 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
                 continue
 
             program_node.append(self._create_related_item(
-                translated_titles.get(lang),
                 'intra_work_relation',
                 'isTranslationOf',
                 doi,
+                description=translated_titles.get(lang),
             ))
 
         return data
@@ -1220,10 +1210,10 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
         for journal_article_node in xml.findall('.//journal_article')[1:]:
             program_node = self._create_program()
             program_node.append(self._create_related_item(
-                raw.original_title(),
                 'intra_work_relation',
                 'hasTranslation',
                 raw.doi,
+                description=raw.original_title(),
             ))
             journal_article_node.append(program_node)
 
@@ -1251,8 +1241,6 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
                 continue
 
             program_node.append(self._create_related_item(
-                self.DEFAULT_DESCRIPTIONS.get(
-                    document_type, ''),
                 relation_data[0],
                 relation_data[1],
                 identifier,

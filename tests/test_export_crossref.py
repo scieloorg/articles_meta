@@ -1437,39 +1437,34 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
         expected_content = [
             (
                 '10.1590/commentary',
-                'Documento comentado',
                 'inter_work_relation',
                 'isCommentOn',
             ),
             (
                 '10.1590/reply',
-                'Documento respondido',
                 'inter_work_relation',
                 'isReplyTo',
             ),
             (
                 '10.1590/reviewed',
-                'Documento revisado por pares',
                 'inter_work_relation',
                 'isReviewOf',
             ),
             (
                 '10.1590/preprint',
-                'Preprint relacionado ao artigo',
                 'intra_work_relation',
                 'hasPreprint',
             ),
         ]
         for related_item, content in zip(related_items[2:], expected_content):
             with self.subTest(identifier=content[0]):
-                self.assertEqual(
-                    content[1], related_item.findtext('description'))
-                relation = related_item.find(content[2])
+                self.assertIsNone(related_item.find('description'))
+                relation = related_item.find(content[1])
                 self.assertEqual(content[0], relation.text)
                 self.assertEqual(
                     'doi', relation.attrib.get('identifier-type'))
                 self.assertEqual(
-                    content[3],
+                    content[2],
                     relation.attrib.get('relationship-type'))
 
     def test_related_item_for_article_type_mappings(self):
@@ -1550,7 +1545,7 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
             ['pt', 'en', 'es'])
 
         data = [self._article, xmlcrossref]
-        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()      
+        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
         with patch.object(
                 Article,
                 'related_documents',
@@ -1569,7 +1564,8 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
             len(xml.findall(
                 './/program/related_item/intra_work_relation'
             ))
-        )        
+        )
+
     def test_related_item_includes_has_preprint_relation(self):
         self._article.data['article']['v241'] = [
             {
