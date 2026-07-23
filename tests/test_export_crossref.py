@@ -708,20 +708,20 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
     def test_related_articles_validating_against_schema(self):
         related_documents = [
             {
-                'identifier': '10.1590/S2237-96222025v34e20240180.a',
-                'document_type': 'reviewed-article',
-                'identifier_type': 'doi',
+                'id': '10.1590/S2237-96222025v34e20240180.a',
+                'related_article_type': 'reviewed-article',
+                'ext_link_type': 'doi',
             },
             {
-                'identifier': '10.1590/S2237-96222025v34e20240180.b',
-                'document_type': 'commentary-article',
-                'identifier_type': 'doi',
+                'id': '10.1590/S2237-96222025v34e20240180.b',
+                'related_article_type': 'commentary-article',
+                'ext_link_type': 'doi',
             },
         ]
         with patch.object(
                 Article,
                 'related_documents',
-                create=True,
+                new_callable=PropertyMock,
                 return_value=related_documents):
             xml = export.Export(self._raw_json).pipeline_crossref()
 
@@ -1391,29 +1391,29 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
             ['pt', 'en', 'es'])
         related_documents = [
             {
-                'identifier': '10.1590/commentary',
-                'document_type': 'commentary-article',
-                'identifier_type': 'doi',
+                'id': '10.1590/commentary',
+                'related_article_type': 'commentary-article',
+                'ext_link_type': 'doi',
             },
             {
-                'identifier': '10.1590/reply',
-                'document_type': 'reply',
-                'identifier_type': 'doi',
+                'id': '10.1590/reply',
+                'related_article_type': 'reply',
+                'ext_link_type': 'doi',
             },
             {
-                'identifier': '10.1590/reviewed',
-                'document_type': 'reviewed-article',
-                'identifier_type': 'doi',
+                'id': '10.1590/reviewed',
+                'related_article_type': 'reviewed-article',
+                'ext_link_type': 'doi',
             },
             {
-                'identifier': '10.1590/preprint',
-                'document_type': 'preprint',
-                'identifier_type': 'doi',
+                'id': '10.1590/preprint',
+                'related_article_type': 'preprint',
+                'ext_link_type': 'doi',
             },
             {
-                'identifier': '10.1590/corrected',
-                'document_type': 'corrected-article',
-                'identifier_type': 'doi',
+                'id': '10.1590/corrected',
+                'related_article_type': 'corrected-article',
+                'ext_link_type': 'doi',
             },
         ]
 
@@ -1467,78 +1467,98 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
                     content[2],
                     relation.attrib.get('relationship-type'))
 
-    def test_related_item_for_article_type_mappings(self):
-        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
-        related_documents = [
-            {
-                'identifier': '10.1590/commented',
-                'document_type': 'article-commentary',
-                'identifier_type': 'doi',
-            },
-            {
-                'identifier': '10.1590/replied',
-                'document_type': 'letter',
-                'identifier_type': 'doi',
-            },
-            {
-                'identifier': '10.1590/reviewed-book',
-                'document_type': 'book-review',
-                'identifier_type': 'doi',
-            },
-            {
-                'identifier': '10.1590/editorial-target',
-                'document_type': 'editorial',
-                'identifier_type': 'doi',
-            },
+    def test_related_item_disambiguates_repeated_related_article_types(self):
+        # "letter" e "commentary" se repetem na especificação SciELO e são
+        # desambiguados pelo document_type do documento corrente (valores de
+        # choices.article_types). "article-commentary" (código 'co') vira
+        # isCommentOn; qualquer outro document_type é tratado como resposta e
+        # vira isReplyTo.
+        cases = [
+            # (código v71 do corrente, related_article_type, relationship-type)
+            ('co', 'commentary', 'isCommentOn'),
+            ('le', 'commentary', 'isReplyTo'),
+            ('ct', 'commentary', 'isReplyTo'),
+            ('co', 'letter', 'isCommentOn'),
+            ('le', 'letter', 'isReplyTo'),
+            ('ct', 'letter', 'isReplyTo'),
         ]
+        for type_code, related_article_type, expected in cases:
+            with self.subTest(
+                    type_code=type_code,
+                    related_article_type=related_article_type):
+                article = _get_article({'v71': [{'_': type_code}]})
+                related_documents = [
+                    {
+                        'id': '10.1590/target',
+                        'related_article_type': related_article_type,
+                        'ext_link_type': 'doi',
+                    },
+                ]
+                xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+                    ['pt'])
+
+                data = [article, xmlcrossref]
+                pipe = export_crossref.XMLProgramRelatedItemPipe()
+                with patch.object(
+                        Article,
+                        'related_documents',
+                        new_callable=PropertyMock,
+                        return_value=related_documents):
+                    raw, xml = pipe.transform(data)
+
+                relation = xml.find(
+                    './/program/related_item/inter_work_relation')
+                self.assertIsNotNone(relation)
+                self.assertEqual('10.1590/target', relation.text)
+                self.assertEqual(
+                    expected, relation.attrib.get('relationship-type'))
+
+    def test_related_item_ignores_unsupported_related_article_types(self):
+        # Errata, retratação, adendo e expressão de preocupação não possuem
+        # relação equivalente no Crossref e devem ser ignorados.
+        related_documents = [
+            {'id': '10.1590/a', 'related_article_type': 'corrected-article'},
+            {'id': '10.1590/b', 'related_article_type': 'retracted-article'},
+            {'id': '10.1590/c', 'related_article_type': 'partial-retraction'},
+            {'id': '10.1590/d', 'related_article_type': 'addendum'},
+            {'id': '10.1590/e', 'related_article_type': 'expression-of-concern'},
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
 
         data = [self._article, xmlcrossref]
-        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
+        pipe = export_crossref.XMLProgramRelatedItemPipe()
         with patch.object(
                 Article,
                 'related_documents',
                 new_callable=PropertyMock,
                 return_value=related_documents):
-            raw, xml = xmlcrossref.transform(data)
+            raw, xml = pipe.transform(data)
 
-        related_items = xml.findall('.//program/related_item/inter_work_relation')
-        expected_content = [
-            ('10.1590/commented', 'isCommentOn'),
-            ('10.1590/replied', 'isReplyTo'),
-            ('10.1590/reviewed-book', 'isReviewOf'),
-            ('10.1590/editorial-target', 'isCommentOn'),
-        ]
-        self.assertEqual(len(expected_content), len(related_items))
-        for relation, content in zip(related_items, expected_content):
-            with self.subTest(identifier=content[0]):
-                self.assertEqual(content[0], relation.text)
-                self.assertEqual(
-                    content[1],
-                    relation.attrib.get('relationship-type'))
+        self.assertEqual(
+            0,
+            len(xml.findall('.//program/related_item/inter_work_relation')))
 
-    def test_related_item_uses_article_document_type_when_missing(self):
-        article = _get_article({'v71': [{'_': 'le'}]})
+    def test_related_item_ignores_missing_related_article_type(self):
         related_documents = [
             {
-                'identifier': '10.1590/target',
-                'identifier_type': 'doi',
+                'id': '10.1590/target',
+                'ext_link_type': 'doi',
             },
         ]
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
 
-        data = [article, xmlcrossref]
-        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
+        data = [self._article, xmlcrossref]
+        pipe = export_crossref.XMLProgramRelatedItemPipe()
         with patch.object(
                 Article,
                 'related_documents',
                 new_callable=PropertyMock,
                 return_value=related_documents):
-            raw, xml = xmlcrossref.transform(data)
+            raw, xml = pipe.transform(data)
 
-        relation = xml.find(
-            './/program/related_item/inter_work_relation')
-        self.assertEqual('10.1590/target', relation.text)
-        self.assertEqual('isReplyTo', relation.attrib.get('relationship-type'))
+        self.assertEqual(
+            0,
+            len(xml.findall('.//program/related_item/inter_work_relation')))
 
     def test_related_item_without_related_documents(self):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
