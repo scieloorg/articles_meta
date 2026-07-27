@@ -1135,39 +1135,29 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
     #
     # Os valores "commentary" e "letter" se repetem na especificação SciELO e
     # são desambiguados pelo `document_type` do documento CORRENTE (valores de
-    # choices.article_types do xylose). Quando o corrente é um comentário
-    # ("article-commentary") a relação é isCommentOn; caso contrário trata-se de
-    # uma resposta/réplica e a relação é isReplyTo (chave ``None`` como padrão).
+    # choices.article_types do xylose):
+    #   - article-commentary → isCommentOn
+    #   - research-article   → hasComment (apenas para "commentary")
+    #   - demais             → isReplyTo (chave ``None``)
+    # Tipos ausentes deste dicionário não geram related_item.
     RELATED_ARTICLE_TYPE_RELATIONS = {
         'commentary-article': ('inter_work_relation', 'isCommentOn'),
         'reply': ('inter_work_relation', 'isReplyTo'),
         'reviewed-article': ('inter_work_relation', 'isReviewOf'),
+        'peer-reviewed-material': ('inter_work_relation', 'isReviewOf'),
         'reviewer-report': ('inter_work_relation', 'hasReview'),
         'preprint': ('intra_work_relation', 'hasPreprint'),
         'commentary': {
             'article-commentary': ('inter_work_relation', 'isCommentOn'),
+            'research-article': ('inter_work_relation', 'hasComment'),
             None: ('inter_work_relation', 'isReplyTo'),
         },
         'letter': {
             'article-commentary': ('inter_work_relation', 'isCommentOn'),
             None: ('inter_work_relation', 'isReplyTo'),
         },
+        'article-commentary': ('inter_work_relation', 'isCommentOn'),
     }
-
-    # Valores de `related-article-type` sem relação equivalente no
-    # relations.xsd do Crossref (errata, retratação, adendo e expressão de
-    # preocupação). Ficam explicitamente sem mapeamento e são ignorados.
-    UNSUPPORTED_RELATED_ARTICLE_TYPES = frozenset({
-        'corrected-article',
-        'correction-forward',
-        'retracted-article',
-        'retraction-forward',
-        'partial-retraction',
-        'addended-article',
-        'addendum',
-        'expression-of-concern',
-        'object-of-concern',
-    })
 
     @classmethod
     def _resolve_relation(cls, related_article, current_document_type):
@@ -1180,11 +1170,13 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
         "commentary").
         """
         related_article_type = related_article.get('related_article_type')
-
-        if related_article_type in cls.UNSUPPORTED_RELATED_ARTICLE_TYPES:
+        if not related_article_type:
             return None
 
         relation = cls.RELATED_ARTICLE_TYPE_RELATIONS.get(related_article_type)
+        if relation is None:
+            return None
+
         if isinstance(relation, dict):
             relation = relation.get(
                 current_document_type, relation.get(None))
@@ -1248,7 +1240,7 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
 
             program_node.append(self._create_related_item(
                 'intra_work_relation',
-                'isTranslationOf',
+                'hasTranslation',
                 doi,
                 description=translated_titles.get(lang),
             ))
@@ -1262,7 +1254,7 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
             program_node = self._create_program()
             program_node.append(self._create_related_item(
                 'intra_work_relation',
-                'hasTranslation',
+                'isTranslationOf',
                 raw.doi,
                 description=raw.original_title(),
             ))
@@ -1280,7 +1272,6 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
         current_document_type = getattr(raw, 'document_type', None)
 
         journal_article_node = xml.find('.//journal_article')
-        program_node = self._get_or_create_program(journal_article_node)
 
         for related_article in related_articles:
             relation_data = self._resolve_relation(
@@ -1289,6 +1280,7 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
             if not relation_data or not identifier:
                 continue
 
+            program_node = self._get_or_create_program(journal_article_node)
             program_node.append(self._create_related_item(
                 relation_element=relation_data[0],
                 relationship_type=relation_data[1],
