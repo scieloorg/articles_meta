@@ -1343,25 +1343,25 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
              "Epidemiological profile of patients on"
              " renal replacement therapy in Brazil, 2000-2004",
              0,
-             "isTranslationOf",
+             "hasTranslation",
              ),
             ('10.1590/ID.es',
              "Perfil epidemiológico de los pacientes en terapia"
              " renal substitutiva en Brasil, 2000-2004",
              1,
-             "isTranslationOf",
+             "hasTranslation",
              ),
             ('10.1590/S0034-89102010000400007',
              "Perfil epidemiológico dos pacientes em terapia"
              " renal substitutiva no Brasil, 2000-2004",
              2,
-             "hasTranslation",
+             "isTranslationOf",
              ),
             ('10.1590/S0034-89102010000400007',
              "Perfil epidemiológico dos pacientes em terapia"
              " renal substitutiva no Brasil, 2000-2004",
              3,
-             "hasTranslation",
+             "isTranslationOf",
              ),
         ]
         self.assertEqual(
@@ -1471,13 +1471,13 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
         # "letter" e "commentary" se repetem na especificação SciELO e são
         # desambiguados pelo document_type do documento corrente (valores de
         # choices.article_types). "article-commentary" (código 'co') vira
-        # isCommentOn; qualquer outro document_type é tratado como resposta e
-        # vira isReplyTo.
+        # isCommentOn; "research-article" (código 'ct') vira hasComment; demais
+        # tipos caem no padrão isReplyTo.
         cases = [
             # (código v71 do corrente, related_article_type, relationship-type)
             ('co', 'commentary', 'isCommentOn'),
             ('le', 'commentary', 'isReplyTo'),
-            ('ct', 'commentary', 'isReplyTo'),
+            ('ct', 'commentary', 'hasComment'),
             ('co', 'letter', 'isCommentOn'),
             ('le', 'letter', 'isReplyTo'),
             ('ct', 'letter', 'isReplyTo'),
@@ -1513,9 +1513,8 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
                 self.assertEqual(
                     expected, relation.attrib.get('relationship-type'))
 
-    def test_related_item_ignores_unsupported_related_article_types(self):
-        # Errata, retratação, adendo e expressão de preocupação não possuem
-        # relação equivalente no Crossref e devem ser ignorados.
+    def test_related_item_ignores_unmapped_related_article_types(self):
+        # Tipos ausentes de RELATED_ARTICLE_TYPE_RELATIONS não geram related_item.
         related_documents = [
             {'id': '10.1590/a', 'related_article_type': 'corrected-article'},
             {'id': '10.1590/b', 'related_article_type': 'retracted-article'},
@@ -2201,13 +2200,13 @@ class ExportCrossRef_MultiLingueDoc_with_DOI_pt_es_Tests(unittest.TestCase):
              "Perfil epidemiológico de los pacientes en terapia"
              " renal substitutiva en Brasil, 2000-2004",
              0,
-             "isTranslationOf",
+             "hasTranslation",
              ),
             ('10.1590/S0034-89102010000400007',
              "Perfil epidemiológico dos pacientes em terapia"
              " renal substitutiva no Brasil, 2000-2004",
              1,
-             "hasTranslation",
+             "isTranslationOf",
              ),
         ]
         self.assertEqual(
