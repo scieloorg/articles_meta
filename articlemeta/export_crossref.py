@@ -1135,10 +1135,9 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
     #
     # Os valores "commentary" e "letter" se repetem na especificação SciELO e
     # são desambiguados pelo `document_type` do documento CORRENTE (valores de
-    # choices.article_types do xylose):
-    #   - article-commentary → isCommentOn
-    #   - research-article   → hasComment (apenas para "commentary")
-    #   - demais             → isReplyTo (chave ``None``)
+    # choices.article_types do xylose, além de "reply" quando aplicável).
+    # Somente combinações conhecidas/documentadas são emitidas; demais
+    # combinações são ignoradas até haver casos reais.
     # Tipos ausentes deste dicionário não geram related_item.
     RELATED_ARTICLE_TYPE_RELATIONS = {
         'commentary-article': ('inter_work_relation', 'isCommentOn'),
@@ -1150,11 +1149,11 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
         'commentary': {
             'article-commentary': ('inter_work_relation', 'isCommentOn'),
             'research-article': ('inter_work_relation', 'hasComment'),
-            None: ('inter_work_relation', 'isReplyTo'),
+            'reply': ('inter_work_relation', 'isReplyTo'),
         },
         'letter': {
             'article-commentary': ('inter_work_relation', 'isCommentOn'),
-            None: ('inter_work_relation', 'isReplyTo'),
+            'reply': ('inter_work_relation', 'isReplyTo'),
         },
         'article-commentary': ('inter_work_relation', 'isCommentOn'),
     }
@@ -1167,7 +1166,7 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
         Usa o `related-article-type` do documento relacionado como fonte
         primária e o `current_document_type` do documento corrente para desambiguar
         os valores que se repetem na especificação SciELO (ex.: "letter" e
-        "commentary").
+        "commentary"). Combinações não mapeadas retornam ``None``.
         """
         related_article_type = related_article.get('related_article_type')
         if not related_article_type:
@@ -1178,8 +1177,7 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
             return None
 
         if isinstance(relation, dict):
-            relation = relation.get(
-                current_document_type, relation.get(None))
+            return relation.get(current_document_type)
 
         return relation
 
@@ -1230,13 +1228,15 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
         raw, xml = data
 
         journal_article_node = xml.find('.//journal_article')
-        program_node = self._get_or_create_program(journal_article_node)
 
         original_language = raw.original_language()
         translated_titles = raw.translated_titles() or {}
+        program_node = None
         for lang, doi in raw.doi_and_lang:
             if lang == original_language:
                 continue
+
+            program_node = self._get_or_create_program(journal_article_node)
 
             program_node.append(self._create_related_item(
                 'intra_work_relation',
