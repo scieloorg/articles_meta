@@ -1,14 +1,14 @@
 # coding: utf-8
-from lxml import etree as ET
-import re
 import os
+import re
 import uuid
 from copy import deepcopy
 from datetime import datetime
 from itertools import product
 
-from xylose.scielodocument import UnavailableMetadataException
 import plumber
+from lxml import etree as ET
+from xylose.scielodocument import UnavailableMetadataException
 
 SUPPLBEG_REGEX = re.compile(r'^0 ')
 SUPPLEND_REGEX = re.compile(r' 0$')
@@ -204,7 +204,7 @@ class XMLJournalIssuePipe(plumber.Pipe):
         try:
             if raw.issue.is_ahead_of_print:
                 raise plumber.UnmetPrecondition()
-        except UnavailableMetadataException as e:
+        except UnavailableMetadataException:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
@@ -748,7 +748,7 @@ class XMLResourcePipe(plumber.Pipe):
         try:
             if not raw.scielo_domain or not raw.publisher_id:
                 raise plumber.UnmetPrecondition()
-        except:
+        except Exception:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
@@ -1127,123 +1127,169 @@ class XMLClosePipe(plumber.Pipe):
 
 
 class XMLProgramRelatedItemPipe(plumber.Pipe):
+    RELATIONS_NAMESPACE = 'http://www.crossref.org/relations.xsd'
+
+    # Relações derivadas do atributo `related-article-type` do
+    # <related-article> (vocabulário SciELO/JATS, o mesmo da tabela do manual
+    # de marcação). Cada valor mapeia para (elemento_crossref, relationship-type).
+    #
+    # Os valores "commentary" e "letter" se repetem na especificação SciELO e
+    # são desambiguados pelo `document_type` do documento CORRENTE (valores de
+    # choices.article_types do xylose, além de "reply" quando aplicável).
+    # Somente combinações conhecidas/documentadas são emitidas; demais
+    # combinações são ignoradas até haver casos reais.
+    # Tipos ausentes deste dicionário não geram related_item.
+    RELATED_ARTICLE_TYPE_RELATIONS = {
+        'commentary-article': ('inter_work_relation', 'isCommentOn'),
+        'reply': ('inter_work_relation', 'isReplyTo'),
+        'reviewed-article': ('inter_work_relation', 'isReviewOf'),
+        'peer-reviewed-material': ('inter_work_relation', 'isReviewOf'),
+        'reviewer-report': ('inter_work_relation', 'hasReview'),
+        'preprint': ('intra_work_relation', 'hasPreprint'),
+        'commentary': {
+            'article-commentary': ('inter_work_relation', 'isCommentOn'),
+            'research-article': ('inter_work_relation', 'hasComment'),
+            'reply': ('inter_work_relation', 'isReplyTo'),
+        },
+        'letter': {
+            'article-commentary': ('inter_work_relation', 'isCommentOn'),
+            'reply': ('inter_work_relation', 'isReplyTo'),
+        },
+        'article-commentary': ('inter_work_relation', 'isCommentOn'),
+    }
+
+    @classmethod
+    def _resolve_relation(cls, related_article, current_document_type):
+        """Resolve (elemento, relationship-type) do Crossref para um documento
+        relacionado.
+
+        Usa o `related-article-type` do documento relacionado como fonte
+        primária e o `current_document_type` do documento corrente para desambiguar
+        os valores que se repetem na especificação SciELO (ex.: "letter" e
+        "commentary"). Combinações não mapeadas retornam ``None``.
+        """
+        related_article_type = related_article.get('related_article_type')
+        if not related_article_type:
+            return None
+
+        relation = cls.RELATED_ARTICLE_TYPE_RELATIONS.get(related_article_type)
+        if relation is None:
+            return None
+
+        if isinstance(relation, dict):
+            return relation.get(current_document_type)
+
+        return relation
 
     def transform(self, data):
         raw, xml = data
         data = self._transform_original(data)
+        data = self._transform_related_articles(data)
         data = self._transform_translations(data)
         return data
 
+    @classmethod
+    def _create_program(cls):
+        program_node = ET.Element('program')
+        program_node.set('xmlns', cls.RELATIONS_NAMESPACE)
+        return program_node
+
+    @classmethod
+    def _get_or_create_program(cls, journal_article_node):
+        program_node = journal_article_node.find('program')
+        if program_node is None:
+            program_node = cls._create_program()
+            journal_article_node.append(program_node)
+        return program_node
+
     @staticmethod
-    def _get_preprint_relations(raw):
-        """Return the list of related-article entries marked as preprint.
+    def _create_related_item(
+            relation_element,
+            relationship_type,
+            identifier,
+            identifier_type='doi',
+            description=None):
+        related_item_node = ET.Element('related_item')
 
-        SciELO stores related-article info in ISIS field ``v241``, with
-        subfields ``i`` (identifier/href), ``t`` (related-article-type) and
-        ``n`` (ext-link-type). Only entries whose type is ``preprint`` and
-        whose link type is ``doi`` (or unspecified) carry a usable DOI for
-        the Crossref ``hasPreprint`` relation.
-        """
-        try:
-            related = raw.data['article'].get('v241') or []
-        except (AttributeError, KeyError, TypeError):
-            return []
+        if description is not None:
+            description_node = ET.Element('description')
+            description_node.text = description
+            related_item_node.append(description_node)
 
-        preprints = []
-        for item in related:
-            if not isinstance(item, dict):
-                continue
-            if item.get('t') != 'preprint':
-                continue
-            identifier = item.get('i') or item.get('_')
-            if not identifier:
-                continue
-            ext_link_type = item.get('n')
-            if ext_link_type and ext_link_type != 'doi':
-                continue
-            preprints.append(identifier)
-        return preprints
+        relation_node = ET.Element(relation_element)
+        relation_node.set('relationship-type', relationship_type)
+        relation_node.set('identifier-type', identifier_type)
+        relation_node.text = identifier
+        related_item_node.append(relation_node)
+
+        return related_item_node
 
     def _transform_original(self, data):
         raw, xml = data
 
-        # first journal_article (main)
         journal_article_node = xml.find('.//journal_article')
-
-        # program
-        program_node = ET.Element("program")
-        program_node.set('xmlns',  'http://www.crossref.org/relations.xsd')
 
         original_language = raw.original_language()
         translated_titles = raw.translated_titles() or {}
+        program_node = None
         for lang, doi in raw.doi_and_lang:
             if lang == original_language:
                 continue
 
-            # program/related_item
-            related_item_node = ET.Element('related_item')
+            program_node = self._get_or_create_program(journal_article_node)
 
-            # program/related_item/description
-            description_node = ET.Element('description')
-            description_node.text = translated_titles.get(lang)
-            related_item_node.append(description_node)
-
-            # program/related_item/intra_work_relation
-            intra_work_relation_node = ET.Element('intra_work_relation')
-            intra_work_relation_node.set(
-                'relationship-type', 'isTranslationOf')
-            intra_work_relation_node.set('identifier-type', 'doi')
-            intra_work_relation_node.text = doi
-            related_item_node.append(intra_work_relation_node)
-
-            program_node.append(related_item_node)
-
-        # program/related_item (hasPreprint)
-        for preprint_doi in self._get_preprint_relations(raw):
-            related_item_node = ET.Element('related_item')
-
-            intra_work_relation_node = ET.Element('intra_work_relation')
-            intra_work_relation_node.set(
-                'relationship-type', 'hasPreprint')
-            intra_work_relation_node.set('identifier-type', 'doi')
-            intra_work_relation_node.text = preprint_doi
-            related_item_node.append(intra_work_relation_node)
-
-            program_node.append(related_item_node)
-
-        journal_article_node.append(program_node)
+            program_node.append(self._create_related_item(
+                'intra_work_relation',
+                'hasTranslation',
+                doi,
+                description=translated_titles.get(lang),
+            ))
 
         return data
 
     def _transform_translations(self, data):
         raw, xml = data
 
-        # program
-        program_node = ET.Element("program")
-        program_node.set('xmlns',  'http://www.crossref.org/relations.xsd')
-
-        # program/related_item
-        related_item_node = ET.Element('related_item')
-
-        # program/related_item/description
-        description_node = ET.Element('description')
-        description_node.text = raw.original_title()
-        related_item_node.append(description_node)
-
-        # program/related_item/intra_work_relation
-        intra_work_relation_node = ET.Element('intra_work_relation')
-        intra_work_relation_node.set(
-            'relationship-type', 'hasTranslation')
-        intra_work_relation_node.set('identifier-type', 'doi')
-        intra_work_relation_node.text = raw.doi
-        related_item_node.append(intra_work_relation_node)
-
-        program_node.append(related_item_node)
-
         for journal_article_node in xml.findall('.//journal_article')[1:]:
-            journal_article_node.append(deepcopy(program_node))
+            program_node = self._create_program()
+            program_node.append(self._create_related_item(
+                'intra_work_relation',
+                'isTranslationOf',
+                raw.doi,
+                description=raw.original_title(),
+            ))
+            journal_article_node.append(program_node)
 
         return data
+
+    def _transform_related_articles(self, data):
+        raw, xml = data
+        related_articles = getattr(raw, 'related_documents', None)
+
+        if not related_articles:
+            return data
+
+        current_document_type = getattr(raw, 'document_type', None)
+
+        journal_article_node = xml.find('.//journal_article')
+
+        for related_article in related_articles:
+            relation_data = self._resolve_relation(
+                related_article, current_document_type)
+            identifier = related_article.get('id')
+            if not relation_data or not identifier:
+                continue
+
+            program_node = self._get_or_create_program(journal_article_node)
+            program_node.append(self._create_related_item(
+                relation_element=relation_data[0],
+                relationship_type=relation_data[1],
+                identifier=identifier,
+                identifier_type=related_article.get('ext_link_type') or 'doi',
+            ))
+
+        return data
+
 
 class XMLFundingDataPipe(plumber.Pipe):
     def precond(data):
@@ -1256,7 +1302,7 @@ class XMLFundingDataPipe(plumber.Pipe):
         element = ET.Element("{http://www.crossref.org/fundref.xsd}assertion")
         element.set("name", name)
         element.text = text
-        
+
         return element
 
     @staticmethod
@@ -1290,12 +1336,12 @@ class XMLFundingDataPipe(plumber.Pipe):
     @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
-        
+
         program = ET.Element(
             "{http://www.crossref.org/fundref.xsd}program"
         )
         program.set("name", "fundref")
-        
+
         self.append_funding_data(
             program=program,
             sponsors=raw.project_sponsor,

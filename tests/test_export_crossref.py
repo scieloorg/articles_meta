@@ -3,6 +3,7 @@ import unittest
 import json
 import os
 import io
+from unittest.mock import patch, PropertyMock
 
 from lxml import etree as ET
 
@@ -704,6 +705,48 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
         self.assertTrue(schema.validate(xmlio))
         self.assertEqual(None, schema.assertValid(xmlio))
 
+    def test_related_articles_validating_against_schema(self):
+        related_documents = [
+            {
+                'id': '10.1590/S2237-96222025v34e20240180.a',
+                'related_article_type': 'reviewed-article',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '10.1590/S2237-96222025v34e20240180.b',
+                'related_article_type': 'commentary-article',
+                'ext_link_type': 'doi',
+            },
+        ]
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            xml = export.Export(self._raw_json).pipeline_crossref()
+
+        xmlio = ET.parse(io.BytesIO(xml))
+        schema_path = (
+            os.path.dirname(__file__) +
+            '/xsd/scielo_crossref/crossref4.4.0.xsd'
+        )
+        with open(schema_path) as fp:
+            schema = ET.XMLSchema(ET.parse(fp))
+
+        schema.assertValid(xmlio)
+        relations = xmlio.findall(
+            './/{http://www.crossref.org/relations.xsd}'
+            'inter_work_relation'
+        )
+        self.assertEqual(2, len(relations))
+        self.assertEqual(
+            ['isReviewOf', 'isCommentOn'],
+            [
+                relation.attrib.get('relationship-type')
+                for relation in relations
+            ]
+        )
+
     def test_journal_article_should_contain_item_number_with_elocation_id(self):
         xmlcrossref = ET.Element("doi_batch")
         publisher_item = ET.Element("publisher_item")
@@ -1300,25 +1343,25 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
              "Epidemiological profile of patients on"
              " renal replacement therapy in Brazil, 2000-2004",
              0,
-             "isTranslationOf",
+             "hasTranslation",
              ),
             ('10.1590/ID.es',
              "Perfil epidemiológico de los pacientes en terapia"
              " renal substitutiva en Brasil, 2000-2004",
              1,
-             "isTranslationOf",
+             "hasTranslation",
              ),
             ('10.1590/S0034-89102010000400007',
              "Perfil epidemiológico dos pacientes em terapia"
              " renal substitutiva no Brasil, 2000-2004",
              2,
-             "hasTranslation",
+             "isTranslationOf",
              ),
             ('10.1590/S0034-89102010000400007',
              "Perfil epidemiológico dos pacientes em terapia"
              " renal substitutiva no Brasil, 2000-2004",
              3,
-             "hasTranslation",
+             "isTranslationOf",
              ),
         ]
         self.assertEqual(
@@ -1341,6 +1384,390 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
                 self.assertEqual(
                     content[3],
                     intra_work_relation.attrib.get('relationship-type'))
+
+
+    def test_related_item_for_supported_related_articles(self):
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+            ['pt', 'en', 'es'])
+        related_documents = [
+            {
+                'id': '10.1590/commentary',
+                'related_article_type': 'commentary-article',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '10.1590/reply',
+                'related_article_type': 'reply',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '10.1590/reviewed',
+                'related_article_type': 'reviewed-article',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '10.1590/peer-reviewed',
+                'related_article_type': 'peer-reviewed-material',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '10.1590/reviewer-report',
+                'related_article_type': 'reviewer-report',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '10.1590/preprint',
+                'related_article_type': 'preprint',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '10.1590/corrected',
+                'related_article_type': 'corrected-article',
+                'ext_link_type': 'doi',
+            },
+        ]
+
+        data = [self._article, xmlcrossref]
+        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = xmlcrossref.transform(data)
+
+        journal_articles = xml.findall('.//journal_article')
+        original_program = journal_articles[0].find('program')
+        related_items = original_program.findall('./related_item')
+
+        self.assertEqual(3, len(xml.findall('.//program')))
+        self.assertEqual(
+            8, len(related_items))
+
+        expected_content = [
+            (
+                '10.1590/commentary',
+                'inter_work_relation',
+                'isCommentOn',
+            ),
+            (
+                '10.1590/reply',
+                'inter_work_relation',
+                'isReplyTo',
+            ),
+            (
+                '10.1590/reviewed',
+                'inter_work_relation',
+                'isReviewOf',
+            ),
+            (
+                '10.1590/peer-reviewed',
+                'inter_work_relation',
+                'isReviewOf',
+            ),
+            (
+                '10.1590/reviewer-report',
+                'inter_work_relation',
+                'hasReview',
+            ),
+            (
+                '10.1590/preprint',
+                'intra_work_relation',
+                'hasPreprint',
+            ),
+        ]
+        for related_item, content in zip(related_items[2:], expected_content):
+            with self.subTest(identifier=content[0]):
+                self.assertIsNone(related_item.find('description'))
+                relation = related_item.find(content[1])
+                self.assertEqual(content[0], relation.text)
+                self.assertEqual(
+                    'doi', relation.attrib.get('identifier-type'))
+                self.assertEqual(
+                    content[2],
+                    relation.attrib.get('relationship-type'))
+
+    def test_related_item_for_peer_reviewed_material_is_review_of(self):
+        # peer-reviewed-material aponta para o material revisado → isReviewOf
+        related_documents = [
+            {
+                'id': '10.1590/reviewed-material',
+                'related_article_type': 'peer-reviewed-material',
+                'ext_link_type': 'doi',
+            },
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
+        article = _get_article({
+            'v337': [{
+                'l': 'pt',
+                'd': '10.1590/S0034-89102010000400007',
+            }],
+        })
+
+        data = [article, xmlcrossref]
+        pipe = export_crossref.XMLProgramRelatedItemPipe()
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = pipe.transform(data)
+
+        relation = xml.find('.//program/related_item/inter_work_relation')
+        self.assertIsNotNone(relation)
+        self.assertEqual('10.1590/reviewed-material', relation.text)
+        self.assertEqual('doi', relation.attrib.get('identifier-type'))
+        self.assertEqual('isReviewOf', relation.attrib.get('relationship-type'))
+        self.assertEqual(1, len(xml.findall('.//program/related_item')))
+
+    def test_related_item_for_reviewer_report_has_review(self):
+        # reviewer-report é o outro lado da relação de peer review → hasReview
+        related_documents = [
+            {
+                'id': '10.1590/reviewer-report',
+                'related_article_type': 'reviewer-report',
+                'ext_link_type': 'doi',
+            },
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
+        article = _get_article({
+            'v337': [{
+                'l': 'pt',
+                'd': '10.1590/S0034-89102010000400007',
+            }],
+        })
+
+        data = [article, xmlcrossref]
+        pipe = export_crossref.XMLProgramRelatedItemPipe()
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = pipe.transform(data)
+
+        relation = xml.find('.//program/related_item/inter_work_relation')
+        self.assertIsNotNone(relation)
+        self.assertEqual('10.1590/reviewer-report', relation.text)
+        self.assertEqual('doi', relation.attrib.get('identifier-type'))
+        self.assertEqual('hasReview', relation.attrib.get('relationship-type'))
+        self.assertEqual(1, len(xml.findall('.//program/related_item')))
+
+    def test_related_item_disambiguates_repeated_related_article_types(self):
+        # "letter" e "commentary" se repetem na especificação SciELO e são
+        # desambiguados pelo document_type do documento corrente. Somente
+        # combinações conhecidas são emitidas.
+        cases = [
+            # (código v71 do corrente, related_article_type, relationship-type)
+            ('co', 'commentary', 'isCommentOn'),
+            ('ct', 'commentary', 'hasComment'),
+            ('co', 'letter', 'isCommentOn'),
+        ]
+        for type_code, related_article_type, expected in cases:
+            with self.subTest(
+                    type_code=type_code,
+                    related_article_type=related_article_type):
+                article = _get_article({'v71': [{'_': type_code}]})
+                related_documents = [
+                    {
+                        'id': '10.1590/target',
+                        'related_article_type': related_article_type,
+                        'ext_link_type': 'doi',
+                    },
+                ]
+                xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+                    ['pt'])
+
+                data = [article, xmlcrossref]
+                pipe = export_crossref.XMLProgramRelatedItemPipe()
+                with patch.object(
+                        Article,
+                        'related_documents',
+                        new_callable=PropertyMock,
+                        return_value=related_documents):
+                    raw, xml = pipe.transform(data)
+
+                relation = xml.find(
+                    './/program/related_item/inter_work_relation')
+                self.assertIsNotNone(relation)
+                self.assertEqual('10.1590/target', relation.text)
+                self.assertEqual(
+                    expected, relation.attrib.get('relationship-type'))
+
+    def test_related_item_when_main_document_is_reply(self):
+        # Documento principal do tipo reply + related commentary/letter →
+        # isReplyTo. xylose não mapeia v71 para "reply", então document_type
+        # é mockado.
+        cases = ['commentary', 'letter']
+        for related_article_type in cases:
+            with self.subTest(related_article_type=related_article_type):
+                article = _get_article({
+                    'v337': [{
+                        'l': 'pt',
+                        'd': '10.1590/S0034-89102010000400007',
+                    }],
+                })
+                related_documents = [
+                    {
+                        'id': '10.1590/target',
+                        'related_article_type': related_article_type,
+                        'ext_link_type': 'doi',
+                    },
+                ]
+                xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+                    ['pt'])
+
+                data = [article, xmlcrossref]
+                pipe = export_crossref.XMLProgramRelatedItemPipe()
+                with patch.object(
+                        Article,
+                        'document_type',
+                        new_callable=PropertyMock,
+                        return_value='reply'), \
+                        patch.object(
+                            Article,
+                            'related_documents',
+                            new_callable=PropertyMock,
+                            return_value=related_documents):
+                    raw, xml = pipe.transform(data)
+
+                relation = xml.find(
+                    './/program/related_item/inter_work_relation')
+                self.assertIsNotNone(relation)
+                self.assertEqual('10.1590/target', relation.text)
+                self.assertEqual(
+                    'isReplyTo', relation.attrib.get('relationship-type'))
+
+    def test_related_item_ignores_unknown_commentary_letter_combinations(self):
+        # Combinações de commentary/letter com document_type não documentado
+        # não geram related_item até haver casos reais.
+        cases = [
+            ('le', 'commentary'),
+            ('le', 'letter'),
+            ('ct', 'letter'),
+            ('ra', 'commentary'),
+            ('ed', 'letter'),
+        ]
+        for type_code, related_article_type in cases:
+            with self.subTest(
+                    type_code=type_code,
+                    related_article_type=related_article_type):
+                article = _get_article({
+                    'v71': [{'_': type_code}],
+                    'v337': [{
+                        'l': 'pt',
+                        'd': '10.1590/S0034-89102010000400007',
+                    }],
+                })
+                related_documents = [
+                    {
+                        'id': '10.1590/target',
+                        'related_article_type': related_article_type,
+                        'ext_link_type': 'doi',
+                    },
+                ]
+                xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+                    ['pt'])
+
+                data = [article, xmlcrossref]
+                pipe = export_crossref.XMLProgramRelatedItemPipe()
+                with patch.object(
+                        Article,
+                        'related_documents',
+                        new_callable=PropertyMock,
+                        return_value=related_documents):
+                    raw, xml = pipe.transform(data)
+
+                self.assertIsNone(
+                    xml.find('.//program/related_item/inter_work_relation'))
+                self.assertIsNone(xml.find('.//program'))
+
+    def test_related_item_ignores_unmapped_related_article_types(self):
+        # Tipos ausentes de RELATED_ARTICLE_TYPE_RELATIONS não geram related_item
+        # nem um <program/> vazio.
+        related_documents = [
+            {'id': '10.1590/a', 'related_article_type': 'corrected-article'},
+            {'id': '10.1590/b', 'related_article_type': 'retracted-article'},
+            {'id': '10.1590/c', 'related_article_type': 'partial-retraction'},
+            {'id': '10.1590/d', 'related_article_type': 'addendum'},
+            {'id': '10.1590/e', 'related_article_type': 'expression-of-concern'},
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
+        article = _get_article({
+            'v337': [{
+                'l': 'pt',
+                'd': '10.1590/S0034-89102010000400007',
+            }],
+        })
+
+        data = [article, xmlcrossref]
+        pipe = export_crossref.XMLProgramRelatedItemPipe()
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = pipe.transform(data)
+
+        self.assertEqual(
+            0,
+            len(xml.findall('.//program/related_item/inter_work_relation')))
+        self.assertIsNone(xml.find('.//program'))
+
+    def test_related_item_ignores_missing_related_article_type(self):
+        related_documents = [
+            {
+                'id': '10.1590/target',
+                'ext_link_type': 'doi',
+            },
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
+        article = _get_article({
+            'v337': [{
+                'l': 'pt',
+                'd': '10.1590/S0034-89102010000400007',
+            }],
+        })
+
+        data = [article, xmlcrossref]
+        pipe = export_crossref.XMLProgramRelatedItemPipe()
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = pipe.transform(data)
+
+        self.assertEqual(
+            0,
+            len(xml.findall('.//program/related_item/inter_work_relation')))
+        self.assertIsNone(xml.find('.//program'))
+
+    def test_related_item_without_related_documents(self):
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+            ['pt', 'en', 'es'])
+
+        data = [self._article, xmlcrossref]
+        xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=[]):
+            raw, xml = xmlcrossref.transform(data)
+
+        self.assertEqual(
+            0,
+            len(xml.findall(
+                './/program/related_item/inter_work_relation'
+            ))
+        )
+        self.assertEqual(
+            4,
+            len(xml.findall(
+                './/program/related_item/intra_work_relation'
+            ))
+        )
 
     def test_related_item_includes_has_preprint_relation(self):
         self._article.data['article']['v241'] = [
@@ -1405,11 +1832,13 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
                 'n': 'doi',
             }
         ]
+
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
             ['pt', 'en', 'es'])
 
         data = [self._article, xmlcrossref]
         xmlcrossref = export_crossref.XMLProgramRelatedItemPipe()
+
         raw, xml = xmlcrossref.transform(data)
 
         relation_types = [
@@ -1418,6 +1847,7 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
                 './/program/related_item/intra_work_relation')
         ]
         self.assertNotIn('hasPreprint', relation_types)
+
 
     def test_collection_for_multilingue_document(self):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
@@ -1954,13 +2384,13 @@ class ExportCrossRef_MultiLingueDoc_with_DOI_pt_es_Tests(unittest.TestCase):
              "Perfil epidemiológico de los pacientes en terapia"
              " renal substitutiva en Brasil, 2000-2004",
              0,
-             "isTranslationOf",
+             "hasTranslation",
              ),
             ('10.1590/S0034-89102010000400007',
              "Perfil epidemiológico dos pacientes em terapia"
              " renal substitutiva no Brasil, 2000-2004",
              1,
-             "hasTranslation",
+             "isTranslationOf",
              ),
         ]
         self.assertEqual(
