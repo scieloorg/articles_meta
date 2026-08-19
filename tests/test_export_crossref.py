@@ -515,6 +515,28 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
 
         self.assertEqual(b'<doi_batch><body><journal><journal_article language="pt" publication_type="full_text" reference_distribution_opts="any"/></journal></body></doi_batch>', ET.tostring(xml))
 
+    def test_journal_article_element_without_doi_and_lang(self):
+        xmlcrossref = ET.Element('doi_batch')
+
+        body = ET.Element('body')
+        body.append(ET.Element('journal'))
+
+        xmlcrossref.append(body)
+
+        data = [self._article_meta, xmlcrossref]
+
+        pipe = export_crossref.XMLJournalArticlePipe()
+        with patch.object(
+                Article, 'doi_and_lang', new_callable=PropertyMock, return_value=[]):
+            raw, xml = pipe.transform(data)
+
+        journal_articles = xml.findall('.//journal_article')
+        self.assertEqual(1, len(journal_articles))
+        self.assertEqual('pt', journal_articles[0].get('language'))
+        self.assertEqual('full_text', journal_articles[0].get('publication_type'))
+        self.assertEqual(
+            'any', journal_articles[0].get('reference_distribution_opts'))
+
     def test_article_titles_element(self):
 
         xmlcrossref = ET.Element('doi_batch')

@@ -310,16 +310,31 @@ class XMLIssuePipe(plumber.Pipe):
 
 class XMLJournalArticlePipe(plumber.Pipe):
 
+    @staticmethod
+    def _create_journal_article(language=None):
+        el = ET.Element('journal_article')
+        if language:
+            el.set('language', language)
+        el.set('publication_type', 'full_text')
+        el.set('reference_distribution_opts', 'any')
+        return el
+
     def transform(self, data):
         raw, xml = data
 
         journal = xml.find('./body/journal')
-        for item in raw.doi_and_lang:
-            el = ET.Element('journal_article')
-            el.set('language', item[0])
-            el.set('publication_type', 'full_text')
-            el.set('reference_distribution_opts', 'any')
-            journal.append(el)
+        items = raw.doi_and_lang or []
+        if items:
+            for lang, _doi in items:
+                journal.append(self._create_journal_article(lang))
+            return data
+
+        language = None
+        try:
+            language = raw.original_language()
+        except (KeyError, IndexError, TypeError):
+            pass
+        journal.append(self._create_journal_article(language))
         return data
 
 
