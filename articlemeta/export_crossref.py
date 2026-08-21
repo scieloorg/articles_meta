@@ -308,18 +308,47 @@ class XMLIssuePipe(plumber.Pipe):
         return data
 
 
+def original_language_or_none(raw):
+    try:
+        return raw.original_language()
+    except (KeyError, IndexError, TypeError):
+        return None
+
+
+def iter_doi_and_lang(raw):
+    """Pares ``(idioma, doi)`` para cada ``journal_article``.
+
+    Usa ``doi_and_lang`` quando houver 1..N DOIs. Sem DOI, devolve um
+    único par com o idioma original e ``doi=None`` (fallback de PID).
+    """
+    items = list(raw.doi_and_lang or [])
+    if items:
+        return items
+    return [(original_language_or_none(raw), None)]
+
+
+def zip_doi_data(xml, raw):
+    nodes = xml.findall('./body/journal//journal_article/doi_data')
+    return zip(nodes, iter_doi_and_lang(raw))
+
+
 class XMLJournalArticlePipe(plumber.Pipe):
+
+    @staticmethod
+    def _create_journal_article(language=None):
+        el = ET.Element('journal_article')
+        if language:
+            el.set('language', language)
+        el.set('publication_type', 'full_text')
+        el.set('reference_distribution_opts', 'any')
+        return el
 
     def transform(self, data):
         raw, xml = data
 
         journal = xml.find('./body/journal')
-        for item in raw.doi_and_lang:
-            el = ET.Element('journal_article')
-            el.set('language', item[0])
-            el.set('publication_type', 'full_text')
-            el.set('reference_distribution_opts', 'any')
-            journal.append(el)
+        for lang, _doi in iter_doi_and_lang(raw):
+            journal.append(self._create_journal_article(lang))
         return data
 
 
@@ -723,30 +752,6 @@ class XMLDOIDataPipe(plumber.Pipe):
             journal_article.append(deepcopy(el))
 
         return data
-
-
-def original_language_or_none(raw):
-    try:
-        return raw.original_language()
-    except (KeyError, IndexError, TypeError):
-        return None
-
-
-def iter_doi_and_lang(raw):
-    """Pares ``(idioma, doi)`` para cada ``doi_data``.
-
-    Usa ``doi_and_lang`` quando houver 1..N DOIs. Sem DOI, devolve um
-    único par com o idioma original e ``doi=None`` (fallback de PID).
-    """
-    items = list(raw.doi_and_lang or [])
-    if items:
-        return items
-    return [(original_language_or_none(raw), None)]
-
-
-def zip_doi_data(xml, raw):
-    nodes = xml.findall('./body/journal//journal_article/doi_data')
-    return zip(nodes, iter_doi_and_lang(raw))
 
 
 class XMLDOIPipe(plumber.Pipe):
