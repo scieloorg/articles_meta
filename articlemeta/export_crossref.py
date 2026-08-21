@@ -732,16 +732,6 @@ def original_language_or_none(raw):
         return None
 
 
-def article_pid(raw):
-    pid = raw.data.get('code')
-    if pid:
-        return pid
-    try:
-        return raw.publisher_id
-    except (KeyError, IndexError, TypeError, AttributeError):
-        return None
-
-
 def iter_doi_and_lang(raw):
     """Pares ``(idioma, doi)`` para cada ``doi_data``.
 
@@ -764,7 +754,7 @@ class XMLDOIPipe(plumber.Pipe):
     DOI_PREFIX = '10.1590'
 
     def _fallback_doi(self, raw):
-        pid = article_pid(raw)
+        pid = raw.data.get('code')
         if not pid:
             return None
         return '{}/{}'.format(self.DOI_PREFIX, pid)
@@ -791,13 +781,13 @@ class XMLResourcePipe(plumber.Pipe):
     def precond(data):
         raw, xml = data
         try:
-            if not raw.scielo_domain or not article_pid(raw):
+            if not raw.scielo_domain or not raw.data.get('code'):
                 raise plumber.UnmetPrecondition()
         except Exception:
             raise plumber.UnmetPrecondition()
 
     def _resource_url(self, raw, lang):
-        pid = article_pid(raw)
+        pid = raw.data.get('code')
         if not raw.scielo_domain or not pid or not lang:
             return None
         return self.ARTICLE_URL.format(raw.scielo_domain, pid, lang)

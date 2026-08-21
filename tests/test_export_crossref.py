@@ -27,6 +27,7 @@ def _get_article(data=None):
             }
         },
         "collection": "scl",
+        "code": "S0034-89102010000400007",
         "doi": "10.1590/S0034-89102010000400007",
         "body": {
             "pt": "Body PT",
@@ -1017,6 +1018,7 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
                 }
             },
             "collection": "scl",
+            "code": "S0034-89102010000400007",
             "doi": "10.1590/S0034-89102010000400007",
             "body": {
                 "pt": "Body PT",
@@ -2047,6 +2049,7 @@ class ExportCrossRef_MultiLingueDoc_with_DOI_pt_es_Tests(unittest.TestCase):
                 }
             },
             "collection": "scl",
+            "code": "S0034-89102010000400007",
             "doi": "10.1590/S0034-89102010000400007",
             "body": {
                 "pt": "Body PT",
