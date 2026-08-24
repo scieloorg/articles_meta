@@ -308,6 +308,30 @@ class XMLIssuePipe(plumber.Pipe):
         return data
 
 
+def original_language_or_none(raw):
+    try:
+        return raw.original_language()
+    except (KeyError, IndexError, TypeError):
+        return None
+
+
+def iter_doi_and_lang(raw):
+    """Pares ``(idioma, doi)`` para cada ``journal_article``.
+
+    Usa ``doi_and_lang`` quando houver 1..N DOIs. Sem DOI, devolve um
+    único par com o idioma original e ``doi=None`` (fallback de PID).
+    """
+    items = list(raw.doi_and_lang or [])
+    if items:
+        return items
+    return [(original_language_or_none(raw), None)]
+
+
+def zip_doi_data(xml, raw):
+    nodes = xml.findall('./body/journal//journal_article/doi_data')
+    return zip(nodes, iter_doi_and_lang(raw))
+
+
 class XMLJournalArticlePipe(plumber.Pipe):
 
     @staticmethod
@@ -321,20 +345,9 @@ class XMLJournalArticlePipe(plumber.Pipe):
 
     def transform(self, data):
         raw, xml = data
-
         journal = xml.find('./body/journal')
-        items = raw.doi_and_lang or []
-        if items:
-            for lang, _doi in items:
-                journal.append(self._create_journal_article(lang))
-            return data
-
-        language = None
-        try:
-            language = raw.original_language()
-        except (KeyError, IndexError, TypeError):
-            pass
-        journal.append(self._create_journal_article(language))
+        for lang, _doi in iter_doi_and_lang(raw):
+            journal.append(self._create_journal_article(lang))
         return data
 
 
@@ -742,15 +755,26 @@ class XMLDOIDataPipe(plumber.Pipe):
 
 class XMLDOIPipe(plumber.Pipe):
 
+    DOI_PREFIX = '10.1590'
+
+    def _fallback_doi(self, raw):
+        pid = raw.data.get('code')
+        if not pid:
+            return None
+        return '{}/{}'.format(self.DOI_PREFIX, pid)
+
+    @staticmethod
+    def _append_doi(doi_data_elem, doi_value):
+        doi = ET.Element('doi')
+        doi.text = doi_value
+        doi_data_elem.append(doi)
+
     def transform(self, data):
         raw, xml = data
-
-        nodes = xml.findall('./body/journal//journal_article/doi_data')
-        for doi_data_elem, doi_and_lang in zip(nodes, raw.doi_and_lang):
-            doi = ET.Element('doi')
-            doi.text = doi_and_lang[1]
-            doi_data_elem.append(doi)
-
+        for doi_data_elem, (_lang, doi_value) in zip_doi_data(xml, raw):
+            value = doi_value or self._fallback_doi(raw)
+            if value:
+                self._append_doi(doi_data_elem, value)
         return data
 
 
@@ -761,23 +785,26 @@ class XMLResourcePipe(plumber.Pipe):
     def precond(data):
         raw, xml = data
         try:
-            if not raw.scielo_domain or not raw.publisher_id:
+            if not raw.scielo_domain or not raw.data.get('code'):
                 raise plumber.UnmetPrecondition()
         except Exception:
             raise plumber.UnmetPrecondition()
 
+    def _resource_url(self, raw, lang):
+        pid = raw.data.get('code')
+        if not raw.scielo_domain or not pid or not lang:
+            return None
+        return self.ARTICLE_URL.format(raw.scielo_domain, pid, lang)
+
     @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
-
-        nodes = xml.findall('./body/journal//journal_article/doi_data')
-        for doi_data_elem, doi_and_lang in zip(nodes, raw.doi_and_lang):
-            resource = ET.Element('resource')
-            resource.text = self.ARTICLE_URL.format(
-                    raw.scielo_domain, raw.publisher_id, doi_and_lang[0]
-                )
-            doi_data_elem.append(resource)
-
+        for doi_data_elem, (lang, _doi) in zip_doi_data(xml, raw):
+            url = self._resource_url(raw, lang)
+            if url:
+                resource = ET.Element('resource')
+                resource.text = url
+                doi_data_elem.append(resource)
         return data
 
 
