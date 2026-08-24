@@ -27,6 +27,7 @@ def _get_article(data=None):
             }
         },
         "collection": "scl",
+        "code": "S0034-89102010000400007",
         "doi": "10.1590/S0034-89102010000400007",
         "body": {
             "pt": "Body PT",
@@ -515,6 +516,28 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
 
         self.assertEqual(b'<doi_batch><body><journal><journal_article language="pt" publication_type="full_text" reference_distribution_opts="any"/></journal></body></doi_batch>', ET.tostring(xml))
 
+    def test_journal_article_element_without_doi_and_lang(self):
+        xmlcrossref = ET.Element('doi_batch')
+
+        body = ET.Element('body')
+        body.append(ET.Element('journal'))
+
+        xmlcrossref.append(body)
+
+        data = [self._article_meta, xmlcrossref]
+
+        pipe = export_crossref.XMLJournalArticlePipe()
+        with patch.object(
+                Article, 'doi_and_lang', new_callable=PropertyMock, return_value=[]):
+            raw, xml = pipe.transform(data)
+
+        journal_articles = xml.findall('.//journal_article')
+        self.assertEqual(1, len(journal_articles))
+        self.assertEqual('pt', journal_articles[0].get('language'))
+        self.assertEqual('full_text', journal_articles[0].get('publication_type'))
+        self.assertEqual(
+            'any', journal_articles[0].get('reference_distribution_opts'))
+
     def test_article_titles_element(self):
 
         xmlcrossref = ET.Element('doi_batch')
@@ -677,6 +700,102 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
         raw, xml = xmlcrossref.transform(data)
 
         self.assertEqual(b'<doi_batch><body><journal><journal_article publication_type="full_text"><publisher_item><identifier id_type="pii">S0034-89102010000400007</identifier></publisher_item></journal_article></journal></body></doi_batch>', ET.tostring(xml))
+
+    def test_doi_element_uses_pid_fallback_without_doi_and_lang(self):
+        xmlcrossref = ET.Element('doi_batch')
+
+        doi_data = ET.Element('doi_data')
+        journal_article = ET.Element('journal_article')
+        journal_article.set('publication_type', 'full_text')
+        journal_article.append(doi_data)
+
+        journal = ET.Element('journal')
+        journal.append(journal_article)
+
+        body = ET.Element('body')
+        body.append(journal)
+
+        xmlcrossref.append(body)
+
+        data = [self._article_meta, xmlcrossref]
+        self._article_meta.data['code'] = 'S0103-50531998000400002'
+
+        pipe = export_crossref.XMLDOIPipe()
+        with patch.object(
+                Article, 'doi_and_lang', new_callable=PropertyMock, return_value=[]):
+            raw, xml = pipe.transform(data)
+
+        doi_node = xml.find('.//journal_article/doi_data/doi')
+        self.assertIsNotNone(doi_node)
+        self.assertEqual(
+            '10.1590/S0103-50531998000400002', doi_node.text)
+
+    def test_doi_element_with_single_doi_and_lang(self):
+        xmlcrossref = ET.Element('doi_batch')
+
+        doi_data = ET.Element('doi_data')
+        journal_article = ET.Element('journal_article')
+        journal_article.set('language', 'en')
+        journal_article.set('publication_type', 'full_text')
+        journal_article.append(doi_data)
+
+        journal = ET.Element('journal')
+        journal.append(journal_article)
+
+        body = ET.Element('body')
+        body.append(journal)
+
+        xmlcrossref.append(body)
+
+        data = [self._article_meta, xmlcrossref]
+
+        pipe = export_crossref.XMLDOIPipe()
+        with patch.object(
+                Article,
+                'doi_and_lang',
+                new_callable=PropertyMock,
+                return_value=[('en', '10.1590/S0103-50531998000400002')]):
+            raw, xml = pipe.transform(data)
+
+        doi_nodes = xml.findall('.//journal_article/doi_data/doi')
+        self.assertEqual(1, len(doi_nodes))
+        self.assertEqual(
+            '10.1590/S0103-50531998000400002', doi_nodes[0].text)
+
+    def test_resource_element_uses_pid_fallback_without_doi_and_lang(self):
+        xmlcrossref = ET.Element('doi_batch')
+
+        doi_data = ET.Element('doi_data')
+        journal_article = ET.Element('journal_article')
+        journal_article.set('language', 'pt')
+        journal_article.set('publication_type', 'full_text')
+        journal_article.append(doi_data)
+
+        journal = ET.Element('journal')
+        journal.append(journal_article)
+
+        body = ET.Element('body')
+        body.append(journal)
+
+        xmlcrossref.append(body)
+
+        data = [self._article_meta, xmlcrossref]
+        self._article_meta.data['code'] = 'S0103-50531998000600002'
+
+        pipe = export_crossref.XMLResourcePipe()
+        with patch.object(
+                Article, 'doi_and_lang', new_callable=PropertyMock, return_value=[]), \
+             patch.object(
+                Article, 'scielo_domain', new_callable=PropertyMock,
+                return_value='www.scielo.br'):
+            raw, xml = pipe.transform(data)
+
+        resource = xml.find('.//journal_article/doi_data/resource')
+        self.assertIsNotNone(resource)
+        self.assertEqual(
+            'http://www.scielo.br/scielo.php?script=sci_arttext'
+            '&pid=S0103-50531998000600002&tlng=pt',
+            resource.text)
 
     def test_xmlclose_pipe(self):
 
@@ -921,6 +1040,7 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
                 }
             },
             "collection": "scl",
+            "code": "S0034-89102010000400007",
             "doi": "10.1590/S0034-89102010000400007",
             "body": {
                 "pt": "Body PT",
@@ -1951,6 +2071,7 @@ class ExportCrossRef_MultiLingueDoc_with_DOI_pt_es_Tests(unittest.TestCase):
                 }
             },
             "collection": "scl",
+            "code": "S0034-89102010000400007",
             "doi": "10.1590/S0034-89102010000400007",
             "body": {
                 "pt": "Body PT",
