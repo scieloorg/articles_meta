@@ -1148,12 +1148,21 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
         'preprint': ('intra_work_relation', 'hasPreprint'),
         'commentary': {
             'article-commentary': ('inter_work_relation', 'isCommentOn'),
+            'commentary-article': ('inter_work_relation', 'isCommentOn'),
             'research-article': ('inter_work_relation', 'hasComment'),
             'reply': ('inter_work_relation', 'isReplyTo'),
         },
         'letter': {
             'article-commentary': ('inter_work_relation', 'isCommentOn'),
+            'commentary-article': ('inter_work_relation', 'isCommentOn'),
             'reply': ('inter_work_relation', 'isReplyTo'),
+            'undefined': ('inter_work_relation', 'isReplyTo'),
+        },
+        'article': {
+            'letter': ('inter_work_relation', 'isCommentOn'),
+        },
+        'book': {
+            'book-review': ('inter_work_relation', 'isReviewOf'),
         },
         'article-commentary': ('inter_work_relation', 'isCommentOn'),
     }
