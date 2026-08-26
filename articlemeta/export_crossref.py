@@ -345,7 +345,6 @@ class XMLJournalArticlePipe(plumber.Pipe):
 
     def transform(self, data):
         raw, xml = data
-
         journal = xml.find('./body/journal')
         for lang, _doi in iter_doi_and_lang(raw):
             journal.append(self._create_journal_article(lang))
