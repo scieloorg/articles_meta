@@ -452,6 +452,30 @@ class XMLArticleContributorsPipe(plumber.Pipe):
         if not raw.authors:
             raise plumber.UnmetPrecondition()
 
+    @staticmethod
+    def _create_institution(affiliation):
+        institution_name = affiliation.get('institution')
+        if not institution_name or not institution_name.strip():
+            return None
+
+        institution = ET.Element('institution')
+
+        name = ET.Element('institution_name')
+        name.text = institution_name
+        institution.append(name)
+
+        place_parts = [
+            affiliation.get(field)
+            for field in ('city', 'state', 'country')
+            if affiliation.get(field) and affiliation.get(field).strip()
+        ]
+        if place_parts:
+            place = ET.Element('institution_place')
+            place.text = ', '.join(place_parts)
+            institution.append(place)
+
+        return institution
+
     @plumber.precondition(precond)
     def transform(self, data):
         """
@@ -497,29 +521,20 @@ class XMLArticleContributorsPipe(plumber.Pipe):
             author_index = [i.upper() for i in authors.get('xref', []) or []]
 
             if raw.affiliations:
-                affs_list = []
+                affiliations = ET.Element('affiliations')
                 for aff in raw.affiliations:
-                    affiliation = ET.Element('affiliation')
-                    if 'index' not in aff:
+                    affiliation_index = aff.get('index')
+                    if not affiliation_index:
                         continue
-                    if aff['index'].upper() in author_index:
-                        aff_list = []
-                        if 'institution' in aff:
-                            aff_list.append(aff['institution'])
-                        if 'addr_line' in aff:
-                            aff_list.append(aff['addr_line'])
-                        if 'country' in aff:
-                            aff_list.append(aff['country'])
+                    if affiliation_index.upper() not in author_index:
+                        continue
 
-                        aff_info = ',  '.join(aff_list)
-                        if len(aff_info.strip()) == 0:
-                            continue
-                        affs_list.append(aff_info)
+                    institution = self._create_institution(aff)
+                    if institution is not None:
+                        affiliations.append(institution)
 
-                affs = '; '.join(affs_list)
-                if len(affs) > 0:
-                    affiliation.text = affs
-                    author.append(affiliation)
+                if len(affiliations):
+                    author.append(affiliations)
 
             if 'orcid' in authors and authors['orcid']:
                 orcid = ET.Element('ORCID')
