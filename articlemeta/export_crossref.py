@@ -27,9 +27,13 @@ class SetupDoiBatchPipe(plumber.Pipe):
         }
 
         el = ET.Element('doi_batch', nsmap=nsmap)
-        el.set('version', '4.4.0')
-        el.set('xmlns', 'http://www.crossref.org/schema/4.4.0')
-        el.set('{http://www.w3.org/2001/XMLSchema-instance}schemaLocation', 'http://www.crossref.org/schema/4.4.0 http://www.crossref.org/schemas/crossref4.4.0.xsd')
+        el.set('version', '5.5.0')
+        el.set('xmlns', 'http://www.crossref.org/schema/5.5.0')
+        el.set(
+            '{http://www.w3.org/2001/XMLSchema-instance}schemaLocation',
+            'http://www.crossref.org/schema/5.5.0 '
+            'https://data.crossref.org/schemas/crossref5.5.0.xsd'
+        )
 
         return data, el
 
@@ -340,7 +344,6 @@ class XMLJournalArticlePipe(plumber.Pipe):
         if language:
             el.set('language', language)
         el.set('publication_type', 'full_text')
-        el.set('reference_distribution_opts', 'any')
         return el
 
     def transform(self, data):
