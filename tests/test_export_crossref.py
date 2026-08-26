@@ -1758,6 +1758,133 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
                 self.assertEqual(
                     'isReplyTo', relation.attrib.get('relationship-type'))
 
+    def test_related_item_undefined_document_with_related_letter_is_reply_to(self):
+        # v71=reply (ou ausente) vira document_type=undefined no xylose.
+        article = _get_article({
+            'v71': [{'_': 'reply'}],
+            'v337': [{
+                'l': 'pt',
+                'd': '10.1590/S0034-89102010000400007',
+            }],
+        })
+        related_documents = [
+            {
+                'id': '10.1016/j.bjane.2015.04.004',
+                'related_article_type': 'letter',
+                'ext_link_type': 'doi',
+            },
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
+
+        data = [article, xmlcrossref]
+        pipe = export_crossref.XMLProgramRelatedItemPipe()
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = pipe.transform(data)
+
+        self.assertEqual('undefined', raw.document_type)
+        relation = xml.find('.//program/related_item/inter_work_relation')
+        self.assertIsNotNone(relation)
+        self.assertEqual('10.1016/j.bjane.2015.04.004', relation.text)
+        self.assertEqual('doi', relation.attrib.get('identifier-type'))
+        self.assertEqual('isReplyTo', relation.attrib.get('relationship-type'))
+
+    def test_related_item_letter_commenting_on_article_is_comment_on(self):
+        article = _get_article({
+            'v71': [{'_': 'le'}],
+            'v337': [{
+                'l': 'pt',
+                'd': '10.1055/s-0044-1800943',
+            }],
+        })
+        related_documents = [
+            {
+                'id': '10.1055/s-0043-1770976',
+                'related_article_type': 'article',
+                'ext_link_type': 'doi',
+            },
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
+
+        data = [article, xmlcrossref]
+        pipe = export_crossref.XMLProgramRelatedItemPipe()
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = pipe.transform(data)
+
+        relation = xml.find('.//program/related_item/inter_work_relation')
+        self.assertIsNotNone(relation)
+        self.assertEqual('10.1055/s-0043-1770976', relation.text)
+        self.assertEqual('doi', relation.attrib.get('identifier-type'))
+        self.assertEqual('isCommentOn', relation.attrib.get('relationship-type'))
+
+    def test_related_item_book_review_of_book_is_review_of(self):
+        article = _get_article({
+            'v71': [{'_': 'rc'}],
+            'v337': [{
+                'l': 'pt',
+                'd': '10.1590/S0034-89102010000400007',
+            }],
+        })
+        related_documents = [
+            {
+                'id': '978-85-54821-00-0',
+                'related_article_type': 'book',
+                'ext_link_type': 'isbn',
+            },
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
+
+        data = [article, xmlcrossref]
+        pipe = export_crossref.XMLProgramRelatedItemPipe()
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = pipe.transform(data)
+
+        relation = xml.find('.//program/related_item/inter_work_relation')
+        self.assertIsNotNone(relation)
+        self.assertEqual('978-85-54821-00-0', relation.text)
+        self.assertEqual('isbn', relation.attrib.get('identifier-type'))
+        self.assertEqual('isReviewOf', relation.attrib.get('relationship-type'))
+
+    def test_related_item_book_review_without_book_identifier_is_ignored(self):
+        article = _get_article({
+            'v71': [{'_': 'rc'}],
+            'v337': [{
+                'l': 'pt',
+                'd': '10.1590/S0034-89102010000400007',
+            }],
+        })
+        related_documents = [
+            {
+                'id': '',
+                'related_article_type': 'book',
+                'ext_link_type': 'doi',
+            },
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
+
+        data = [article, xmlcrossref]
+        pipe = export_crossref.XMLProgramRelatedItemPipe()
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = pipe.transform(data)
+
+        self.assertIsNone(xml.find('.//program/related_item/inter_work_relation'))
+        self.assertIsNone(xml.find('.//program'))
+
     def test_related_item_ignores_unknown_commentary_letter_combinations(self):
         # Combinações de commentary/letter com document_type não documentado
         # não geram related_item até haver casos reais.
