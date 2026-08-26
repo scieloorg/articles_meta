@@ -2,14 +2,37 @@
 import unittest
 import json
 import os
-import io
-from unittest.mock import patch, PropertyMock
+from unittest.mock import Mock, patch, PropertyMock
 
 from lxml import etree as ET
+import xmlschema
 
 from articlemeta import export_crossref
 from articlemeta import export
 from articlemeta.export import CustomArticle as Article
+
+
+SCHEMA_DIR = os.path.join(
+    os.path.dirname(__file__), 'xsd', 'scielo_crossref')
+CROSSREF_SCHEMA_PATH = os.path.join(SCHEMA_DIR, 'crossref5.5.0.xsd')
+CROSSREF_SCHEMA_LOCATIONS = [
+    (
+        'http://www.ncbi.nlm.nih.gov/JATS1',
+        'https://data.crossref.org/schemas/'
+        'JATS-journalpublishing1-3d2-mathml3.xsd'
+    ),
+]
+_CROSSREF_SCHEMA = None
+
+
+def get_crossref_schema():
+    global _CROSSREF_SCHEMA
+    if _CROSSREF_SCHEMA is None:
+        _CROSSREF_SCHEMA = xmlschema.XMLSchema11(
+            CROSSREF_SCHEMA_PATH,
+            locations=CROSSREF_SCHEMA_LOCATIONS,
+        )
+    return _CROSSREF_SCHEMA
 
 
 def _get_article(data=None):
@@ -251,6 +274,19 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
         raw, xml = xmlcrossref.transform(data)
 
         self.assertEqual('doi_batch', xml.tag)
+        self.assertEqual('5.5.0', xml.get('version'))
+        self.assertEqual(
+            'http://www.crossref.org/schema/5.5.0',
+            xml.get('xmlns')
+        )
+        self.assertEqual(
+            'http://www.crossref.org/schema/5.5.0 '
+            'https://data.crossref.org/schemas/crossref5.5.0.xsd',
+            xml.get(
+                '{http://www.w3.org/2001/XMLSchema-instance}'
+                'schemaLocation'
+            )
+        )
 
     def test_doi_batch_id_element(self):
 
@@ -514,7 +550,7 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
         xmlcrossref = export_crossref.XMLJournalArticlePipe()
         raw, xml = xmlcrossref.transform(data)
 
-        self.assertEqual(b'<doi_batch><body><journal><journal_article language="pt" publication_type="full_text" reference_distribution_opts="any"/></journal></body></doi_batch>', ET.tostring(xml))
+        self.assertEqual(b'<doi_batch><body><journal><journal_article language="pt" publication_type="full_text"/></journal></body></doi_batch>', ET.tostring(xml))
 
     def test_journal_article_element_without_doi_and_lang(self):
         xmlcrossref = ET.Element('doi_batch')
@@ -535,8 +571,6 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
         self.assertEqual(1, len(journal_articles))
         self.assertEqual('pt', journal_articles[0].get('language'))
         self.assertEqual('full_text', journal_articles[0].get('publication_type'))
-        self.assertEqual(
-            'any', journal_articles[0].get('reference_distribution_opts'))
 
     def test_article_titles_element(self):
 
@@ -633,7 +667,89 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
         xmlcrossref = export_crossref.XMLArticleContributorsPipe()
         raw, xml = xmlcrossref.transform(data)
 
-        self.assertEqual(b'<doi_batch><body><journal><journal_article publication_type="full_text"><contributors><person_name contributor_role="editor" sequence="first"><given_name>Mariangela Leal</given_name><surname>Cherchiglia</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Elaine Leandro</given_name><surname>Machado</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="translator" sequence="additional"><given_name>Daniele Ara&#250;jo Campo</given_name><surname>Szuster</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Eli Iola Gurgel</given_name><surname>Andrade</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Francisco de Assis</given_name><surname>Ac&#250;rcio</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Waleska Teixeira</given_name><surname>Caiaffa</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Ricardo</given_name><surname>Sesso</surname><affiliation>Universidade Federal de S&#227;o Paulo,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Augusto A</given_name><surname>Guerra Junior</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL; Universidade Federal de S&#227;o Paulo,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Odilon Vanni de</given_name><surname>Queiroz</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name><person_name contributor_role="author" sequence="additional"><given_name>Isabel Cristina</given_name><surname>Gomes</surname><affiliation>Universidade Federal de Minas Gerais,  BRAZIL</affiliation></person_name></contributors></journal_article></journal></body></doi_batch>', ET.tostring(xml))
+        persons = xml.findall('.//contributors/person_name')
+        self.assertEqual(10, len(persons))
+        self.assertEqual(
+            ['editor', 'author', 'translator'] + ['author'] * 7,
+            [person.get('contributor_role') for person in persons]
+        )
+        self.assertEqual([], xml.findall('.//affiliation'))
+
+        first_institution = persons[0].find(
+            './affiliations/institution')
+        self.assertEqual(
+            'Universidade Federal de Minas Gerais',
+            first_institution.findtext('institution_name')
+        )
+        self.assertEqual(
+            'Belo Horizonte, MG, BRAZIL',
+            first_institution.findtext('institution_place')
+        )
+
+        multiple_institutions = persons[7].findall(
+            './affiliations/institution')
+        self.assertEqual(2, len(multiple_institutions))
+        self.assertEqual(
+            [
+                'Universidade Federal de Minas Gerais',
+                'Universidade Federal de São Paulo',
+            ],
+            [
+                institution.findtext('institution_name')
+                for institution in multiple_institutions
+            ]
+        )
+
+    def test_article_affiliations_skip_invalid_entries_and_precede_orcid(self):
+        raw = Mock()
+        raw.authors = [
+            {
+                'given_names': 'Jane',
+                'surname': 'Doe',
+                'xref': ['A1', 'A2', 'A3'],
+                'orcid': '0000-0002-1825-0097',
+            }
+        ]
+        raw.affiliations = [
+            {
+                'index': 'A1',
+                'institution': 'Example University',
+                'city': 'Example City',
+                'state': 'EX',
+                'country': 'Example Country',
+            },
+            {
+                'index': 'A2',
+                'institution': '   ',
+                'city': 'Ignored City',
+            },
+            {
+                'index': 'A3',
+                'institution': 'Name Only Institute',
+                'city': ' ',
+                'country': '',
+            },
+        ]
+
+        xml = ET.fromstring(
+            '<doi_batch><body><journal><journal_article/>'
+            '</journal></body></doi_batch>'
+        )
+        pipe = export_crossref.XMLArticleContributorsPipe()
+        _, xml = pipe.transform([raw, xml])
+
+        person = xml.find('.//person_name')
+        self.assertEqual(
+            ['given_name', 'surname', 'affiliations', 'ORCID'],
+            [child.tag for child in person]
+        )
+        institutions = person.findall('./affiliations/institution')
+        self.assertEqual(2, len(institutions))
+        self.assertEqual(
+            'Example City, EX, Example Country',
+            institutions[0].findtext('institution_place')
+        )
+        self.assertIsNone(institutions[1].find('institution_place'))
 
     def test_article_publication_date_element(self):
 
@@ -812,17 +928,10 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
     def test_validating_against_schema(self):
 
         xml = export.Export(self._raw_json).pipeline_crossref()
+        schema = get_crossref_schema()
 
-        xmlio = ET.parse(io.BytesIO(xml))
-
-        fp = open(os.path.dirname(__file__)+'/xsd/scielo_crossref/crossref4.4.0.xsd')
-        schema_root = ET.parse(fp)
-        schema = ET.XMLSchema(schema_root)
-        fp.close()
-
-        schema.assertValid(xmlio)
-        self.assertTrue(schema.validate(xmlio))
-        self.assertEqual(None, schema.assertValid(xmlio))
+        self.assertTrue(schema.is_valid(xml))
+        self.assertEqual(None, schema.validate(xml))
 
     def test_related_articles_validating_against_schema(self):
         related_documents = [
@@ -844,16 +953,10 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
                 return_value=related_documents):
             xml = export.Export(self._raw_json).pipeline_crossref()
 
-        xmlio = ET.parse(io.BytesIO(xml))
-        schema_path = (
-            os.path.dirname(__file__) +
-            '/xsd/scielo_crossref/crossref4.4.0.xsd'
-        )
-        with open(schema_path) as fp:
-            schema = ET.XMLSchema(ET.parse(fp))
-
-        schema.assertValid(xmlio)
-        relations = xmlio.findall(
+        schema = get_crossref_schema()
+        schema.validate(xml)
+        xmlroot = ET.fromstring(xml)
+        relations = xmlroot.findall(
             './/{http://www.crossref.org/relations.xsd}'
             'inter_work_relation'
         )
@@ -2738,14 +2841,14 @@ class ExportCrossRef_XMLFundingData_Tests(unittest.TestCase):
         ET.register_namespace('fr', "http://www.crossref.org/fundref.xsd")
 
         self.xmlcrossref =  ET.Element(
-            '{http://www.crossref.org/schema/4.4.0}doi_batch',
+            '{http://www.crossref.org/schema/5.5.0}doi_batch',
             nsmap=namespace_map,
             attrib={
                 '{http://www.w3.org/2001/XMLSchema-instance}schemaLocation': (
-                    "http://www.crossref.org/schema/4.4.0 "
-                    "http://www.crossref.org/schemas/crossref4.4.0.xsd"
+                    "http://www.crossref.org/schema/5.5.0 "
+                    "https://data.crossref.org/schemas/crossref5.5.0.xsd"
                 ),
-                'version': '4.4.0'
+                'version': '5.5.0'
             }
         )
         journal = ET.Element('journal')
