@@ -27,9 +27,13 @@ class SetupDoiBatchPipe(plumber.Pipe):
         }
 
         el = ET.Element('doi_batch', nsmap=nsmap)
-        el.set('version', '4.4.0')
-        el.set('xmlns', 'http://www.crossref.org/schema/4.4.0')
-        el.set('{http://www.w3.org/2001/XMLSchema-instance}schemaLocation', 'http://www.crossref.org/schema/4.4.0 http://www.crossref.org/schemas/crossref4.4.0.xsd')
+        el.set('version', '5.5.0')
+        el.set('xmlns', 'http://www.crossref.org/schema/5.5.0')
+        el.set(
+            '{http://www.w3.org/2001/XMLSchema-instance}schemaLocation',
+            'http://www.crossref.org/schema/5.5.0 '
+            'https://data.crossref.org/schemas/crossref5.5.0.xsd'
+        )
 
         return data, el
 
@@ -340,7 +344,6 @@ class XMLJournalArticlePipe(plumber.Pipe):
         if language:
             el.set('language', language)
         el.set('publication_type', 'full_text')
-        el.set('reference_distribution_opts', 'any')
         return el
 
     def transform(self, data):
@@ -448,6 +451,30 @@ class XMLArticleContributorsPipe(plumber.Pipe):
         if not raw.authors:
             raise plumber.UnmetPrecondition()
 
+    @staticmethod
+    def _create_institution(affiliation):
+        institution_name = affiliation.get('institution')
+        if not institution_name or not institution_name.strip():
+            return None
+
+        institution = ET.Element('institution')
+
+        name = ET.Element('institution_name')
+        name.text = institution_name
+        institution.append(name)
+
+        place_parts = [
+            affiliation.get(field)
+            for field in ('city', 'state', 'country')
+            if affiliation.get(field) and affiliation.get(field).strip()
+        ]
+        if place_parts:
+            place = ET.Element('institution_place')
+            place.text = ', '.join(place_parts)
+            institution.append(place)
+
+        return institution
+
     @plumber.precondition(precond)
     def transform(self, data):
         """
@@ -493,29 +520,20 @@ class XMLArticleContributorsPipe(plumber.Pipe):
             author_index = [i.upper() for i in authors.get('xref', []) or []]
 
             if raw.affiliations:
-                affs_list = []
+                affiliations = ET.Element('affiliations')
                 for aff in raw.affiliations:
-                    affiliation = ET.Element('affiliation')
-                    if 'index' not in aff:
+                    affiliation_index = aff.get('index')
+                    if not affiliation_index:
                         continue
-                    if aff['index'].upper() in author_index:
-                        aff_list = []
-                        if 'institution' in aff:
-                            aff_list.append(aff['institution'])
-                        if 'addr_line' in aff:
-                            aff_list.append(aff['addr_line'])
-                        if 'country' in aff:
-                            aff_list.append(aff['country'])
+                    if affiliation_index.upper() not in author_index:
+                        continue
 
-                        aff_info = ',  '.join(aff_list)
-                        if len(aff_info.strip()) == 0:
-                            continue
-                        affs_list.append(aff_info)
+                    institution = self._create_institution(aff)
+                    if institution is not None:
+                        affiliations.append(institution)
 
-                affs = '; '.join(affs_list)
-                if len(affs) > 0:
-                    affiliation.text = affs
-                    author.append(affiliation)
+                if len(affiliations):
+                    author.append(affiliations)
 
             if 'orcid' in authors and authors['orcid']:
                 orcid = ET.Element('ORCID')
