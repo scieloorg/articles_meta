@@ -12,7 +12,7 @@ pyramid.includes = pyramid_debugtoolbar
 # '127.0.0.1' and '::1'.
 # debugtoolbar.hosts = 127.0.0.1 ::1
 
-mongo_uri = 127.0.0.1:27017
+mongo_uri = http://127.0.0.1:27017/articlemeta
 admintoken = admin
 
 [server:main]
