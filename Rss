@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xml:lang="en-US" xmlns="http://www.w3.org/2005/Atom">
+  <id>tag:www.traviscistatus.com,2005:/history</id>
+  <link rel="alternate" type="text/html" href="https://www.traviscistatus.com"/>
+  <link rel="self" type="application/atom+xml" href="https://www.traviscistatus.com/history.atom"/>
+  <title>Estado de Travis CI - Historial de incidentes</title>
+  <actualizado>2026-05-21T05:58:37Z</actualizado>
+  <autor>
+    <name>Travis CI</name>
+  </autor>
+  <entrada>
+    <id>tag:www.traviscistatus.com,2005:Incident/29577269</id>
+    <publicado>2026-04-11T13:16:07Z</publicado>
+    <actualizado>2026-04-11T13:16:07Z</actualizado>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/kz540w740dz2"/>
+    <title>Mantenimiento de bases de datos</title>
+    <content type="html"><p><small>Abr <var data-var='date'>11</var>, <var data-var='time'>13:16</var> UTC</small><br><strong>Completado</strong> - El mantenimiento del sistema se ha completado con éxito. Todos los sistemas funcionan como se esperaba. Agradecemos su paciencia durante este proceso.</p><p><small>Abr <var data-var='date'>11</var>, <var data-var='time'>11:35</var> UTC</small><br><strong>En progreso</strong> - El mantenimiento programado está en curso. Proporcionaremos actualizaciones según sea necesario.</p><p><small>Abr <var data-var='date'>11</var>, <var data-var='time'>11:33</var> UTC</small><br><strong>Programado</strong> - Realizaremos mantenimiento de la base de datos este sábado, 11 de abril, a partir de las 11:00 a. m. UTC. <br /><br />Debería durar de 1 a 3 horas y durante este tiempo la aplicación podría no estar disponible temporalmente. Para cualquier pregunta, póngase en contacto con support@travis-ci.com</p></content>
+  </entrada>
+  <entrada>
+    <id>tag:www.traviscistatus.com,2005:Incident/28702314</id>
+    <publicado>2026-02-28T13:51:06Z</publicado>
+    <actualizado>2026-02-28T13:51:06Z</actualizado>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/zkm61zb75wbd"/>
+    <title>Mantenimiento de bases de datos</title>
+    <content type="html"><p><small>Feb <var data-var='date'>28</var>, <var data-var='time'>13:51</var> UTC</small><br><strong>Completado</strong> - El mantenimiento del sistema se ha completado con éxito. Todos los sistemas funcionan como se esperaba. Agradecemos su paciencia durante este proceso.</p><p><small>Feb <var data-var='date'>28</var>, <var data-var='time'>12:00</var> UTC</small><br><strong>En progreso</strong> - El mantenimiento programado está en curso. Proporcionaremos actualizaciones según sea necesario.</p><p><small>Feb <var data-var='date'>27</var>, <var data-var='time'>22:11</var> UTC</small><br><strong>Programado</strong> - Realizaremos mantenimiento de la base de datos este sábado, 28 de febrero, a partir de las 12:00 a. m. UTC. <br /><br />Debería durar de 1 a 3 horas y durante este tiempo la aplicación podría no estar disponible temporalmente. Para cualquier pregunta, póngase en contacto con support@travis-ci.com</p></content>
+  </entrada>
+  <entrada>
+    <id>tag:www.traviscistatus.com,2005:Incident/24545670</id>
+    <publicado>2025-04-26T19:25:58Z</publicado>
+    <actualizado>2025-04-26T19:26:00Z</actualizado>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/32xsqhzft208"/>
+    <title>Mantenimiento programado de la base de datos – Fin de semana del 26 de abril</title>
+    <content type="html"><p><small>Abr <var data-var='date'>26</var>, <var data-var='time'>19:25</var> UTC</small><br><strong>Completado</strong> - Mantenimiento de la base de datos completado. Es posible que deba cerrar sesión y volver a iniciarla en el navegador web en caso de que la interfaz de usuario no se actualice correctamente. Las compilaciones se ejecutan correctamente. Si detecta algún problema, infórmelo a nuestro soporte.</p><p><small>Abr <var data-var='date'>26</var>, <var data-var='time'>18:18</var> UTC</small><br><strong>Verificando</strong> - Verificando el sistema después de la ejecución de los elementos de mantenimiento.</p><p><small>Abr <var data-var='date'>26</var>, <var data-var='time'>11:00</var> UTC</small><br><strong>En progreso</strong> - El mantenimiento programado está actualmente en curso. Proporcionaremos actualizaciones según sea necesario.</p><p><small>Abr <var data-var='date'> 2</var>, <var data-var='time'>10:32</var> UTC<br> <strong>Programado</strong> - Realizaremos un mantenimiento esencial de la base de datos durante el fin de semana del 26 de abril para actualizar nuestros sistemas de bases de datos. <br /><br /><br /><Durante este período, el sistema Travis CI podría experimentar hasta 16 horas de inactividad total y no se ejecutarán compilaciones. Por favor, planifique sus flujos de trabajo en consecuencia, ya que podrían producirse interrupciones durante este período. <br /><br /><Entendemos que el mantenimiento puede ser un inconveniente y agradecemos su paciencia mientras trabajamos para mejorar nuestros servicios. Nuestro equipo se esforzará por minimizar el impacto y restaurar la funcionalidad completa lo antes posible. <br /><br /><br /><Para obtener actualizaciones en tiempo real durante el período de mantenimiento, visite nuestra página de estado. <br /><br /><Gracias por su comprensión.</p>
+  </entrada>
+  <entrada>
+    <id>tag:www.traviscistatus.com,2005:Incident/24545600</id>
+    <published>2025-04-03T06:00:00Z</published>
+    <actualizado>2025-04-03T06:00:02Z</actualizado>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/4sf5ndj2t84g"/>
+    <title>Mantenimiento urgente del subsistema de facturación</title>
+    <content type="html"><p><small>Abr <var data-var='date'> 3</var>, <var data-var='time'>06:00</var> UTC</small><br><strong>Completado</strong> - Trabajo completado, todos los sistemas en verde.</p><p><small>Abr <var data-var='date'> 3</var>, <var data-var='time'>05:00</var> UTC</small><br><strong>En progreso</strong> - El mantenimiento programado está actualmente en curso. Proporcionaremos actualizaciones según sea necesario.</p><p><small>Abr <var data-var='date'> 2</var>, <var data-var='time'>10:25</var> UTC</small><br><strong>Programado</strong> - Realizaremos una breve ventana de mantenimiento para abordar un problema con nuestro sistema de facturación relacionado con el consumo de licencias de usuario, según lo informado por algunos usuarios. Este mantenimiento incluirá la optimización de la caché.<br /><br />Entendemos que el tiempo de inactividad puede ser inconveniente y agradecemos su paciencia mientras trabajamos para mejorar nuestros servicios. Nuestro equipo se esforzará por minimizar cualquier interrupción y restablecer la funcionalidad completa lo antes posible. Las actualizaciones estarán disponibles en nuestra página de estado durante todo el período de mantenimiento. Gracias por su comprensión.
+  </entrada>
+  <entrada>
+    <id>tag:www.traviscistatus.com,2005:Incident/23275818</id>
+    <publicado>2025-01-28T18:45:30Z</publicado>
+    <actualizado>2025-01-28T18:45:30Z</actualizado>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/hb4cvybrqrk9"/>
+    <title>Las pruebas no funcionan</title>
+    <content type="html"><p><small>Ene <var data-var='date'>28</var>, <var data-var='time'>18:45</var> UTC</small><br><strong>Resuelto</strong> - Este incidente ha sido resuelto.</p><p><small>Dic <var data-var='date'>20</var>, <var data-var='time'>18:44</var> UTC</small><br><strong>Investigando</strong> - Las pruebas no están disponibles actualmente. El problema ha sido identificado y estamos preparando una solución. Mientras tanto, póngase en contacto con support@travis-ci.com si tiene alguna pregunta.
+  </entrada>
+  <entrada>
+    <id>tag:www.traviscistatus.com,2005:Incident/21962417</id>
+    <publicado>2024-09-23T08:42:14Z</publicado>
+    <actualizado>2024-09-23T08:42:14Z</actualizado>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/n4bzhq56lwjt"/>
+    <title>La actualización de dependencias de DPLv2 provoca fallos en las implementaciones de DPLv2</title>
+    <content type="html"><p><small>Sep <var data-var='date'>23</var>, <var data-var='time'>08:42</var> UTC</small><br><strong>Resuelto</strong> - Las actualizaciones de imágenes de compilación y las actualizaciones de DPLv2 se lanzarán continuamente. DPLv2 se promoverá como la versión predeterminada de la gema DPL el 30 de septiembre.</p><p><small>Sep <var data-var='date'>11</var>, <var data-var='time'>10:45</var> UTC</small><br><strong>Monitoreo</strong> - Se aplicaron actualizaciones en los entornos de compilación de DPLv2 y Travis CI. Estamos monitoreando. DPLv2 podría ser promovido a la función DPL predeterminada después del 14 de septiembre.</p><p><small>Sep;<var data-var='date'> 5</var>,<var data-var='time'>10:24</var> UTC</small><br><strong>Actualización</strong> - Se ha publicado el parche 3.0.58 del servidor TCI Enterprise y se recomienda su uso a más tardar el 14 de septiembre de 2024.</p><p><small>Sep <var data-var='date'> 3</var>, <var data-var='time'>11:54</var> UTC</small><br><strong>Actualización</strong> - La actualización de las imágenes del entorno de compilación aún está en curso: se identificaron dependencias adicionales y se está trabajando en ellas. Hasta que finalicen las actualizaciones del entorno de compilación, DPLv1 funciona normalmente; se recomienda a los usuarios de DPLv2 que continúen utilizando la solución alternativa de actualización de gemas uri.<br /><br />La versión del servidor TCI Enterprise recibirá el parche 3.0.58 en breve. El parche garantizará la estabilidad de la gema DPL predeterminada utilizada, al tiempo que permitirá seleccionar una versión DPL diferente; consulte el registro de cambios de Enterprise.</p><p><small>Ago <var data-var='date'>30</var>, <var data-var='time'>13:26</var> UTC</small><br><strong>Actualización</strong> - Hemos revertido la gema DPLv2 de ser la última estable en el repositorio de gemas, 1.10.16 es ahora la última estable. Esto no afecta a los usuarios alojados en TCI. Esto debería evitar que los entornos de servidor TCI Enterprise no actualizados a TCIE v3.1 sufran la necesidad de actualizar archivos .travis.yml individuales, mediante la designación de una versión específica de la gema dpl. <br /><br />Actualizaciones de imágenes en curso y se probarán posteriormente. Próxima actualización prevista para el 2 de septiembre.</p><p><small>Ago <var data-var='date'>29</var>,<var data-var='time'>14:07</var> UTC</small> <br><strong>Identificado</strong> - Hemos lanzado DPLv2 como gema estable el 28 de agosto en la colección de gemas de Travis. Hay un problema para los usuarios de DPLv2 y hay una solución alternativa disponible.</br> <br> La gema 'uri' actualizada hace 2 días provocó que DPLv2 2.0.5 no funcionara correctamente en los entornos de compilación de Travis CI debido a la cadena de dependencias. Esto significa que algunas de sus recetas de despliegue que utilizan 'deploy' y la palabra clave `dpl_version: 2.0.5` pueden dejar de funcionar.<br /><br />Recomendamos a nuestros usuarios de DPLv2 que añadan temporalmente el siguiente fragmento a su archivo .travis.yml como solución alternativa:<br /><br />```<br />before_deploy:<br />- gem update uri<br />```<br /><br />Estamos actualizando nuestros entornos de compilación y cerraremos este incidente una vez que se haya completado.</p>
+  </entrada>
+  <entrada>
+    <id>tag:www.traviscistatus.com,2005:Incident/22051099</id>
+    <publicado>2024-09-04T19:23:30Z</publicado>
+    <actualizado>2024-09-04T19:23:30Z</actualizado>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/n1lflzmcbcvl"/>
+    <title>Los trabajos de arm64 no se están ejecutando</title>
+    <content type="html"><p><small>Sep <var data-var='date'> 4</var>, <var data-var='time'>19:23</var> UTC</small><br><strong>Resuelto</strong> - Este incidente ha sido resuelto.</p><p><small>Sep <var data-var='date'> 4</var>, <var data-var='time'>14:54</var> UTC</small><br><strong>Investigando</strong> - Estamos investigando un problema que impide que los trabajos arm64 se ejecuten correctamente.</p></content>
+  </entrada>
+  <entrada>
+    <id>tag:www.traviscistatus.com,2005:Incident/21873042</id>
+    <publicado>2024-08-29T14:23:23Z</publicado>
+    <actualizado>2024-08-29T14:23:24Z</actualizado>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/12xg3gp8r2gl"/>
+    <title>Los trabajos s390x y ppc64le no se están ejecutando</title>
+    <content type="html"><p><small>Ago <var data-var='date'>29</var>, <var data-var='time'>14:23</var> UTC</small><br><strong>Resuelto</strong> - Este incidente se ha resuelto para las compilaciones Bionic y Focal. Estamos trabajando en las compilaciones Jammy que deberían estar solucionadas pronto, las actualizaciones se publicarán en nuestra página de registro de cambios.</p><p><small>Ago <var data-var='date'>24</var>, <var data-var='time'>00:42</var> UTC<br>Identificado<strong>Identificado</strong> - Las compilaciones de Bionic y Focal deberían funcionar ahora, la corrección se ha implementado.<p>Agosto</p> <p>Agosto</p> <var data-var='date'>23</var>, <var data-var='time'>13:58</var> UTC<br>Investigando</strong> - Hemos identificado un problema que impide que los trabajos de s390x y ppc64le se ejecuten correctamente. Estamos trabajando activamente para solucionar este problema.<p></p>
+  </entrada>
+  <entrada>
+    <id>tag:www.traviscistatus.com,2005:Incident/21952680</id>
+    <publicado>2024-08-29T02:00:08Z</publicado>
+    <actualizado>2024-08-29T02:00:09Z</actualizado>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/dqmbbct9dzf4"/>
+    <title>Las compilaciones no se están procesando</title>
+    <content type="html"><p><small>Ago <var data-var='date'>29</var>, <var data-var='time'>02:00</var> UTC</small><br><strong>Resuelto</strong> - Este problema se ha resuelto y ahora las compilaciones se ejecutan como se esperaba.</p><p><small>Ago <var data-var='date'>28</var>, <var data-var='time'>22:31</var> UTC</small><br><strong>Investigando</strong> - Actualmente estamos investigando un problema que impide que algunas compilaciones funcionen correctamente.</p></content>
+  </entrada>
+  <entrada>
+    <id>tag:www.traviscistatus.com,2005:Incident/21686626</id>
+    <publicado>2024-08-12T05:17:46Z</publicado>
+    <actualizado>2024-08-12T05:17:47Z</actualizado>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/6tm8gybgwlbx"/>
+    <title>Mantenimiento de infraestructura</title>
+    <content type="html"><p><small>Ago <var data-var='date'>12</var>, <var data-var='time'>05:17</var> UTC</small><br><strong>Completado</strong> - El mantenimiento programado se ha completado.</p><p><small>Ago <var data-var='date'>11</var>, <var data-var='time'>23:58</var> UTC</small><br><strong>Actualización</strong> - Continuamos verificando los elementos de mantenimiento.</p><p><small>Ago <var data-var='date'>11</var>, <var data-var='time'>23:57</var> UTC</small><br><strong>Verificando</strong> - Los trabajos de compilación en cola durante el mantenimiento ahora se están vaciando de la cola.</p><p><small>Ago <var data-var='date'>11</var>, <var data-var='time'>21:02</var> UTC</small><br><strong>Actualización</strong> - Estamos investigando problemas posteriores a la actualización. En todos los casos, la funcionalidad del sistema se restablecerá a las 00:00 UTC+0.</p><p><small>Ago <var data-var='date'>10</var>, <var data-var='time'>11:00</var> UTC</small><br><strong>En progreso</strong> - El mantenimiento programado está actualmente en curso. Proporcionaremos actualizaciones según sea necesario.</p><p><small>Ago <var data-var='date'> 8</var>, <var data-var='time'>16:29</var> UTC</small><br><strong>Programado</strong> - Realizaremos tareas de mantenimiento de infraestructura durante el fin de semana. El sistema podría no estar disponible durante aproximadamente 2 horas dentro de este período y es posible que no se ejecuten las compilaciones.</p></content>
+  </entrada>
+  <entrada>
+    <id>tag:www.traviscistatus.com,2005:Incident/21534621</id>
+    <publicado>2024-08-03T16:40:04Z</publicado>
+    <actualizado>2024-08-03T16:40:04Z</actualizado>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/4l0k72srq6mg"/>
+    <title>Actualización de la configuración del clúster</title>
+    <content type="html"><p><small>Ago <var data-var='date'> 3</var>, <var data-var='time'>16:40</var> UTC</small><br><strong>Completado</strong> - El mantenimiento programado se ha completado.</p><p><small>Ago <var data-var='date'> 3</var>, <var data-var='time'>14:00</var> UTC</small><br><strong>En progreso</strong> - El mantenimiento programado está actualmente en progreso. Proporcionaremos actualizaciones según sea necesario.</p><p><small>Jul <var data-var='date'>26</var>, <var data-var='time'>14:08</var> UTC</small><br><strong>Programado</strong> - Actualizaremos nuestra configuración de clúster y balanceo de carga. Durante el mantenimiento, el sistema podría quedar temporalmente no disponible (aproximadamente 1 hora) debido a las actualizaciones de los registros DNS.</p></content>
+  </entrada>
+  <entrada>
+    <id>tag:www.traviscistatus.com,2005:Incident/19983376</id>
+    <publicado>2024-03-06T08:00:56Z</publicado>
+    <actualizado>2024-03-06T12:49:16Z</actualizado>
+    <link rel="alternate" type="text/html" href="https://www.traviscistatus.com/incidents/bdjg4kkpyhw3"/>
+    <title>Mantenimiento del sistema (del 27 de febrero al 6 de marzo)</title>
+    <content type="html"><p><small>Mar <var data-var='date'> 6</var>, <var data-var='time'>08:00</var> UTC</small><br><strong>Completado</strong> - El mantenimiento programado se ha completado.</p><p><small>Mar <var data-var='date'> 6</var>, <var data-var='time'>07:46</var> UTC</small><br><strong>Actualización</strong> - Mantenimiento programado en curso. El servicio puede no estar disponible durante aproximadamente 60 minutos entre ahora y las 12:00 UTC+0.</p><p><small>Mar <var data-var='date'> 1</var>, <var data-var='time'>20:59</var> UTC</small><br><strong>Actualización</strong> - Hemos identificado una actualización adicional que se realizará durante esta acción de mantenimiento. La ventana de mantenimiento se extendió hasta el 6 de marzo. El 6 de marzo, entre las 08:00 y las 12:00 UTC+0, el servicio puede no estar disponible temporalmente durante aproximadamente 60 minutos.</p><p><small>Feb <var data-var='date'>28</var>, <var data-var='time'>12:42</var> UTC</small><br><strong>Actualización</strong> - El estado de compilación en GitHub funciona. Las compilaciones activadas desde GitLab, BitBucket y Assembla están operativas. Próximas actualizaciones el 29 de febrero.</p><p><small>Feb <var data-var='date'>28</var>, <var data-var='time'>11:36</var> UTC</small><br><strong>Actualización</strong> - Aviso: Los estados de compilación no se envían de vuelta a GitHub después de que se ejecuta la compilación. No está disponible la activación de compilaciones desde GitLab, BitBucket y Assembla. Estamos en progreso con actividades de mantenimiento.</p><p><small>Feb <var data-var='date'>27</var>, <var data-var='time'>08:00</var> UTC</small><br><strong>En progreso</strong> - El mantenimiento programado está actualmente en curso. Proporcionaremos actualizaciones según sea necesario.</p><p><small>Feb <var data-var='date'>26</var>, <var data-var='time'>09:42</var> UTC</small><br><strong>Actualización</strong> - Recordatorio: Travis CI estará en mantenimiento durante la semana del 27/Feb al 5/Mar. Puede haber interrupciones intermitentes del servicio,especialmente el 28 de febrero.</p><p><small>Feb <var data-var='date'>14</var>, <var data-var='time'>12:41</var> UTC</small><br><strong>Programado</strong> - Travis CI estará en mantenimi
