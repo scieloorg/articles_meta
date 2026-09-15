@@ -7,8 +7,11 @@ from datetime import datetime
 from itertools import product
 
 import plumber
+from langdetect import DetectorFactory, LangDetectException, detect
 from lxml import etree as ET
 from xylose.scielodocument import UnavailableMetadataException
+
+DetectorFactory.seed = 0
 
 SUPPLBEG_REGEX = re.compile(r'^0 ')
 SUPPLEND_REGEX = re.compile(r' 0$')
@@ -390,73 +393,91 @@ def _get_langs_ordered_by_priority(raw):
     return main_langs
 
 
-def _nonempty_article_titles(raw):
+def _article_titles(raw):
+    """Títulos v12 com texto, indexados pela etiqueta de idioma."""
     titles = {raw.original_language(): raw.original_title()}
     titles.update(raw.translated_titles() or {})
     return {
-        lang: title.strip() if isinstance(title, str) else title
+        lang: title.strip()
         for lang, title in titles.items()
-        if title and str(title).strip()
+        if (title or '').strip()
     }
 
 
-def _title_for_journal_article(titles, ja_lang, langs_ordered_by_priority):
-    if ja_lang and titles.get(ja_lang):
-        return titles[ja_lang]
-    for lang in langs_ordered_by_priority:
-        if titles.get(lang):
-            return titles[lang]
-    for title in titles.values():
-        if title:
-            return title
-    return '[NO TITLE AVAILABLE]'
+def _detect_title_language(title):
+    try:
+        return detect(title)
+    except LangDetectException:
+        return None
+
+
+def _pick_article_title(titles, article_lang, preferred_langs):
+    """
+    Escolhe o texto do ``<title>`` e o idioma do ``journal_article``.
+
+    O ``v40`` (idioma do artigo / DOI) pode estar errado. O ``langdetect``
+    compara o texto do ``v12`` com as duas etiquetas:
+
+    - texto bate com ``v12@l`` → confia no ``v12``, corrige o idioma do XML
+    - texto bate com ``v40`` → confia no ``v40``, a etiqueta do ``v12`` é que
+      estava errada
+    """
+    if titles.get(article_lang):
+        return titles[article_lang], article_lang
+
+    for lang in preferred_langs:
+        title = titles.get(lang)
+        if not title:
+            continue
+        detected = _detect_title_language(title)
+        if detected == lang:
+            return title, lang
+        if detected == article_lang:
+            return title, article_lang
+
+    return next(iter(titles.values()), '[NO TITLE AVAILABLE]'), article_lang
+
+
+def _pick_alternate_title(titles, article_lang, preferred_langs, main_title):
+    """Outro v12, texto diferente do <title>, para original_language_title."""
+    for lang in preferred_langs:
+        title = titles.get(lang)
+        if title and lang != article_lang and title != main_title:
+            return lang, title
+    return None, None
 
 
 class XMLArticleTitlePipe(plumber.Pipe):
     """
-    Create `<title>` and `<original_language_title/>`
-    `<title>` contains the article title related to the corresponding DOI
-    `<original_language_title>` is a title different from `<title>`, select the
-    first title from a priority list: en, pt, es, other article title languages
-
-    If there is no title in the ``journal_article`` language, fall back to the
-    first available title instead of ``[NO TITLE AVAILABLE]``. Alternate titles
-    are emitted only when another language has a distinct, non-empty title.
+    ``<title>`` no idioma do journal_article; ``<original_language_title>``
+    só se existir outro título com texto distinto.
     """
 
     def transform(self, data):
         raw, xml = data
-        nodes = xml.findall('.//journal_article')
+        titles = _article_titles(raw)
+        preferred_langs = _get_langs_ordered_by_priority(raw)
 
-        article_titles = _nonempty_article_titles(raw)
-        langs_ordered_by_priority = _get_langs_ordered_by_priority(raw)
+        for journal_article in xml.findall('.//journal_article'):
+            article_lang = journal_article.get('language')
+            titles_node = journal_article.find('./titles')
 
-        for ja in nodes:
-            ja_lang = ja.get("language")
+            main_title, title_lang = _pick_article_title(
+                titles, article_lang, preferred_langs)
+            if title_lang:
+                journal_article.set('language', title_lang)
 
-            node = ja.find('./titles')
+            title_el = ET.Element('title')
+            title_el.text = main_title
+            titles_node.append(title_el)
 
-            el = ET.Element('title')
-            main_title = _title_for_journal_article(
-                article_titles, ja_lang, langs_ordered_by_priority)
-            el.text = main_title
-            node.append(el)
-
-            for lang in langs_ordered_by_priority:
-                if lang == ja_lang:
-                    continue
-                alt_text = article_titles.get(lang)
-                if not alt_text or alt_text == main_title:
-                    continue
-
-                # create `<original_language_title>` which content is
-                # a title in a language different from `ja_lang`
-                # (http://support.crossref.org/hc/requests/407513)
-                alt_title = ET.Element('original_language_title')
-                alt_title.set('language', lang)
-                alt_title.text = alt_text
-                node.append(alt_title)
-                break
+            alt_lang, alt_text = _pick_alternate_title(
+                titles, title_lang, preferred_langs, main_title)
+            if alt_text:
+                alt_el = ET.Element('original_language_title')
+                alt_el.set('language', alt_lang)
+                alt_el.text = alt_text
+                titles_node.append(alt_el)
 
         return data
 

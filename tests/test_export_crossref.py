@@ -623,6 +623,51 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
         _, xml = export_crossref.XMLArticleTitlePipe().transform([raw, xml])
 
         self.assertEqual(title, xml.findtext('.//title'))
+        self.assertEqual('en', xml.find('.//journal_article').get('language'))
+        self.assertIsNone(xml.find('.//original_language_title'))
+
+    def test_article_title_uses_langdetect_when_v12_language_mismatches_v40(self):
+        title = 'Transtornos intestinais'
+        raw = Mock()
+        raw.original_language.return_value = 'pt'
+        raw.original_title.return_value = None
+        raw.translated_titles.return_value = {'en': title}
+
+        xml = ET.fromstring(
+            '<doi_batch><body><journal>'
+            '<journal_article language="pt" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '</journal></body></doi_batch>'
+        )
+        _, xml = export_crossref.XMLArticleTitlePipe().transform([raw, xml])
+
+        self.assertEqual(title, xml.findtext('.//title'))
+        self.assertEqual('pt', xml.find('.//journal_article').get('language'))
+        self.assertIsNone(xml.find('.//original_language_title'))
+        self.assertEqual('pt', export_crossref._detect_title_language(title))
+
+    def test_article_title_trusts_v12_when_langdetect_matches_tag_not_v40(self):
+        title = (
+            'Methodological parameters for the identification and '
+            'taxonomic classification of isolated theropodomorph teeth'
+        )
+        raw = Mock()
+        raw.original_language.return_value = 'pt'
+        raw.original_title.return_value = None
+        raw.translated_titles.return_value = {'en': title}
+
+        xml = ET.fromstring(
+            '<doi_batch><body><journal>'
+            '<journal_article language="pt" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '</journal></body></doi_batch>'
+        )
+        _, xml = export_crossref.XMLArticleTitlePipe().transform([raw, xml])
+
+        self.assertEqual(title, xml.findtext('.//title'))
+        self.assertEqual('en', xml.find('.//journal_article').get('language'))
         self.assertIsNone(xml.find('.//original_language_title'))
 
     def test_article_title_placeholder_when_no_titles_exist(self):
