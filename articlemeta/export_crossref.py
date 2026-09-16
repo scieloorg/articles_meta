@@ -383,24 +383,39 @@ def title_doi_lang(raw):
     return items
 
 
-def _get_langs_ordered_by_priority(raw):
-    other_langs = list((raw.translated_titles() or {}).keys())
-    article_langs = [raw.original_language()] + other_langs
-    main_langs = []
-    for lang in ["en", "pt", "es"] + article_langs:
-        if lang in article_langs and lang not in main_langs:
-            main_langs.append(lang)
-    return main_langs
+def _correct_article_title_languages(raw):
+    """
+    Retorna o idioma original e os títulos com seus idiomas corrigidos.
 
+    Se houver v12 para v40, confia nas etiquetas existentes. Caso contrário,
+    usa o idioma detectado no texto de cada título.
+    """
+    original_lang = raw.original_language()
+    raw_titles = {original_lang: raw.original_title()}
+    raw_titles.update(raw.translated_titles() or {})
 
-def _article_titles(raw):
-    """Títulos v12 com texto, indexados pela etiqueta de idioma."""
-    titles = {raw.original_language(): raw.original_title()}
-    titles.update(raw.translated_titles() or {})
+    langs = list(dict.fromkeys(
+        ["en", "pt", "es"] + list(raw_titles)))
+    titles = {
+        lang: raw_titles[lang].strip()
+        for lang in langs
+        if (raw_titles.get(lang) or '').strip()
+    }
+
+    if original_lang in titles:
+        return {
+            "original_language": original_lang,
+            "titles": titles,
+        }
+
+    corrected_titles = {}
+    for lang, title in titles.items():
+        corrected_lang = _detect_title_language(title) or lang
+        corrected_titles.setdefault(corrected_lang, title)
+
     return {
-        lang: title.strip()
-        for lang, title in titles.items()
-        if (title or '').strip()
+        "original_language": next(iter(corrected_titles), original_lang),
+        "titles": corrected_titles,
     }
 
 
@@ -411,38 +426,21 @@ def _detect_title_language(title):
         return None
 
 
-def _pick_article_title(titles, article_lang, preferred_langs):
-    """
-    Escolhe o texto do ``<title>`` e o idioma do ``journal_article``.
-
-    O ``v40`` (idioma do artigo / DOI) pode estar errado. O ``langdetect``
-    compara o texto do ``v12`` com as duas etiquetas:
-
-    - texto bate com ``v12@l`` → confia no ``v12``, corrige o idioma do XML
-    - texto bate com ``v40`` → confia no ``v40``, a etiqueta do ``v12`` é que
-      estava errada
-    """
-    if titles.get(article_lang):
-        return titles[article_lang], article_lang
-
-    for lang in preferred_langs:
-        title = titles.get(lang)
-        if not title:
-            continue
-        detected = _detect_title_language(title)
-        if detected == lang:
-            return title, lang
-        if detected == article_lang:
-            return title, article_lang
-
-    return next(iter(titles.values()), '[NO TITLE AVAILABLE]'), article_lang
+def _pick_article_title(title_data, article_lang):
+    """Escolhe o título do idioma pedido ou o título original."""
+    titles = title_data["titles"]
+    title_lang = (
+        article_lang
+        if article_lang in titles
+        else title_data["original_language"]
+    )
+    return titles.get(title_lang, '[NO TITLE AVAILABLE]'), title_lang
 
 
-def _pick_alternate_title(titles, article_lang, preferred_langs, main_title):
+def _pick_alternate_title(titles, article_lang, main_title):
     """Outro v12, texto diferente do <title>, para original_language_title."""
-    for lang in preferred_langs:
-        title = titles.get(lang)
-        if title and lang != article_lang and title != main_title:
+    for lang, title in titles.items():
+        if lang != article_lang and title != main_title:
             return lang, title
     return None, None
 
@@ -455,15 +453,15 @@ class XMLArticleTitlePipe(plumber.Pipe):
 
     def transform(self, data):
         raw, xml = data
-        titles = _article_titles(raw)
-        preferred_langs = _get_langs_ordered_by_priority(raw)
+        title_data = _correct_article_title_languages(raw)
+        titles = title_data["titles"]
 
         for journal_article in xml.findall('.//journal_article'):
             article_lang = journal_article.get('language')
             titles_node = journal_article.find('./titles')
 
             main_title, title_lang = _pick_article_title(
-                titles, article_lang, preferred_langs)
+                title_data, article_lang)
             if title_lang:
                 journal_article.set('language', title_lang)
 
@@ -472,7 +470,7 @@ class XMLArticleTitlePipe(plumber.Pipe):
             titles_node.append(title_el)
 
             alt_lang, alt_text = _pick_alternate_title(
-                titles, title_lang, preferred_langs, main_title)
+                titles, title_lang, main_title)
             if alt_text:
                 alt_el = ET.Element('original_language_title')
                 alt_el.set('language', alt_lang)
