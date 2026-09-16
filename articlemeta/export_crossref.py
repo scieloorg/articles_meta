@@ -426,18 +426,7 @@ def _detect_title_language(title):
         return None
 
 
-def _pick_article_title(title_data, article_lang):
-    """Escolhe o título do idioma pedido ou o título original."""
-    titles = title_data["titles"]
-    title_lang = (
-        article_lang
-        if article_lang in titles
-        else title_data["original_language"]
-    )
-    return titles.get(title_lang, '[NO TITLE AVAILABLE]'), title_lang
-
-
-def _pick_alternate_title(titles, article_lang, main_title):
+def _pick_original_language_title(titles, article_lang, main_title):
     """Outro v12, texto diferente do <title>, para original_language_title."""
     for lang, title in titles.items():
         if lang != article_lang and title != main_title:
@@ -460,17 +449,14 @@ class XMLArticleTitlePipe(plumber.Pipe):
             article_lang = journal_article.get('language')
             titles_node = journal_article.find('./titles')
 
-            main_title, title_lang = _pick_article_title(
-                title_data, article_lang)
-            if title_lang:
-                journal_article.set('language', title_lang)
+            main_title = titles.get(article_lang, '[NO TITLE AVAILABLE]')
 
             title_el = ET.Element('title')
             title_el.text = main_title
             titles_node.append(title_el)
 
-            alt_lang, alt_text = _pick_alternate_title(
-                titles, title_lang, main_title)
+            alt_lang, alt_text = _pick_original_language_title(
+                titles, article_lang, main_title)
             if alt_text:
                 alt_el = ET.Element('original_language_title')
                 alt_el.set('language', alt_lang)
