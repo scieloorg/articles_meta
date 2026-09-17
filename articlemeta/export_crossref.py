@@ -393,13 +393,10 @@ def _correct_article_title_languages(raw):
     original_lang = raw.original_language()
     raw_titles = {original_lang: raw.original_title()}
     raw_titles.update(raw.translated_titles() or {})
-
-    langs = list(dict.fromkeys(
-        ["en", "pt", "es"] + list(raw_titles)))
     titles = {
-        lang: raw_titles[lang].strip()
-        for lang in langs
-        if (raw_titles.get(lang) or '').strip()
+        lang: title.strip()
+        for lang, title in raw_titles.items()
+        if (title or '').strip()
     }
 
     if original_lang in titles:
@@ -414,7 +411,7 @@ def _correct_article_title_languages(raw):
         corrected_titles.setdefault(corrected_lang, title)
 
     return {
-        "original_language": next(iter(corrected_titles), original_lang),
+        "original_language": original_lang,
         "titles": corrected_titles,
     }
 
@@ -426,41 +423,33 @@ def _detect_title_language(title):
         return None
 
 
-def _pick_original_language_title(titles, article_lang, main_title):
-    """Outro v12, texto diferente do <title>, para original_language_title."""
-    for lang, title in titles.items():
-        if lang != article_lang and title != main_title:
-            return lang, title
-    return None, None
-
-
 class XMLArticleTitlePipe(plumber.Pipe):
     """
-    ``<title>`` no idioma do journal_article; ``<original_language_title>``
-    só se existir outro título com texto distinto.
+    ``<title>`` no idioma do journal_article.
+
+    ``<original_language_title>`` só nas versões traduzidas, com o título
+    do idioma original (v40).
     """
 
     def transform(self, data):
         raw, xml = data
         title_data = _correct_article_title_languages(raw)
         titles = title_data["titles"]
+        original_lang = title_data["original_language"]
+        original_title = titles.get(original_lang)
 
         for journal_article in xml.findall('.//journal_article'):
             article_lang = journal_article.get('language')
             titles_node = journal_article.find('./titles')
 
-            main_title = titles.get(article_lang, '[NO TITLE AVAILABLE]')
-
             title_el = ET.Element('title')
-            title_el.text = main_title
+            title_el.text = titles.get(article_lang, '[NO TITLE AVAILABLE]')
             titles_node.append(title_el)
 
-            alt_lang, alt_text = _pick_original_language_title(
-                titles, article_lang, main_title)
-            if alt_text:
+            if article_lang != original_lang:
                 alt_el = ET.Element('original_language_title')
-                alt_el.set('language', alt_lang)
-                alt_el.text = alt_text
+                alt_el.set('language', original_lang)
+                alt_el.text = original_title
                 titles_node.append(alt_el)
 
         return data
