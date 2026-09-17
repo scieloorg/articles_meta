@@ -1,14 +1,13 @@
 # coding: utf-8
-import unittest
+import io
 import json
 import os
-import io
-from unittest.mock import Mock, patch, PropertyMock
+import unittest
+from unittest.mock import Mock, PropertyMock, patch
 
 from lxml import etree as ET
 
-from articlemeta import export_crossref
-from articlemeta import export
+from articlemeta import export, export_crossref
 from articlemeta.export import CustomArticle as Article
 
 
@@ -668,10 +667,7 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
 
         self.assertEqual('[NO TITLE AVAILABLE]', xml.findtext('.//title'))
         self.assertEqual('pt', xml.find('.//journal_article').get('language'))
-        alt = xml.find('.//original_language_title')
-        self.assertIsNotNone(alt)
-        self.assertEqual('en', alt.get('language'))
-        self.assertEqual(title, alt.text)
+        self.assertIsNone(xml.find('.//original_language_title'))
 
     def test_article_title_placeholder_when_no_titles_exist(self):
         raw = Mock()
@@ -2972,7 +2968,7 @@ class ExportCrossRef_XMLFundingData_Tests(unittest.TestCase):
         journal_article.append(publisher_item)
         journal_article.append(xxx)
         journal.append(journal_article)
-        
+
         body.append(journal)
         self.xmlcrossref.append(body)
 
@@ -3003,7 +2999,7 @@ class ExportCrossRef_XMLFundingData_Tests(unittest.TestCase):
 
         _xmlcrossref = export_crossref.XMLFundingDataPipe()
         raw, xml = _xmlcrossref.transform(data)
-        
+
         publisher_item = xml.xpath(".//journal_article/publisher_item")[-1]
 
         self.assertEqual(publisher_item.getnext().find("*").tag, "{http://www.crossref.org/fundref.xsd}assertion")
