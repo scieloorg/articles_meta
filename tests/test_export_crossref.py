@@ -1,14 +1,13 @@
 # coding: utf-8
-import unittest
+import io
 import json
 import os
-import io
-from unittest.mock import patch, PropertyMock
+import unittest
+from unittest.mock import Mock, PropertyMock, patch
 
 from lxml import etree as ET
 
-from articlemeta import export_crossref
-from articlemeta import export
+from articlemeta import export, export_crossref
 from articlemeta.export import CustomArticle as Article
 
 
@@ -602,6 +601,91 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
 
         self.assertEqual(expected_titles, titles)
         self.assertEqual(expected_alt_titles, alt_titles)
+
+    def test_article_title_falls_back_when_missing_in_journal_language(self):
+        title = (
+            'Methodological parameters for the identification and '
+            'taxonomic classification of isolated theropodomorph teeth'
+        )
+        raw = Mock()
+        raw.original_language.return_value = 'en'
+        raw.original_title.return_value = None
+        raw.translated_titles.return_value = {'pt': title}
+
+        xml = ET.fromstring(
+            '<doi_batch><body><journal>'
+            '<journal_article language="en" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '</journal></body></doi_batch>'
+        )
+        _, xml = export_crossref.XMLArticleTitlePipe().transform([raw, xml])
+
+        self.assertEqual(title, xml.findtext('.//title'))
+        self.assertEqual('en', xml.find('.//journal_article').get('language'))
+        self.assertIsNone(xml.find('.//original_language_title'))
+
+    def test_article_title_uses_langdetect_when_v12_language_mismatches_v40(self):
+        title = 'Transtornos intestinais'
+        raw = Mock()
+        raw.original_language.return_value = 'pt'
+        raw.original_title.return_value = None
+        raw.translated_titles.return_value = {'en': title}
+
+        xml = ET.fromstring(
+            '<doi_batch><body><journal>'
+            '<journal_article language="pt" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '</journal></body></doi_batch>'
+        )
+        _, xml = export_crossref.XMLArticleTitlePipe().transform([raw, xml])
+
+        self.assertEqual(title, xml.findtext('.//title'))
+        self.assertEqual('pt', xml.find('.//journal_article').get('language'))
+        self.assertIsNone(xml.find('.//original_language_title'))
+        self.assertEqual('pt', export_crossref._detect_title_language(title))
+
+    def test_article_title_keeps_journal_language_when_detected_differs_from_v40(self):
+        title = (
+            'Methodological parameters for the identification and '
+            'taxonomic classification of isolated theropodomorph teeth'
+        )
+        raw = Mock()
+        raw.original_language.return_value = 'pt'
+        raw.original_title.return_value = None
+        raw.translated_titles.return_value = {'en': title}
+
+        xml = ET.fromstring(
+            '<doi_batch><body><journal>'
+            '<journal_article language="pt" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '</journal></body></doi_batch>'
+        )
+        _, xml = export_crossref.XMLArticleTitlePipe().transform([raw, xml])
+
+        self.assertEqual('[NO TITLE AVAILABLE]', xml.findtext('.//title'))
+        self.assertEqual('pt', xml.find('.//journal_article').get('language'))
+        self.assertIsNone(xml.find('.//original_language_title'))
+
+    def test_article_title_placeholder_when_no_titles_exist(self):
+        raw = Mock()
+        raw.original_language.return_value = 'en'
+        raw.original_title.return_value = None
+        raw.translated_titles.return_value = {}
+
+        xml = ET.fromstring(
+            '<doi_batch><body><journal>'
+            '<journal_article language="en" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '</journal></body></doi_batch>'
+        )
+        _, xml = export_crossref.XMLArticleTitlePipe().transform([raw, xml])
+
+        self.assertEqual('[NO TITLE AVAILABLE]', xml.findtext('.//title'))
+        self.assertIsNone(xml.find('.//original_language_title'))
 
     def test_article_contributors_element(self):
 
@@ -2884,7 +2968,7 @@ class ExportCrossRef_XMLFundingData_Tests(unittest.TestCase):
         journal_article.append(publisher_item)
         journal_article.append(xxx)
         journal.append(journal_article)
-        
+
         body.append(journal)
         self.xmlcrossref.append(body)
 
@@ -2915,7 +2999,7 @@ class ExportCrossRef_XMLFundingData_Tests(unittest.TestCase):
 
         _xmlcrossref = export_crossref.XMLFundingDataPipe()
         raw, xml = _xmlcrossref.transform(data)
-        
+
         publisher_item = xml.xpath(".//journal_article/publisher_item")[-1]
 
         self.assertEqual(publisher_item.getnext().find("*").tag, "{http://www.crossref.org/fundref.xsd}assertion")

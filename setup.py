@@ -19,6 +19,7 @@ requires = [
     'thriftpywrap==1.0.0',
     'xylose>=1.35.13',
     'crossrefapi>=1.3',
+    'langdetect',
     ]
 
 test_requires = ['mocker', 'nose>=1.0', 'coverage', 'mongomock']
