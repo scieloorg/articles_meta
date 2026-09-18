@@ -1,14 +1,14 @@
 # coding: utf-8
-import unittest
+import io
 import json
 import os
-from unittest.mock import Mock, patch, PropertyMock
 
+import unittest
+from unittest.mock import Mock, PropertyMock, patch
 from lxml import etree as ET
 import xmlschema
 
-from articlemeta import export_crossref
-from articlemeta import export
+from articlemeta import export, export_crossref
 from articlemeta.export import CustomArticle as Article
 
 
@@ -636,6 +636,91 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
 
         self.assertEqual(expected_titles, titles)
         self.assertEqual(expected_alt_titles, alt_titles)
+
+    def test_article_title_falls_back_when_missing_in_journal_language(self):
+        title = (
+            'Methodological parameters for the identification and '
+            'taxonomic classification of isolated theropodomorph teeth'
+        )
+        raw = Mock()
+        raw.original_language.return_value = 'en'
+        raw.original_title.return_value = None
+        raw.translated_titles.return_value = {'pt': title}
+
+        xml = ET.fromstring(
+            '<doi_batch><body><journal>'
+            '<journal_article language="en" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '</journal></body></doi_batch>'
+        )
+        _, xml = export_crossref.XMLArticleTitlePipe().transform([raw, xml])
+
+        self.assertEqual(title, xml.findtext('.//title'))
+        self.assertEqual('en', xml.find('.//journal_article').get('language'))
+        self.assertIsNone(xml.find('.//original_language_title'))
+
+    def test_article_title_uses_langdetect_when_v12_language_mismatches_v40(self):
+        title = 'Transtornos intestinais'
+        raw = Mock()
+        raw.original_language.return_value = 'pt'
+        raw.original_title.return_value = None
+        raw.translated_titles.return_value = {'en': title}
+
+        xml = ET.fromstring(
+            '<doi_batch><body><journal>'
+            '<journal_article language="pt" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '</journal></body></doi_batch>'
+        )
+        _, xml = export_crossref.XMLArticleTitlePipe().transform([raw, xml])
+
+        self.assertEqual(title, xml.findtext('.//title'))
+        self.assertEqual('pt', xml.find('.//journal_article').get('language'))
+        self.assertIsNone(xml.find('.//original_language_title'))
+        self.assertEqual('pt', export_crossref._detect_title_language(title))
+
+    def test_article_title_keeps_journal_language_when_detected_differs_from_v40(self):
+        title = (
+            'Methodological parameters for the identification and '
+            'taxonomic classification of isolated theropodomorph teeth'
+        )
+        raw = Mock()
+        raw.original_language.return_value = 'pt'
+        raw.original_title.return_value = None
+        raw.translated_titles.return_value = {'en': title}
+
+        xml = ET.fromstring(
+            '<doi_batch><body><journal>'
+            '<journal_article language="pt" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '</journal></body></doi_batch>'
+        )
+        _, xml = export_crossref.XMLArticleTitlePipe().transform([raw, xml])
+
+        self.assertEqual('[NO TITLE AVAILABLE]', xml.findtext('.//title'))
+        self.assertEqual('pt', xml.find('.//journal_article').get('language'))
+        self.assertIsNone(xml.find('.//original_language_title'))
+
+    def test_article_title_placeholder_when_no_titles_exist(self):
+        raw = Mock()
+        raw.original_language.return_value = 'en'
+        raw.original_title.return_value = None
+        raw.translated_titles.return_value = {}
+
+        xml = ET.fromstring(
+            '<doi_batch><body><journal>'
+            '<journal_article language="en" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '</journal></body></doi_batch>'
+        )
+        _, xml = export_crossref.XMLArticleTitlePipe().transform([raw, xml])
+
+        self.assertEqual('[NO TITLE AVAILABLE]', xml.findtext('.//title'))
+        self.assertIsNone(xml.find('.//original_language_title'))
 
     def test_article_contributors_element(self):
 
@@ -1861,6 +1946,133 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
                 self.assertEqual(
                     'isReplyTo', relation.attrib.get('relationship-type'))
 
+    def test_related_item_undefined_document_with_related_letter_is_reply_to(self):
+        # v71=reply (ou ausente) vira document_type=undefined no xylose.
+        article = _get_article({
+            'v71': [{'_': 'reply'}],
+            'v337': [{
+                'l': 'pt',
+                'd': '10.1590/S0034-89102010000400007',
+            }],
+        })
+        related_documents = [
+            {
+                'id': '10.1016/j.bjane.2015.04.004',
+                'related_article_type': 'letter',
+                'ext_link_type': 'doi',
+            },
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
+
+        data = [article, xmlcrossref]
+        pipe = export_crossref.XMLProgramRelatedItemPipe()
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = pipe.transform(data)
+
+        self.assertEqual('undefined', raw.document_type)
+        relation = xml.find('.//program/related_item/inter_work_relation')
+        self.assertIsNotNone(relation)
+        self.assertEqual('10.1016/j.bjane.2015.04.004', relation.text)
+        self.assertEqual('doi', relation.attrib.get('identifier-type'))
+        self.assertEqual('isReplyTo', relation.attrib.get('relationship-type'))
+
+    def test_related_item_letter_commenting_on_article_is_comment_on(self):
+        article = _get_article({
+            'v71': [{'_': 'le'}],
+            'v337': [{
+                'l': 'pt',
+                'd': '10.1055/s-0044-1800943',
+            }],
+        })
+        related_documents = [
+            {
+                'id': '10.1055/s-0043-1770976',
+                'related_article_type': 'article',
+                'ext_link_type': 'doi',
+            },
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
+
+        data = [article, xmlcrossref]
+        pipe = export_crossref.XMLProgramRelatedItemPipe()
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = pipe.transform(data)
+
+        relation = xml.find('.//program/related_item/inter_work_relation')
+        self.assertIsNotNone(relation)
+        self.assertEqual('10.1055/s-0043-1770976', relation.text)
+        self.assertEqual('doi', relation.attrib.get('identifier-type'))
+        self.assertEqual('isCommentOn', relation.attrib.get('relationship-type'))
+
+    def test_related_item_book_review_of_book_is_review_of(self):
+        article = _get_article({
+            'v71': [{'_': 'rc'}],
+            'v337': [{
+                'l': 'pt',
+                'd': '10.1590/S0034-89102010000400007',
+            }],
+        })
+        related_documents = [
+            {
+                'id': '978-85-54821-00-0',
+                'related_article_type': 'book',
+                'ext_link_type': 'isbn',
+            },
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
+
+        data = [article, xmlcrossref]
+        pipe = export_crossref.XMLProgramRelatedItemPipe()
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = pipe.transform(data)
+
+        relation = xml.find('.//program/related_item/inter_work_relation')
+        self.assertIsNotNone(relation)
+        self.assertEqual('978-85-54821-00-0', relation.text)
+        self.assertEqual('isbn', relation.attrib.get('identifier-type'))
+        self.assertEqual('isReviewOf', relation.attrib.get('relationship-type'))
+
+    def test_related_item_book_review_without_book_identifier_is_ignored(self):
+        article = _get_article({
+            'v71': [{'_': 'rc'}],
+            'v337': [{
+                'l': 'pt',
+                'd': '10.1590/S0034-89102010000400007',
+            }],
+        })
+        related_documents = [
+            {
+                'id': '',
+                'related_article_type': 'book',
+                'ext_link_type': 'doi',
+            },
+        ]
+        xmlcrossref = create_xmlcrossref_with_n_journal_article_element(['pt'])
+
+        data = [article, xmlcrossref]
+        pipe = export_crossref.XMLProgramRelatedItemPipe()
+        with patch.object(
+                Article,
+                'related_documents',
+                new_callable=PropertyMock,
+                return_value=related_documents):
+            raw, xml = pipe.transform(data)
+
+        self.assertIsNone(xml.find('.//program/related_item/inter_work_relation'))
+        self.assertIsNone(xml.find('.//program'))
+
     def test_related_item_ignores_unknown_commentary_letter_combinations(self):
         # Combinações de commentary/letter com document_type não documentado
         # não geram related_item até haver casos reais.
@@ -2860,7 +3072,7 @@ class ExportCrossRef_XMLFundingData_Tests(unittest.TestCase):
         journal_article.append(publisher_item)
         journal_article.append(xxx)
         journal.append(journal_article)
-        
+
         body.append(journal)
         self.xmlcrossref.append(body)
 
@@ -2891,7 +3103,7 @@ class ExportCrossRef_XMLFundingData_Tests(unittest.TestCase):
 
         _xmlcrossref = export_crossref.XMLFundingDataPipe()
         raw, xml = _xmlcrossref.transform(data)
-        
+
         publisher_item = xml.xpath(".//journal_article/publisher_item")[-1]
 
         self.assertEqual(publisher_item.getnext().find("*").tag, "{http://www.crossref.org/fundref.xsd}assertion")

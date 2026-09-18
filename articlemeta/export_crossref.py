@@ -7,8 +7,11 @@ from datetime import datetime
 from itertools import product
 
 import plumber
+from langdetect import DetectorFactory, LangDetectException, detect
 from lxml import etree as ET
 from xylose.scielodocument import UnavailableMetadataException
+
+DetectorFactory.seed = 0
 
 SUPPLBEG_REGEX = re.compile(r'^0 ')
 SUPPLEND_REGEX = re.compile(r' 0$')
@@ -348,7 +351,6 @@ class XMLJournalArticlePipe(plumber.Pipe):
 
     def transform(self, data):
         raw, xml = data
-
         journal = xml.find('./body/journal')
         for lang, _doi in iter_doi_and_lang(raw):
             journal.append(self._create_journal_article(lang))
@@ -384,55 +386,74 @@ def title_doi_lang(raw):
     return items
 
 
-def _get_langs_ordered_by_priority(raw):
-    other_langs = list((raw.translated_titles() or {}).keys())
-    article_langs = [raw.original_language()] + other_langs
-    main_langs = []
-    for lang in ["en", "pt", "es"] + article_langs:
-        if lang in article_langs and lang not in main_langs:
-            main_langs.append(lang)
-    return main_langs
+def _correct_article_title_languages(raw):
+    """
+    Retorna o idioma original e os títulos com seus idiomas corrigidos.
+
+    Se houver v12 para v40, confia nas etiquetas existentes. Caso contrário,
+    usa o idioma detectado no texto de cada título.
+    """
+    original_lang = raw.original_language()
+    raw_titles = {original_lang: raw.original_title()}
+    raw_titles.update(raw.translated_titles() or {})
+    titles = {
+        lang: title.strip()
+        for lang, title in raw_titles.items()
+        if (title or '').strip()
+    }
+
+    if original_lang in titles:
+        return {
+            "original_language": original_lang,
+            "titles": titles,
+        }
+
+    corrected_titles = {}
+    for lang, title in titles.items():
+        corrected_lang = _detect_title_language(title) or lang
+        corrected_titles.setdefault(corrected_lang, title)
+
+    return {
+        "original_language": original_lang,
+        "titles": corrected_titles,
+    }
+
+
+def _detect_title_language(title):
+    try:
+        return detect(title)
+    except LangDetectException:
+        return None
 
 
 class XMLArticleTitlePipe(plumber.Pipe):
     """
-    Create `<title>` and `<original_language_title/>`
-    `<title>` contains the article title related to the corresponding DOI
-    `<original_language_title>` is a title different from `<title>`, select the
-    first title from a priority list: en, pt, es, other article title languages
+    ``<title>`` no idioma do journal_article.
+
+    ``<original_language_title>`` só nas versões traduzidas, com o título
+    do idioma original (v40).
     """
 
     def transform(self, data):
         raw, xml = data
-        nodes = xml.findall('.//journal_article')
+        title_data = _correct_article_title_languages(raw)
+        titles = title_data["titles"]
+        original_lang = title_data["original_language"]
+        original_title = titles.get(original_lang)
 
-        article_titles = {raw.original_language(): raw.original_title()}
-        article_titles.update(raw.translated_titles() or {})
-        langs_ordered_by_priority = _get_langs_ordered_by_priority(raw)
+        for journal_article in xml.findall('.//journal_article'):
+            article_lang = journal_article.get('language')
+            titles_node = journal_article.find('./titles')
 
-        for ja in nodes:
-            ja_lang = ja.get("language")
+            title_el = ET.Element('title')
+            title_el.text = titles.get(article_lang, '[NO TITLE AVAILABLE]')
+            titles_node.append(title_el)
 
-            node = ja.find('./titles')
-
-            # create `<title>` which content is a title in a language equal to `ja_lang`
-            el = ET.Element('title')
-            el.text = article_titles.get(ja_lang) or '[NO TITLE AVAILABLE]'
-            node.append(el)
-
-            for lang in langs_ordered_by_priority:
-                if ja_lang == lang:
-                    continue
-
-                # create `<original_language_title>` which content is
-                # a title in a language different from `ja_lang`
-                # (http://support.crossref.org/hc/requests/407513)
-                alt_title = ET.Element('original_language_title')
-                alt_title.set('language', lang)
-                alt_title.text = article_titles.get(lang) or '[NO TITLE AVAILABLE]'
-                node.append(alt_title)
-                # select only the first title
-                break
+            if article_lang != original_lang:
+                alt_el = ET.Element('original_language_title')
+                alt_el.set('language', original_lang)
+                alt_el.text = original_title
+                titles_node.append(alt_el)
 
         return data
 
@@ -1209,12 +1230,21 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
         'preprint': ('intra_work_relation', 'hasPreprint'),
         'commentary': {
             'article-commentary': ('inter_work_relation', 'isCommentOn'),
+            'commentary-article': ('inter_work_relation', 'isCommentOn'),
             'research-article': ('inter_work_relation', 'hasComment'),
             'reply': ('inter_work_relation', 'isReplyTo'),
         },
         'letter': {
             'article-commentary': ('inter_work_relation', 'isCommentOn'),
+            'commentary-article': ('inter_work_relation', 'isCommentOn'),
             'reply': ('inter_work_relation', 'isReplyTo'),
+            'undefined': ('inter_work_relation', 'isReplyTo'),
+        },
+        'article': {
+            'letter': ('inter_work_relation', 'isCommentOn'),
+        },
+        'book': {
+            'book-review': ('inter_work_relation', 'isReviewOf'),
         },
         'article-commentary': ('inter_work_relation', 'isCommentOn'),
     }
