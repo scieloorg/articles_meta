@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://www.crossref.org/fundref.xsd"
-    xmlns="http://www.crossref.org/fundref.xsd">
+    targetNamespace="http://www.crossref.org/fundingdata5.5.0.xsd"
+    xmlns="http://www.crossref.org/fundingdata5.5.0.xsd"
+	xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
+    vc:minVersion="1.1">
     
     <!--=========Change History===========
     08/22/25 (PDF) added grant_id    
-    10/9/24 (PDF) added ror identifier    
+    10/9/24 (PDF) added ror identifier, created versioned fundingdata5.4.0.xsd schema    
     05/2/13 (PDF) changed funding_identifier to award_number
     -->
     
@@ -37,10 +39,10 @@
             </xsd:sequence>
             <xsd:attribute name="provider" default="publisher">
                 <xsd:simpleType>
-                    <xsd:restriction base="xsd:NMTOKEN">
-                        <xsd:enumeration value="publisher"/>
-                        <xsd:enumeration value="crossref"/>
-                    </xsd:restriction>
+                <xsd:restriction base="xsd:NMTOKEN">
+                    <xsd:enumeration value="publisher"/>
+                    <xsd:enumeration value="crossref"/>
+                </xsd:restriction>
                 </xsd:simpleType>
             </xsd:attribute>
             <xsd:attribute name="name" use="required">
@@ -51,7 +53,7 @@
                         <xsd:enumeration value="ror"/>
                         <xsd:enumeration value="funder_name"/>
                         <xsd:enumeration value="award_number"/>
-                        <xsd:enumeration value="grant_doi"/> 
+                        <xsd:enumeration value="grant_doi"/>
                     </xsd:restriction>
                 </xsd:simpleType>
             </xsd:attribute>
