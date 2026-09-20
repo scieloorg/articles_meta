@@ -92,7 +92,12 @@ def get_acron_issueid_fname_without_extension(file_path):
     """
     _file_path = os.path.normpath(file_path.replace('\\', '/')).lower()
     try:
-        file_id = FILE_REGEX.search(_file_path).group()
+        match = FILE_REGEX.search(_file_path)
+        if not match:
+            logger.error(
+                u'Fail to parse file_path %s: no regex match', file_path)
+            return
+        file_id = match.group()
         file_id, ext = os.path.splitext(file_id)
         folders = file_id.split('/')
         if not ext == '.xml':
@@ -102,11 +107,11 @@ def get_acron_issueid_fname_without_extension(file_path):
             folders = folders[-3:]
         if len(folders) != 3:
             logger.error(
-                u'Fail to parse file_path %s for %s', (file_path, file_id))
+                u'Fail to parse file_path %s for %s', file_path, file_id)
             return
-    except:
+    except Exception:
         logger.error(
-            u'Fail to parse file_path %s for %s', (file_path, file_id))
+            u'Fail to parse file_path %s', file_path)
         return
     return folders
 
