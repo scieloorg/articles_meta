@@ -1,0 +1,117 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python application
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Test with pytest
+      run: |
+        
+        
+        
+       pytest
+            - nombre: Configurar Java JDK
+  Usos: actions/setup-java@v5.2.0
+  con:
+    # La versión de Java que se va a configurar. Admite una versión completa o semántica de Java. Consulte ejemplos de sintaxis compatibles en el archivo README.
+    versión de Java: # opcional
+    # La ruta al archivo `.java-version`. Consulte ejemplos de sintaxis admitida en el archivo README.
+    archivo-versión-java: # opcional
+    # Distribución de Java. Consulte la lista de distribuciones compatibles en el archivo README.
+    distribución:
+    # El tipo de paquete (jdk, jre, jdk+fx, jre+fx)
+    java-package: # opcional, por defecto es jdk
+    # La arquitectura del paquete (por defecto, la arquitectura del ejecutor de acciones)
+    arquitectura: # opcional
+    # Ruta donde se encuentra el JDK comprimido
+    jdkFile: # opcional
+    # Configure esta opción si desea que la acción compruebe la última versión disponible que cumpla con la especificación de versión.
+    check-latest: # opcional
+    # ID del repositorio distributionManagement en el archivo pom.xml. El valor predeterminado es `github`.
+    server-id: # opcional, el valor predeterminado es github
+    # Nombre de la variable de entorno para el nombre de usuario para la autenticación en el repositorio Apache Maven. El valor predeterminado es $GITHUB_ACTOR
+    nombre-de-usuario-del-servidor: # opcional, el valor predeterminado es GITHUB_ACTOR
+    # Nombre de la variable de entorno para la contraseña o el token para la autenticación en el repositorio Apache Maven. El valor predeterminado es $GITHUB_TOKEN.
+    contraseña del servidor: # opcional, el valor predeterminado es GITHUB_TOKEN
+    # Ruta donde se escribirá el archivo settings.xml. El valor predeterminado es ~/.m2.
+    ruta-de-configuración: # opcional
+    # Sobrescribe el archivo settings.xml si existe. El valor predeterminado es "true".
+    overwrite-settings: # opcional, el valor predeterminado es true
+    # Clave privada GPG para importar. Por defecto es una cadena vacía.
+    gpg-private-key: # opcional
+    # Nombre de la variable de entorno para la frase de contraseña de la clave privada GPG. El valor predeterminado es $GPG_PASSPHRASE.
+    Contraseña GPG: # opcional
+    # Nombre de la plataforma de compilación para almacenar en caché las dependencias. Puede ser "maven", "gradle" o "sbt".
+    caché: # opcional
+    # Ruta a un archivo de dependencia: pom.xml, build.gradle, build.sbt, etc. Esta opción se puede usar con la opción `cache`. Si se omite, la acción busca el archivo de dependencia en todo el repositorio. Esta opción admite comodines y una lista de nombres de archivo para almacenar en caché varias dependencias.
+    ruta de dependencia de caché: # opcional
+    # Solución alternativa para pasar el estado del trabajo al paso posterior al trabajo. Esta variable no está destinada a la configuración manual.
+    estado-trabajo: # opcional, el valor predeterminado es ${{ job.status }}
+    # El token utilizado para autenticarse al obtener manifiestos de versión alojados en github.com, como por ejemplo para la compilación de Microsoft de OpenJDK. Al ejecutar esta acción en github.com, el valor predeterminado es suficiente. Al ejecutarla en GHES, puede proporcionar un token de acceso personal para github.com si experimenta limitaciones de velocidad.
+    token: # opcional, el valor predeterminado es ${{ github.server_url == 'https://github.com' && github.token || '' }}
+    # Nombre del ID de la cadena de herramientas de Maven si no se desea el nombre predeterminado "${distribution}_${java-version}". Consulte ejemplos de sintaxis admitida en el archivo de uso avanzado.
+    mvn-toolchain-id: # opcional
+    # Nombre del proveedor de la cadena de herramientas Maven si no se desea el nombre predeterminado "${distribution}". Consulte ejemplos de sintaxis admitida en el archivo de uso avanzado.
+    mvn-toolchain-vendor: # opcional
+
+
+
+
+                      - nombre: Configurar el entorno Node.js
+  Usos: actions/setup-node@v6.4.0
+  con:
+    # Especificación de la versión a utilizar. Ejemplos: 12.x, 10.15.1, >=10.15.0.
+    versión del nodo: # opcional
+    # Archivo que contiene la especificación de la versión a utilizar. Ejemplos: package.json, .nvmrc, .node-version, .tool-versions.
+    archivo-de-versión-de-nodo: # opcional
+    # Arquitectura de destino que utilizará Node. Ejemplos: x86, x64. Se utilizará la arquitectura del sistema por defecto.
+    arquitectura: # opcional
+    # Configure esta opción si desea que la acción compruebe si existe la última versión disponible que cumpla con la especificación de versión.
+    check-latest: # opcional
+    # Registro opcional para configurar para la autenticación. Configurará el registro en un archivo .npmrc y .yarnrc a nivel de proyecto, y configurará la autenticación para que lea desde env.NODE_AUTH_TOKEN.
+    url del registro: # opcional
+    # Ámbito opcional para autenticarse contra registros con ámbito. Se recurrirá al propietario del repositorio cuando se utilice el registro de paquetes de GitHub (https://npm.pkg.github.com/).
+    ámbito: # opcional
+    # Se utiliza para obtener distribuciones de nodos desde node-versions. Dado que existe un valor predeterminado, normalmente el usuario no lo proporciona. Al ejecutar esta acción en github.com, el valor predeterminado es suficiente. Al ejecutarla en GHES, puede proporcionar un token de acceso personal para github.com si experimenta limitaciones de velocidad.
+    token: # opcional, el valor predeterminado es ${{ github.server_url == 'https://github.com' && github.token || '' }}
+    # Se utiliza para especificar un gestor de paquetes para el almacenamiento en caché en el directorio predeterminado. Valores admitidos: npm, yarn, pnpm.
+    caché: # opcional
+    # Establezca en falso para deshabilitar el almacenamiento en caché automático. De forma predeterminada, el almacenamiento en caché está habilitado cuando devEngines.packageManager o el campo packageManager de nivel superior en package.json especifican npm como el administrador de paquetes.
+    package-manager-cache: # opcional, por defecto es true
+    # Se utiliza para especificar la ruta a un archivo de dependencia: package-lock.json, yarn.lock, etc. Admite comodines o una lista de nombres de archivo para almacenar en caché múltiples dependencias.
+    ruta de dependencia de caché: # opcional
+    # Se utiliza para especificar un espejo alternativo desde donde descargar los binarios de Node.js.
+    espejo: # opcional
+    # El token utilizado como encabezado de autorización al obtener desde el espejo
+    token espejo: # opcional
+          
