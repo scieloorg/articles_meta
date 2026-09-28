@@ -10,7 +10,7 @@ from processing import load_languages
 from articlemeta import controller
 
 
-def mock_static_catalog_init_method(self, collection):
+def mock_static_catalog_init_method(self, collection, fallback_domain=None):
     self.catalog = {
         "rsp": {
             "v52": {
@@ -113,6 +113,74 @@ class LoadLanguageTest(TestCase):
         self.assertEqual(self._raw_json['fulltexts']['html'],
                          document['fulltexts']['html'])
         self.assertIsNotNone(document['fulltexts'].get('pdf'))
+
+    def test_static_catalog_fallback(self):
+        """Test that StaticCatalog tries fallback domain when primary fails"""
+        
+        # Mock do_request to simulate primary domain failure with actual catalog data
+        def mock_do_request_primary_fails(url, json=True):
+            if 'www.scielo.br' in url:
+                return None  # Primary fails
+            elif 'antigo.scielo.br' in url:
+                # Fallback succeeds with catalog data
+                class MockResponse:
+                    def iter_lines(self, decode_unicode=None):
+                        # Return sample catalog entries
+                        return [
+                            'serial/rsp/v52/0034-8910-rsp-s1518-87872018052000131.pdf',
+                            'serial/rsp/v52/0034-8910-rsp-s1518-87872018052000131.xml',
+                        ]
+                return MockResponse()
+            return None
+        
+        with patch.object(load_languages, 'do_request', side_effect=mock_do_request_primary_fails):
+            # Test with fallback domain - should populate catalog
+            catalog = load_languages.StaticCatalog('www.scielo.br', fallback_domain='antigo.scielo.br')
+            self.assertIsInstance(catalog.catalog, dict)
+            # Verify catalog was populated from fallback
+            self.assertIn('rsp', catalog.catalog)
+            self.assertIn('v52', catalog.catalog['rsp'])
+            
+        # Test without fallback domain - should log error and have empty catalog
+        def mock_do_request_always_fails(url, json=True):
+            return None  # Both primary and fallback fail
+        
+        with patch.object(load_languages, 'do_request', side_effect=mock_do_request_always_fails):
+            with patch.object(load_languages, 'logger') as mock_logger:
+                catalog_no_fallback = load_languages.StaticCatalog('www.scielo.br', fallback_domain=None)
+                self.assertIsInstance(catalog_no_fallback.catalog, dict)
+                # Verify error was logged for each file type (pdf, html, xml)
+                error_calls = [call for call in mock_logger.error.call_args_list 
+                             if 'Failed to load static catalog' in str(call)]
+                self.assertGreaterEqual(len(error_calls), 3)  # At least one for each file type
+
+    @patch.object(
+        load_languages.StaticCatalog, "__init__", mock_static_catalog_init_method
+    )
+    def test_run_with_fallback_domain(self):
+        """Test run function with fallback_domain parameter"""
+        mocked_articlemeta_db = mongomock.MongoClient().db
+        mocked_articlemeta_db['collections'].insert_many([
+            {
+                "acron": "scl",
+                "code": "scl",
+                "domain": "www.scielo.br"
+            },
+        ])
+        mocked_articlemeta_db['articles'].insert_one(self._raw_json)
+
+        # Test with fallback_domain parameter
+        load_languages.run(['scl'],
+                           mocked_articlemeta_db,
+                           all_records=True,
+                           forced_url='www.scielo.br',
+                           fallback_domain='antigo.scielo.br')
+
+        document = mocked_articlemeta_db['articles'].find_one(
+            {'code': self._raw_json['code']},
+            {'_id': 0, 'citations': 0}
+        )
+        self.assertIsNotNone(document)
 
 
 if __name__ == '__main__':
