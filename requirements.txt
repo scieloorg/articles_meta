@@ -26,3 +26,4 @@ zope.deprecation==4.3.0
 zope.interface==6.1
 crossrefapi==1.3.0
 langdetect==1.0.9
+xmlschema==4.1.0

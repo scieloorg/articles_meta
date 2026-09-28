@@ -1,4 +1,5 @@
 # coding: utf-8
+import json
 import os
 import re
 import uuid
@@ -7,14 +8,35 @@ from datetime import datetime
 from itertools import product
 
 import plumber
+import thriftpy2
 from langdetect import DetectorFactory, LangDetectException, detect
 from lxml import etree as ET
-from xylose.scielodocument import UnavailableMetadataException
+from thriftpy2.rpc import make_client
+from xylose.scielodocument import Article, UnavailableMetadataException
+
+from articlemeta.controller import DataBroker, get_dbconn
 
 DetectorFactory.seed = 0
 
 SUPPLBEG_REGEX = re.compile(r'^0 ')
 SUPPLEND_REGEX = re.compile(r' 0$')
+
+articlemeta_thrift = thriftpy2.load(
+    os.path.join(
+        os.path.dirname(__file__), 'thrift', 'articlemeta.thrift'
+    ),
+    module_name='articlemeta_crossref_thrift',
+)
+
+ARTICLEMETA_THRIFT_HOST = os.environ.get(
+    'ARTICLEMETA_THRIFT_HOST', '127.0.0.1'
+)
+ARTICLEMETA_THRIFT_PORT = int(
+    os.environ.get('ARTICLEMETA_THRIFT_PORT', '11620')
+)
+ARTICLEMETA_THRIFT_TIMEOUT = int(
+    os.environ.get('ARTICLEMETA_THRIFT_TIMEOUT', '3000')
+)
 
 
 class SetupDoiBatchPipe(plumber.Pipe):
@@ -1382,6 +1404,232 @@ class XMLProgramRelatedItemPipe(plumber.Pipe):
         return data
 
 
+class XMLCrossmarkUpdatesPipe(plumber.Pipe):
+    AI_NAMESPACE = 'http://www.crossref.org/AccessIndicators.xsd'
+    FR_NAMESPACE = 'http://www.crossref.org/fundref.xsd'
+    CT_NAMESPACE = 'http://www.crossref.org/clinicaltrials.xsd'
+
+    UPDATE_TYPES = {
+        'corrected-article': 'correction',
+        'retracted-article': 'retraction',
+        'partial-retraction': 'partial_retraction',
+        'addended-article': 'addendum',
+        'addendum': 'addendum',
+        'expression-of-concern': 'expression_of_concern',
+    }
+    CORRECTION_TARGET_TYPES = {'article', 'review-article'}
+    PROGRAM_ORDER = {
+        FR_NAMESPACE: 0,
+        AI_NAMESPACE: 1,
+        CT_NAMESPACE: 2,
+    }
+
+    @classmethod
+    def _resolve_update_type(cls, related_article, current_document_type):
+        related_article_type = related_article.get('related_article_type')
+        update_type = cls.UPDATE_TYPES.get(related_article_type)
+        if update_type:
+            return update_type
+
+        if (
+                current_document_type == 'correction'
+                and related_article_type in cls.CORRECTION_TARGET_TYPES):
+            return 'correction'
+
+        return None
+
+    @staticmethod
+    def _get_related_article(identifier, collection):
+        client = None
+        try:
+            client = make_client(
+                articlemeta_thrift.ArticleMeta,
+                ARTICLEMETA_THRIFT_HOST,
+                ARTICLEMETA_THRIFT_PORT,
+                timeout=ARTICLEMETA_THRIFT_TIMEOUT,
+            )
+            result = client.get_article(
+                identifier,
+                collection or '',
+                False,
+                '',
+                False,
+            )
+            data = json.loads(result)
+            if data.get('article'):
+                return Article(data)
+        except (OSError, ValueError, thriftpy2.thrift.TException):
+            return None
+        finally:
+            if client is not None:
+                client.close()
+        return None
+
+    def _collect_updates(self, raw):
+        related_articles = getattr(raw, 'related_documents', None) or []
+        current_document_type = getattr(raw, 'document_type', None)
+        collection = getattr(raw, 'collection_acronym', None)
+        updates = []
+
+        for related_article in related_articles:
+            update_type = self._resolve_update_type(
+                related_article, current_document_type
+            )
+            identifier_type = str(related_article.get('ext_link_type')).lower()
+            identifier = related_article.get('id')
+            if not update_type or identifier_type != 'doi' or not identifier:
+                continue
+
+            article = self._get_related_article(identifier, collection)
+            update_date = self._complete_update_date(
+                article.publication_date if article else None
+            )
+            if update_date:
+                updates.append((update_type, update_date, identifier))
+
+        return updates
+
+    @staticmethod
+    def _complete_update_date(update_date):
+        """
+        Completa a data de atualização fornecida em formato AAAA, AAAA-MM ou AAAA-MM-DD.
+        Retorna uma string no formato AAAA-01-01 se apenas o ano for fornecido,
+        AAAA-MM-01 se ano e mês forem fornecidos, ou retorna o valor original se já estiver completo.
+        Se nenhum valor for fornecido, retorna None.
+        """
+        if not update_date:
+            return None
+
+        parts = str(update_date).split('-')
+        if len(parts) == 1:
+            return '{}-01-01'.format(parts[0])
+        if len(parts) == 2:
+            return '{}-01'.format(update_date)
+        return update_date
+
+    @staticmethod
+    def _get_or_create_custom_metadata(crossmark):
+        custom_metadata = crossmark.find('custom_metadata')
+        if custom_metadata is None:
+            custom_metadata = ET.Element('custom_metadata')
+            crossmark.append(custom_metadata)
+        return custom_metadata
+
+    @classmethod
+    def append_custom_metadata_program(cls, crossmark, program):
+        custom_metadata = cls._get_or_create_custom_metadata(crossmark)
+        namespace = ET.QName(program).namespace
+        program_order = cls.PROGRAM_ORDER[namespace]
+
+        for index, child in enumerate(custom_metadata):
+            child_namespace = ET.QName(child).namespace
+            child_order = cls.PROGRAM_ORDER.get(child_namespace, -1)
+            if child_order > program_order:
+                custom_metadata.insert(index, program)
+                break
+        else:
+            custom_metadata.append(program)
+
+    @classmethod
+    def _move_custom_metadata_programs(cls, journal_article, crossmark):
+        """Move os programas de metadados não bibliográficos para o Crossmark.
+
+        O schema exige que ``fr:program`` (FundRef), ``ai:program``
+        (Access Indicators) e ``ct:program`` (Clinical Trials) fiquem dentro
+        de ``crossmark/custom_metadata``, nessa ordem. Os pipes anteriores
+        acrescentam esses programas como filhos de ``journal_article``.
+        Esta função os retira de lá e os reinsere em ``custom_metadata``,
+        preservando a ordem do schema.
+        """
+        for program in list(journal_article):
+            namespace = ET.QName(program).namespace
+            if namespace in cls.PROGRAM_ORDER:
+                journal_article.remove(program)
+                cls.append_custom_metadata_program(crossmark, program)
+
+    @staticmethod
+    def _create_crossmark(policy, domain, updates):
+        crossmark = ET.Element('crossmark')
+
+        crossmark_policy = ET.Element('crossmark_policy')
+        crossmark_policy.text = policy
+        crossmark.append(crossmark_policy)
+
+        if domain:
+            crossmark_domains = ET.Element('crossmark_domains')
+            crossmark_domain = ET.Element('crossmark_domain')
+            domain_element = ET.Element('domain')
+            domain_element.text = domain
+            crossmark_domain.append(domain_element)
+            crossmark_domains.append(crossmark_domain)
+            crossmark.append(crossmark_domains)
+
+        if updates:
+            updates_element = ET.Element('updates')
+            for update_type, update_date, identifier in updates:
+                update = ET.Element('update')
+                update.set('type', update_type)
+                update.set('date', update_date)
+                update.text = identifier
+                updates_element.append(update)
+            crossmark.append(updates_element)
+
+        return crossmark
+
+    @staticmethod
+    def _journal_issns(raw):
+        journal = getattr(raw, 'journal', None)
+        if not journal:
+            return []
+
+        issns = []
+        for name in ('electronic_issn', 'print_issn', 'scielo_issn'):
+            try:
+                value = getattr(journal, name)
+            except Exception:
+                continue
+            if value and value not in issns:
+                issns.append(value)
+        return issns
+
+    @classmethod
+    def _databroker(cls):
+        if getattr(cls, '_cached_databroker', None) is None:
+            db_dsn = os.environ.get('MONGODB_HOST', '127.0.0.1:27017')
+            cls._cached_databroker = DataBroker(get_dbconn(db_dsn))
+        return cls._cached_databroker
+
+    def _get_policy_doi(self, raw):
+        issns = self._journal_issns(raw)
+        return self._databroker().get_crossmark_policy_doi(issns)
+
+    def transform(self, data):
+        raw, xml = data
+
+        journal_article = xml.find('.//journal_article')
+        if journal_article is None:
+            return data
+
+        policy = self._get_policy_doi(raw)
+        if not policy:
+            return data
+
+
+        domain = getattr(raw, 'scielo_domain', None)
+        updates = self._collect_updates(raw)
+
+        crossmark = self._create_crossmark(policy, domain, updates)
+        self._move_custom_metadata_programs(journal_article, crossmark)
+
+        publisher_item = journal_article.find('publisher_item')
+        if publisher_item is not None:
+            publisher_item.addnext(crossmark)
+        else:
+            journal_article.append(crossmark)
+
+        return data
+
+
 class XMLFundingDataPipe(plumber.Pipe):
     def precond(data):
         raw, _ = data
@@ -1440,10 +1688,11 @@ class XMLFundingDataPipe(plumber.Pipe):
         )
 
         publisher_item = xml.xpath(".//journal_article/publisher_item")[-1]
-        crossmark = publisher_item.find("../crossmark")
+        crossmark = publisher_item.getparent().find("crossmark")
 
         if crossmark is not None:
-            crossmark.append(program)
+            XMLCrossmarkUpdatesPipe.append_custom_metadata_program(
+                crossmark, program)
         else:
             publisher_item.addnext(program)
 

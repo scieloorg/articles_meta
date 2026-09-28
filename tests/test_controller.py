@@ -2,6 +2,8 @@ import unittest
 import json
 from datetime import datetime
 
+import mongomock
+
 from articlemeta import controller
 
 class FunctionDatesToStringTests(unittest.TestCase):
@@ -146,3 +148,42 @@ class PdfsPathsTests(unittest.TestCase):
         ]}
         result = controller._counter_dict(data)
         self.assertDictEqual(expected, result)
+
+
+class CrossmarkPolicyDoiTests(unittest.TestCase):
+    def setUp(self):
+        self.db = mongomock.MongoClient().db
+        self.db.crossmark_policies.insert_one({
+            'issns': ['2237-9622', '1679-4974'],
+            'doi_url': '10.1590/scielo.crossmark.policy',
+            'content_url': 'https://www.scielo.br/crossmark/policy',
+        })
+        self.broker = controller.DataBroker(self.db)
+
+    def test_both_issns_return_the_same_doi(self):
+        expected = '10.1590/scielo.crossmark.policy'
+        self.assertEqual(
+            expected, self.broker.get_crossmark_policy_doi(['2237-9622']))
+        self.assertEqual(
+            expected, self.broker.get_crossmark_policy_doi(['1679-4974']))
+
+    def test_several_issns_are_queried_at_once(self):
+        expected = '10.1590/scielo.crossmark.policy'
+        self.assertEqual(
+            expected,
+            self.broker.get_crossmark_policy_doi(
+                ['0000-0000', '1679-4974']),
+        )
+
+    def test_missing_issn_returns_none(self):
+        self.assertIsNone(self.broker.get_crossmark_policy_doi(['0000-0000']))
+
+    def test_dx_doi_url_prefix_is_stripped(self):
+        self.db.crossmark_policies.insert_one({
+            'issns': ['0034-8910'],
+            'doi_url': '10.1590/rsp.crossmark.policy',
+            'content_url': 'https://www.scielo.br/crossmark/rsp',
+        })
+        self.assertEqual(
+            '10.1590/rsp.crossmark.policy',
+            self.broker.get_crossmark_policy_doi(['0034-8910']))

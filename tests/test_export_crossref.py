@@ -1054,6 +1054,34 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
             ]
         )
 
+    def test_crossmark_updates_validating_against_schema(self):
+        self._raw_json['article']['v241'] = [{
+            'i': '10.1590/S2237-96222025v34e20240180',
+            't': 'corrected-article',
+            'n': 'doi',
+        }]
+        self._raw_json['article']['v223'] = [{'_': '20260922'}]
+        related_article = Mock(publication_date='2026-09-22')
+        with patch.object(
+                export_crossref.XMLCrossmarkUpdatesPipe,
+                '_get_policy_doi',
+                return_value='10.1590/crossmark-policy'):
+            with patch.object(
+                    export_crossref.XMLCrossmarkUpdatesPipe,
+                    '_get_related_article',
+                    return_value=related_article):
+                xml = export.Export(self._raw_json).pipeline_crossref()
+
+        schema = get_crossref_schema()
+        schema.validate(xml)
+        xmlroot = ET.fromstring(xml)
+        update = xmlroot.find(
+            './/{http://www.crossref.org/schema/5.5.0}update')
+        self.assertEqual('correction', update.get('type'))
+        self.assertEqual('2026-09-22', update.get('date'))
+        self.assertEqual(
+            '10.1590/S2237-96222025v34e20240180', update.text)
+
     def test_journal_article_should_contain_item_number_with_elocation_id(self):
         xmlcrossref = ET.Element("doi_batch")
         publisher_item = ET.Element("publisher_item")
@@ -3037,6 +3065,345 @@ class ExportCrossRef_XMLVolumePipe_Tests(unittest.TestCase):
         self.assertEqual(
             b'<doi_batch><body><journal><journal_issue/></journal></body></doi_batch>',
             ET.tostring(xml))
+
+class ExportCrossRef_XMLCrossmarkUpdatesPipe_Tests(unittest.TestCase):
+    POLICY_DOI = '10.1590/crossmark-policy'
+
+    def setUp(self):
+        self.xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
+            ['pt'], 'publisher_item')
+        self.raw = Mock(
+            related_documents=[],
+            document_type='undefined',
+            document_publication_date='2026-09-22',
+            scielo_domain='www.scielo.br',
+            collection_acronym='scl',
+        )
+        self.pipe = export_crossref.XMLCrossmarkUpdatesPipe()
+        self.related_article = Mock(
+            publication_date='2026-09-22',
+        )
+        self.related_article_patch = patch.object(
+            self.pipe,
+            '_get_related_article',
+            return_value=self.related_article,
+        )
+        self.related_article_patch.start()
+
+    def tearDown(self):
+        self.related_article_patch.stop()
+
+    def transform(self, raw=None, xml=None, policy_doi=None):
+        with patch.object(
+                self.pipe, '_get_policy_doi', return_value=policy_doi):
+            return self.pipe.transform([
+                raw or self.raw,
+                xml if xml is not None else self.xmlcrossref,
+            ])
+
+    def test_resolve_all_supported_related_article_types(self):
+        cases = [
+            ('corrected-article', 'correction'),
+            ('retracted-article', 'retraction'),
+            ('partial-retraction', 'partial_retraction'),
+            ('addended-article', 'addendum'),
+            ('addendum', 'addendum'),
+            ('expression-of-concern', 'expression_of_concern'),
+        ]
+
+        for related_article_type, expected in cases:
+            with self.subTest(related_article_type=related_article_type):
+                result = self.pipe._resolve_update_type(
+                    {'related_article_type': related_article_type},
+                    'undefined',
+                )
+                self.assertEqual(expected, result)
+
+    def test_resolve_generic_correction_targets_only_for_corrections(self):
+        for related_article_type in ('article', 'review-article'):
+            with self.subTest(related_article_type=related_article_type):
+                related_article = {
+                    'related_article_type': related_article_type,
+                }
+                self.assertEqual(
+                    'correction',
+                    self.pipe._resolve_update_type(
+                        related_article, 'correction'),
+                )
+                self.assertIsNone(
+                    self.pipe._resolve_update_type(
+                        related_article, 'research-article'),
+                )
+
+    def test_do_not_infer_update_types_missing_from_article_meta(self):
+        unsupported_types = (
+            'clarification',
+            'corrigendum',
+            'erratum',
+            'new_edition',
+            'new_version',
+            'removal',
+            'withdrawal',
+        )
+
+        for related_article_type in unsupported_types:
+            with self.subTest(related_article_type=related_article_type):
+                self.assertIsNone(self.pipe._resolve_update_type(
+                    {'related_article_type': related_article_type},
+                    'undefined',
+                ))
+
+    def test_get_related_article_by_doi_from_thrift_server(self):
+        client = Mock()
+        client.get_article.return_value = json.dumps({
+            'collection': 'scl',
+            'article': {
+                'v223': [{'_': '20260922'}],
+            },
+        })
+
+        with patch.object(
+                export_crossref, 'ARTICLEMETA_THRIFT_HOST',
+                'articlemeta-thriftserver'), patch.object(
+                export_crossref, 'ARTICLEMETA_THRIFT_PORT', 11620), patch.object(
+                export_crossref, 'ARTICLEMETA_THRIFT_TIMEOUT', 5000), patch.object(
+                    export_crossref,
+                    'make_client',
+                    return_value=client) as make_client:
+                article = (
+                    export_crossref.XMLCrossmarkUpdatesPipe
+                    ._get_related_article('10.1590/original', 'scl')
+                )
+
+        make_client.assert_called_once_with(
+            export_crossref.articlemeta_thrift.ArticleMeta,
+            'articlemeta-thriftserver',
+            11620,
+            timeout=5000,
+        )
+        client.get_article.assert_called_once_with(
+            '10.1590/original',
+            'scl',
+            False,
+            '',
+            False,
+        )
+        client.close.assert_called_once_with()
+        self.assertEqual('2026-09-22', article.document_publication_date)
+
+    def test_complete_partial_publication_date_with_day(self):
+        self.assertEqual(
+            '2013-10-01',
+            self.pipe._complete_update_date('2013-10'),
+        )
+        self.assertEqual(
+            '2013-01-01',
+            self.pipe._complete_update_date('2013'),
+        )
+        self.assertEqual(
+            '2026-09-22',
+            self.pipe._complete_update_date('2026-09-22'),
+        )
+
+        self.related_article.publication_date = '2013-10'
+        self.raw.related_documents = [{
+            'id': '10.1590/corrected',
+            'related_article_type': 'corrected-article',
+            'ext_link_type': 'doi',
+        }]
+
+        _, xml = self.transform(policy_doi=self.POLICY_DOI)
+        update = xml.find('.//updates/update')
+        self.assertEqual('2013-10-01', update.get('date'))
+
+    def test_create_multiple_updates_in_schema_order(self):
+        self.raw.related_documents = [
+            {
+                'id': '10.1590/corrected',
+                'related_article_type': 'corrected-article',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '10.1590/retracted',
+                'related_article_type': 'retracted-article',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '10.1590/partial',
+                'related_article_type': 'partial-retraction',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '10.1590/addendum',
+                'related_article_type': 'addendum',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '10.1590/concern',
+                'related_article_type': 'expression-of-concern',
+                'ext_link_type': 'doi',
+            },
+        ]
+
+        _, xml = self.transform(policy_doi=self.POLICY_DOI)
+
+        journal_article = xml.find('.//journal_article')
+        self.assertEqual(
+            ['publisher_item', 'crossmark'],
+            [child.tag for child in journal_article],
+        )
+        crossmark = journal_article.find('crossmark')
+        self.assertEqual(
+            ['crossmark_policy', 'crossmark_domains', 'updates'],
+            [child.tag for child in crossmark],
+        )
+        self.assertEqual(
+            self.POLICY_DOI,
+            crossmark.findtext('crossmark_policy'),
+        )
+        self.assertEqual(
+            'www.scielo.br',
+            crossmark.findtext(
+                'crossmark_domains/crossmark_domain/domain'),
+        )
+        updates = crossmark.findall('updates/update')
+        self.assertEqual(
+            [
+                'correction',
+                'retraction',
+                'partial_retraction',
+                'addendum',
+                'expression_of_concern',
+            ],
+            [update.get('type') for update in updates],
+        )
+        self.assertEqual(
+            ['2026-09-22'] * 5,
+            [update.get('date') for update in updates],
+        )
+
+    def test_ignore_inverse_non_doi_and_missing_identifier_relations(self):
+        self.raw.related_documents = [
+            {
+                'id': '10.1590/correction',
+                'related_article_type': 'correction-forward',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '10.1590/retraction',
+                'related_article_type': 'retraction-forward',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '10.1590/retracted',
+                'related_article_type': 'retracted-forward',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '10.1590/concern',
+                'related_article_type': 'object-of-concern',
+                'ext_link_type': 'doi',
+            },
+            {
+                'id': '978-65-00-00000-0',
+                'related_article_type': 'addendum',
+                'ext_link_type': 'isbn',
+            },
+            {
+                'related_article_type': 'corrected-article',
+                'ext_link_type': 'doi',
+            },
+        ]
+
+        _, xml = self.transform(policy_doi=self.POLICY_DOI)
+
+        crossmark = xml.find('.//crossmark')
+        self.assertEqual(
+            ['crossmark_policy', 'crossmark_domains'],
+            [child.tag for child in crossmark],
+        )
+        self.assertIsNone(crossmark.find('updates'))
+
+    def test_policy_is_required_and_domain_and_updates_are_optional(self):
+        self.raw.related_documents = [{
+            'id': '10.1590/corrected',
+            'related_article_type': 'corrected-article',
+            'ext_link_type': 'doi',
+        }]
+
+        _, missing_policy = self.transform(policy_doi=None)
+        self.assertIsNone(missing_policy.find('.//crossmark'))
+
+        self.raw.scielo_domain = None
+        _, missing_domain = self.transform(policy_doi=self.POLICY_DOI)
+        crossmark = missing_domain.find('.//crossmark')
+        self.assertEqual(
+            ['crossmark_policy', 'updates'],
+            [child.tag for child in crossmark],
+        )
+
+        xml = create_xmlcrossref_with_n_journal_article_element(
+            ['pt'], 'publisher_item')
+        self.raw.scielo_domain = 'www.scielo.br'
+        self.related_article.publication_date = None
+        _, missing_date = self.transform(xml=xml, policy_doi=self.POLICY_DOI)
+        crossmark = missing_date.find('.//crossmark')
+        self.assertEqual(
+            ['crossmark_policy', 'crossmark_domains'],
+            [child.tag for child in crossmark],
+        )
+        self.assertIsNone(crossmark.find('updates'))
+
+    def test_move_access_indicators_and_funding_to_custom_metadata(self):
+        self.raw.related_documents = [{
+            'id': '10.1590/corrected',
+            'related_article_type': 'corrected-article',
+            'ext_link_type': 'doi',
+        }]
+        self.raw.project_sponsor = [{'orgname': 'CNPQ'}]
+        self.raw.award_ids = ['123']
+        access_program = ET.Element(
+            '{http://www.crossref.org/AccessIndicators.xsd}program')
+        self.xmlcrossref.find('.//journal_article').append(access_program)
+
+        _, xml = self.transform(policy_doi=self.POLICY_DOI)
+        _, xml = export_crossref.XMLFundingDataPipe().transform(
+            [self.raw, xml])
+
+        journal_article = xml.find('.//journal_article')
+        crossmark = journal_article.find('crossmark')
+        custom_metadata = crossmark.find('custom_metadata')
+        self.assertEqual(
+            [
+                '{http://www.crossref.org/fundref.xsd}program',
+                '{http://www.crossref.org/AccessIndicators.xsd}program',
+            ],
+            [child.tag for child in custom_metadata],
+        )
+        direct_programs = [
+            child for child in journal_article
+            if ET.QName(child).namespace in (
+                'http://www.crossref.org/fundref.xsd',
+                'http://www.crossref.org/AccessIndicators.xsd',
+            )
+        ]
+        self.assertEqual([], direct_programs)
+
+    def test_add_crossmark_only_to_original_language_article(self):
+        self.raw.related_documents = [{
+            'id': '10.1590/corrected',
+            'related_article_type': 'corrected-article',
+            'ext_link_type': 'doi',
+        }]
+        xml = create_xmlcrossref_with_n_journal_article_element(
+            ['pt', 'es'], 'publisher_item')
+
+        _, xml = self.transform(xml=xml, policy_doi=self.POLICY_DOI)
+
+        journal_articles = xml.findall('.//journal_article')
+        self.assertIsNotNone(journal_articles[0].find('crossmark'))
+        self.assertIsNone(journal_articles[1].find('crossmark'))
+
 
 class ExportCrossRef_XMLFundingData_Tests(unittest.TestCase):
     def setUp(self):

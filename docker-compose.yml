@@ -4,6 +4,9 @@ services:
     image: scieloorg/articles_meta
     environment:
       ADMIN_TOKEN:
+      ARTICLEMETA_THRIFT_HOST: articlemeta-thriftserver
+      ARTICLEMETA_THRIFT_PORT: 11620
+      ARTICLEMETA_THRIFT_TIMEOUT: 3000
       LOGGING_LEVEL: DEBUG
       MONGODB_HOST: 
       SENTRY_DSN: 
