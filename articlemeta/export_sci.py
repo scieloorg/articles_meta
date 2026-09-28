@@ -610,18 +610,19 @@ class XMLArticleMetaArticleIdDOIPipe(plumber.Pipe):
 
         raw, xml = data
 
-        if not raw.doi:
+        if not raw.doi_and_lang:
             raise plumber.UnmetPrecondition()
 
     @plumber.precondition(precond)
     def transform(self, data):
         raw, xml = data
 
-        articleiddoi = ET.Element('article-id')
-        articleiddoi.set('pub-id-type', 'doi')
-        articleiddoi.text = raw.doi
-
-        xml.find('./article/front/article-meta').append(articleiddoi)
+        articlemeta = xml.find('./article/front/article-meta')
+        for _lang, doi in raw.doi_and_lang:
+            articleiddoi = ET.Element('article-id')
+            articleiddoi.set('pub-id-type', 'doi')
+            articleiddoi.text = doi
+            articlemeta.append(articleiddoi)
 
         return data
 
