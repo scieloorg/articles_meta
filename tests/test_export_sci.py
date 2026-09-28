@@ -1075,6 +1075,41 @@ class ExportTests(unittest.TestCase):
 
         self.assertEqual(u'10.1590/S0034-89102010000400007', articleidpublisher)
 
+    def test_xml_article_meta_article_id_doi_includes_translation_doi(self):
+
+        article = Article({
+            'article': {
+                'v40': [{'_': 'pt'}],
+                'v237': [{'_': '10.1590/1679-395120190117'}],
+                'v337': [
+                    {'l': 'pt', 'd': '10.1590/1679-395120190117', '_': ''},
+                    {'l': 'en', 'd': '10.1590/1679-395120190117x', '_': ''},
+                ],
+            },
+            'title': {},
+        })
+
+        pxml = ET.Element('articles')
+        pxml.append(ET.Element('article'))
+
+        article_el = pxml.find('article')
+        article_el.append(ET.Element('front'))
+
+        front = article_el.find('front')
+        front.append(ET.Element('article-meta'))
+
+        raw, xml = export_sci.XMLArticleMetaArticleIdDOIPipe().transform(
+            [article, pxml])
+
+        dois = [
+            el.text for el in xml.findall(
+                './article/front/article-meta/article-id[@pub-id-type="doi"]')
+        ]
+
+        self.assertEqual(
+            ['10.1590/1679-395120190117', '10.1590/1679-395120190117x'],
+            dois)
+
     def test_xml_article_meta_article_id_doi_without_data_pipe(self):
 
         fakexylosearticle = Article({'article': {}, 'title': {}})
