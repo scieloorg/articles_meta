@@ -903,6 +903,49 @@ class XMLCollectionPipe(plumber.Pipe):
         return data
 
 
+class XMLTextMiningPipe(plumber.Pipe):
+    """Deposita a URL do PDF em ``collection property="text-mining"``."""
+
+    def _pdf_url(self, raw, lang):
+        fulltexts = raw.data.get('fulltexts') or {}
+        pdf_url = (fulltexts.get('pdf') or {}).get(lang)
+        if pdf_url:
+            return pdf_url
+
+        html_url = (fulltexts.get('html') or {}).get(lang)
+        if not html_url:
+            return None
+
+        url = html_url.replace('script=sci_arttext', 'script=sci_pdf')
+        if 'format=pdf' not in url:
+            separator = '&' if '?' in url else '?'
+            url = '{0}{1}format=pdf'.format(url, separator)
+        return url
+
+    @staticmethod
+    def _create_collection(url):
+        resource = ET.Element('resource')
+        resource.set('mime_type', 'application/pdf')
+        resource.set('content_version', 'vor')
+        resource.text = url
+
+        item = ET.Element('item')
+        item.append(resource)
+
+        collection = ET.Element('collection')
+        collection.set('property', 'text-mining')
+        collection.append(item)
+        return collection
+
+    def transform(self, data):
+        raw, xml = data
+        for doi_data_elem, (lang, _doi) in zip_doi_data(xml, raw):
+            url = self._pdf_url(raw, lang)
+            if url:
+                doi_data_elem.append(self._create_collection(url))
+        return data
+
+
 class XMLArticleCitationsPipe(plumber.Pipe):
 
     def precond(data):
