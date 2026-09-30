@@ -904,28 +904,15 @@ class XMLCollectionPipe(plumber.Pipe):
 
 
 class XMLTextMiningPipe(plumber.Pipe):
-    """Deposita a URL do PDF em ``collection property="text-mining"``."""
+    """Deposita a URL do XML em ``collection property="text-mining"``.
 
-    def _pdf_url(self, raw, lang):
-        fulltexts = raw.data.get('fulltexts') or {}
-        pdf_url = (fulltexts.get('pdf') or {}).get(lang)
-        if pdf_url:
-            return pdf_url
-
-        html_url = (fulltexts.get('html') or {}).get(lang)
-        if not html_url:
-            return None
-
-        url = html_url.replace('script=sci_arttext', 'script=sci_pdf')
-        if 'format=pdf' not in url:
-            separator = '&' if '?' in url else '?'
-            url = '{0}{1}format=pdf'.format(url, separator)
-        return url
+    A URL é a mesma de ``XMLCollectionPipe``, com ``format=xml``.
+    """
 
     @staticmethod
     def _create_collection(url):
         resource = ET.Element('resource')
-        resource.set('mime_type', 'application/pdf')
+        resource.set('mime_type', 'application/xml')
         resource.set('content_version', 'vor')
         resource.text = url
 
@@ -939,10 +926,13 @@ class XMLTextMiningPipe(plumber.Pipe):
 
     def transform(self, data):
         raw, xml = data
-        for doi_data_elem, (lang, _doi) in zip_doi_data(xml, raw):
-            url = self._pdf_url(raw, lang)
-            if url:
-                doi_data_elem.append(self._create_collection(url))
+        for doi_data, doi_and_lang in zip(
+                xml.findall('.//journal_article/doi_data'),
+                raw.doi_and_lang):
+            url = XMLCollectionPipe.ARTICLE_PDF.format(
+                raw.scielo_domain, raw.publisher_id, doi_and_lang[0]
+            )
+            doi_data.append(self._create_collection(url + '&format=xml'))
         return data
 
 
