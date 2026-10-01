@@ -903,6 +903,39 @@ class XMLCollectionPipe(plumber.Pipe):
         return data
 
 
+class XMLTextMiningPipe(plumber.Pipe):
+    """Deposita a URL do XML em ``collection property="text-mining"``.
+
+    A URL é a mesma de ``XMLCollectionPipe``, com ``format=xml``.
+    """
+
+    @staticmethod
+    def _create_collection(url):
+        resource = ET.Element('resource')
+        resource.set('mime_type', 'application/xml')
+        resource.set('content_version', 'vor')
+        resource.text = url
+
+        item = ET.Element('item')
+        item.append(resource)
+
+        collection = ET.Element('collection')
+        collection.set('property', 'text-mining')
+        collection.append(item)
+        return collection
+
+    def transform(self, data):
+        raw, xml = data
+        for doi_data, doi_and_lang in zip(
+                xml.findall('.//journal_article/doi_data'),
+                raw.doi_and_lang):
+            url = XMLCollectionPipe.ARTICLE_PDF.format(
+                raw.scielo_domain, raw.publisher_id, doi_and_lang[0]
+            )
+            doi_data.append(self._create_collection(url + '&format=xml'))
+        return data
+
+
 class XMLArticleCitationsPipe(plumber.Pipe):
 
     def precond(data):
