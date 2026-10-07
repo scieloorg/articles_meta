@@ -2332,7 +2332,7 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
             with self.subTest(text):
                 self.assertEqual(res.text, text)
 
-    def test_text_mining_uses_collection_url_with_format_xml(self):
+    def test_text_mining_uses_collection_pdf_url(self):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
             ['pt', 'en', 'es'], 'doi_data')
 
@@ -2341,11 +2341,11 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
 
         texts = [
             "http://www.scielo.br/scielo.php?script=sci_pdf"
-            "&pid=S0034-89102010000400007&tlng=pt&format=xml",
+            "&pid=S0034-89102010000400007&tlng=pt",
             "http://www.scielo.br/scielo.php?script=sci_pdf"
-            "&pid=S0034-89102010000400007&tlng=en&format=xml",
+            "&pid=S0034-89102010000400007&tlng=en",
             "http://www.scielo.br/scielo.php?script=sci_pdf"
-            "&pid=S0034-89102010000400007&tlng=es&format=xml",
+            "&pid=S0034-89102010000400007&tlng=es",
         ]
         collections = xml.findall(
             './/doi_data/collection[@property="text-mining"]')
@@ -2354,10 +2354,10 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
             with self.subTest(text):
                 resource = collection.find('item/resource')
                 self.assertEqual(text, resource.text)
-                self.assertEqual('application/xml', resource.get('mime_type'))
+                self.assertEqual('application/pdf', resource.get('mime_type'))
                 self.assertEqual('vor', resource.get('content_version'))
 
-    def test_text_mining_keeps_similarity_check_url_without_format_xml(self):
+    def test_text_mining_uses_same_url_as_similarity_check(self):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(
             ['pt', 'en', 'es'], 'doi_data')
 
@@ -2374,8 +2374,8 @@ class ExportCrossRef_MultiLingueDoc_with_MultipleDOI_Tests(unittest.TestCase):
         for crawler_collection, mining_collection in zip(crawler, mining):
             crawler_url = crawler_collection.findtext('item/resource')
             mining_url = mining_collection.findtext('item/resource')
-            self.assertNotIn('format=xml', crawler_url)
-            self.assertEqual(crawler_url + '&format=xml', mining_url)
+            self.assertNotIn('format=xml', mining_url)
+            self.assertEqual(crawler_url, mining_url)
 
     def test_citations_for_multilingue_document(self):
         xmlcrossref = create_xmlcrossref_with_n_journal_article_element(

@@ -904,15 +904,15 @@ class XMLCollectionPipe(plumber.Pipe):
 
 
 class XMLTextMiningPipe(plumber.Pipe):
-    """Deposita a URL do XML em ``collection property="text-mining"``.
+    """Deposita a URL do PDF em ``collection property="text-mining"``.
 
-    A URL é a mesma de ``XMLCollectionPipe``, com ``format=xml``.
+    A URL é a mesma de ``XMLCollectionPipe``.
     """
 
     @staticmethod
     def _create_collection(url):
         resource = ET.Element('resource')
-        resource.set('mime_type', 'application/xml')
+        resource.set('mime_type', 'application/pdf')
         resource.set('content_version', 'vor')
         resource.text = url
 
@@ -932,7 +932,7 @@ class XMLTextMiningPipe(plumber.Pipe):
             url = XMLCollectionPipe.ARTICLE_PDF.format(
                 raw.scielo_domain, raw.publisher_id, doi_and_lang[0]
             )
-            doi_data.append(self._create_collection(url + '&format=xml'))
+            doi_data.append(self._create_collection(url))
         return data
 
 
