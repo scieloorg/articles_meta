@@ -1,5 +1,6 @@
 # coding: utf-8
 import json
+import logging
 import os
 import re
 import uuid
@@ -15,6 +16,8 @@ from thriftpy2.rpc import make_client
 from xylose.scielodocument import Article, UnavailableMetadataException
 
 from articlemeta.controller import DataBroker, get_dbconn
+
+logger = logging.getLogger(__name__)
 
 DetectorFactory.seed = 0
 
@@ -441,6 +444,13 @@ def _correct_article_title_languages(raw):
     }
 
 
+def _v12_languages(raw):
+    """Idiomas dos títulos como registrados em v12, antes da correção."""
+    titles = {raw.original_language(): raw.original_title()}
+    titles.update(raw.translated_titles() or {})
+    return [lang for lang, title in titles.items() if (title or '').strip()]
+
+
 def _detect_title_language(title):
     try:
         return detect(title)
@@ -454,6 +464,9 @@ class XMLArticleTitlePipe(plumber.Pipe):
 
     ``<original_language_title>`` só nas versões traduzidas, com o título
     do idioma original (v40).
+
+    Sem título no idioma do journal_article, usa o primeiro título disponível
+    (ordem de v12) e registra um aviso, pois v40 e v12 estão inconsistentes.
     """
 
     def transform(self, data):
@@ -467,8 +480,18 @@ class XMLArticleTitlePipe(plumber.Pipe):
             article_lang = journal_article.get('language')
             titles_node = journal_article.find('./titles')
 
+            title = titles.get(article_lang)
+            if not title and titles:
+                title = next(iter(titles.values()))
+                logger.warning(
+                    'Crossref %s: sem título em %s (v40: %s, v12: %s); '
+                    'usando o primeiro título disponível',
+                    raw.publisher_id, article_lang, original_lang,
+                    ', '.join(_v12_languages(raw)),
+                )
+
             title_el = ET.Element('title')
-            title_el.text = titles.get(article_lang, '[NO TITLE AVAILABLE]')
+            title_el.text = title or '[NO TITLE AVAILABLE]'
             titles_node.append(title_el)
 
             if article_lang != original_lang:
