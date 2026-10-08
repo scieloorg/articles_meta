@@ -687,6 +687,7 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
             'taxonomic classification of isolated theropodomorph teeth'
         )
         raw = Mock()
+        raw.publisher_id = 'S0000-00002000000000001'
         raw.original_language.return_value = 'pt'
         raw.original_title.return_value = None
         raw.translated_titles.return_value = {'en': title}
@@ -698,11 +699,66 @@ class ExportCrossRef_one_DOI_only_Tests(unittest.TestCase):
             '</journal_article>'
             '</journal></body></doi_batch>'
         )
-        _, xml = export_crossref.XMLArticleTitlePipe().transform([raw, xml])
+        with self.assertLogs(export_crossref.logger, 'WARNING') as logs:
+            _, xml = export_crossref.XMLArticleTitlePipe().transform(
+                [raw, xml])
 
-        self.assertEqual('[NO TITLE AVAILABLE]', xml.findtext('.//title'))
+        self.assertEqual(title, xml.findtext('.//title'))
         self.assertEqual('pt', xml.find('.//journal_article').get('language'))
         self.assertIsNone(xml.find('.//original_language_title'))
+        self.assertIn('S0000-00002000000000001', logs.output[0])
+
+    def test_article_title_falls_back_to_first_v12_title_when_several(self):
+        raw = Mock()
+        raw.publisher_id = 'S0000-00002000000000001'
+        raw.original_language.return_value = 'pt'
+        raw.original_title.return_value = None
+        raw.translated_titles.return_value = {
+            'es': 'La psicología en la atención a las personas con discapacidad',
+            'en': 'Psychological attention to persons with disability',
+        }
+
+        xml = ET.fromstring(
+            '<doi_batch><body><journal>'
+            '<journal_article language="pt" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '</journal></body></doi_batch>'
+        )
+        with self.assertLogs(export_crossref.logger, 'WARNING'):
+            _, xml = export_crossref.XMLArticleTitlePipe().transform(
+                [raw, xml])
+
+        self.assertEqual(
+            ['La psicología en la atención a las personas con discapacidad'],
+            [node.text for node in xml.findall('.//title')])
+
+    def test_article_title_falls_back_to_title_likely_in_article_language(self):
+        # S0100-29452014000400023: título em espanhol rotulado como pt
+        raw = Mock()
+        raw.publisher_id = 'S0000-00002000000000001'
+        raw.original_language.return_value = 'es'
+        raw.original_title.return_value = None
+        raw.translated_titles.return_value = {
+            'en': 'Proposal of descriptors for Acca sellowiana (Berg.) Burret',
+            'pt': 'Propuesta de descriptores para Acca sellowiana (Berg.) Burret',
+        }
+
+        xml = ET.fromstring(
+            '<doi_batch><body><journal>'
+            '<journal_article language="es" publication_type="full_text">'
+            '<titles/>'
+            '</journal_article>'
+            '</journal></body></doi_batch>'
+        )
+        with self.assertLogs(export_crossref.logger, 'WARNING'):
+            _, xml = export_crossref.XMLArticleTitlePipe().transform(
+                [raw, xml])
+
+        self.assertEqual(
+            ['Propuesta de descriptores para Acca sellowiana (Berg.) Burret'],
+            [node.text for node in xml.findall('.//title')])
+        self.assertEqual('es', xml.find('.//journal_article').get('language'))
 
     def test_article_title_placeholder_when_no_titles_exist(self):
         raw = Mock()
