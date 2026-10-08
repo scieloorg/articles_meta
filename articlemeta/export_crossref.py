@@ -10,7 +10,8 @@ from itertools import product
 
 import plumber
 import thriftpy2
-from langdetect import DetectorFactory, LangDetectException, detect
+from langdetect import (
+    DetectorFactory, LangDetectException, detect, detect_langs)
 from lxml import etree as ET
 from thriftpy2.rpc import make_client
 from xylose.scielodocument import Article, UnavailableMetadataException
@@ -458,6 +459,25 @@ def _detect_title_language(title):
         return None
 
 
+def _language_probability(title, lang):
+    try:
+        return max(
+            (item.prob for item in detect_langs(title) if item.lang == lang),
+            default=0,
+        )
+    except LangDetectException:
+        return 0
+
+
+def _fallback_title(titles, lang):
+    """Título com maior probabilidade de estar em ``lang``.
+
+    Sem nenhum candidato em ``lang``, devolve o primeiro título disponível.
+    """
+    candidates = list(titles.values())
+    return max(candidates, key=lambda title: _language_probability(title, lang))
+
+
 class XMLArticleTitlePipe(plumber.Pipe):
     """
     ``<title>`` no idioma do journal_article.
@@ -465,8 +485,9 @@ class XMLArticleTitlePipe(plumber.Pipe):
     ``<original_language_title>`` só nas versões traduzidas, com o título
     do idioma original (v40).
 
-    Sem título no idioma do journal_article, usa o primeiro título disponível
-    (ordem de v12) e registra um aviso, pois v40 e v12 estão inconsistentes.
+    Sem título no idioma do journal_article, usa o título com maior
+    probabilidade de estar nesse idioma (ou o primeiro disponível, na ordem
+    de v12) e registra um aviso, pois v40 e v12 estão inconsistentes.
     """
 
     def transform(self, data):
@@ -482,10 +503,10 @@ class XMLArticleTitlePipe(plumber.Pipe):
 
             title = titles.get(article_lang)
             if not title and titles:
-                title = next(iter(titles.values()))
+                title = _fallback_title(titles, article_lang)
                 logger.warning(
                     'Crossref %s: sem título em %s (v40: %s, v12: %s); '
-                    'usando o primeiro título disponível',
+                    'usando o título disponível mais provável',
                     raw.publisher_id, article_lang, original_lang,
                     ', '.join(_v12_languages(raw)),
                 )
